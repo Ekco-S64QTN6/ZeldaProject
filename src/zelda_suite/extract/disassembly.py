@@ -80,7 +80,7 @@ def parse_dl_pointer_table(
     lines = source.splitlines()
     label_line: int | None = None
     for index, line in enumerate(lines):
-        match = _LABEL_RE.fullmatch(line)
+        match = _LABEL_RE.fullmatch(line.split(";", 1)[0])
         if match and match.group("label") == label:
             label_line = index
             break
