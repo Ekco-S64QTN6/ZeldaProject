@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -111,7 +112,7 @@ def test_inspect_rom_cli_emits_metadata_json_and_creates_new_output(
     result = runner.invoke(cli, ["inspect-rom", str(image)])
 
     assert result.exit_code == 0, result.output
-    payload = __import__("json").loads(result.output)
+    payload = json.loads(result.output)
     assert payload["format"] == "zelda-suite-rom-image"
     assert payload["is_expected_headerless_size"] is True
     assert payload["offset_map"]["example_cpu_address"] == "$0B8000"
