@@ -8,7 +8,7 @@ from pathlib import Path
 import click
 
 from zelda_suite import __version__
-from zelda_suite.extract import parse_dl_pointer_table
+from zelda_suite.extract import parse_dl_pointer_table, parse_incbin_inventory
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
 
@@ -181,6 +181,70 @@ def inspect_pointer_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} pointer-table entries to {output}")
+
+@cli.command(name="inspect-incbin")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    help="Revision to record; omitted values are marked unspecified.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_incbin(
+    source: Path, source_revision: str | None, output: Path | None
+) -> None:
+    """Inventory source-level incbin declarations without opening payloads."""
+    recorded_revision = source_revision or "unspecified"
+    try:
+        source_text = source.read_text(encoding="utf-8")
+        declarations = parse_incbin_inventory(
+            source_text,
+            source_file=source.name,
+            source_revision=recorded_revision,
+        )
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    payload = {
+        "format": "zelda-suite-incbin-inventory",
+        "format_version": 1,
+        "source_file": source.name,
+        "source_revision": recorded_revision,
+        "declaration_count": len(declarations),
+        "declarations": [item.to_dict() for item in declarations],
+    }
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(f"Wrote {len(declarations)} incbin declarations to {output}")
+
 
 @cli.command(name="init")
 @click.argument("name")
