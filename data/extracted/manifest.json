@@ -73,6 +73,15 @@
       "record_count": 397,
       "subsystem": "text",
       "description": "Message IDs, source offsets, and declared lengths from the two pinned message blocks."
+    },
+    {
+      "name": "sprite-active3-dispatch",
+      "file": "sprite-active3-dispatch.json",
+      "format": "zelda-suite-sprite-dispatch",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 68,
+      "subsystem": "sprites",
+      "description": "Sixty-eight source-mapped handlers for sprite type IDs $79-$BC, preserving aliases."
     }
   ]
 }
