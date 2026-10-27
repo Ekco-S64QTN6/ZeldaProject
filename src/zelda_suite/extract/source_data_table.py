@@ -197,6 +197,10 @@ def parse_source_data_table(
                         f"table {label!r} ended after {len(entries)} entries; "
                         f"expected {entry_count}"
                     )
+                if stop_name is not None:
+                    raise DataTableParseError(
+                        f"stop label {stop_name!r} was not found before the block ended"
+                    )
                 return entries
             if depth != 1:
                 raise DataTableParseError(
