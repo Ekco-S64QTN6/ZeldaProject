@@ -9,11 +9,17 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
+DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
+POINTER_DIRECTIVE_WIDTHS = {"dw": 2, "dl": 3}
+
 _LABEL_RE = re.compile(r"^\s*(?P<label>[A-Za-z_][A-Za-z0-9_]*)\s*:\s*$")
 _EXPRESSION_RE = re.compile(
     r"(?P<label>[A-Za-z_][A-Za-z0-9_]*)(?:(?P<sign>[+-])\s*(?P<offset>\$[0-9A-Fa-f]+|[0-9]+))?\Z"
 )
-_DIRECTIVE_RE = re.compile(r"^\s*dl\s+(?P<values>.*?)\s*$", re.IGNORECASE)
+_DIRECTIVE_RE = re.compile(
+    r"^\s*(?P<directive>db|dw|dl)\s+(?P<values>.*?)\s*$",
+    re.IGNORECASE,
+)
 
 
 class DisassemblyParseError(ValueError):
@@ -55,24 +61,36 @@ def _parse_pointer_expression(expression: str, source_line: int) -> tuple[str, i
     return match.group("label"), offset
 
 
-def parse_dl_pointer_table(
+def parse_source_pointer_table(
     source: str,
     label: str,
     table_file_offset: int,
     *,
-    entry_width: int = 3,
+    directive: str = "dl",
+    entry_width: int | None = None,
     source_revision: str | None = None,
 ) -> list[PointerTableEntry]:
-    """Parse a brace-delimited Asar `dl` block into auditable source records.
+    """Parse a brace-delimited Asar dw or dl table into audit records.
 
-    `table_file_offset` is the verified file offset of the first entry and
-    `entry_width` is the number of ROM bytes represented by each `dl`
-    expression. The helper computes only entry locations; it never evaluates
-    an expression or resolves it to target ROM bytes.
+    The directive determines the default entry width (dw=2, dl=3). A caller
+    may supply an explicit width for a documented custom encoding, but that
+    width only affects calculated entry locations and does not change how the
+    source expressions are parsed. The function never evaluates expressions
+    or resolves target symbols to ROM byte offsets.
     """
+    normalized_directive = directive.lower() if isinstance(directive, str) else ""
+    if normalized_directive not in POINTER_DIRECTIVE_WIDTHS:
+        raise ValueError("directive must be 'dw' or 'dl'")
     if table_file_offset < 0:
         raise ValueError("table_file_offset must be non-negative")
-    if entry_width <= 0:
+    actual_entry_width = (
+        POINTER_DIRECTIVE_WIDTHS[normalized_directive]
+        if entry_width is None
+        else entry_width
+    )
+    if isinstance(actual_entry_width, bool) or not isinstance(actual_entry_width, int):
+        raise TypeError("entry_width must be an integer")
+    if actual_entry_width <= 0:
         raise ValueError("entry_width must be positive")
     if not label or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", label):
         raise ValueError("label must be a valid assembly identifier")
@@ -122,30 +140,38 @@ def parse_dl_pointer_table(
             return entries
 
         if depth != 1:
-            # Nested Asar blocks are not part of the supported pointer-table syntax.
             raise DisassemblyParseError(
                 f"nested block encountered in pointer table {label!r} "
                 f"on line {index + 1}"
             )
 
-        directive = _DIRECTIVE_RE.fullmatch(code)
-        if directive is None:
-            # Labels and directives other than dl are not pointer entries.
+        data_directive = _DIRECTIVE_RE.fullmatch(code)
+        if data_directive is None:
+            # Labels and non-data instructions are not pointer entries.
             continue
-
-        values = directive.group("values").strip()
-        if not values:
+        actual_directive = data_directive.group("directive").lower()
+        if actual_directive not in DATA_DIRECTIVE_WIDTHS:
+            continue
+        if actual_directive != normalized_directive:
             raise DisassemblyParseError(
-                f"empty dl directive in table {label!r} on line {index + 1}"
+                f"expected {normalized_directive} directive but found "
+                f"{actual_directive} in table {label!r} on line {index + 1}"
             )
 
-        # A comma separates adjacent data expressions in Asar. Current pointer
-        # tables use one expression per line, but accepting multiple values
-        # keeps indexing correct if a declaration is compacted later.
+        values = data_directive.group("values").strip()
+        if not values:
+            raise DisassemblyParseError(
+                f"empty {normalized_directive} directive in table {label!r} "
+                f"on line {index + 1}"
+            )
+
+        # A comma separates adjacent data expressions in Asar. Accepting
+        # multiple values keeps indexing correct if a declaration is compacted.
         expressions = [value.strip() for value in values.split(",")]
         if any(not expression for expression in expressions):
             raise DisassemblyParseError(
-                f"malformed dl directive in table {label!r} on line {index + 1}"
+                f"malformed {normalized_directive} directive in table {label!r} "
+                f"on line {index + 1}"
             )
 
         for expression in expressions:
@@ -157,7 +183,7 @@ def parse_dl_pointer_table(
                 PointerTableEntry(
                     table_index=table_index,
                     pointer_entry_file_offset=table_file_offset
-                    + table_index * entry_width,
+                    + table_index * actual_entry_width,
                     source_line=index + 1,
                     pointer_expression=expression,
                     target_label=target_label,
@@ -168,3 +194,41 @@ def parse_dl_pointer_table(
             )
 
     raise DisassemblyParseError(f"closing brace not found for table {label!r}")
+
+
+def parse_dl_pointer_table(
+    source: str,
+    label: str,
+    table_file_offset: int,
+    *,
+    entry_width: int = 3,
+    source_revision: str | None = None,
+) -> list[PointerTableEntry]:
+    """Parse an Asar dl pointer table, preserving the existing public API."""
+    return parse_source_pointer_table(
+        source,
+        label,
+        table_file_offset,
+        directive="dl",
+        entry_width=entry_width,
+        source_revision=source_revision,
+    )
+
+
+def parse_dw_pointer_table(
+    source: str,
+    label: str,
+    table_file_offset: int,
+    *,
+    entry_width: int = 2,
+    source_revision: str | None = None,
+) -> list[PointerTableEntry]:
+    """Parse an Asar dw pointer table into two-byte-entry source records."""
+    return parse_source_pointer_table(
+        source,
+        label,
+        table_file_offset,
+        directive="dw",
+        entry_width=entry_width,
+        source_revision=source_revision,
+    )

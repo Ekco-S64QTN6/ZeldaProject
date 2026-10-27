@@ -9,10 +9,11 @@ import click
 
 from zelda_suite import __version__
 from zelda_suite.extract import (
+    POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     load_source_export,
-    parse_dl_pointer_table,
     parse_incbin_inventory,
+    parse_source_pointer_table,
 )
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
@@ -107,11 +108,18 @@ def _parse_offset_text(value: str) -> int:
     help="Verified file offset of the first pointer entry (e.g. $0F8000).",
 )
 @click.option(
+    "--directive",
+    type=click.Choice(["dl", "dw"], case_sensitive=False),
+    default="dl",
+    show_default=True,
+    help="Asar pointer-table data directive; dw uses 2-byte entries, dl uses 3-byte entries.",
+)
+@click.option(
     "--entry-width",
     type=click.IntRange(min=1),
-    default=3,
-    show_default=True,
-    help="Bytes per source-table entry.",
+    default=None,
+    show_default=False,
+    help="Optional override for calculated entry locations.",
 )
 @click.option(
     "--source-revision",
@@ -129,7 +137,8 @@ def inspect_pointer_table(
     source: Path,
     label: str,
     table_offset: str,
-    entry_width: int,
+    directive: str,
+    entry_width: int | None,
     source_revision: str | None,
     output: Path | None,
 ) -> None:
@@ -142,10 +151,11 @@ def inspect_pointer_table(
         offset = _parse_offset_text(table_offset)
         source_text = source.read_text(encoding="utf-8")
         recorded_revision = source_revision or "unspecified"
-        entries = parse_dl_pointer_table(
+        entries = parse_source_pointer_table(
             source_text,
             label,
             offset,
+            directive=directive,
             entry_width=entry_width,
             source_revision=recorded_revision,
         )
@@ -159,7 +169,11 @@ def inspect_pointer_table(
         "source_revision": recorded_revision,
         "table_label": label,
         "table_file_offset": offset,
-        "entry_width": entry_width,
+        "entry_width": (
+            entry_width
+            if entry_width is not None
+            else POINTER_DIRECTIVE_WIDTHS[directive.lower()]
+        ),
         "entry_count": len(entries),
         "entries": [entry.to_dict() for entry in entries],
     }

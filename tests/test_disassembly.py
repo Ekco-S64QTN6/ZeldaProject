@@ -6,6 +6,7 @@ import pytest
 from zelda_suite.extract.disassembly import (
     DisassemblyParseError,
     parse_dl_pointer_table,
+    parse_dw_pointer_table,
 )
 
 SAMPLE_SOURCE = """
@@ -112,3 +113,49 @@ def test_records_are_json_friendly() -> None:
     assert record["pointer_expression"] == "RoomDataTiles_Empty+$0008"
     assert record["target_addend"] == 8
     assert record["is_empty_target"] is True
+
+
+
+SAMPLE_WORD_SOURCE = """; synthetic excerpt — not ROM data
+OverworldData_HiddenItems:
+{
+    dw OverworldData_HiddenItems_Screen_00
+    dw OverworldData_HiddenItems_Screen_02+$0002 ; addend example
+    dw Screen03, Screen04+$0004
+}
+"""
+
+
+def test_parses_dw_pointer_table_with_two_byte_stride() -> None:
+    entries = parse_dw_pointer_table(
+        SAMPLE_WORD_SOURCE,
+        "OverworldData_HiddenItems",
+        0x0DC2F9,
+        source_revision="pinned-sha",
+    )
+
+    assert len(entries) == 4
+    assert [entry.table_index for entry in entries] == [0, 1, 2, 3]
+    assert [entry.pointer_entry_file_offset for entry in entries] == [
+        0x0DC2F9,
+        0x0DC2FB,
+        0x0DC2FD,
+        0x0DC2FF,
+    ]
+    assert entries[0].pointer_expression == "OverworldData_HiddenItems_Screen_00"
+    assert entries[1].target_label == "OverworldData_HiddenItems_Screen_02"
+    assert entries[1].target_addend == 2
+    assert entries[2].target_addend is None
+    assert entries[3].target_addend == 4
+    assert entries[3].source_revision == "pinned-sha"
+
+
+def test_dw_parser_rejects_dl_entries_inside_word_table() -> None:
+    source = """WordPointers:
+{
+    dw FirstTarget
+    dl SecondTarget
+}
+"""
+    with pytest.raises(DisassemblyParseError, match="expected dw directive but found dl"):
+        parse_dw_pointer_table(source, "WordPointers", 0x100)

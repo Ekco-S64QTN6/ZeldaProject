@@ -84,3 +84,24 @@ transform used by a future API.
    fixtures or user-supplied local fixtures, never committed ROM data.
 
 This is documentation only. No ROM bytes are read, copied, or modified.
+
+
+## Export the source pointer table
+
+The shared source-table parser can export the 128 two-byte pointer expressions
+without resolving targets or decoding the hidden-item records:
+
+```bash
+uv run zelda-suite inspect-pointer-table \
+  reference/AsarUSALTTPDisassembly/Bank1B.asm \
+  OverworldData_HiddenItems \
+  --table-offset '$0DC2F9' \
+  --directive dw \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/hidden-item-pointers.json
+uv run zelda-suite validate-source-export /tmp/hidden-item-pointers.json
+```
+
+The parser's two-byte stride is checked against the pinned source table in CI.
+The output validates the source expressions and entry locations only; the
+pointed-to lists still require local-ROM verification before record extraction.

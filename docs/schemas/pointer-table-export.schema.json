@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Zelda Suite pointer-table source export",
-  "description": "Source-level Asar dl table entries. Target addresses are not resolved by this format.",
+  "description": "Source-level Asar dw or dl pointer-table entries. Target addresses are not resolved by this format.",
   "type": "object",
   "required": [
     "format",

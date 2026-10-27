@@ -155,3 +155,40 @@ def test_pointer_table_json_schema_matches_cli_payload(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert set(payload) == set(schema["required"])
     assert set(payload["entries"][0]) == set(schema["$defs"]["entry"]["required"])
+
+
+
+def test_cli_inspects_dw_pointer_table_with_two_byte_offsets(tmp_path: Path) -> None:
+    source = tmp_path / "word-pointers.asm"
+    source.write_text(
+        """WordPointers:
+{
+    dw FirstTarget
+    dw SecondTarget+$0002
+}
+""",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "WordPointers",
+            "--table-offset",
+            "$0DC2F9",
+            "--directive",
+            "dw",
+            "--source-revision",
+            "pinned-sha",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["entry_width"] == 2
+    assert payload["entry_count"] == 2
+    assert payload["entries"][0]["pointer_entry_file_offset"] == 0x0DC2F9
+    assert payload["entries"][1]["pointer_entry_file_offset"] == 0x0DC2FB
+    assert payload["entries"][1]["target_addend"] == 2
