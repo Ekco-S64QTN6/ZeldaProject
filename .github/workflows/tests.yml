@@ -46,5 +46,6 @@ jobs:
           tests/test_pinned_data_table.py
           tests/test_extracted_table_assets.py
           tests/test_extracted_falling_prize_layout.py
+          tests/test_extracted_text_dictionary.py
       - name: Run tests
         run: python -m pytest -q
