@@ -8,6 +8,7 @@ from pathlib import Path
 import click
 
 from zelda_suite import __version__
+from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
@@ -16,6 +17,8 @@ from zelda_suite.extract import (
     load_source_export,
     parse_incbin_inventory,
     parse_source_pointer_table,
+    read_rom_bytes,
+    sha256_rom_bytes,
 )
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
@@ -265,6 +268,90 @@ def inspect_incbin(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(declarations)} incbin declarations to {output}")
+
+
+@cli.command(name="diff-rom")
+@click.argument(
+    "base_rom",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "modified_rom",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write diff JSON to a new file instead of stdout.",
+)
+def diff_rom_files(base_rom: Path, modified_rom: Path, output: Path | None) -> None:
+    """Create a deterministic, read-only diff between a base ROM and candidate ROM."""
+    try:
+        base_bytes = read_rom_bytes(base_rom)
+        modified_bytes = read_rom_bytes(modified_rom)
+    except ROMImageInspectionError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    if len(base_bytes) != EXPECTED_US_ROM_SIZE:
+        raise click.ClickException(
+            f"base ROM must be the expected headerless 1 MiB image "
+            f"({EXPECTED_US_ROM_SIZE:,} bytes); got {len(base_bytes):,}. "
+            "Use inspect-rom to diagnose the file."
+        )
+    if not modified_bytes:
+        raise click.ClickException("modified ROM image is empty")
+    if (
+        len(modified_bytes) == EXPECTED_US_ROM_SIZE + COPIER_HEADER_SIZE
+        or (
+            len(modified_bytes) > SNES_ROM_BANK_SIZE
+            and len(modified_bytes) % SNES_ROM_BANK_SIZE == COPIER_HEADER_SIZE
+        )
+    ):
+        raise click.ClickException(
+            "modified ROM size suggests a 512-byte copier header; "
+            "remove/resolve the header locally before diffing"
+        )
+
+    byte_diff = compare_bytes(base_bytes, modified_bytes)
+    payload = {
+        "format": "zelda-suite-rom-file-diff",
+        "format_version": 1,
+        "base_rom": {
+            "filename": base_rom.name,
+            "size_bytes": len(base_bytes),
+            "sha256": sha256_rom_bytes(base_bytes),
+        },
+        "modified_rom": {
+            "filename": modified_rom.name,
+            "size_bytes": len(modified_bytes),
+            "sha256": sha256_rom_bytes(modified_bytes),
+        },
+        "diff": byte_diff.to_dict(),
+    }
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(f"Wrote ROM file diff to {output}")
 
 
 @cli.command(name="inspect-rom")

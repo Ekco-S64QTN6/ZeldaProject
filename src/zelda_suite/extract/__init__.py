@@ -23,6 +23,8 @@ from zelda_suite.extract.rom_image import (
     format_lorom_cpu_address,
     inspect_rom_image,
     lorom_cpu_address,
+    read_rom_bytes,
+    sha256_rom_bytes,
 )
 
 __all__ = [
@@ -42,5 +44,7 @@ __all__ = [
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
     "parse_source_pointer_table",
+    "read_rom_bytes",
+    "sha256_rom_bytes",
     "validate_source_export",
 ]
