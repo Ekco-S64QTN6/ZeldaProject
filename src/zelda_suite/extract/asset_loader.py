@@ -369,9 +369,6 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
         inline_comment = entry["inline_comment"]
         if inline_comment is not None and not isinstance(inline_comment, str):
             raise AssetLoadError(f"{context}.inline_comment must be a string or null")
-        entry_source_file = _string(entry.get("source_file", source_file), f"{context}.source_file") if "source_file" in entry else source_file
-        if entry_source_file != source_file:
-            raise AssetLoadError(f"{context}.source_file does not match top-level source_file")
         entry_revision = _string(entry["source_revision"], f"{context}.source_revision")
         if entry_revision != revision:
             raise AssetLoadError(
