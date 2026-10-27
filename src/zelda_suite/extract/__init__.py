@@ -16,16 +16,6 @@ from zelda_suite.extract.dictionary_inventory import (
     DictionaryInventoryError,
     parse_dictionary_fragment_inventory,
 )
-from zelda_suite.extract.dictionary_inventory import (
-    DictionaryFragment,
-    DictionaryInventoryError,
-    parse_dictionary_fragment_inventory,
-)
-from zelda_suite.extract.dictionary_inventory import (
-    DictionaryFragment,
-    DictionaryInventoryError,
-    parse_dictionary_fragment_inventory,
-)
 from zelda_suite.extract.disassembly import (
     POINTER_DIRECTIVE_WIDTHS,
     DisassemblyParseError,
@@ -51,11 +41,11 @@ from zelda_suite.extract.rom_image import (
 
 __all__ = [
     "DATA_DIRECTIVE_WIDTHS",
+    "DICTIONARY_INVENTORY_FORMAT",
     "POINTER_DIRECTIVE_WIDTHS",
     "AssetLoadError",
     "DataTableEntry",
     "DataTableParseError",
-    "DICTIONARY_INVENTORY_FORMAT",
     "DictionaryFragment",
     "DictionaryInventoryError",
     "DisassemblyParseError",
