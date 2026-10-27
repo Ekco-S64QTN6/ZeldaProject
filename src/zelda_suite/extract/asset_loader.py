@@ -14,7 +14,7 @@ POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
-_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\\Z")
+_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 _POINTER_TOP_KEYS = {
     "format",
     "format_version",
