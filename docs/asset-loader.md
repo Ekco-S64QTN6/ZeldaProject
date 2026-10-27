@@ -9,23 +9,26 @@ before returning it to a caller.
 ```python
 from zelda_suite.extract import load_source_export
 
-export = load_source_export("/tmp/room-object-pointers.json")
+export = load_source_export("/tmp/text-message-index.json")
 print(export["format"], export["format_version"])
 ```
 
 Supported version-1 formats are pointer-table exports from
 `zelda-suite inspect-pointer-table`, `incbin` inventories from
 `zelda-suite inspect-incbin`, scalar data-table exports from
-`zelda-suite inspect-data-table`, and text dictionary fragment inventories
-from `zelda-suite inspect-text-dictionary`. The loader checks required fields,
-rejects unknown keys and unsupported versions, confirms record counts, and
-validates cross-field invariants including index/offset sequences, directive
-widths, source revisions, source extents, and bounded table relationships.
+`zelda-suite inspect-data-table`, text dictionary fragment inventories from
+`zelda-suite inspect-text-dictionary`, and source text message indexes from
+`zelda-suite inspect-text-messages`.
 
-Dictionary fragment inventories preserve source annotation mismatches rather
-than rejecting them as inherently invalid. The loader checks that each recorded
-match flag accurately reflects the recorded source extent and directive size;
-a `false` flag is valid provenance for an unresolved source-layout discrepancy.
+The loader rejects unknown keys and unsupported versions, verifies record
+counts and source revisions, and checks cross-field invariants including entry
+index/offset sequences, directive widths, directive-vs-annotated source
+extents, and message starts computed from preceding directive byte counts.
+Offset annotations that disagree with source-derived sequential offsets are
+preserved as diagnostics; a `false` comparison flag is valid provenance for an
+unresolved source comment. Similarly, a message block whose declared byte
+total differs from its annotated range is recorded as a mismatch rather than
+rewritten.
 
 ## CLI
 
@@ -34,16 +37,18 @@ The same checks are available through:
 ```bash
 uv run zelda-suite validate-source-export /tmp/room-object-pointers.json
 uv run zelda-suite validate-source-export /tmp/text-dictionary-fragments.json
+uv run zelda-suite validate-source-export /tmp/text-message-index.json
 ```
 
-The command prints `[OK]` for a supported consistent export and returns a
-nonzero exit code with a diagnostic for invalid data.
+The command prints `[OK]` for a supported internally consistent export and
+returns a nonzero exit code with a diagnostic for invalid data. It does not
+claim that source address comments have been verified against a local ROM.
 
 ## Scope
 
-This is the roadmap's source-export validation foundation, not yet a loader for
-editable game data. It accepts metadata about source declarations and does not
-open ROMs, resolve symbol targets from ROM memory, open `incbin` payload
-paths, decode dictionary/message streams, perform extraction, or permit edits.
-Future schema versions and game-data formats should be added through explicit
-validators and fixture-backed tests rather than weakening current checks.
+This is the source-export validation foundation, not yet a loader for editable
+game data. It accepts metadata about source declarations and does not read ROM
+bytes, resolve symbols from ROM memory, open `incbin` payload paths, decode
+dictionary/message streams, perform extraction, or permit edits. Future schema
+versions and game-data formats should be added through explicit validators and
+fixture-backed tests rather than weakening current checks.
