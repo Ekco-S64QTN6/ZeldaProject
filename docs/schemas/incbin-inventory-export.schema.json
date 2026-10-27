@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite incbin source inventory export",
+  "description": "Source-comment inventory of labelled Asar incbin directives; payload files are not opened.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "declaration_count",
+    "declarations"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-incbin-inventory"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "declaration_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "declarations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/declaration"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "nullable_nonnegative_integer": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "declaration": {
+      "type": "object",
+      "required": [
+        "source_file",
+        "source_revision",
+        "label",
+        "source_line",
+        "incbin_path",
+        "declared_size_bytes",
+        "source_file_offset_start",
+        "source_file_offset_end",
+        "computed_file_offset_end",
+        "source_range_size_matches"
+      ],
+      "properties": {
+        "source_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "incbin_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declared_size_bytes": {
+          "$ref": "#/$defs/nullable_nonnegative_integer"
+        },
+        "source_file_offset_start": {
+          "$ref": "#/$defs/nullable_nonnegative_integer"
+        },
+        "source_file_offset_end": {
+          "$ref": "#/$defs/nullable_nonnegative_integer"
+        },
+        "computed_file_offset_end": {
+          "$ref": "#/$defs/nullable_nonnegative_integer"
+        },
+        "source_range_size_matches": {
+          "type": ["boolean", "null"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
