@@ -5,8 +5,8 @@ from zelda_suite.extract.asset_loader import (
     validate_source_export,
 )
 from zelda_suite.extract.disassembly import (
-    DisassemblyParseError,
     POINTER_DIRECTIVE_WIDTHS,
+    DisassemblyParseError,
     PointerTableEntry,
     parse_dl_pointer_table,
     parse_dw_pointer_table,
@@ -19,11 +19,11 @@ from zelda_suite.extract.incbin_inventory import (
 )
 
 __all__ = [
+    "POINTER_DIRECTIVE_WIDTHS",
     "AssetLoadError",
     "DisassemblyParseError",
     "IncbinDeclaration",
     "IncbinInventoryError",
-    "POINTER_DIRECTIVE_WIDTHS",
     "PointerTableEntry",
     "load_source_export",
     "parse_dl_pointer_table",
