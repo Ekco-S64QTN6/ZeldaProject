@@ -5,7 +5,9 @@ import hashlib
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
+from zelda_suite.cli.main import cli
 from zelda_suite.extract.rom_image import (
     COPIER_HEADER_SIZE,
     EXPECTED_US_ROM_SIZE,
@@ -95,3 +97,30 @@ def test_reports_unrecognized_size_without_claiming_header_state(tmp_path: Path)
 def test_missing_image_has_a_clear_error(tmp_path: Path) -> None:
     with pytest.raises(ROMImageInspectionError, match="could not read ROM image"):
         inspect_rom_image(tmp_path / "missing.smc")
+
+
+
+def test_inspect_rom_cli_emits_metadata_json_and_creates_new_output(
+    tmp_path: Path,
+) -> None:
+    image = tmp_path / "synthetic-us.smc"
+    image.write_bytes(b"R" * EXPECTED_US_ROM_SIZE)
+    output = tmp_path / "rom-inspection.json"
+    runner = CliRunner()
+
+    result = runner.invoke(cli, ["inspect-rom", str(image)])
+
+    assert result.exit_code == 0, result.output
+    payload = __import__("json").loads(result.output)
+    assert payload["format"] == "zelda-suite-rom-image"
+    assert payload["is_expected_headerless_size"] is True
+    assert payload["offset_map"]["example_cpu_address"] == "$0B8000"
+
+    written = runner.invoke(cli, ["inspect-rom", str(image), "--output", str(output)])
+    assert written.exit_code == 0, written.output
+    assert output.is_file()
+    assert output.read_text(encoding="utf-8").endswith("\\n")
+
+    refused = runner.invoke(cli, ["inspect-rom", str(image), "--output", str(output)])
+    assert refused.exit_code != 0
+    assert "already exists" in refused.output or "exists" in refused.output
