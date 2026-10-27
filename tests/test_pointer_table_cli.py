@@ -1,0 +1,119 @@
+"""CLI tests for source-level disassembly pointer table inspection."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from click.testing import CliRunner
+
+from zelda_suite.cli.main import DISASSEMBLY_REVISION, cli
+
+SAMPLE_SOURCE = """; test-only synthetic source — not ROM data
+ExamplePointers:
+{
+    dl FirstTarget
+    dl RoomDataTiles_Empty+$0008
+    dl ThirdTarget, FourthTarget+$0010
+}
+"""
+
+
+def test_cli_inspects_pointer_table_to_json_stdout(tmp_path: Path) -> None:
+    source = tmp_path / "example.asm"
+    source.write_text(SAMPLE_SOURCE, encoding="utf-8")
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "ExamplePointers",
+            "--table-offset",
+            "$0F8000",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["format"] == "zelda-suite-pointer-table"
+    assert payload["entry_count"] == 4
+    assert payload["source_revision"] == DISASSEMBLY_REVISION
+    assert payload["entries"][1]["pointer_entry_file_offset"] == 0x0F8003
+    assert payload["entries"][1]["is_empty_target"] is True
+    assert payload["entries"][1]["source_revision"] == DISASSEMBLY_REVISION
+    assert result.output.endswith("\n")
+
+
+def test_cli_writes_output_file_without_overwriting(tmp_path: Path) -> None:
+    source = tmp_path / "example.asm"
+    source.write_text(SAMPLE_SOURCE, encoding="utf-8")
+    output = tmp_path / "table.json"
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "ExamplePointers",
+            "--table-offset",
+            "0x0F8000",
+            "--source-revision",
+            "test-revision",
+            "--output",
+            str(output),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["source_revision"] == "test-revision"
+    assert payload["entry_count"] == 4
+    assert "Wrote 4 pointer-table entries" in result.output
+
+    second_result = runner.invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "ExamplePointers",
+            "--table-offset",
+            "$0F8000",
+            "--output",
+            str(output),
+        ],
+    )
+    assert second_result.exit_code != 0
+    assert "refusing to overwrite existing output" in second_result.output
+    assert json.loads(output.read_text(encoding="utf-8")) == payload
+
+
+def test_cli_reports_invalid_source_table_and_offset(tmp_path: Path) -> None:
+    source = tmp_path / "example.asm"
+    source.write_text(SAMPLE_SOURCE, encoding="utf-8")
+
+    missing_label = CliRunner().invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "MissingPointers",
+            "--table-offset",
+            "$0F8000",
+        ],
+    )
+    assert missing_label.exit_code != 0
+    assert "label not found" in missing_label.output
+
+    invalid_offset = CliRunner().invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "ExamplePointers",
+            "--table-offset",
+            "$not-hex",
+        ],
+    )
+    assert invalid_offset.exit_code != 0
+    assert "use a decimal" in invalid_offset.output
