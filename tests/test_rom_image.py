@@ -124,4 +124,4 @@ def test_inspect_rom_cli_emits_metadata_json_and_creates_new_output(
 
     refused = runner.invoke(cli, ["inspect-rom", str(image), "--output", str(output)])
     assert refused.exit_code != 0
-    assert "already exists" in refused.output or "exists" in refused.output
+    assert "refusing to overwrite existing output" in refused.output
