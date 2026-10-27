@@ -1,0 +1,78 @@
+{
+  "format": "zelda-suite-asset-registry",
+  "format_version": 1,
+  "assets": [
+    {
+      "name": "falling-prize-item-values",
+      "file": "falling-prize-item-values.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 7,
+      "subsystem": "items",
+      "description": "Seven item values used by the AddPendantOrCrystal falling-prize routine."
+    },
+    {
+      "name": "falling-prize-fall-heights",
+      "file": "falling-prize-fall-heights.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 7,
+      "subsystem": "items",
+      "description": "Seven indexed fall-height values for the AddPendantOrCrystal routine."
+    },
+    {
+      "name": "falling-prize-y-offsets",
+      "file": "falling-prize-y-offsets.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 7,
+      "subsystem": "items",
+      "description": "Seven indexed Y-offset values for the AddPendantOrCrystal routine."
+    },
+    {
+      "name": "falling-prize-x-offsets",
+      "file": "falling-prize-x-offsets.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 7,
+      "subsystem": "items",
+      "description": "Seven indexed X-offset values for the AddPendantOrCrystal routine."
+    },
+    {
+      "name": "falling-prize-delay-timers",
+      "file": "falling-prize-delay-timers.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 7,
+      "subsystem": "items",
+      "description": "Seven indexed delay-timer values for the AddPendantOrCrystal routine."
+    },
+    {
+      "name": "text-dictionary-pointers",
+      "file": "text-dictionary-pointers.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 98,
+      "subsystem": "text",
+      "description": "Ninety-eight symbolic pointers to text dictionary fragments."
+    },
+    {
+      "name": "text-dictionary-fragments",
+      "file": "text-dictionary-fragments.json",
+      "format": "zelda-suite-dictionary-inventory",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 98,
+      "subsystem": "text",
+      "description": "Pointer-to-fragment metadata and source-declared extent diagnostics."
+    },
+    {
+      "name": "text-message-index",
+      "file": "text-message-index.json",
+      "format": "zelda-suite-text-message-index",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 397,
+      "subsystem": "text",
+      "description": "Message IDs, source offsets, and declared lengths from the two pinned message blocks."
+    }
+  ]
+}
