@@ -91,6 +91,7 @@ uv run zelda-suite inspect-pointer-table \
   reference/AsarUSALTTPDisassembly/Bank1F.asm \
   RoomData_ObjectDataPointers \
   --table-offset '$0F8000' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
   --output /tmp/room-object-pointers.json
 ```
 
