@@ -15,10 +15,17 @@ ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 - [Dungeon rooms](./dungeons.md) — documents the discovered 320-entry room
   object-pointer table, the mismatch with the roadmap's 296-room count, and
   evidence still needed before extraction becomes a stable contract.
+- [Overworld payloads](./overworld.md) — high/low per-screen `incbin` layout,
+  source-declared offsets/sizes, and limits of the current evidence.
+- [Overworld hidden items](./overworld-hidden-items.md) — 128-entry pointer
+  table and three-byte record description, including an unresolved size-tail
+  discrepancy that must be reconciled before parsing.
+- [Falling-prize item lookup](./falling-prize-items.md) — seven-entry
+  `AddPendantOrCrystal` item-value table and the adjacent indexed arrays.
 
 ## Planned subsystem docs
 
-- `overworld.md` — 160 maps, tile layers, palettes, warps.
+- `overworld.md` — full editable map schema (tiles, layers, palettes, warps); the current file is discovery-only.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
 - `items.md` — item table, chest table, shop table.
 - `text.md` — message table, encoding, compression.
