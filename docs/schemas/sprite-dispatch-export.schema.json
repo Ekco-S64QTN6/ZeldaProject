@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite source SpriteActive3 dispatch export",
+  "description": "Source-derived handler labels and sprite ID comments for one local sprite dispatch table; no ROM bytes are included.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "table_file_offset",
+    "table_end_offset",
+    "table_size_bytes",
+    "entry_width_bytes",
+    "sprite_type_id_start",
+    "sprite_type_id_end",
+    "entry_count",
+    "entries"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-sprite-dispatch"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "table_label": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "table_file_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "table_end_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "table_size_bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entry_width_bytes": {
+      "const": 2
+    },
+    "sprite_type_id_start": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "sprite_type_id_end": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "sprite_type_id",
+        "pointer_entry_file_offset",
+        "source_line",
+        "handler_expression",
+        "handler_label",
+        "source_comment_sprite_type_id",
+        "source_handler_address_annotation",
+        "source_description",
+        "source_comment",
+        "source_revision"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sprite_type_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "pointer_entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "handler_expression": {
+          "type": "string",
+          "pattern": "^Sprite_[A-Za-z0-9_]+$"
+        },
+        "handler_label": {
+          "type": "string",
+          "pattern": "^Sprite_[A-Za-z0-9_]+$"
+        },
+        "source_comment_sprite_type_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "source_handler_address_annotation": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-Fa-f]+$"
+        },
+        "source_description": {
+          "type": "string"
+        },
+        "source_comment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

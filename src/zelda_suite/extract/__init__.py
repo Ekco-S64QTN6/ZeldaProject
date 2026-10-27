@@ -2,6 +2,7 @@
 from zelda_suite.extract.asset_loader import (
     ASSET_REGISTRY_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
+    SPRITE_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
     AssetLoadError,
     list_extracted_assets,
@@ -42,6 +43,12 @@ from zelda_suite.extract.rom_image import (
     read_rom_bytes,
     sha256_rom_bytes,
 )
+from zelda_suite.extract.sprite_dispatch import (
+    SpriteDispatchEntry,
+    SpriteDispatchParseError,
+    SpriteDispatchTable,
+    parse_sprite_dispatch_table,
+)
 from zelda_suite.extract.text_message_index import (
     MessageSourceBlock,
     TextMessageBlockRecord,
@@ -56,6 +63,7 @@ __all__ = [
     "DATA_DIRECTIVE_WIDTHS",
     "DICTIONARY_INVENTORY_FORMAT",
     "POINTER_DIRECTIVE_WIDTHS",
+    "SPRITE_DISPATCH_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
     "DataTableEntry",
@@ -69,6 +77,9 @@ __all__ = [
     "PointerTableEntry",
     "ROMImageInspection",
     "ROMImageInspectionError",
+    "SpriteDispatchEntry",
+    "SpriteDispatchParseError",
+    "SpriteDispatchTable",
     "TextMessageBlockRecord",
     "TextMessageIndex",
     "TextMessageIndexError",
@@ -85,6 +96,7 @@ __all__ = [
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
     "parse_source_pointer_table",
+    "parse_sprite_dispatch_table",
     "parse_text_message_index",
     "read_rom_bytes",
     "sha256_rom_bytes",

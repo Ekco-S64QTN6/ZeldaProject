@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 8
+    assert len(assets) == 9
     assert names == {
         "falling-prize-item-values",
         "falling-prize-fall-heights",
@@ -326,6 +326,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "text-dictionary-pointers",
         "text-dictionary-fragments",
         "text-message-index",
+        "sprite-active3-dispatch",
     }
 
     loaded = {
@@ -336,6 +337,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["text-dictionary-pointers"]["entry_count"] == 98
     assert loaded["text-dictionary-fragments"]["fragment_count"] == 98
     assert loaded["text-message-index"]["message_count"] == 397
+    assert loaded["sprite-active3-dispatch"]["entry_count"] == 68
 
 
 def test_named_asset_loader_validates_registry_provenance_and_name(

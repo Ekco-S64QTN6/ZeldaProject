@@ -78,3 +78,35 @@ path; do not extrapolate these 68 entries into a full catalog.
 
 This note records source declarations only and does not read or modify ROM
 bytes or claim sprite editing is implemented.
+
+## Committed source inventory
+
+The source inventory is now committed as
+[`data/extracted/sprite-active3-dispatch.json`](../../data/extracted/sprite-active3-dispatch.json)
+and registered as `sprite-active3-dispatch` in
+[`data/extracted/manifest.json`](../../data/extracted/manifest.json). Each record
+keeps the actual sprite type ID separate from the zero-based `table_index`,
+preserves the `dw` handler label, and stores the raw source comment alongside
+the comment's handler-address annotation and description.
+
+Regenerate it using the pinned source:
+
+```bash
+uv run zelda-suite inspect-sprite-dispatch \
+  reference/AsarUSALTTPDisassembly/Bank1E.asm \
+  --table-offset '$0F0B33' \
+  --table-end-offset '$0F0BBA' \
+  --sprite-id-start '$79' \
+  --entry-count 68 \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/sprite-active3-dispatch.json
+uv run zelda-suite validate-source-export /tmp/sprite-active3-dispatch.json
+diff -u data/extracted/sprite-active3-dispatch.json /tmp/sprite-active3-dispatch.json
+```
+
+The JSON export schema is
+[`sprite-dispatch-export.schema.json`](./sprite-dispatch-export.schema.json).
+CI checks that the committed 68 records match the pinned source parser exactly.
+Handler labels that appear more than once remain separate table slots, since
+different sprite IDs may intentionally share one implementation. The source
+comment addresses remain annotations and are not resolved to ROM file offsets.

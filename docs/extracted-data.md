@@ -206,3 +206,20 @@ unregistered names, unsafe filenames, format/revision/count mismatches, and
 invalid source export payloads. See the
 [named asset loader guide](./asset-loader.md) and
 [registry schema](./schemas/asset-registry.schema.json).
+
+## SpriteActive3 handler dispatch
+
+`data/extracted/sprite-active3-dispatch.json` indexes the 68 `dw` entries in
+`SpriteActive3_Table` from pinned `Bank1E.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. It covers the actual sprite type
+IDs `$79–$BC`; each record keeps the source ID and zero-based table slot as
+separate fields. Duplicate handler labels are preserved because distinct sprite
+types intentionally alias some implementations.
+
+The two-byte entry offsets span `$0F0B33–$0F0BBA`. Each source comment also
+contains a short handler address annotation; that annotation is stored as text
+and is not treated as a resolved ROM file offset.
+
+Regenerate it with `zelda-suite inspect-sprite-dispatch` as documented in
+[`sprite-dispatch.md`](./schemas/sprite-dispatch.md). The record contract is
+defined by the [sprite-dispatch export schema](./schemas/sprite-dispatch-export.schema.json).

@@ -51,7 +51,8 @@
             "zelda-suite-incbin-inventory",
             "zelda-suite-data-table",
             "zelda-suite-dictionary-inventory",
-            "zelda-suite-text-message-index"
+            "zelda-suite-text-message-index",
+          "zelda-suite-sprite-dispatch"
           ]
         },
         "source_revision": {

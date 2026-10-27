@@ -49,5 +49,6 @@ jobs:
           tests/test_extracted_text_dictionary.py
           tests/test_dictionary_inventory.py
           tests/test_text_message_index.py
+          tests/test_sprite_dispatch.py
       - name: Run tests
         run: python -m pytest -q
