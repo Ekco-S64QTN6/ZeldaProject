@@ -20,7 +20,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the eight named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the nine named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
