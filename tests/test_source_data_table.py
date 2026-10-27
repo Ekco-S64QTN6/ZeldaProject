@@ -87,7 +87,7 @@ def test_preserves_non_literal_expression_without_evaluating_it() -> None:
         ({"entry_count": 0}, "positive"),
         ({"entry_count": True}, "integer"),
         ({"directive": "foo", "entry_count": 1}, "directive"),
-        ({"entry_count": 7, "stop_before_label": ".missing"}, "stop label"),
+        ({"source": SAMPLE_SOURCE.replace("    .fall_height\\n    db $60, $80\\n", ""), "entry_count": 7, "stop_before_label": ".missing"}, "stop label"),
     ],
 )
 def test_rejects_invalid_counts_directives_and_boundaries(
