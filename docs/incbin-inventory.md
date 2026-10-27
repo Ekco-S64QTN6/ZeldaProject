@@ -28,6 +28,22 @@ separate computed end when the start and size permit it. When a stated range
 and size disagree, `source_range_size_matches` is false; the parser does not
 correct the comments. Missing source facts remain null.
 
+## CLI usage
+
+The same inventory is available as stable JSON through:
+
+```bash
+uv run zelda-suite inspect-incbin \
+  reference/AsarUSALTTPDisassembly/Bank0B.asm \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/overworld-incbin-inventory.json
+```
+
+The JSON shape is specified by [the export schema](./schemas/incbin-inventory-export.schema.json).
+When `--source-revision` is omitted, the output records `unspecified`; pass the
+actual pinned source revision when producing an auditable inventory. Output
+files are created exclusively and existing files are never overwritten.
+
 ## Important limitations
 
 - This parser reads assembly text only. It does not open any `incbin` target
@@ -42,6 +58,5 @@ correct the comments. Missing source facts remain null.
   source snippets and do not need a ROM.
 
 The helper is exported from the extraction package alongside the
-source-pointer-table parser. It deliberately has no CLI command yet; a future
-CLI can consume it after the source inventory format has been used against
-more of the pinned disassembly and local ROM/tool output.
+source-pointer-table parser. Both Python and CLI interfaces parse assembly text
+only; neither resolves symbols or confirms the included payload bytes.
