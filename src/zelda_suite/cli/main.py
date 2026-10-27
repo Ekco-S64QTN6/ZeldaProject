@@ -68,7 +68,6 @@ def cli() -> None:
 
 
 
-DISASSEMBLY_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 
 
 def _parse_offset_text(value: str) -> int:
@@ -103,9 +102,9 @@ def _parse_offset_text(value: str) -> int:
 )
 @click.option(
     "--source-revision",
-    default=DISASSEMBLY_REVISION,
-    show_default=True,
-    help="Pinned disassembly revision recorded in the output.",
+    default=None,
+    show_default=False,
+    help="Revision to record; omitted values are marked unspecified.",
 )
 @click.option(
     "--output",
@@ -118,7 +117,7 @@ def inspect_pointer_table(
     label: str,
     table_offset: str,
     entry_width: int,
-    source_revision: str,
+    source_revision: str | None,
     output: Path | None,
 ) -> None:
     """Parse a source-level Asar dl table to auditable JSON records.
@@ -129,12 +128,13 @@ def inspect_pointer_table(
     try:
         offset = _parse_offset_text(table_offset)
         source_text = source.read_text(encoding="utf-8")
+        recorded_revision = source_revision or "unspecified"
         entries = parse_dl_pointer_table(
             source_text,
             label,
             offset,
             entry_width=entry_width,
-            source_revision=source_revision,
+            source_revision=recorded_revision,
         )
     except (OSError, UnicodeError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
@@ -143,7 +143,7 @@ def inspect_pointer_table(
         "format": "zelda-suite-pointer-table",
         "format_version": 1,
         "source_file": source.name,
-        "source_revision": source_revision,
+        "source_revision": recorded_revision,
         "table_label": label,
         "table_file_offset": offset,
         "entry_width": entry_width,
