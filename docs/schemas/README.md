@@ -11,6 +11,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 - [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
+- [Scalar data-table JSON export](./data-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-data-table`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 
 ## Phase 1 discovery notes
