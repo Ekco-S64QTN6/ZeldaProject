@@ -75,7 +75,9 @@ def _parse_offset_text(value: str) -> int:
     try:
         if value.startswith("$"):
             return int(value[1:], 16)
-        return int(value, 0)
+        if value.lower().startswith(("0x", "+0x", "-0x")):
+            return int(value, 0)
+        return int(value, 10)
     except ValueError as exc:
         raise click.BadParameter(
             "use a decimal, 0x-prefixed, or Asar-style $-prefixed integer"
