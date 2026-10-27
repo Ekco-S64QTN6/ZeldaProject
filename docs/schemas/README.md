@@ -5,15 +5,27 @@ specified in [project-format.md](../project-format.md). Game-system schemas are
 introduced alongside Phase 1 extractors so that every field is grounded in the
 ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 
+## Source export contracts
+
+- [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
+- [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
+
 ## Phase 1 discovery notes
 
 - [Dungeon rooms](./dungeons.md) — documents the discovered 320-entry room
   object-pointer table, the mismatch with the roadmap's 296-room count, and
   evidence still needed before extraction becomes a stable contract.
+- [Overworld payloads](./overworld.md) — high/low per-screen `incbin` layout,
+  source-declared offsets/sizes, and limits of the current evidence.
+- [Overworld hidden items](./overworld-hidden-items.md) — 128-entry pointer
+  table and three-byte record description, including an unresolved size-tail
+  discrepancy that must be reconciled before parsing.
+- [Falling-prize item lookup](./falling-prize-items.md) — seven-entry
+  `AddPendantOrCrystal` item-value table and the adjacent indexed arrays.
 
 ## Planned subsystem docs
 
-- `overworld.md` — 160 maps, tile layers, palettes, warps.
+- `overworld.md` — full editable map schema (tiles, layers, palettes, warps); the current file is discovery-only.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
 - `items.md` — item table, chest table, shop table.
 - `text.md` — message table, encoding, compression.

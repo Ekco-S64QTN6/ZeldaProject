@@ -1,9 +1,3 @@
-
----
-
-### `pyproject.toml`
-
-```toml
 [project]
 name = "zelda-suite"
 version = "0.0.1"

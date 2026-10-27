@@ -80,3 +80,21 @@ to shared data.
    extraction tests before exposing rooms through the authoring API.
 
 No ROM bytes are read or written by this documentation change.
+
+
+## Inspect the source table
+
+The source declarations can be parsed (without reading ROM data) with:
+
+```bash
+uv run zelda-suite inspect-pointer-table \
+  reference/AsarUSALTTPDisassembly/Bank1F.asm \
+  RoomData_ObjectDataPointers \
+  --table-offset '$0F8000' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/room-object-pointers.json
+```
+
+See [disassembly source-table inspection](../disassembly-parser.md) for the
+output contract and parser limitations. The resulting table should be reviewed
+against a local ROM before any source record is treated as a resolved pointer.
