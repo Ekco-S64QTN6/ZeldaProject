@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite text dictionary fragment inventory",
+  "description": "Metadata-only mapping between dictionary pointer expressions and source-declared fragment extents.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "pointer_table_label",
+    "pointer_table_file_offset",
+    "data_label",
+    "data_file_offset",
+    "fragment_count",
+    "fragments"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-dictionary-inventory"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pointer_table_label": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "pointer_table_file_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "data_label": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "data_file_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fragment_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fragments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/fragment"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "fragment": {
+      "type": "object",
+      "required": [
+        "pointer_index",
+        "pointer_entry_file_offset",
+        "pointer_expression",
+        "fragment_label",
+        "fragment_source_line",
+        "fragment_file_offset",
+        "next_fragment_file_offset",
+        "source_extent_bytes",
+        "data_directive",
+        "directive_value_count",
+        "directive_width_bytes",
+        "declared_payload_bytes",
+        "source_extent_matches_directive",
+        "is_end_of_table",
+        "source_revision"
+      ],
+      "properties": {
+        "pointer_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointer_entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointer_expression": {
+          "type": "string",
+          "pattern": "^DictionaryEntries_[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "fragment_label": {
+          "type": "string",
+          "pattern": "^\\.[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "fragment_source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fragment_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "next_fragment_file_offset": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "source_extent_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "data_directive": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "db",
+            "dw",
+            "dl",
+            null
+          ]
+        },
+        "directive_value_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "directive_width_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "declared_payload_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "source_extent_matches_directive": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "is_end_of_table": {
+          "type": "boolean"
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
