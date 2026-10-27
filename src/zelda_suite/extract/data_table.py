@@ -173,6 +173,32 @@ def parse_data_table(
         )
     table_start_line = start_hits[0]
 
+    if parent_label is None and not label.startswith("."):
+        next_nonempty: tuple[int, str] | None = None
+        for index in range(table_start_line + 1, len(lines)):
+            code = _code(lines[index])
+            if code:
+                next_nonempty = (index, code)
+                break
+        if next_nonempty is not None and next_nonempty[1] == "{":
+            depth = 1
+            for index in range(next_nonempty[0] + 1, len(lines)):
+                code = _code(lines[index])
+                depth += code.count("{")
+                depth -= code.count("}")
+                if depth == 0:
+                    scope_end = index
+                    break
+            else:
+                raise DataTableParseError(
+                    f"closing brace not found for data table {label!r}"
+                )
+        elif end_label is None:
+            for index in range(table_start_line + 1, len(lines)):
+                if _GLOBAL_LABEL_RE.fullmatch(_code(lines[index])) is not None:
+                    scope_end = index
+                    break
+
     if end_label is None:
         table_end_line = scope_end
     else:
