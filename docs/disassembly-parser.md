@@ -14,12 +14,15 @@ uv run zelda-suite inspect-pointer-table \
   reference/AsarUSALTTPDisassembly/Bank1F.asm \
   RoomData_ObjectDataPointers \
   --table-offset '$0F8000' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
   --output /tmp/room-object-pointers.json
 ```
 
-The command defaults to the repository's pinned disassembly revision
-`347c23f9fc019c72d32da537c9cb235f468d021d`. Use `--source-revision` when
-inspecting another revision so the JSON records which source was parsed.
+The example explicitly records the repository's pinned disassembly revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. For arbitrary source files, the
+command records `unspecified` unless `--source-revision` is supplied; it
+cannot prove a file's Git revision from the source text alone. Always record the
+revision you actually inspected when producing an auditable export.
 
 The output includes:
 
