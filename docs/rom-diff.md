@@ -68,3 +68,28 @@ emulator smoke test.
 Synthetic tests cover unchanged buffers, separated/adjacent changes, appends,
 truncations, absolute offset reporting, stable JSON, and invalid inputs. They
 require no ROM or ROM-derived fixture.
+
+
+## File-backed CLI
+
+The read-only CLI compares a canonical-size base ROM with a locally built
+candidate image and wraps the byte diff with input metadata:
+
+```bash
+uv run zelda-suite diff-rom \
+  "base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc" \
+  project/build/candidate.smc \
+  --output /tmp/candidate-diff.json
+```
+
+The command reads both files only through `zelda_suite.extract.read_rom_bytes`,
+requires the base image to be exactly 1 MiB, and records each input filename,
+size, and SHA-256 beside the deterministic diff. A candidate whose size suggests
+a 512-byte copier header is rejected rather than silently shifted. The output
+uses the `zelda-suite-rom-file-diff` version-1 format described by
+[the export schema](./schemas/rom-file-diff-export.schema.json).
+
+This command compares two ROM images; it does not apply project edits, write
+ROMs, generate IPS patches, or prove that a candidate boots. Mapping semantic
+project changes to ROM bytes and an emulator verification loop remain separate
+roadmap work.
