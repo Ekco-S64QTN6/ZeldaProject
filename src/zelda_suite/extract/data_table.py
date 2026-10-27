@@ -137,11 +137,8 @@ def parse_data_table(
     if table_file_offset < 0:
         raise ValueError("table_file_offset must be non-negative")
 
-    actual_entry_width = (
-        DATA_DIRECTIVE_WIDTHS[normalized_directive]
-        if entry_width is None
-        else entry_width
-    )
+    directive_width = DATA_DIRECTIVE_WIDTHS[normalized_directive]
+    actual_entry_width = directive_width if entry_width is None else entry_width
     if isinstance(actual_entry_width, bool) or not isinstance(actual_entry_width, int):
         raise TypeError("entry_width must be an integer")
     if actual_entry_width <= 0:
@@ -257,10 +254,10 @@ def parse_data_table(
 
         for expression in expressions:
             value = _literal_value(expression)
-            if value is not None and value >= 1 << (8 * actual_entry_width):
+            if value is not None and value >= 1 << (8 * directive_width):
                 raise DataTableParseError(
-                    f"literal {expression!r} exceeds {actual_entry_width}-byte "
-                    f"width in table {label!r} on line {index + 1}"
+                    f"literal {expression!r} exceeds {directive_width}-byte "
+                    f"directive width in table {label!r} on line {index + 1}"
                 )
             table_index = len(entries)
             entries.append(
