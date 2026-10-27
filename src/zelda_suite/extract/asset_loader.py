@@ -12,9 +12,11 @@ from typing import Any
 
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
+DATA_TABLE_FORMAT = "zelda-suite-data-table"
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
 _IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+_SOURCE_LABEL_RE = re.compile(r"\.?[A-Za-z_][A-Za-z0-9_]*\Z")
 _POINTER_TOP_KEYS = {
     "format",
     "format_version",
@@ -55,6 +57,29 @@ _INCBIN_DECLARATION_KEYS = {
     "source_file_offset_end",
     "computed_file_offset_end",
     "source_range_size_matches",
+}
+_DATA_TABLE_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "parent_label",
+    "table_label",
+    "end_label",
+    "table_file_offset",
+    "directive",
+    "entry_width",
+    "entry_count",
+    "entries",
+}
+_DATA_TABLE_ENTRY_KEYS = {
+    "table_index",
+    "entry_file_offset",
+    "source_line",
+    "source_label",
+    "expression",
+    "literal_value",
+    "source_revision",
 }
 
 
@@ -275,6 +300,90 @@ def _validate_incbin_export(payload: dict[str, Any]) -> None:
             )
 
 
+def _source_label(value: Any, context: str) -> str:
+    label = _string(value, context)
+    if _SOURCE_LABEL_RE.fullmatch(label) is None:
+        raise AssetLoadError(f"{context} must be a source assembly label")
+    return label
+
+
+def _nullable_source_label(value: Any, context: str) -> str | None:
+    if value is None:
+        return None
+    return _source_label(value, context)
+
+
+def _validate_data_table_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _DATA_TABLE_TOP_KEYS, "data-table export")
+    if payload["format"] != DATA_TABLE_FORMAT:
+        raise AssetLoadError("data-table export has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported data-table format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+
+    _string(payload["source_file"], "source_file")
+    revision = _string(payload["source_revision"], "source_revision")
+    _nullable_label = payload["parent_label"]
+    if _nullable_label is not None:
+        _identifier(_nullable_label, "parent_label")
+    table_label = _source_label(payload["table_label"], "table_label")
+    end_label = _nullable_source_label(payload["end_label"], "end_label")
+
+    table_offset = _integer(payload["table_file_offset"], "table_file_offset", minimum=0)
+    directive = payload["directive"]
+    directive_widths = {"db": 1, "dw": 2, "dl": 3}
+    if directive not in directive_widths:
+        raise AssetLoadError("directive must be 'db', 'dw', or 'dl'")
+    entry_width = _integer(payload["entry_width"], "entry_width", minimum=1)
+    entry_count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    entries = payload["entries"]
+    if not isinstance(entries, list) or not entries:
+        raise AssetLoadError("entries must be a non-empty array")
+    if entry_count != len(entries):
+        raise AssetLoadError(
+            f"entry_count is {entry_count}, but entries contains {len(entries)} records"
+        )
+
+    literal_limit = 1 << (8 * directive_widths[directive])
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _DATA_TABLE_ENTRY_KEYS, context)
+
+        table_index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
+        if table_index != expected_index:
+            raise AssetLoadError(
+                f"{context}.table_index must be {expected_index}, got {table_index}"
+            )
+        entry_offset = _integer(
+            entry["entry_file_offset"], f"{context}.entry_file_offset", minimum=0
+        )
+        expected_offset = table_offset + expected_index * entry_width
+        if entry_offset != expected_offset:
+            raise AssetLoadError(
+                f"{context}.entry_file_offset must be {expected_offset}, got {entry_offset}"
+            )
+        _integer(entry["source_line"], f"{context}.source_line", minimum=1)
+        source_label = entry["source_label"]
+        if source_label is not None:
+            _source_label(source_label, f"{context}.source_label")
+        _string(entry["expression"], f"{context}.expression")
+        literal_value = _nullable_integer(
+            entry["literal_value"], f"{context}.literal_value", minimum=0
+        )
+        if literal_value is not None and literal_value >= literal_limit:
+            raise AssetLoadError(
+                f"{context}.literal_value does not fit the {directive} directive"
+            )
+        entry_revision = _string(entry["source_revision"], f"{context}.source_revision")
+        if entry_revision != revision:
+            raise AssetLoadError(
+                f"{context}.source_revision does not match top-level source_revision"
+            )
+
 def validate_source_export(payload: Any) -> dict[str, Any]:
     """Validate an already-parsed source export and return it unchanged."""
     export = _object(payload, "source export")
@@ -283,6 +392,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_pointer_export(export)
     elif format_name == INCBIN_INVENTORY_FORMAT:
         _validate_incbin_export(export)
+    elif format_name == DATA_TABLE_FORMAT:
+        _validate_data_table_export(export)
     else:
         raise AssetLoadError(f"unsupported source export format: {format_name!r}")
     return export
