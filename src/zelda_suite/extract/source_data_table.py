@@ -80,8 +80,15 @@ def _find_target_label(
         if _GLOBAL_LABEL_RE.fullmatch(label) is None:
             raise ValueError("global label must be a valid assembly identifier")
         for index, line in enumerate(lines):
-            if _label_name(line) == label:
-                return index, None, label
+            if _label_name(line) != label:
+                continue
+            for following in range(index + 1, len(lines)):
+                code, _ = _strip_comment(lines[following])
+                stripped = code.strip()
+                if not stripped:
+                    continue
+                return index, following if stripped == "{" else None, label
+            return index, None, label
         raise DataTableParseError(f"label not found: {label}")
 
     parent, child = label.split(".", 1)
@@ -219,11 +226,12 @@ def parse_source_data_table(
                     )
                 return entries
 
-            # The sublabels inside one scalar table annotate contiguous value
-            # groups; retain the last label on each value record.
-            if current_label.startswith(".") or not in_brace_block:
+            # Local labels inside one scalar table annotate contiguous value
+            # groups. A new global label marks the end of this table.
+            if current_label.startswith("."):
                 active_label = current_label
-            elif current_label != label:
+                continue
+            if current_label != label:
                 if entries:
                     if len(entries) != entry_count:
                         raise DataTableParseError(
