@@ -44,5 +44,6 @@ jobs:
           tests/test_data_table.py
           tests/test_data_table_cli.py
           tests/test_pinned_data_table.py
+          tests/test_extracted_table_assets.py
       - name: Run tests
         run: python -m pytest -q
