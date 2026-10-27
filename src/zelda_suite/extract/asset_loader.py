@@ -14,6 +14,7 @@ POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
+TEXT_MESSAGE_INDEX_FORMAT = "zelda-suite-text-message-index"
 _DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
@@ -593,6 +594,213 @@ def _validate_dictionary_inventory_export(payload: dict[str, Any]) -> None:
         raise AssetLoadError("dictionary inventory must contain exactly one end-of-table marker")
 
 
+_TEXT_MESSAGE_INDEX_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_revision",
+    "source_block_count",
+    "source_blocks",
+    "message_count",
+    "messages",
+}
+_TEXT_MESSAGE_BLOCK_KEYS = {
+    "source_file",
+    "data_block_label",
+    "block_start_offset",
+    "block_end_offset",
+    "block_size_bytes",
+    "message_count",
+    "declared_byte_count_total",
+    "declared_bytes_match_block_size",
+}
+_TEXT_MESSAGE_KEYS = {
+    "message_index",
+    "message_id",
+    "message_label",
+    "source_file",
+    "data_block_label",
+    "source_line",
+    "source_offset_annotation",
+    "annotated_file_offset",
+    "source_offset_annotation_valid",
+    "source_offset_matches_sequential",
+    "sequential_file_offset",
+    "declared_byte_count",
+    "source_revision",
+}
+_MESSAGE_LABEL_RE = re.compile(r"Message_([0-9A-Fa-f]{4})\Z")
+_MESSAGE_OFFSET_ANNOTATION_RE = re.compile(r"\$([0-9A-Fa-f]+)\Z")
+
+
+def _validate_text_message_index_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _TEXT_MESSAGE_INDEX_TOP_KEYS, "text message index")
+    if payload["format"] != TEXT_MESSAGE_INDEX_FORMAT:
+        raise AssetLoadError("text message index has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported text message index version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    revision = _string(payload["source_revision"], "source_revision")
+
+    raw_blocks = payload["source_blocks"]
+    if not isinstance(raw_blocks, list) or not raw_blocks:
+        raise AssetLoadError("source_blocks must be a non-empty array")
+    block_count = _integer(payload["source_block_count"], "source_block_count", minimum=1)
+    if block_count != len(raw_blocks):
+        raise AssetLoadError(
+            f"source_block_count is {block_count}, but source_blocks contains {len(raw_blocks)} records"
+        )
+
+    blocks: dict[tuple[str, str], dict[str, Any]] = {}
+    for index, raw_block in enumerate(raw_blocks):
+        context = f"source_blocks[{index}]"
+        block = _object(raw_block, context)
+        _exact_keys(block, _TEXT_MESSAGE_BLOCK_KEYS, context)
+        source_file = _string(block["source_file"], f"{context}.source_file")
+        label = _string(block["data_block_label"], f"{context}.data_block_label")
+        _identifier(label, f"{context}.data_block_label")
+        start = _integer(block["block_start_offset"], f"{context}.block_start_offset", minimum=0)
+        end = _integer(block["block_end_offset"], f"{context}.block_end_offset", minimum=0)
+        if end < start:
+            raise AssetLoadError(f"{context}.block_end_offset precedes block_start_offset")
+        size = _integer(block["block_size_bytes"], f"{context}.block_size_bytes", minimum=1)
+        if size != end - start + 1:
+            raise AssetLoadError(f"{context}.block_size_bytes is inconsistent with its range")
+        _integer(block["message_count"], f"{context}.message_count", minimum=1)
+        declared_total = _integer(
+            block["declared_byte_count_total"],
+            f"{context}.declared_byte_count_total",
+            minimum=1,
+        )
+        matches = _boolean(
+            block["declared_bytes_match_block_size"],
+            f"{context}.declared_bytes_match_block_size",
+        )
+        if matches is not (declared_total == size):
+            raise AssetLoadError(
+                f"{context}.declared_bytes_match_block_size is inconsistent with its counts"
+            )
+        identity = (source_file, label)
+        if identity in blocks:
+            raise AssetLoadError(f"duplicate source block: {source_file}:{label}")
+        blocks[identity] = block
+
+    messages = payload["messages"]
+    message_count = _integer(payload["message_count"], "message_count", minimum=1)
+    if not isinstance(messages, list) or not messages:
+        raise AssetLoadError("messages must be a non-empty array")
+    if message_count != len(messages):
+        raise AssetLoadError(
+            f"message_count is {message_count}, but messages contains {len(messages)} records"
+        )
+
+    block_records: dict[tuple[str, str], list[dict[str, Any]]] = {
+        key: [] for key in blocks
+    }
+    seen_ids: set[int] = set()
+    running_offsets: dict[tuple[str, str], int] = {
+        key: block["block_start_offset"] for key, block in blocks.items()
+    }
+    totals: dict[tuple[str, str], int] = {key: 0 for key in blocks}
+    for expected_index, raw_message in enumerate(messages):
+        context = f"messages[{expected_index}]"
+        message = _object(raw_message, context)
+        _exact_keys(message, _TEXT_MESSAGE_KEYS, context)
+        index = _integer(message["message_index"], f"{context}.message_index", minimum=0)
+        if index != expected_index:
+            raise AssetLoadError(
+                f"{context}.message_index must be {expected_index}, got {index}"
+            )
+        message_id = _integer(message["message_id"], f"{context}.message_id", minimum=0)
+        if message_id > 0xFFFF:
+            raise AssetLoadError(f"{context}.message_id exceeds 16 bits")
+        if message_id in seen_ids:
+            raise AssetLoadError(f"duplicate text message ID: {message_id:04X}")
+        seen_ids.add(message_id)
+        message_label = _string(message["message_label"], f"{context}.message_label")
+        label_match = _MESSAGE_LABEL_RE.fullmatch(message_label)
+        if label_match is None or int(label_match.group(1), 16) != message_id:
+            raise AssetLoadError(f"{context}.message_label does not match message_id")
+
+        source_file = _string(message["source_file"], f"{context}.source_file")
+        data_label = _string(message["data_block_label"], f"{context}.data_block_label")
+        identity = (source_file, data_label)
+        if identity not in blocks:
+            raise AssetLoadError(f"{context} refers to an unknown source block")
+        block = blocks[identity]
+        _integer(message["source_line"], f"{context}.source_line", minimum=1)
+        annotation = message["source_offset_annotation"]
+        annotated_offset = _nullable_integer(
+            message["annotated_file_offset"], f"{context}.annotated_file_offset", minimum=0
+        )
+        annotation_valid = message["source_offset_annotation_valid"]
+        annotation_matches = message["source_offset_matches_sequential"]
+        sequential_offset = _integer(
+            message["sequential_file_offset"], f"{context}.sequential_file_offset", minimum=0
+        )
+        expected_sequential = running_offsets[identity]
+        if sequential_offset != expected_sequential:
+            raise AssetLoadError(
+                f"{context}.sequential_file_offset is inconsistent with previous message lengths"
+            )
+        byte_count = _integer(message["declared_byte_count"], f"{context}.declared_byte_count", minimum=1)
+        running_offsets[identity] += byte_count
+        totals[identity] += byte_count
+
+        if annotation is None:
+            if annotated_offset is not None or annotation_valid is not None or annotation_matches is not None:
+                raise AssetLoadError(
+                    f"{context} must use null offset fields when no source annotation exists"
+                )
+        else:
+            annotation_text = _string(annotation, f"{context}.source_offset_annotation")
+            annotation_match = _MESSAGE_OFFSET_ANNOTATION_RE.fullmatch(annotation_text)
+            if annotation_match is None:
+                raise AssetLoadError(
+                    f"{context}.source_offset_annotation must be a dollar-prefixed hexadecimal value"
+                )
+            raw_digits = annotation_match.group(1)
+            raw_value = int(raw_digits, 16)
+            expected_valid = (
+                len(raw_digits) == 6
+                and block["block_start_offset"] <= raw_value <= block["block_end_offset"]
+            )
+            if type(annotation_valid) is not bool or annotation_valid is not expected_valid:
+                raise AssetLoadError(
+                    f"{context}.source_offset_annotation_valid is inconsistent with its block range"
+                )
+            expected_annotated_offset = raw_value if expected_valid else None
+            if annotated_offset != expected_annotated_offset:
+                raise AssetLoadError(
+                    f"{context}.annotated_file_offset is inconsistent with its annotation"
+                )
+            expected_matches = annotated_offset == sequential_offset
+            if type(annotation_matches) is not bool or annotation_matches is not expected_matches:
+                raise AssetLoadError(
+                    f"{context}.source_offset_matches_sequential is inconsistent with its offsets"
+                )
+
+        entry_revision = _string(message["source_revision"], f"{context}.source_revision")
+        if entry_revision != revision:
+            raise AssetLoadError(
+                f"{context}.source_revision does not match top-level source_revision"
+            )
+        block_records[identity].append(message)
+
+    for identity, block in blocks.items():
+        entries = block_records[identity]
+        if len(entries) != block["message_count"]:
+            raise AssetLoadError(
+                f"{identity[0]}:{identity[1]} message_count does not match its messages"
+            )
+        if totals[identity] != block["declared_byte_count_total"]:
+            raise AssetLoadError(
+                f"{identity[0]}:{identity[1]} declared_byte_count_total does not match its messages"
+            )
+
+
 def validate_source_export(payload: Any) -> dict[str, Any]:
     """Validate an already-parsed source export and return it unchanged."""
     export = _object(payload, "source export")
@@ -605,6 +813,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_data_table_export(export)
     elif format_name == DICTIONARY_INVENTORY_FORMAT:
         _validate_dictionary_inventory_export(export)
+    elif format_name == TEXT_MESSAGE_INDEX_FORMAT:
+        _validate_text_message_index_export(export)
     else:
         raise AssetLoadError(f"unsupported source export format: {format_name!r}")
     return export

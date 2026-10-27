@@ -120,3 +120,18 @@ states three `dw` values (six bytes). See the
 [export schema](./dictionary-inventory-export.schema.json).
 
 This inventory is not a text decoder and is not an edit-ready text representation.
+
+## Source message index
+
+The committed `data/extracted/text-message-index.json` contains a metadata-only
+index of 397 message labels from the main and extra message blocks. It records
+the line for each `Message_####` label, any immediately preceding standalone
+source offset annotation, the source-derived sequential offset, and byte count
+computed from the Asar directives.
+
+The main block's declared bytes match its header range, but six offset comments
+do not agree with sequential sizes (three annotations are malformed). The extra
+block has no per-message offset comments and its declared bytes are one byte
+short of its header range. These discrepancies are explicitly recorded. The
+index does not include encoded bytes or decoded text and does not validate the
+runtime message-pointer construction.
