@@ -14,6 +14,7 @@ POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
 DICTIONARY_FRAGMENT_FORMAT = "zelda-suite-dictionary-fragment-inventory"
+_DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
 _IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
@@ -511,6 +512,8 @@ def _validate_dictionary_fragment_export(payload: dict[str, Any]) -> None:
             entry["source_extent_bytes"], f"{context}.source_extent_bytes", minimum=0
         )
         directive = entry["data_directive"]
+        if directive is not None and not isinstance(directive, str):
+            raise AssetLoadError(f"{context}.data_directive must be a string or null")
         value_count = _integer(
             entry["directive_value_count"], f"{context}.directive_value_count", minimum=0
         )
