@@ -913,7 +913,8 @@ def _validate_sprite_dispatch_export(payload: dict[str, Any]) -> None:
         expected_offset = table_start + expected_index * entry_width
         if pointer_offset != expected_offset:
             raise AssetLoadError(
-                f"{context}.pointer_entry_file_offset must be {expected_offset}, got {pointer_offset}"
+                f"{context}.pointer_entry_file_offset must be {expected_offset}, "
+                f"got {pointer_offset}"
             )
         _integer(entry["source_line"], f"{context}.source_line", minimum=1)
         expression = _string(entry["handler_expression"], f"{context}.handler_expression")
