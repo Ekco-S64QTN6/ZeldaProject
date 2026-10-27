@@ -13,6 +13,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
+- [Dictionary fragment inventory](./dictionary-fragment-inventory.schema.json) — version 1 source metadata for `zelda-suite inspect-text-dictionary`.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
 
 ## Committed source-derived data
@@ -23,6 +24,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/falling-prize-x-offsets.json`](../../data/extracted/falling-prize-x-offsets.json) — indexed X offsets.
 - [`data/extracted/falling-prize-delay-timers.json`](../../data/extracted/falling-prize-delay-timers.json) — indexed delay timers.
 - [`data/extracted/text-dictionary-pointers.json`](../../data/extracted/text-dictionary-pointers.json) — 98 symbolic dictionary-fragment pointer expressions.
+- [`data/extracted/text-dictionary-fragments.json`](../../data/extracted/text-dictionary-fragments.json) — pointer-to-fragment metadata, including the unresolved `.You` source-size mismatch.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
