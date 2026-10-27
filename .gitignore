@@ -1,0 +1,42 @@
+# --- ROMs (never commit) ---
+*.smc
+*.sfc
+*.fig
+*.swc
+
+# --- Working project files ---
+project/*
+!project/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Build / release artifacts ---
+build/
+dist/
+*.exe
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- Editor / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Local secrets ---
+.env
+.env.local
+
+# --- Test fixtures that contain copyrighted data ---
+tests/fixtures/local/*
+!tests/fixtures/local/.gitkeep

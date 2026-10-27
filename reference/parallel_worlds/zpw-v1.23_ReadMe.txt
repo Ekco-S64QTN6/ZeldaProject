@@ -1,0 +1,610 @@
+
+
+                                      +
+                                     +++
+                                    +++++
+                                   +++++++
+                                  +++++++++
+                                 +++++++++++
+                                +++++++++++++
+                               +++++++++++++++
+                              +++++++++++++++++
+                             +                 +
+                            +++               +++
+                           +++++             +++++
+                          +++++++           +++++++
+                         +++++++++         +++++++++
+                        +++++++++++       +++++++++++
+                       +++++++++++++     +++++++++++++
+                      +++++++++++++++   +++++++++++++++
+                     +++++++++++++++++ +++++++++++++++++
+                    +++++++++++++++++++++++++++++++++++++
+
+                               The Legend of
+                         Zelda Parallel Worlds v1.23
+
+
+                   game developed and published by Nintendo
+                        for the Super NES, ©1991-1992
+
+             hack made by Euclid, SePH (Orochimaru) and qwertymodo
+                         f_force1[at]hotmail[dot]com
+                         tac_seph[at]hotmail[dot]com
+                       qwertymodo[at]qwertymodo[dot]com
+                      version 1.00 - December 31st, 2006
+                      version 1.10 - May 19th, 2007
+                      version 1.20 - December 31st, 2016
+                      version 1.23 - March 27th 2017
+
+
+
+                        readme is best viewed with
+              Courier New 10 pt font with word wrap turned off
+   /\
+  /__\=========================================================================
+ /\  /\               T A B L E   O F   C O N T E N T S
+/__\/__\=======================================================================
+
+    I.  Game Basics
+         1.  Introduction
+         2.  Patching the game
+         3.  Story (Prelude)
+         4.  Features
+
+   II. Brief Walkthrough
+         1.  Hyrule Field & Caves system
+         2.  Sneaking into the guardhouse
+         3.  The guardhouse escape
+         4.  The mysterious Parallel Worlds...
+
+  III. Frequently Asked Questions
+  
+   IV. The Anniversary Release
+         1.  Changes in version 1.2
+         2.  Setting up the MSU-1 audio
+
+    V. Final Words
+         1.  Version History
+         2.  Special thanks and credits
+
+   /\ 
+  /__\=========================================================================
+ /\  /\                 I. Game Basics
+/__\/__\=======================================================================
+
+-------------------------------------------------------------------------------
+                        I-1.  Introduction
+-------------------------------------------------------------------------------
+
+ * Are you ready for a brand new adventure?
+ * Are you ready to play a whole new zelda 3 game, with completely new 
+   dungeons and overworlds?
+ * Are you ready to find the secrets of the Parallel Worlds?
+
+Parallel Worlds is a fully hacked version of Zelda 3 (aka A Link to the Past).
+A majority of the game has been changed. There may be a few rooms which can be 
+said to be similar to some from the original game.
+
+General changes involve:
+
+ * Brand new Overworlds, I promise you won't find an area which is unchanged!
+ * Brand new Dungeons, all dungeons are completely different from the original!
+ * New house indoors and caves, some of these you may find similar to the 
+   original game.
+ * New Graphics, a lot of the graphics have been changed.
+ * New Screen layout, similar to Ocarina of Time yet not exactly the same.
+ * Some new music, the original game had great music, these are not to be 
+   changed :)
+ * New Story, while some maybe similar to the original game, but 
+   it's intentional.
+ * A lot of other changes, and surprises! 
+
+This is a result of 4 years (maybe 5) of "behind the scenes" hard work, lots 
+of assembly hacks and fixes etc. This game was known as Tower of the Triforce 
+which some people may remember, when I released a demo from that game a few 
+years ago. When SePH joined the team a majority of the things from that hack 
+was taken over into this hack, so spiritually it's still the Tower of the 
+Triforce (to me that is).
+
+This game is difficult. Believe me when I say it is. You'll need to have every 
+trick from the original game memorized plus more to beat this.
+
+Puzzles are everywhere in this game. Some dungeons are more puzzle oriented, 
+while some dungeons are more fighting oriented. I try to keep a balance 
+between the two in some dungeons.
+
+While there isn't much enemy changes, there are a few, which I'll let the 
+player find out by themselves.
+
+There is tons of secrets in this game... some are original while some are just 
+brought over from other zelda games.
+
+That's it for a brief introduction... we hope you enjoy playing this game! 
+
+
+-------------------------------------------------------------------------------
+                        I-2.  Patching the game
+-------------------------------------------------------------------------------
+
+First things first, to play Zelda Parallel Worlds you will need:
+
+1. The included patch
+2. A patching program such as beat or Floating IPS
+3. A copy of Zelda A Link To The Past (U) WITHOUT A HEADER
+   (Don't bother asking for the rom!)
+4. Other useful Information:
+   CRC32: 7A569B88 (only if you hard patch the rom)
+   Patched Size: 1.5MB (1,572,864 bytes)
+
+You can find a guide on how to use LIPS at romhacking[dot]net
+
+-------------------------------------------------------------------------------
+                        I-3.  Story (Prelude)
+-------------------------------------------------------------------------------
+
+Please note:
+ **This game's story is not based on any official Zelda games**
+
+
+You are a treasure hunter from another land. You moved here with your friend, 
+in order to find treasure of course!
+
+A lot of things started to happen not long after you moved here.
+
+Seven people has "appeared out of nowhere" and beings questioning about the 
+Parallel Tower and the inhabitants of Kakariko Village. The Parallel Tower was 
+situated in the Sky Islands northeast of the village. The legend behind the 
+Parallel Tower was long lost, and only the elders knew the legend.
+
+Word begin to spread out about the Parallel Tower, and people started to learn 
+about the legend again. The legend says it was a byproduct of a war long ago 
+and a power, known as the Triforce, existed at the top of it. It is said that 
+nobody knows about the clues as to how to get to the top of the Tower. The 
+seven people are said to know about these "clues" to the Tower.
+
+The king was notified of these seven people and he invited them to the castle 
+to find out what they wanted with the tower. Just the night before the seven 
+people are to have an audience with the king, the king's assistant, Draegor, 
+eliminates the king and claims the throne by default.
+
+The seven people walked right into an obvious trap. Draegor, who people believe
+is a power hungry person, caught all 7 people and forces them to tell him what 
+they know about the Tower.
+
+When the people learnt of the king's fate, a rebel force is gathered in secret 
+to plot against Draegor. The rebel force learnt that 2 out of 7 people which 
+Draegor caught are still alive and imprisoned in the guardhouse. They quickly 
+rallied anyone who may be interested in the Tower and the locals to help these 
+last 2 people.
+
+You and your friend heard about this plan and are willing help the rebels 
+against Draegor.
+
+The night of the operation begins the story...
+
+
+-------------------------------------------------------------------------------
+                        I-4.  Features
+-------------------------------------------------------------------------------
+
+For detailed changes and screenshots of the game hud and various other things,
+I suggest you refer to the html version of this readme.
+
+
+   /\
+  /__\=========================================================================
+ /\  /\                 II. Brief Walkthrough *SPOILERS AHEAD!*
+/__\/__\=======================================================================
+
+  This part of the readme contains information on how to get past the 
+introduction sequence. Since it can be quite hard, especially for beginners, 
+we decided to include a brief walkthrough of it in the readme. Thus if you 
+wouldn't like to be spoiled, you might want to skip this part of the reading.
+
+  **The names of the areas/places are in the brackets.**
+
+Of course, if you have any more questions or comments you can always leave a 
+message in the thread or an email at: tac_seph[at]hotmail[dot]com
+
+Anyways, enjoy!
+
+-------------------------------------------------------------------------------
+                        II-1.  Hyrule Field & Caves system
+-------------------------------------------------------------------------------
+
+[House Interior]
+
+Once you're told of the beginning interlude, head outside.
+
+[Your House]
+
+From here on, you could go to the beach in the west but the area is pretty 
+much closed down for now, so instead, head north.
+
+[Village Entrance]
+
+Guards are blocking the way to the right path (which leads to the Misty woods).
+So that leaves you no choice but to keep going north.
+
+[Kakariko Village]
+
+Ah! Looks like there's guards everywhere, sounds like you can't wander around 
+too much either. There's a large cave surrounded by shallow water. Notice it's
+emplacement for now but don't enter it just yet (It's dark inside). Enter the
+right entrance of the twin house to get some bombs inside the pots. You might
+want to refill as needed. Eventually you'll be able to buy them too. Back in
+the village, head to the east area.
+
+[Village Cemetery]
+
+Still more guards blocking places and sentries around, you find yourself very
+close to the church. Follow the path to the east until you see two paths. One
+heading northeast and the other southeast. Take the north one while beeing
+cautious of the guard that can attack you here.
+
+[Church path]
+
+There's a cave south of here, but don't jump there for now, instead follow the
+brown path until you find tall grass. Keep going north. 
+
+[Village Church]
+
+Cross the north bridge and atop the stairs you'll find the church where 
+villagers gather to pray at times. Enter it. Inside, examine the top of the
+right stairs. You'll find an heart container inside a chest!
+
+Now go back outside, then head into that cave in the church path which I 
+mentioned earlier.
+
+[Hyrulian Cave System]
+
+When you enter the cave you'll notice a fake shooter there. Nothing impressive.
+Proceed to the next room... here, quickly make your way to the left before
+the Armos knight wakes up. In the next room, make haste to the south room 
+before the shooter starts shooting at you. Head south in the next big room,
+until you come across some pots. Take one of them and kill the bat in your way,
+take another one and head west *Don't jump below just yet* and kill the other 
+bat next to the chest. Now you may claim it's content! You'll get the lamp!
+You can now jump down to the south and exit.
+
+Now it's time to head for the guardhouse. Well hidden near the castle, it's 
+where most of the guards gather during patrol duties and also where the main 
+prison lies.
+
+Remember that large cave I introduced in Kakariko Village? Now that you've got 
+something to light your way, it's time to go there again!
+
+[Secret Waterway]
+
+Inside go to the left, picking up those valuable blue rupees on your way and 
+then head north. In the next room you'll see a hole, jump in it to find
+yourself on the bottom floor. First, light the torch so that you see something, 
+then head east. Now there's an enemy which blocks your way south. If you think
+you can avoid it, then go for it, otherwise take one of the pots in the north
+part of this room to quickly get rid of it. Then proceed to the south exit.
+
+[Lupo Intersection]
+
+Don't waste your time here, avoid the monsters and enter the west cave 
+surrounded by the torches you see.
+
+[Ancient Tunnels]
+
+Here lies the ancient catacombs tunnels used by the village ancestors as a 
+way to quickly move between places. Now it's mostly stuffed up by traps and
+holes left by the time. 
+
+**You might want to save your progress to this point if you don't want to restart
+your game from the start. You get your sword very late in the guardhouse and 
+hence if you don't have it and die you'll start again in your house (That can be
+annoying for some people). You're warned!**
+
+Inside, take the right door. By being cautious of the shooter, pickup the blue 
+rupees then proceed north. Looks like someone was here before you, the content
+of the chests were all stolen already. Head right. In the next room lies the
+most challenging part of the intro, getting around the pits of doom labyrinth
+that is. The problem lies with the fact that there will have plenty of shooters
+in your way, firing at random, so it's a pretty tedious part at first but once 
+you know a way, it's pretty easy actually. When you're done, take the exit and
+prepare to claim your first sword and shield!
+
+**Again, for beginners, using savestates here is the key to get through it.**
+
+[Castle Guardhouse]
+
+Move south carefully, and make haste to the doorway of the guardhouse before 
+the sentry guard catches you. Congratulations you've made it alive to the 
+guardhouse. Now comes the infiltration part!
+
+-------------------------------------------------------------------------------
+                        II-2.  Sneaking into the guardhouse
+-------------------------------------------------------------------------------
+
+Once you've made step into the guardhouse, three paths opens for you to go. 
+One needs a key and the other you need to activate a switch. For now head west. 
+Follow the path through the rooms until you descend stairs. You'll find 
+yourself in the wine cellar. There's a small key and a big door. Take the small
+key and head back to the entrance. Now, active the switch near the north door 
+and then head east. Continue walking through the doors till you end up in a 
+room full of bookcases. Activate the switch on the floor and go to the next 
+room. Bottom of the stairs, there's four pots and a big chest. Since you don't
+have the big chest key, let's just pick up the pots to find a key. You may now
+go back to the entrance.
+
+Now that you've got two keys, use one of them to open the north door and again
+follow that path until you descend the stairs. When you arrive at B1 you'll 
+know that the next few rooms of the guardhouse will have plenty of locked 
+doors and switches on the floor. Just follow the path you see and you'll 
+eventually find stairs which leads to B2 in the interrogation room where is 
+held your friend you see in the beginning. Head to the west room and down the 
+stairs. You'll end up in the prison upper floor. Go west, walk past the 
+dangerous soldiers there and down the stairs again. The prison lower floor is
+just ahead. Now move to the room just above you, and then quickly move the 
+middleand head south, now walk past the guard there and finally go up again. 
+Head east. Here lies the prison warden's room. The soldier here has one of 
+the keys to get to your friend but you don't have anything to fight him yet,
+so just move to the next room for now.
+
+For the next two rooms, just head south, walking past your enemies then you'll
+encounter a blue soldier in front of you. Quickly head east before he catches 
+you. You walk past an heart pie but you need the hookshot to get there, so 
+forget it for now. Just go to the next room. You'll get locked in and will 
+have to dodge the floor tiles. When it's opened, head north and use your key
+on the remaining locked door. Inside you'll find the big key in a chest 
+surrounded by spikes. Now that you have that key you can go back all the way
+up to the wine cellar near the entrance.
+
+Once you're there, head for the locked door. Once it's opened, in the next
+room you'll see lots of soldiers, head right and somewhere south of the bar, 
+there's a switch for the locked door you'll see. Open it and get the key 
+inside. You may now return to the interrogation floor, somewhere on that floor
+you can use your big key in a cell. Once it's done, in the next room you 
+should see a locked door. Use your small key and finally the other side 
+you'll get your sword and shield! Now you're missing one more key. Head to
+the prison warden's room and kill the soldier there. You'll find a key on 
+his corpse.
+
+It's time to go save Zelda. Go to the prison upper floor in the room with the
+stairs to go up. Now head into the room to the right (which you haven't go to
+yet). Kill everyone in the room to open the locked door. In the next room,
+open the door with your remaining key and inside lies Zelda. Heard her short
+ story then finally head to the wine cellar once again. Inside, move the top
+ of the room hidden passage. This concludes the walkthrough for the
+guardhouse! Now it's time to escape through the sewers...
+
+-------------------------------------------------------------------------------
+                        II-3.  The guardhouse escape
+-------------------------------------------------------------------------------
+
+[Cellar Passage]
+
+To the right of the door there's a chest but since it requires the big chest
+key, which you don't have you'll have to take the left path. Move along the 
+doors until you descend stairs.
+
+[Guardhouse Sewers]
+
+Here, there's no straight path to chose, but remember that the exit is
+somewhere east from where you enter. Once you've it through the maze you'll
+end up in a small room full of holes, switches and rats. The correct switch
+to open the north door is the one between the two small holes near the 
+entrance. Move the north room once you've walked on the switch. In the next
+small room there's a labyrinth. Find the way out and head up the stairs.
+
+[Church passage]
+
+Head south and follow the pretty straight forward path which lies before you.
+When you encounter stairs, take them to find yourself near a maze of pegs.
+Follow where it goes and eventually you'll have the choice of either going up
+the stairs or hitting a peg switch. Do the later, there's no point going up
+just yet. Follow the newly formed ways you can go to and you'll eventually
+see the stairs to go below. Take them and just north of them lies another set
+of stairs. Head into the maze and north of there lies stairs to move to the
+church's back room. On the floor above, you should see a chest. Take it, it 
+contains the big chest key of this level.
+
+Now you've got to go back to the cellar passage and get the chest which you've
+previously missed on. Once you arrive, open it to get the blue boomerang. Now
+that you have it you may return to the church passage. Make sure the blue pegs 
+are on and the red ones are off. Make it all the way up to the church back 
+room using the other set of stairs which you haven't used yet. Now just move
+below and using your boomerang hit the peg switch while moving right. 
+Eventually you'll be able to go in the next room just below. Hit the left 
+switch and you'll make it into the church!
+
+-------------------------------------------------------------------------------
+                        II-4.  The mysterious Parallel Worlds...
+-------------------------------------------------------------------------------
+
+Hear what Zelda and the old wise men have to say and you can now go explore the 
+rest of this world and its secrets!
+
+ 
+   /\
+  /__\=========================================================================
+ /\  /\                 III. Frequently Asked Questions
+/__\/__\=======================================================================
+
+This section will expand as questions keep coming.
+
+Q: I have found the big key, but the big chest in the guardhouse doesn't open!
+A: If you haven't noticed yet, this game doesn't use either maps or compass in 
+the dungeons. Instead, we used our creative talents to make two new distinctive
+items for you to get. The big chest key and the big door key! That means if you
+want that chest to open, you need to find the proper key.
+
+Q: What's the purpose of the mysterious tablets?
+A: It is a secret to everybody.
+
+Q: I'm lost, I don't know where to go next!
+A: Look around, most of the story was changed and so is the monologue so talk
+to all the people you encounter. There are enough clues hidden everywhere for 
+you to finish this game.
+
+Go to http://zeldaparallelworlds.googlepages.com/ for the most updated FAQ.
+
+There is a full map and walkthrough (WIP) available at zelda.qwertymodo.com.
+
+There's also a Parallel Worlds FAQ by Nephalim and Tompa around the internets.
+
+   /\
+  /__\=========================================================================
+ /\  /\                 IV. The Anniversary Release
+/__\/__\=======================================================================
+
+-------------------------------------------------------------------------------
+                        IV-1.  Changes in version 1.2
+-------------------------------------------------------------------------------
+
+On December 31st, the 10th anniversary of the original v1.00 release, a new
+update was released addressing many existing issues with the game, as well as
+adding several new features.  These changes are the result of several years
+worth of new code written by several different authors, which was compiled
+together by qwertymodo, along with several other minor changes and fixes.
+Unlike the Parallel Remodel hack by PuzzleDude, the dungeon layouts were
+intentionally left unchanged (other than a few minor door adjustments).
+However, the new gameplay mechanics introduced serve to address many
+long-standing issues.  The list of changes is rather extensive.
+
+===New Features===
+- MSU-1 Audio
+- Stun enemies by hitting them without a sword (huge help in the Guardhouse)
+- Able to change directions while dashing with the pegasus boots
+- Able to break pots with the sword
+- Able to collect items with the sword
+- Death counter doesn't increment when saving and quitting normally
+- Able to cancel the flute transport by pressing B at the destination map screen
+- The shovel has been added to fill the last inventory slot
+
+===Improvements===
+- The game has been converted to FastROM, to minimize slowdown in several areas
+- Loading your game starts you with full health, not half
+- It is now possible to save at any time, even before collecting the sword
+- It is now possible to backtrack from the Parallel Tower big chest key
+- Armor upgrades now occur in the correct order, regardless of which you get first
+- The in-game clock is now hidden until exiting the church for the first time
+- Bombs no longer hurt you on knockback, making bomb jump rooms easier
+- The soldier's speed increase has been adjusted slightly
+- The Armos Knights in the first dungeon have been made easier
+
+===Bug Fixes===
+- Able to collect both blue and red boomerang (no longer have to choose)
+- Able to collect second mushroom even with magic powder in inventory
+- Fixed several broken boss room doors
+- Mothula no longer stops firing after a few shots
+- Fixed the glitch with the Impa's Ways boss crystal not falling sometimes
+- Fixed several outdoor staircases (minor graphical glitch/incorrect Y position)
+- Fixed a layering bug on several indor staircases
+- Fixed the sprite palette bug when turned into a bunny in the Parallel Tower
+- Minor sprite recoloring (Link's face, Hylian Shield, Spiritual Stones)
+- The graphical glitch on the title screen has been fixed
+- Fixed the curtain door graphics at the top of the Parallel Tower
+- Fixed the unreachable bat in the church basement
+- Disable the Book of Mudora in all caves to avoid glitching on incorrect exit
+- Various typo fixes and other text adjustments
+
+-------------------------------------------------------------------------------
+                        IV-2.  Setting up the MSU-1 audio
+-------------------------------------------------------------------------------
+SD2SNES/bsnes/Snes9x:
+    1) Create a folder to hold the game files and place the patched ROM inside
+    2) Extract the .pcm files from the MSU-1 audio pack into the same folder
+    3) Rename the .pcm files to match the ROM file, e.g.:
+        ParallelWorlds.sfc
+        ParallelWorlds-1.pcm
+        ParallelWorlds-2.pcm
+        etc.
+    4) Rename the .msu file from the audio pack to match as well, e.g.:
+        ParallelWorlds.msu
+    5) (bsnes only) Copy the manifest.xml to the game folder and rename to match
+
+higan:
+    1) Open the higan library and select Import ROM Files
+    2) Select the patched ROM file
+    3) Open Settings>Configuration>Advanced and locate the Game Library
+    4) Browse to the Game Library location and open the Super Famicom folder
+    5) Open the folder containing the ROM you just imported
+   5a) You can rename the game folder, but THE FOLDER NAME MUST END IN .sfc
+    6) Copy the .pcm and .msu files from the MSU-1 audio pack into the game folder
+    
+  Not using a manifest file:
+    7) Rename the .pcm files to track-1.pcm, track-2.pcm, etc
+    8) Rename the .msu file to msu1.rom
+    
+  Using a manifest file:
+    7) Copy the manifest.bml from the audio pack into the game folder
+    8) Open manifest.bml in a text editor to see the expected file names
+    9) Rename the files accordingly (program.rom, *.pcm, zpw.msu)
+   10) In higan, under Settings>Configuration>Advanced, uncheck Ignore Manifests
+
+   /\
+  /__\=========================================================================
+ /\  /\                 V. Final Words
+/__\/__\=======================================================================
+
+-------------------------------------------------------------------------------
+                        V-1.  Version History
+-------------------------------------------------------------------------------
+
+version 1.21 - January 7th, 2017:
+- Minor bugfix for a game-breaking door in Darunia's Caverns
+
+version 1.20 - December 31st, 2016:
+- MSU-1 audio
+- New gameplay mechanics
+- Various improvements, bugfixes, and dialog improvements
+
+version 1.10 - May 19th, 2007:
+- Dialog improvements
+- moved infinite-conversion-lock town NPC
+- changed a puzzle combination
+
+version 1.00 - December 31st, 2006: Initial release
+
+-------------------------------------------------------------------------------
+                        V-2.  Special thanks and credits
+-------------------------------------------------------------------------------
+
+This hack would not be what it is without contributions from the following:
+
+Richyawyingtmv    New music
+
+Daisuke           Link's sprite, Mothula and various (Main spriter)
+.TakaM            Wooden house, beach, palm trees shadows and various
+GanonSpriteR      Draegor, Title screen master sword
+aab               Snowland, lavaland miscellaneous
+NoeL              Alternate mountain tiles
+Calvein           Grass pattern
+Geckkko           Barn tiles
+Bearer            Wooden house tiles
+Revan             Some ship tiles
+Hero Of Fire      Cemetery Gate
+Dark Link         Shields
+Retro             Triforce statues
+
+Reshaper256       SpritePalettesByRooms asm patch
+JaSp              For his day/night asm patch
+d4s               For finding how to change the hardcoded grass palette
+
+NEONswift         Area names idea, finding how to move some hardcoded areas
+Omega45889        For finding Draegor's name, various
+MathOnNapkins     Help and his documents
+KTurbo            Beta testing and suggestions
+Chickenlump       Help using YY-CHR, various data
+GameMakr24        Inspiration
+Ghillie           Ideas and suggestions
+Duke Serkol       Ideas and suggestions
+Sephiroth3        His editor Hyrule Magic
+FuSoYa            His tool zcompress
+Yy                His tile editor YY-CHR
+Ryusui            His utility TheCheat
+Danaelo           Readme FAQ layout
+AstroBlue         Readme Triforce headers
+You, the player   For waiting so long to play a full Z3 hack
+                  and of course, playing this game!
+                  
+The5thHerring     Dialog Revision 1.1
+Dr Floppy         1.1 Script Insertion and testing
+
+If you have any further questions or would like to point out a mistake, feel
+free to send me an email at tac_seph[at]hotmail[dot]com. Thanks for reading.

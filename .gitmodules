@@ -1,0 +1,3 @@
+[submodule "reference/AsarUSALTTPDisassembly"]
+	path = reference/AsarUSALTTPDisassembly
+	url = https://github.com/JaredBrian/AsarUSALTTPDisassembly.git

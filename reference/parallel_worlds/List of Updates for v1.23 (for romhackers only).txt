@@ -1,0 +1,995 @@
+PARALLEL WORLDS
+Updates from 1.20 to 1.23
+
+
+1.) Darunia fix
+in room 211 the southern door does not open:
+
+1298B6:
+20 18 83 12 60 38 62 36 80 18 82 18 22 00 -->
+60 38 80 18 22 00 62 36 82 18 20 18 83 12
+
+
+
+2.) Darunia room 209
+you can trap yourself with no escape
+
+129793:
+82 18 -->
+82 00
+
+129799:
+62 18 -->
+62 00
+
+
+
+3.) Darunia room 193
+you can trap yourself with no escape
+
+128CBB:
+60 18 -->
+60 00
+
+
+
+4.) Darunia room 178
+you can trap yourself with no escape
+
+1280B2:
+60 36 -->
+60 00
+
+
+
+5.) Darunia room 144
+boss room needs to be closed
+(I believe this is already done in 1.2)
+
+119332:
+61 00 -->
+61 18
+
+
+
+6.) Darunia room 162
+you can trap yourself with no escape
+
+11A140:
+60 18 -->
+60 00
+
+
+--------------------------------------------------------
+
+
+7.) In the overworld area 80 (Pyramid where the Master sword is) a false rain/water music is playing in the background
+this music needs to be put to NOP
+
+
+10C05F:
+12 -->
+52
+
+this is end of the 1st music table, the same value (ie 52) is on the second table, since the rain/water is correctly turned off when you pull the sword
+
+
+--------------------------------------------------------
+
+
+8.) Reverting the ASM for the Master Sword
+
+Pulling the Master Sword will turn off all snow overlays in the dark world, but this will make an overlay bug in the ice-world-lake area, where you open the dungeon entrance with the Ether medallion.
+
+The Ether also interferes with the overlay code before the Master sword, and thus this makes bugs in this area only: after you open the dungeon and enter it and go out - the overlay is displayed but the snow is not moving (it should be either turned off completely or turned on completely).
+
+
+8A.)
+012FA3,
+block is 6C long:
+A2 95 00 C9 03 00 F0 60 C9 05 00 F0 5B C9 07 00 F0 56 A2 9D 00 C9 43 00 F0 4E C9 45 00 F0 49 C9 47 00 F0 44 A2 9D 00 C9 35 00 F0 3C C9 37 00 F0 37 C9 3F 00 F0 32 C9 70 00 D0 0B AF F0 F2 7E 29 20 00 D0 21 80 0F A2 96 00 AF C5 F3 7E 29 FF 00 C9 02 00 B0 05 A2 9F 00 80 0E A5 8A 29 40 00 F0 07 80 F2 EA EA A2 96 00 22 D0 FA 07
+
+8B.)
+12503,
+block is 0B long
+8E 2E 01 A9 32 85 9A 22 53 FC 07
+
+8C.)
+17FD2,
+block is 1D long
+FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
+
+8D.)
+07762C,
+block is 07 long
+AF C3 F2 7E 29 20 D0
+
+
+--------------------------------------------------------
+
+
+9.) This is how you Invert (apply) the Master sword ASM (in case anyone wants to insert it after they have already removed it)
+
+9A.)
+012FA3,
+block is 6C long:
+A2 95 00 C9 03 00 F0 5F C9 05 00 F0 5A C9 07 00 F0 55 A2 96 00 AF 59 F3 7E 29 FF 00 C9 04 00 F0 46 A5 8A 29 FF 00 A2 9D 00 C9 43 00 F0 39 C9 45 00 F0 34 C9 47 00 F0 2F A2 9D 00 C9 35 00 F0 27 C9 37 00 F0 22 C9 3F 00 F0 1D A2 96 00 AF C5 F3 7E 29 FF 00 C9 02 00 B0 05 A2 9F 00 80 09 A5 8A 29 40 00 F0 02 80 F2 22 D0 FA 87 EA
+
+9B.)
+12503,
+block is 0B long
+20 D2 FF A9 32 85 9A 20 DE FF EA
+
+9C.)
+17FD2,
+block is 1D long
+AF 59 F3 7E C9 04 F0 03 8E 2E 01 60 AF 59 F3 7E C9 04 D0 04 A9 00 85 9A 22 53 FC 87 60
+
+9D.)
+07762C,
+block is 07 long
+AF 59 F3 7E C9 04 F0
+
+
+--------------------------------------------------------
+
+
+10.) Reverting the false Tiles at overworld cloud areas and Parallel Tower area and the ice-church area
+
+checked global hex banks:
+all 8x8 to 16x16 definitions are
+78000 (block is 7540)= all definitions
+= 00 bytes have changed
+
+checked global hex banks:
+all 16x16 to 32x32 definitions are
+18000 (3400)= left up definitions
+1B400 (3400)= right up definitions
+20000 (3400)= left down definitions
+23400 (3400)= right down definition
+=25 bytes have changed
+-----
+
+tiles used for new drawing: 589, 585, 2898, 5821
+tiles used for old drawing: 588, 716, 2894, 5806
+
+changed tiles are:
+589, 585, 2898, 5821, and 590 for some reason, while 590 was not used for new drawing in area 67
+
+
+
+CHANGES
+Reverting changed tiles:
+
+a.) tile 589,
+18373: 5E --> 12
+1B773: 5E --> 12
+20373: 05 --> 12
+23773: 05 --> 16
+
+
+b.) tile 585,
+1836D: 5E --> D2
+1B76D: 5F --> D0
+2036D: 05 --> D0
+2376D: 05 --> CF
+
+
+c.) tile 590,
+18374: 1C --> 16
+
+
+d.) tile 2898,
+190FA: 60 --> CB
+190FD: 10 --> 30
+1C4FA: 34 --> F6
+1C4FD: 00 --> 30
+210FA: 67 --> CB
+210FD: 10 --> 30
+244FA: 60 --> EA
+244FD: 10 --> 30
+
+
+e.) tile 5821,
+1A21B: 58 --> 27
+1A21E: 11 --> 1B
+1D61B: 67 --> 2E
+1D61E: 11 --> 1B
+2221B: 5B --> 27
+2221E: 11 --> 1B
+2561B: 6A --> 2E
+2561E: 11 --> 1B
+
+indeed these are 25 bytes, which have changed,
+so this matches to global hex-string scan
+
+
+--------------------------------------------------------
+
+
+11.) Reverting drawing in area 67
+
+from new: 589, 589, 589, 589,, 585, 2898,, 5821
+
+to old: 588, 588, 588, 588,, 716, 2894,, 5806
+
+
+CHANGES:
+
+a.) Four 589 elements into four 588 elements
+6277A: 4D --> 4C
+
+b.) Element 585 to element 716
+6277C: 49 --> CC
+
+c.) Element 2898 to element 2894
+6277D: 52 --> 4E
+
+d.) Element 5821 to element 5806
+6278E: BD --> AE
+
+
+--------------------------------------------------------
+
+
+
+12.) Solving the bug:
+You can falsly walk out of picture in PW ice world church area
+
+This will close the false exit left and right
+(in both cases you can walk off screen)
+by manipulating 16x16 tiles (which are used only on this GFX number, so they are not used in other areas)
+
+
+32x32 tiles affected are:
+2187, 2188, 1884, 1886
+
+
+1ST VARIANT (ALL OBJECTS FACED ONE WAY)
+
+a.) 18B0C: 06 --> 73
+    18B0F: 60 --> 30
+
+b.) 18CCF: 06 --> 73
+    18CD1: 36 --> 33
+
+c.) 1BF0A: 06 --> 73
+    1BF0E: 60 --> 30
+
+d.) 1C0D2: 06 --> 73
+    1C0D6: 61 --> 31
+
+e.) 20B0C: 07 --> 73
+    20B0F: 61 --> 31
+
+f.) 20CCF: 07 --> 73
+    20CD1: 06 --> 03
+
+g.) 23F0A: 07 --> 73
+    23F0E: 60 --> 30
+
+h.) 240D2: 07 --> 73
+    240D6: 61 --> 31
+
+
+
+2ND VARIANT (OBJECTS FACED LEFT AND RIGHT IN PATTERN)
+
+a.) 18B0C: 06 --> 73
+    18B0F: 60 --> 30
+
+b.) 18CCF: 06 --> 73
+    18CD1: 36 --> 33
+
+c.) 1BF0A: 06 --> C1
+    1BF0E: 60 --> 30
+
+d.) 1C0D2: 06 --> C1
+    1C0D6: 61 --> 31
+
+e.) 20B0C: 07 --> C1
+    20B0F: 61 --> 31
+
+f.) 20CCF: 07 --> C1
+    20CD1: 06 --> 03
+
+g.) 23F0A: 07 --> 73
+    23F0E: 60 --> 30
+
+h.) 240D2: 07 --> 73
+    240D6: 61 --> 31
+
+
+
+--------------------------------------------------------
+
+
+
+13.) Adopting the drawing:
+changing overworld drawing of 32x32 tiles to make it look better after the edit:
+
+
+
+a.) AREA 27
+Changing drawing: 2188 + 2187, to 2135 + 2135
+5C030:
+01 CC 4E 43 8B 8C E0 35 --> E0 3B CC 4E 8B 57 57 8C
+
+
+
+b.) AREA 67
+Changing drawing: 2188 + 2187, to 2135 + 2135
+6277B:
+01 49 52 43 8B 8C 05 --> 0B 49 52 8B 57 57 8C
+
+
+
+c.) AREA 25
+Changing drawing: 2187 to 2114
+622BC:
+8B --> 42
+
+
+
+d.) NOP-ing the anti-sword shooter in area 27,
+since now it is shooting from empty space, since now there is
+no statue
+
+4CF21:
+C6 --> 1D
+
+Sprite 1D= useless sprite
+this sprite does nothing and it is there for the purpose to be able to later insert sprite without shifting the hex-string
+
+
+
+--------------------------------------------------------
+
+
+14.) Another bug reported on Zeldix in Darunia's dungeon
+
+When you are in room 178 in the right up quadrant, and move the block, the south door does not open (when it should, and it did open on version 1.0 and 1.1)
+
+This bug can not be seen in Hyrule Magic
+
+Main problem: too much shutter doors:
+PW 1.1 had another problem, which was solved, but like said too many doors, need to revert 2 shutters to 2 regular door, so 4 shutter door remain and then move those 4 to most left position in the hex string (all type 12)
+
+Local problem: the upper door was not opening because it was only the 6th in hex string (only first 4 are ok with special doors).
+
+
+
+the code for the doors in 178 is here:
+1280AC, (block is 10):
+
+the correct final code is (makes only 4 shutters and all doors are in the correct order too):
+1280AC, write new code:
+80 18 61 18 22 18 02 18 82 00 60 00 81 00 20 00
+
+
+Study:
+80 18, this is the door which was reported (shutter door)
+61 18, shutter door
+22 18, shutter door
+02 18, shutter door
+
+here's where shutter doors must end (limit reached= 4 doors)
+
+82 00, regular door (type 0) works always
+60 00, regular door (type 0) works always
+81 00, regular door (type 0) works always
+20 00, regular door (type 0) works always
+
+
+In PW 1.1 the door 80 18 was at position 2 (which is ok), in PW 1.2 it was on position 6 (not ok)
+
+
+
+-----------------------------
+
+
+
+15.) Study of same code in PW 1.1 and 1.2
+*****************************************
+
+1.1
+82 18, ok shutter
+80 18, ok shutter (this door in question was working here)
+61 18, ok shutter
+81 00, not ok, should be lower (regular door)
+60 36, not ok, limit breach for shutters (can be solved)
+22 18, not ok, limit breach for shutters (can not be solved)
+02 18, not ok, limit breach for shutters (can not be solved)
+20 00, ok regular door
+
+
+1.2
+61 18, ok shutter
+22 18, ok shutter
+02 18, ok shutter
+60 36, ok shutter
+82 18, not ok, limit breach for shutters 
+80 18, not ok, limit breach for shutters (reported door)
+81 00, ok regular door
+20 00, ok regular door
+
+
+1.23
+80 18, ok shutter (reported door now working)
+61 18, ok shutter
+22 18, ok shutter
+02 18, ok shutter
+82 00, reverted from shutter to regular door (without paradoxes)
+60 00, reverted from shutter to regular door (without paradoxes)
+81 00, ok regular door
+20 00, ok regular door
+
+
+Note: If a breached shutter door is on the edge of the room, it will still work, but it will give false visual when walking in the room from another room: see transit from 178 to 194. Room 194 has 8 shutter doors, and thus when you walk into this room, you walk !through! the shutter doors (visual problem), but the doors still works though. 4 of the 8 should be displaying correctly (the first 4 in the hex code).
+
+
+-----------------------------
+
+
+16.) Reverting some breached-shutter-doors in Darunia
+
+room 194 has 8 shutters, 4 of which are ok, the other 4 make you walk through the shutter when comming into the room
+
+Study is this: all horizontal doors are ok, all vertical false (achieved through in-game testing)
+
+
+Room 194 reverting vertical doors to regular doors:
+no game paradoxes if we do this:
+
+128D40:
+63 18 22 18 02 18 83 18 20 18 61 18 00 18 81 18 -->
+63 18 22 18 02 18 83 18 20 00 61 00 00 00 81 00
+
+
+-----------------------------
+
+
+17.) Reverting all Darunia rooms to 4 shutters at max
+and in the correct order, so that the shutter doors
+are always in the first 4 positions (since they only
+work if they are there)
+
+
+all Darunia rooms are (in Hyrule Magic's grid):
+
+144, 145, 146, 147
+160, 161, 162, 163
+     177, 178, 179
+     193, 194, 195
+     209, 210, 211, 212
+
+
+
+DOOR CODES; from old to final code:
+
+
+ROOM 144 (door code is ok)
+119332:
+61 18 -->
+61 18
+
+
+ROOM 145 (door code is ok)
+119422:
+60 38 80 38 82 38 81 18 61 00 83 00 -->
+60 38 80 38 82 38 81 18 61 00 83 00
+
+
+ROOM 146 (reverting door type-27 to type-00)
+119498:
+62 18 61 18 80 36 82 18 83 36 22 00 60 00 63 00 -->
+62 18 61 18 80 36 82 18 83 00 22 00 60 00 63 00
+
+
+ROOM 147 (changing door type-27 to type-12)
+119566:
+82 36 80 36 60 38 22 36 02 00 81 00 -->
+82 36 80 36 60 38 22 18 02 00 81 00
+combo with room 146 is now: 00-12, before it was 27-27
+
+
+ROOM 160 (door code is ok)
+11A005:
+00 1E 80 00 60 1C -->
+00 1E 80 00 60 1C
+
+
+ROOM 161 (putting door type-00 from position 2 to 4)
+11A0C6:
+82 18 62 00 00 18 63 18 61 00 80 00 20 00 60 00 -->
+82 18 00 18 63 18 62 00 61 00 80 00 20 00 60 00 
+old code was ok, but now it is even better, since all type 0 doors should be last in the string,
+so before it was: s,r,s,s---r,r,r,r
+now it is:        s,s,s,r---r,r,r,r
+while --- is the limit for shutters
+(s= shutter, r= regular door)
+
+
+ROOM 162 (reverting one shutter, since you can trap yourself)
+see section 6.) + moving type 00 more right
+11A140:
+60 18 00 18 63 18 81 00 80 00 82 00 02 00 -->
+60 00 00 18 63 18 81 00 80 00 82 00 02 00 -->
+00 18 63 18 60 00 81 00 80 00 82 00 02 00 
+doors were: s,s,s,r---r,r,r 
+then were:  r,s,s,r---r,r,r
+now are:    s,s,r,r---r,r,r
+
+
+ROOM 163 (door code is ok)
+11A1C1:
+80 18 60 18 82 38 62 18 20 00 02 00 81 00 61 00 -->
+80 18 60 18 82 38 62 18 20 00 02 00 81 00 61 00 
+
+
+ROOM 177 (door code is ok)
+12803E:
+82 18 62 18 60 18 61 00 83 00 63 00 80 00 00 00 -->
+82 18 62 18 60 18 61 00 83 00 63 00 80 00 00 00 
+
+
+ROOM 178 (see section 14.) and 15.))
+reverting one shutter because of trapped in, reverting another shutter since too many shutters in one room, and reorganizing room for shutters to be most left and type 00 doors to be most right. 4 shutters on the left side allowed.
+1280AC:
+61 18 22 18 02 18 60 36 82 18 80 18 81 00 20 00 -->
+80 18 61 18 22 18 02 18 82 00 60 00 81 00 20 00
+
+
+ROOM 179 (door code is ok)
+128108:
+80 18 60 18 82 18 62 18 20 00 00 00 81 00 61 00 -->
+80 18 60 18 82 18 62 18 20 00 00 00 81 00 61 00 
+
+
+ROOM 193 (door 60 must be put to 00 otherwise you can trap yourself and because too many shutters) see section 3.)
++moving type 00 to the right
+128CB7:
+61 18 00 18 60 18 80 18 82 18 63 00 83 00 81 00 -->
+61 18 00 18 60 00 80 18 82 18 63 00 83 00 81 00 -->
+61 18 00 18 80 18 82 18 60 00 63 00 83 00 81 00 
+
+
+ROOM 194 (see section 16.))
+128D40:
+63 18 22 18 02 18 83 18 20 18 61 18 00 18 81 18 -->
+63 18 22 18 02 18 83 18 20 00 61 00 00 00 81 00
+
+
+ROOM 195 (moving door type 00 right)
+128DA8:
+00 00 20 18 82 18 62 18 81 00 80 00 02 00 22 00 -->
+20 18 82 18 62 18 00 00 81 00 80 00 02 00 22 00
+
+
+ROOM 209 (put doors 82 and 62 to 00 because you can trap yourself, see section 2.) +move 00 to right
+129791:
+00 18 82 18 80 18 60 18 62 18 83 00 20 00 -->
+00 18 82 00 80 18 60 18 62 00 83 00 20 00 -->
+00 18 80 18 60 18 82 00 62 00 83 00 20 00
+
+
+ROOM 210 (door code is ok)
+129845:
+20 18 00 18 22 18 83 18 82 00 62 00 80 00 60 00 -->
+20 18 00 18 22 18 83 18 82 00 62 00 80 00 60 00
+
+
+
+
+
+
+ROOM 211 (the so called darunia fix patch is thus still wrong, too many shutters)
+further problems in this room are: too many shutter doors, one shutter is type 09 unstead of 12.
+1298B6:
+20 18 83 12 60 38 62 36 80 18 82 18 22 00 -->
+60 38 80 18 22 00 62 36 82 18 20 18 83 12
+
+darunia fix positions door 22 00 completely wrong since door belongs far right, doors 82 18, 20 18, 83 12 are all wrong (shutter limit breach on all)
+
+-reverting 2 shutters with no game paradoxes (these are type 28 and type 27 doors - both go to type 00)
+this is door 60 38 --> 60 00
+and door 62 36 --> 62 00
+
+-changing one remaining shutter from type 09 to 12
+this is door 83 12 --> 83 18
+
+thus whole code is:
+20 18 83 18 60 00 62 00 80 18 82 18 22 00
+
+
+
+now we move 2 doors with type 00 to the far right:
+final debugged code for room 211 is:
+1298B6:
+20 18 83 18 80 18 82 18 22 00 60 00 62 00
+
+
+Whole process was:
+1298B6:
+20 18 83 12 60 38 62 36 80 18 82 18 22 00 -->
+60 38 80 18 22 00 62 36 82 18 20 18 83 12 -->
+20 18 83 18 60 00 62 00 80 18 82 18 22 00 -->
+20 18 83 18 80 18 82 18 22 00 60 00 62 00 = final, debugged
+
+
+
+
+
+
+
+ROOM 212 (putting door type 00 far right)
+129952:
+22 00 82 36 80 2E 62 36 -->
+82 36 80 2E 62 36 22 00
+
+
+
+
+
+
+-----------------------------
+
+
+
+18.) Monologue version update from 1.2 to 1.123
+
+
+Change monologue 179:
+Welcome to the Hack![2]Version 1.2[3]Enjoy!
+
+To new content:
+Welcome to the Hack![2]Version 1.23[3]Enjoy!
+
+
+
+Global banks to transfer to ALTTP are
+
+E0000 (block is 8000)
+75F40 (block is 14C0)
+
+If we do this, then edit in ALTTP with HM, and transfer back, we also need to make this small dictionary edit.
+For some reason Euclid made dictionary entry "and" with no space, into "ide".
+
+!Reverting dictionary "ide" to "and", but only if the transfer was made to ALTTP and saved with HM, since it will write byte 90 for "and" while PW will understand byte 90 as "ide".
+
+
+
+So change:
+**********
+747E2,
+22 1D 1E, = ide, -->
+1A 27 1D, = and
+
+this is byte 90= "and" with no space after it
+byte 8C= "and" with space after it
+byte 8C remains
+
+This is the only dictionary change between ALTTP and PW.
+
+
+-----------------------------
+
+
+
+19.) Fixing SNES checksum and Internal header name
+
+Expand rom to 2MB to have even size, which is more compatible.
+
+
+
+
+
+
+
+
+--------------------------
+I found additional things!
+--------------------------
+
+
+
+
+
+
+
+20.) Be able to collect Byrna in dark world or light world, ie insert the Alternative treasure chest: Byrna/Heartpiece
+
+Put Byrna in room 268 (dark world)
+E976:
+17 --> 18
+
+Define alternative treasure for Byrna to be Heart piece
+Table is at: 3B528 and is 4C (76 in dec) long.
+
+Byrna is 18 (24 dec) and HPiece is 17 (23 dec)
+
+Thus Byrna is 24 dec starting from 00, so 25th byte in the table is alt for Byrna.
+
+thus
+3B540:
+FF --> 17
+sets alt for Byrna to be HPiece
+
+Tested with Hyrule Magic and it says: Byrna (alt HPiece) in rooms 268 and 279 in 2 of the chests.
+
+
+
+-----------------------------
+
+
+
+21.) Fix the infinite-diggable tile
+
+This tile does not respond and is bugged. This is tile 832 in dec or 0340 in hex. Tile will not reload gfx onto it. Thus this tile is an "infinite bush" tile and "infinite dig" tile.
+
+We need to remove this 16x16 tile from all 32x32 tile, by replacing it with a similar tile which also contains "leafs" gfx.
+
+
+
+Scanning for tile
+*****************
+
+There are 4 hex data blocks which contain all 16x16 into 32x32 tiles:
+18000, 1B400, 20000, 23400, while each is 3400 long
+
+code goes by 6 bytes:
+-- -- -- --, -- --
+4 bytes      2 bytes global
+local
+
+thus tile 340 can get written as 03 and 40
+
+40 -- -- --, 3- --
+-- 40 -- --, -3 --
+-- -- 40 --, -- 3-
+-- -- -- 40, -- -3
+
+All above cases form a valid 340= 832 tile to be loaded onto 32x32 either NE, NW, SE, SW if in different global gfx data blocks or being 1st, 2nd, 3rd or 4th in the group of 4 32x32 tile in one row.
+
+
+
+We scan by copy pasting entire 3400 block into txt and adjust the slider to cut rows by 6 bytes. Then we search for byte 40. Once found in first 4 bytes, we look at last 2 bytes in same row and search for value 3.
+
+
+
+a.) First block:
+18000, (3400)
+no such tile found
+
+
+b.) Second block:
+1B400, (3400)
+no such tile found
+
+
+c.) Third block:
+20000, (3400)
+
+-tile found: code is:
+3C D4 DD 40 D2 23 = forth tile here is 340
+
+-tile found: code is:
+F9 34 40 AC 30 35 = third tile here is 340
+
+-tile found: code is:
+40 34 36 D3 30 03 = first tile here is 340
+
+no further found
+
+
+d.) Fourth block:
+23400, (3400)
+
+-tile found: code is:
+40 34 D3 36 30 30 = 1st tile here is 340
+
+-------------------------------
+
+
+
+Fix the tile
+************
+
+
+Addresses are thus:
+We will change tile 832= 340 into
+tile 2648= A58
+tile 2648 looks the same, but it is not bugged like tile 832
+tile 2648 has the same filling of leafes
+
+thus the byte 40 will become 58
+and the 3 in the right section will become A.
+
+
+20FAE:
+3C D4 DD 40 D2 23 -->
+3C D4 DD 58 D2 2A
+
+2108C:
+F9 34 40 AC 30 35 -->
+F9 34 58 AC 30 A5
+
+21110:
+40 34 36 D3 30 03 -->
+58 34 36 D3 A0 03
+
+24510:
+40 34 D3 36 30 30 -->
+58 34 D3 36 A0 30
+
+
+
+
+-----------------------------
+
+
+
+22.) Fix the day/night palettes to be less dark,
+since when you have reain/snow/fog overlay + night, then
+you don't see anything (since it is double dark)
+
+address
+1201EE, (block length is 90 in hex)
+
+
+
+invert (makes it lighter)
+1201EE:
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+
+
+revert (in case someone wants to put this back the way it was in PW original release)
+1201EE:
+00 10 00 10 00 10 00 10 00 10 00 10 00 10 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 08 00 08 00 08 00 10 00 10 00 10 00 01 00 01 00 01 00 01 00 01 C0 00 80 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 00 40 00 80 00 C0 00 00 01 00 01 00 01 08 00 08 00 08 00 08 00 08 00 06 00 04 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 04 00 06 00 08 00 08 00
+
+
+-----------------------------
+
+
+23.) Repair 2 bytes which got overwritten in 13.) b.),
+while they were correct in 11.) b.) c.)
+
+So basically repeat 11.) b.) c.)
+
+
+b.) Element 585 to element 716
+6277C: 49 --> CC
+
+c.) Element 2898 to element 2894
+6277D: 52 --> 4E
+
+
+
+-----------------------------
+
+
+24.) Further dictionary problem.
+We need to revert back to "ide"
+
+747E2,
+1A 27 1D, = and -->
+22 1D 1E, = ide
+
+Now we need to take the original ALTTP, change it also to "ide",
+and only then export the monologues from 1.20, edit them, and only then save
+then import back to PW. While both files are on "ide".
+
+Namely this can not be done with "and" since this was the case:
+changing to "and" will preserve "and" in monologue:
+105: it contracts and...
+if we do nothing this will be contract ide...
+but if change to "and" on PW, in monologue 20 there will be
+"insand" instead of "inside".
+
+This means we need to adopt everything on "ide" before export and import,
+and thus adopt to the PW, namely PW does not write "and" with byte 90,
+like ALTTP.
+
+
+
+-----------------------------
+
+
+25.) Further problem on the 
+pw_stair_entrance_fix.asm
+
+Basically what's happening here is, that rooms above 292 were no longer an exception, when they should be: thus room 294 with fairies was exiting Link on regular -16 pixels, which is too high, thus his head was seen in the wall.
+
+Second problem is that 16 pixel are far to high, yet on staircases this is 0 pixels. Main problem is the difference between the two: 16 is too high and 0 even too low.
+
+Original code
+01660B,
+A5 A0     ,load room index
+C9 24 01  ,check room 292 or bellow
+B0 08     ,bcs
+A5 20     ,get Y coordinate
+38        ,sec
+E9 10 00  ,subtract 16 pixels (= higher)
+85 20     ,sta new value to Y coordinate
+
+PW 1.2 makes a jump to new code here to list the exceptions when to start link on 0 pixels, otherwise 16 pixels.
+
+
+New solution
+01660B,
+A5 A0     ,load room index
+C9 27 01  ,check room 295 or bellow (thus all rooms)
+B0 08     ,bcs
+A5 20     ,get Y coordinate
+38        ,sec
+E9 08 00  ,subtract 8 pixels, not 16
+85 20     ,sta new value to Y coordinate
+
+We leave the code in, but we make a check for all rooms (thus cmp is now 295 and lower), this will debug the room 294 which starts Link too high in the wall.
+
+Now the subtract gets reduced by half and is thus normalized 8 pixels for all caves (Link now never starts too high in the wall), otherwise if not cave, but stairs, Link still is not too high like before on 16. If it's 8 pixels, it seems he actually is getting from the stairs (no need to be as low as 0 pixels).
+
+Thus:
+1660B:
+A5 A0 C9 27 01 B0 08 A5 20 38 E9 08 00 85 20
+
+
+-----------------------------
+
+
+26.) Further problem on the
+wall in area 32 above the hole with fairies.
+
+This wall needs to be "on top"
+thus element 873 and not 891
+the byte actually changes 3 elements in one go
+
+891= 37B
+873= 369
+
+
+F8FA5:
+7B --> 69
+
+
+-----------------------------
+
+
+27.) Link's Y when he enters
+the hole at your house (entrance 1A)
+is too high up
+(Y is set to 448 which is for bg2)
+bg1 uses 472
+
+448= 1C0
+472= 1D8
+
+14F8D:
+C0 --> D8
+
+
+-----------------------------
+
+
+28.) Link's Y when he enters
+the church (light and ice world)
+is too high up
+(Y is set to 448 which is for bg2)
+bg1 uses 472
+
+448= 1C0
+472= 1D8
+
+14F5D:
+C0 --> D8
+
+15017:
+C0 --> D8
+
+
+-----------------------------
+-----------------------------
+
+
+
