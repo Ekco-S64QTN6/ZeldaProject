@@ -41,5 +41,8 @@ jobs:
           tests/test_source_export_integration.py
           tests/test_rom_image.py
           tests/test_rom_file_diff_cli.py
+          tests/test_data_table.py
+          tests/test_data_table_cli.py
+          tests/test_pinned_data_table.py
       - name: Run tests
         run: python -m pytest -q

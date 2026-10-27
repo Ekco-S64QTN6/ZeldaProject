@@ -15,6 +15,7 @@ PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 BANK1F_PATH = REFERENCE / "Bank1F.asm"
 BANK0B_PATH = REFERENCE / "Bank0B.asm"
 BANK1B_PATH = REFERENCE / "Bank1B.asm"
+ANCILLA_PATH = REFERENCE / "Ancilla" / "ancilla_init.asm"
 
 
 @pytest.mark.skipif(
@@ -112,3 +113,55 @@ def test_real_dw_hidden_item_export_loads_as_128_entries(tmp_path: Path) -> None
     assert payload["entry_count"] == 128
     assert payload["entries"][0]["pointer_entry_file_offset"] == 0x0DC2F9
     assert payload["entries"][-1]["pointer_entry_file_offset"] == 0x0DC3F7
+
+
+
+@pytest.mark.skipif(
+    not ANCILLA_PATH.is_file(),
+    reason="AsarUSALTTPDisassembly submodule is not checked out",
+)
+def test_real_data_table_export_round_trips_through_loader(tmp_path: Path) -> None:
+    export_path = tmp_path / "falling-prize-item-values.json"
+    result = CliRunner().invoke(
+        cli,
+        [
+            "inspect-data-table",
+            str(ANCILLA_PATH),
+            ".item_values",
+            "--table-offset",
+            "$048B90",
+            "--directive",
+            "db",
+            "--parent-label",
+            "Pool_AddPendantOrCrystal",
+            "--end-label",
+            ".fall_height",
+            "--source-revision",
+            PINNED_REVISION,
+            "--output",
+            str(export_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = load_source_export(export_path)
+    assert payload["format"] == "zelda-suite-data-table"
+    assert payload["directive"] == "db"
+    assert payload["entry_width"] == 1
+    assert payload["entry_count"] == 7
+    assert [entry["literal_value"] for entry in payload["entries"]] == [
+        0x10,
+        0x37,
+        0x39,
+        0x38,
+        0x26,
+        0x0F,
+        0x20,
+    ]
+    assert payload["entries"][0]["entry_file_offset"] == 0x048B90
+    assert payload["entries"][-1]["entry_file_offset"] == 0x048B96
+    assert payload["source_revision"] == PINNED_REVISION
+
+    validated = CliRunner().invoke(cli, ["validate-source-export", str(export_path)])
+    assert validated.exit_code == 0, validated.output
+    assert "7 entries" in validated.output

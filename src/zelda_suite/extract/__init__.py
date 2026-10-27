@@ -4,6 +4,12 @@ from zelda_suite.extract.asset_loader import (
     load_source_export,
     validate_source_export,
 )
+from zelda_suite.extract.data_table import (
+    DATA_DIRECTIVE_WIDTHS,
+    DataTableEntry,
+    DataTableParseError,
+    parse_data_table,
+)
 from zelda_suite.extract.disassembly import (
     POINTER_DIRECTIVE_WIDTHS,
     DisassemblyParseError,
@@ -28,8 +34,11 @@ from zelda_suite.extract.rom_image import (
 )
 
 __all__ = [
+    "DATA_DIRECTIVE_WIDTHS",
     "POINTER_DIRECTIVE_WIDTHS",
     "AssetLoadError",
+    "DataTableEntry",
+    "DataTableParseError",
     "DisassemblyParseError",
     "IncbinDeclaration",
     "IncbinInventoryError",
@@ -40,6 +49,7 @@ __all__ = [
     "inspect_rom_image",
     "load_source_export",
     "lorom_cpu_address",
+    "parse_data_table",
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
