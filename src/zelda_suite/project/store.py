@@ -82,6 +82,17 @@ def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
     }
 
 
+def _render_json(payload: dict[str, Any]) -> str:
+    """Serialize an export payload using the canonical byte representation."""
+    return json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+
 def export_project(
     database_path: str | Path, json_path: str | Path | None = None
 ) -> Path:
@@ -101,13 +112,7 @@ def export_project(
     finally:
         connection.close()
 
-    rendered = json.dumps(
-        payload,
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=True,
-        allow_nan=False,
-    ) + "\n"
+    rendered = _render_json(payload)
 
     temporary_path: Path | None = None
     try:
@@ -199,3 +204,113 @@ def initialize_project(
         raise
 
     return database_path, json_path
+
+
+
+def validate_project(
+    database_path: str | Path, json_path: str | Path | None = None
+) -> list[str]:
+    """Validate a project without mutating its SQLite database or JSON export.
+
+    Returns a list of human-readable problems. An empty list means the current
+    schema is structurally sound and the adjacent JSON export matches SQLite.
+    """
+    db_path = Path(database_path)
+    output_path = Path(json_path) if json_path is not None else db_path.with_suffix(".json")
+    if not db_path.is_file():
+        return [f"database file not found: {db_path}"]
+
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    try:
+        connection = sqlite3.connect(read_only_uri, uri=True)
+    except sqlite3.Error as exc:
+        return [f"could not open database read-only: {exc}"]
+
+    problems: list[str] = []
+    try:
+        try:
+            integrity_rows = connection.execute("PRAGMA quick_check").fetchall()
+        except sqlite3.Error as exc:
+            return [f"SQLite integrity check failed to run: {exc}"]
+
+        if integrity_rows != [("ok",)]:
+            detail = "; ".join(str(row[0]) for row in integrity_rows)
+            problems.append(f"SQLite integrity check failed: {detail}")
+
+        tables = {
+            str(row[0])
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        required_tables = {"project", "schema_version"}
+        missing_tables = sorted(required_tables - tables)
+        if missing_tables:
+            problems.append(
+                "missing required table(s): " + ", ".join(missing_tables)
+            )
+            return problems
+
+        try:
+            foreign_key_errors = connection.execute(
+                "PRAGMA foreign_key_check"
+            ).fetchall()
+        except sqlite3.Error as exc:
+            problems.append(f"foreign-key check failed to run: {exc}")
+        else:
+            if foreign_key_errors:
+                problems.append(
+                    f"foreign-key check found {len(foreign_key_errors)} violation(s)"
+                )
+
+        try:
+            payload = _export_payload(connection)
+        except (sqlite3.Error, ValueError, TypeError) as exc:
+            problems.append(f"project metadata is invalid: {exc}")
+            return problems
+
+        format_version = payload["format_version"]
+        if format_version != PROJECT_FORMAT_VERSION:
+            problems.append(
+                f"unsupported project format version {format_version}; "
+                f"this tool supports {PROJECT_FORMAT_VERSION}"
+            )
+
+        schema_version = payload["schema_version"]
+        if schema_version != CURRENT_SCHEMA_VERSION:
+            problems.append(
+                f"unsupported database schema version {schema_version}; "
+                f"this tool supports {CURRENT_SCHEMA_VERSION}"
+            )
+
+        try:
+            _validate_project_name(payload["project"]["name"])
+        except (ValueError, TypeError) as exc:
+            problems.append(f"invalid project name in metadata: {exc}")
+
+        if payload["project"]["base_rom"]["expected_filename"] != BASE_ROM_FILENAME:
+            problems.append(
+                "project metadata does not name the canonical US base ROM"
+            )
+
+        try:
+            expected_json = _render_json(payload).encode("utf-8")
+        except (TypeError, ValueError) as exc:
+            problems.append(f"project metadata cannot be exported as JSON: {exc}")
+        else:
+            if not output_path.is_file():
+                problems.append(f"JSON export file not found: {output_path}")
+            else:
+                try:
+                    actual_json = output_path.read_bytes()
+                except OSError as exc:
+                    problems.append(f"could not read JSON export: {exc}")
+                else:
+                    if actual_json != expected_json:
+                        problems.append(
+                            f"JSON export is stale or non-canonical: {output_path}"
+                        )
+    finally:
+        connection.close()
+
+    return problems
