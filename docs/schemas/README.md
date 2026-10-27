@@ -2,10 +2,16 @@
 
 The initialized SQLite database currently has only the metadata schema
 specified in [project-format.md](../project-format.md). Game-system schemas are
-introduced with the Phase 1 extractors so that every field can be grounded in
-the ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
+introduced alongside Phase 1 extractors so that every field is grounded in the
+ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 
-Planned subsystem docs:
+## Phase 1 discovery notes
+
+- [Dungeon rooms](./dungeons.md) — documents the discovered 320-entry room
+  object-pointer table, the mismatch with the roadmap's 296-room count, and
+  evidence still needed before extraction becomes a stable contract.
+
+## Planned subsystem docs
 
 - `overworld.md` — 160 maps, tile layers, palettes, warps.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
