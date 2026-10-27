@@ -1,5 +1,6 @@
 """ROM extraction, source parsing, asset loading, and image inspection helpers."""
 from zelda_suite.extract.asset_loader import (
+    DICTIONARY_INVENTORY_FORMAT,
     AssetLoadError,
     load_source_export,
     validate_source_export,
@@ -54,6 +55,7 @@ __all__ = [
     "AssetLoadError",
     "DataTableEntry",
     "DataTableParseError",
+    "DICTIONARY_INVENTORY_FORMAT",
     "DictionaryFragment",
     "DictionaryInventoryError",
     "DisassemblyParseError",
