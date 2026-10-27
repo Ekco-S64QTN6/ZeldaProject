@@ -120,7 +120,7 @@ def test_inspect_rom_cli_emits_metadata_json_and_creates_new_output(
     written = runner.invoke(cli, ["inspect-rom", str(image), "--output", str(output)])
     assert written.exit_code == 0, written.output
     assert output.is_file()
-    assert output.read_text(encoding="utf-8").endswith("\\n")
+    assert output.read_text(encoding="utf-8").endswith("\n")
 
     refused = runner.invoke(cli, ["inspect-rom", str(image), "--output", str(output)])
     assert refused.exit_code != 0
