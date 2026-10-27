@@ -41,7 +41,7 @@ correct the comments. Missing source facts remain null.
 - This is an inventory helper, not a decoder. The included tests use synthetic
   source snippets and do not need a ROM.
 
-The helper lives in the extraction package but intentionally does not update
-any existing CLI or package initializer. That keeps this contribution
-merge-order independent of the pointer-table parser PR; a future CLI can
-consume it once the extraction APIs settle.
+The helper is exported from the extraction package alongside the
+source-pointer-table parser. It deliberately has no CLI command yet; a future
+CLI can consume it after the source inventory format has been used against
+more of the pinned disassembly and local ROM/tool output.
