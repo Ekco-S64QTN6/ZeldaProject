@@ -7,8 +7,10 @@ from pathlib import Path
 import click
 
 from zelda_suite import __version__
+from zelda_suite.project import initialize_project
+from zelda_suite.project.store import BASE_ROM_FILENAME
 
-US_ROM_FILENAME = "Legend of Zelda, The - A Link to the Past (U) [!].smc"
+US_ROM_FILENAME = BASE_ROM_FILENAME
 EXPECTED_US_ROM_SIZE = 1_048_576
 COPIER_HEADER_SIZE = 512
 SNES_ROM_BANK_SIZE = 0x8000
@@ -61,6 +63,27 @@ def _inspect_base_rom(path: Path) -> tuple[str, str]:
 @click.version_option(__version__)
 def cli() -> None:
     """ZeldaProject authoring suite."""
+
+
+@cli.command(name="init")
+@click.argument("name")
+@click.option(
+    "--workspace",
+    type=click.Path(path_type=Path, exists=True, file_okay=False, dir_okay=True),
+    default=".",
+    show_default=True,
+    help="Workspace root; project files are created in workspace/project/.",
+)
+def init_project(name: str, workspace: Path) -> None:
+    """Initialize a versioned SQLite project and its JSON export."""
+    try:
+        database_path, json_path = initialize_project(name, workspace / "project")
+    except (ValueError, FileExistsError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    click.echo(f"Created SQLite project: {database_path}")
+    click.echo(f"Created JSON export:    {json_path}")
+    click.echo("No ROM was read or copied. Game-system schemas will be added in Phase 1.")
 
 
 @cli.command()

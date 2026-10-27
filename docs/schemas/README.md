@@ -1,6 +1,11 @@
 # Project data schemas
 
-Populated in Phase 1. Each subsystem gets its own schema doc:
+The initialized SQLite database currently has only the metadata schema
+specified in [project-format.md](../project-format.md). Game-system schemas are
+introduced with the Phase 1 extractors so that every field can be grounded in
+the ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
+
+Planned subsystem docs:
 
 - `overworld.md` — 160 maps, tile layers, palettes, warps.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
@@ -10,4 +15,5 @@ Populated in Phase 1. Each subsystem gets its own schema doc:
 - `audio.md` — music track pointers, sample banks.
 
 Each schema doc must cite the corresponding label / address range in
-`AsarUSALTTPDisassembly`.
+`AsarUSALTTPDisassembly` and must not claim extraction support until its loader
+and fixtures exist.
