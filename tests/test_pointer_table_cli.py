@@ -6,7 +6,7 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from zelda_suite.cli.main import cli
+from zelda_suite.cli.main import _parse_offset_text, cli
 
 SAMPLE_SOURCE = """; test-only synthetic source — not ROM data
 ExamplePointers:
@@ -117,3 +117,12 @@ def test_cli_reports_invalid_source_table_and_offset(tmp_path: Path) -> None:
     )
     assert invalid_offset.exit_code != 0
     assert "use a decimal" in invalid_offset.output
+
+
+
+def test_offset_parser_accepts_decimal_and_prefixed_values() -> None:
+    assert _parse_offset_text("0") == 0
+    assert _parse_offset_text("000") == 0
+    assert _parse_offset_text("123") == 123
+    assert _parse_offset_text("0x7B") == 123
+    assert _parse_offset_text("$7B") == 123
