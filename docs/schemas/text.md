@@ -105,3 +105,18 @@ construction logic before treating the ID range as a dense public API.
 
 This is documentation only. It does not read or write ROM bytes and does not
 claim message extraction or text editing is implemented.
+
+
+## Fragment extent metadata
+
+The committed
+[`text-dictionary-fragments.json`](../../data/extracted/text-dictionary-fragments.json)
+inventory connects each pointer target to the corresponding local fragment
+label and records source-comment offsets and directive widths without copying
+the encoded fragment bytes. It also identifies an unresolved source mismatch
+at `.You`: the next label begins two bytes after it, while the source directive
+states three `dw` values (six bytes). See the
+[extract inventory notes](../extracted-data.md) and
+[export schema](./dictionary-fragment-inventory.schema.json).
+
+This inventory is not a text decoder and is not an edit-ready text representation.
