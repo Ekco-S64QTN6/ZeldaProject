@@ -45,8 +45,7 @@ pinned source revision, record count, subsystem, and short description. The
 JSON shape is defined in
 [asset-registry.schema.json](./schemas/asset-registry.schema.json). The initial
 registry covers the five falling-prize lookup arrays, the 98-entry text
-dictionary pointer/fragment metadata, and the 397-entry source text message
-index.
+dictionary pointer/fragment metadata, the 397-entry source text message index, and the 68-entry SpriteActive3 dispatch table.
 
 Add an asset by committing its validated export, adding exactly one registry
 entry, adding test coverage for its provenance/count, and documenting any
