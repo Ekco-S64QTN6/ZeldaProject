@@ -25,4 +25,4 @@ uv run zelda-suite validate project/my-hack.db
 just doctor        # or: .venv/bin/zelda-suite doctor
 ```
 
-See [`docs/doctor.md`](./docs/doctor.md) for diagnostics, [`docs/project-format.md`](./docs/project-format.md) for the SQLite/JSON project format, and [`docs/disassembly-parser.md`](./docs/disassembly-parser.md) for source-level pointer-table inspection.
+See [`docs/doctor.md`](./docs/doctor.md) for diagnostics, [`docs/project-format.md`](./docs/project-format.md) for the SQLite/JSON project format,  [`docs/disassembly-parser.md`](./docs/disassembly-parser.md) for source-level pointer-table inspection, and [`docs/asset-loader.md`](./docs/asset-loader.md) for validating source-export JSON.
