@@ -22,6 +22,7 @@ from zelda_suite.extract import (
     parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
     parse_source_pointer_table,
+    parse_sprite_dispatch_table,
     parse_text_message_index,
     read_rom_bytes,
     sha256_rom_bytes,
@@ -331,6 +332,113 @@ def inspect_data_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} data-table entries to {output}")
+
+
+@cli.command(name="inspect-sprite-dispatch")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--table-offset",
+    required=True,
+    help="Verified file offset of the first dispatch entry, e.g. $0F0B33.",
+)
+@click.option(
+    "--table-end-offset",
+    required=True,
+    help="Inclusive file offset of the final dispatch byte, e.g. $0F0BBA.",
+)
+@click.option(
+    "--table-label",
+    default="SpriteActive3_Table",
+    show_default=True,
+    help="Global assembly label for the dispatch table.",
+)
+@click.option(
+    "--sprite-id-start",
+    default="$79",
+    show_default=True,
+    help="Sprite type ID of the first table entry.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=68,
+    show_default=True,
+    help="Expected number of two-byte handler entries.",
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    help="Pinned source revision to record in the export.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_sprite_dispatch(
+    source: Path,
+    table_offset: str,
+    table_end_offset: str,
+    table_label: str,
+    sprite_id_start: str,
+    entry_count: int,
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Export source metadata for the SpriteActive3 handler dispatch table."""
+    try:
+        source_text = source.read_text(encoding="utf-8")
+        table = parse_sprite_dispatch_table(
+            source_text,
+            table_file_offset=_parse_offset_text(table_offset),
+            table_end_offset=_parse_offset_text(table_end_offset),
+            source_revision=source_revision or "unspecified",
+            source_file=source.name,
+            table_label=table_label,
+            sprite_type_id_start=_parse_offset_text(sprite_id_start),
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    handler_counts: dict[str, int] = {}
+    for entry in table.entries:
+        handler_counts[entry.handler_label] = handler_counts.get(entry.handler_label, 0) + 1
+    alias_id_count = sum(
+        count for count in handler_counts.values() if count > 1
+    )
+    click.echo(
+        f"Wrote {len(table.entries)} sprite dispatch records to {output}; "
+        f"{alias_id_count} sprite IDs share aliased handlers"
+    )
 
 
 @cli.command(name="inspect-text-messages")
