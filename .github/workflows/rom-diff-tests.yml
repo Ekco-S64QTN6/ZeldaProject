@@ -34,4 +34,4 @@ jobs:
       - name: Lint diff implementation and tests
         run: python -m ruff check --isolated src/zelda_suite/diff tests/test_rom_diff.py
       - name: Run synthetic diff tests
-        run: PYTHONPATH=src python -m pytest -q tests/test_rom_diff.py
+        run: PYTHONPATH=src python -m pytest -c /dev/null -q tests/test_rom_diff.py
