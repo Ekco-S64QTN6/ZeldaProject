@@ -7,6 +7,8 @@ ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 
 ## Source export contracts
 
+The supported version-1 source exports can be loaded and validated with the [asset loader](../asset-loader.md).
+
 - [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 
