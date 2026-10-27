@@ -77,3 +77,76 @@ verified fixture establish what the bytes mean.
    representations have been traced to consumer code and tests.
 
 This documentation does not read, copy, or modify ROM bytes.
+
+
+
+## Hole and entrance lookup tables
+
+The same pinned
+[`Bank1B.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank1B.asm#L411-L490)
+contains small, source-labelled tables used to map overworld hole/door
+locations to entrance IDs. These are separate from the `ScreenXX_High/Low`
+payloads above.
+
+### Holes
+
+`Pool_Overworld_Hole` spans file offsets `$0DB800–$0DB85F` (96 bytes):
+
+| Label | Start offset | Count / width | Description in source |
+| --- | --- | --- | --- |
+| `.map16` | `$0DB800` | 19 words | Map16 coordinates for holes |
+| `.area` | `$0DB826` | 19 words | Overworld area numbers paired with the coordinates |
+| `.entrance` | `$0DB84C` | 20 bytes | Entrance IDs used after a hole match or fallback |
+
+The count difference is intentional in the visible consumer flow: the routine
+scans the 19 Map16/area pairs, but if none match it selects byte offset
+`$0026`, divides by two, and reads the twentieth `.entrance` byte. The
+source comment says this fallback sends Link to the Chris Houlihan room; its
+table byte is `$82`. Keep the fallback entry separate from the 19 ordinary
+coordinate/area rows rather than inventing a twentieth coordinate.
+
+### Doors and entrances
+
+`Pool_Overworld_Entrance` spans `$0DB8BF–$0DBBF3` (0x335 bytes), divided into
+five arrays:
+
+| Label | Start offset | Count / width | Purpose established by source |
+| --- | --- | --- | --- |
+| `.ValidDoorTypes_low` | `$0DB8BF` | 44 words | Low half of accepted door-tile type pairs |
+| `.ValidDoorTypes_high` | `$0DB917` | 44 words | High half of the same accepted pairs |
+| `.Screens` | `$0DB96F` | 129 words | Screen/area values used to locate a door entrance |
+| `.TileIndex` | `$0DBA71` | 129 words | Tile-index values paired with `.Screens` |
+| `.ID` | `$0DBB73` | 129 bytes | Entrance ID returned for the matching table slot |
+
+The entrance-check routine compares both halves of a door tile type against the
+44 `.ValidDoorTypes` pairs. It then searches `.Screens` and `.TileIndex` in
+parallel; on a match, it halves the byte offset to index the one-byte `.ID`
+array. This supports an inventory with a stable zero-based table slot and a
+separate stored entrance-ID byte.
+
+Do not conflate the array slot with the stored ID: source comments label
+`.ID` slots from `0x00` upward while the byte comments name values such as
+`ENTRANCE 01`. Preserve the slot, original byte, and source comment separately
+until the editor's ID convention is independently verified.
+
+The relevant consumers are visible in
+[`Bank1B.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank1B.asm#L451-L474)
+for hole entry and
+[`Bank1B.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank1B.asm#L990-L1055)
+for door/entrance matching.
+
+### Extraction requirements
+
+Keep these structures in a separate raw inventory from decoded overworld tile
+layers. Before exposing entrance CRUD operations:
+
+1. Preserve every source table slot and its exact source label/address.
+2. Compare the three hole arrays and the three parallel entrance arrays with a
+   locally supplied clean US ROM; assert the documented counts and widths.
+3. Test the hole fallback path separately from ordinary coordinate matches.
+4. Verify whether entrance IDs are one-based values, table-slot indexes, or a
+   distinct domain by following the code that consumes `$010E`.
+5. Keep ROM-derived byte fixtures local and out of Git.
+
+This remains source-backed discovery, not a complete overworld editor schema.
+No ROM bytes are read or modified by this documentation.
