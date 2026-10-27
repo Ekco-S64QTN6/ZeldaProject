@@ -1,4 +1,4 @@
-"""ROM extraction, source parsing, and asset loading helpers."""
+"""ROM extraction, source parsing, asset loading, and image inspection helpers."""
 from zelda_suite.extract.asset_loader import (
     AssetLoadError,
     load_source_export,
@@ -17,6 +17,13 @@ from zelda_suite.extract.incbin_inventory import (
     IncbinInventoryError,
     parse_incbin_inventory,
 )
+from zelda_suite.extract.rom_image import (
+    ROMImageInspection,
+    ROMImageInspectionError,
+    format_lorom_cpu_address,
+    inspect_rom_image,
+    lorom_cpu_address,
+)
 
 __all__ = [
     "POINTER_DIRECTIVE_WIDTHS",
@@ -25,7 +32,12 @@ __all__ = [
     "IncbinDeclaration",
     "IncbinInventoryError",
     "PointerTableEntry",
+    "ROMImageInspection",
+    "ROMImageInspectionError",
+    "format_lorom_cpu_address",
+    "inspect_rom_image",
     "load_source_export",
+    "lorom_cpu_address",
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
