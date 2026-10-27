@@ -31,6 +31,7 @@ jobs:
           python -m ruff check
           src/zelda_suite/cli/main.py
           src/zelda_suite/extract
+          tests/test_asset_loader.py
           tests/test_disassembly.py
           tests/test_incbin_inventory.py
           tests/test_incbin_cli.py
