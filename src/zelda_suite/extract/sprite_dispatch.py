@@ -8,7 +8,8 @@ from typing import Any
 _TABLE_LABEL_RE = re.compile(r"^\s*(?P<label>[A-Za-z_][A-Za-z0-9_]*)\s*:\s*$")
 _ENTRY_RE = re.compile(r"^\s*dw\s+(?P<handler>[A-Za-z_][A-Za-z0-9_]*)\s*$", re.IGNORECASE)
 _COMMENT_RE = re.compile(
-    r"0x(?P<sprite_id>[0-9A-Fa-f]+)\s*-\s*\$(?P<handler_address>[0-9A-Fa-f]+)\s*(?P<description>.*)\Z"
+    r"0x(?P<sprite_id>[0-9A-Fa-f]+)\s*-\s*"
+    r"\$(?P<handler_address>[0-9A-Fa-f]+)\s*(?P<description>.*)\Z"
 )
 
 
