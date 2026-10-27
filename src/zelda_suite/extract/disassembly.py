@@ -9,6 +9,7 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
+DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 POINTER_DIRECTIVE_WIDTHS = {"dw": 2, "dl": 3}
 
 _LABEL_RE = re.compile(r"^\s*(?P<label>[A-Za-z_][A-Za-z0-9_]*)\s*:\s*$")
@@ -149,7 +150,7 @@ def parse_source_pointer_table(
             # Labels and non-data instructions are not pointer entries.
             continue
         actual_directive = data_directive.group("directive").lower()
-        if actual_directive not in POINTER_DIRECTIVE_WIDTHS:
+        if actual_directive not in DATA_DIRECTIVE_WIDTHS:
             continue
         if actual_directive != normalized_directive:
             raise DisassemblyParseError(
