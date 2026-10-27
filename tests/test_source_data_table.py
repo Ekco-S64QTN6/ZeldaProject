@@ -115,7 +115,7 @@ def test_rejects_invalid_counts_directives_and_boundaries(
         "stop_before_label": ".fall_height",
     }
     base.update(kwargs)
-    with pytest.raises((ValueError, DataTableParseError), match=message):
+    with pytest.raises((ValueError, TypeError), match=message):
         parse_source_data_table(**base)  # type: ignore[arg-type]
 
 
