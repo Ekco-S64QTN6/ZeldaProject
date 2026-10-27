@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite source scalar data-table export",
+  "description": "Bounded source-level Asar db/dw/dl values. Expressions are preserved, not evaluated.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "table_file_offset",
+    "directive",
+    "entry_width",
+    "entry_count",
+    "entries"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-data-table"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "table_label": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)?$"
+    },
+    "table_file_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "directive": {
+      "enum": [
+        "db",
+        "dw",
+        "dl"
+      ]
+    },
+    "entry_width": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "entry_file_offset",
+        "source_line",
+        "directive",
+        "source_label",
+        "expression",
+        "numeric_value",
+        "inline_comment",
+        "source_revision"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "directive": {
+          "enum": [
+            "db",
+            "dw",
+            "dl"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z_][A-Za-z0-9_]*|\\.[A-Za-z_][A-Za-z0-9_]*)$"
+        },
+        "expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "numeric_value": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "inline_comment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
