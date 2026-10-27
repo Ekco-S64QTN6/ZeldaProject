@@ -126,3 +126,32 @@ def test_offset_parser_accepts_decimal_and_prefixed_values() -> None:
     assert _parse_offset_text("123") == 123
     assert _parse_offset_text("0x7B") == 123
     assert _parse_offset_text("$7B") == 123
+
+
+
+def test_pointer_table_json_schema_matches_cli_payload(tmp_path: Path) -> None:
+    schema_path = (
+        Path(__file__).resolve().parents[1]
+        / "docs"
+        / "schemas"
+        / "pointer-table-export.schema.json"
+    )
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    source = tmp_path / "example.asm"
+    source.write_text(SAMPLE_SOURCE, encoding="utf-8")
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "inspect-pointer-table",
+            str(source),
+            "ExamplePointers",
+            "--table-offset",
+            "0",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert set(payload) == set(schema["required"])
+    assert set(payload["entries"][0]) == set(schema["$defs"]["entry"]["required"])
