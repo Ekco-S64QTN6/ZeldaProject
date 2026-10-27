@@ -82,6 +82,28 @@ class ROMImageInspection:
         return payload
 
 
+def read_rom_bytes(path: str | Path) -> bytes:
+    """Read bytes from a ROM file inside the extraction layer.
+
+    The caller is responsible for interpreting size or header state. This
+    helper deliberately returns the bytes unchanged and never writes them.
+    """
+    image_path = Path(path)
+    try:
+        return image_path.read_bytes()
+    except OSError as exc:
+        raise ROMImageInspectionError(
+            f"could not read ROM image {image_path}: {exc}"
+        ) from exc
+
+
+def sha256_rom_bytes(data: bytes) -> str:
+    """Return the SHA-256 fingerprint of already-loaded ROM bytes."""
+    if not isinstance(data, bytes):
+        raise TypeError("data must be bytes")
+    return hashlib.sha256(data).hexdigest()
+
+
 def inspect_rom_image(path: str | Path) -> ROMImageInspection:
     """Read and hash a ROM image without modifying it.
 
@@ -91,13 +113,7 @@ def inspect_rom_image(path: str | Path) -> ROMImageInspection:
     likely copier header; all other sizes are reported as unrecognized.
     """
     image_path = Path(path)
-    try:
-        data = image_path.read_bytes()
-    except (OSError, IsADirectoryError) as exc:
-        raise ROMImageInspectionError(
-            f"could not read ROM image {image_path}: {exc}"
-        ) from exc
-
+    data = read_rom_bytes(image_path)
     size = len(data)
     is_headerless = size == EXPECTED_US_ROM_SIZE
     if is_headerless:
@@ -112,7 +128,7 @@ def inspect_rom_image(path: str | Path) -> ROMImageInspection:
     return ROMImageInspection(
         filename=image_path.name,
         size_bytes=size,
-        sha256=hashlib.sha256(data).hexdigest(),
+        sha256=sha256_rom_bytes(data),
         expected_headerless_size_bytes=EXPECTED_US_ROM_SIZE,
         is_expected_headerless_size=is_headerless,
         header_assessment=assessment,
