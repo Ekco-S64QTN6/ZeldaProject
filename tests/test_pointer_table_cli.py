@@ -6,7 +6,7 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from zelda_suite.cli.main import DISASSEMBLY_REVISION, cli
+from zelda_suite.cli.main import cli
 
 SAMPLE_SOURCE = """; test-only synthetic source — not ROM data
 ExamplePointers:
@@ -37,10 +37,10 @@ def test_cli_inspects_pointer_table_to_json_stdout(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert payload["format"] == "zelda-suite-pointer-table"
     assert payload["entry_count"] == 4
-    assert payload["source_revision"] == DISASSEMBLY_REVISION
+    assert payload["source_revision"] == "unspecified"
     assert payload["entries"][1]["pointer_entry_file_offset"] == 0x0F8003
     assert payload["entries"][1]["is_empty_target"] is True
-    assert payload["entries"][1]["source_revision"] == DISASSEMBLY_REVISION
+    assert payload["entries"][1]["source_revision"] == "unspecified"
     assert result.output.endswith("\n")
 
 
