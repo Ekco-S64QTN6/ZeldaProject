@@ -820,6 +820,158 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
     return export
 
 
+
+ASSET_REGISTRY_FORMAT = "zelda-suite-asset-registry"
+_ASSET_REGISTRY_TOP_KEYS = {"format", "format_version", "assets"}
+_ASSET_REGISTRY_ENTRY_KEYS = {
+    "name",
+    "file",
+    "format",
+    "source_revision",
+    "record_count",
+    "subsystem",
+    "description",
+}
+_ASSET_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
+_ASSET_FILE_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*\.json\Z")
+_SUPPORTED_SOURCE_FORMATS = {
+    POINTER_TABLE_FORMAT,
+    INCBIN_INVENTORY_FORMAT,
+    DATA_TABLE_FORMAT,
+    DICTIONARY_INVENTORY_FORMAT,
+    TEXT_MESSAGE_INDEX_FORMAT,
+}
+
+
+def _validate_asset_registry(payload: Any) -> dict[str, Any]:
+    registry = _object(payload, "asset registry")
+    _exact_keys(registry, _ASSET_REGISTRY_TOP_KEYS, "asset registry")
+    if registry["format"] != ASSET_REGISTRY_FORMAT:
+        raise AssetLoadError("asset registry has an invalid format identifier")
+    version = _integer(registry["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported asset registry version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+
+    assets = registry["assets"]
+    if not isinstance(assets, list) or not assets:
+        raise AssetLoadError("asset registry assets must be a non-empty array")
+    seen_names: set[str] = set()
+    seen_files: set[str] = set()
+    for index, raw_asset in enumerate(assets):
+        context = f"assets[{index}]"
+        asset = _object(raw_asset, context)
+        _exact_keys(asset, _ASSET_REGISTRY_ENTRY_KEYS, context)
+        name = _string(asset["name"], f"{context}.name")
+        if _ASSET_NAME_RE.fullmatch(name) is None:
+            raise AssetLoadError(f"{context}.name must be a lowercase kebab-case asset name")
+        if name in seen_names:
+            raise AssetLoadError(f"duplicate asset name: {name}")
+        seen_names.add(name)
+
+        filename = _string(asset["file"], f"{context}.file")
+        if _ASSET_FILE_RE.fullmatch(filename) is None or Path(filename).name != filename:
+            raise AssetLoadError(
+                f"{context}.file must be a JSON filename inside the registry directory"
+            )
+        if filename in seen_files:
+            raise AssetLoadError(f"duplicate asset file: {filename}")
+        seen_files.add(filename)
+
+        format_name = _string(asset["format"], f"{context}.format")
+        if format_name not in _SUPPORTED_SOURCE_FORMATS:
+            raise AssetLoadError(
+                f"{context}.format is not a supported source export format"
+            )
+        _string(asset["source_revision"], f"{context}.source_revision")
+        _integer(asset["record_count"], f"{context}.record_count", minimum=1)
+        _string(asset["subsystem"], f"{context}.subsystem")
+        _string(asset["description"], f"{context}.description")
+
+    return registry
+
+
+def _load_asset_registry(registry_path: str | Path) -> tuple[dict[str, Any], Path]:
+    path = Path(registry_path)
+    try:
+        content = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise AssetLoadError(f"could not read asset registry {path}: {exc}") from exc
+
+    try:
+        payload = json.loads(content, parse_constant=_reject_nonstandard_constant)
+    except (json.JSONDecodeError, AssetLoadError) as exc:
+        raise AssetLoadError(f"invalid JSON in asset registry {path}: {exc}") from exc
+    return _validate_asset_registry(payload), path
+
+
+def list_extracted_assets(
+    registry_path: str | Path = "data/extracted/manifest.json",
+) -> list[dict[str, Any]]:
+    """List registered extracted assets without opening their data files.
+
+    The registry path defaults to data/extracted/manifest.json. Callers using a
+    different workspace can pass that workspace's registry explicitly.
+    """
+    registry, _ = _load_asset_registry(registry_path)
+    return [dict(asset) for asset in registry["assets"]]
+
+
+def load_extracted_asset(
+    name: str,
+    registry_path: str | Path = "data/extracted/manifest.json",
+) -> dict[str, Any]:
+    """Load one named asset from the registry and validate its provenance.
+
+    Only a simple registered name is accepted; the filename is selected by the
+    registry and cannot be provided by the caller. The selected file must stay
+    directly inside the registry directory. Its export format, source revision,
+    and record count must match the registry metadata.
+    """
+    if not isinstance(name, str) or _ASSET_NAME_RE.fullmatch(name) is None:
+        raise AssetLoadError("asset name must be lowercase kebab-case")
+
+    registry, registry_file = _load_asset_registry(registry_path)
+    record = next((asset for asset in registry["assets"] if asset["name"] == name), None)
+    if record is None:
+        raise AssetLoadError(f"unknown extracted asset: {name}")
+
+    base_directory = registry_file.resolve().parent
+    asset_path = (base_directory / record["file"]).resolve()
+    if asset_path.parent != base_directory:
+        raise AssetLoadError(
+            f"registered asset {name!r} resolves outside the registry directory"
+        )
+
+    payload = load_source_export(asset_path)
+    if payload.get("format") != record["format"]:
+        raise AssetLoadError(
+            f"registered asset {name!r} declares format {record['format']!r}, "
+            f"but file contains {payload.get('format')!r}"
+        )
+    if payload.get("source_revision") != record["source_revision"]:
+        raise AssetLoadError(
+            f"registered asset {name!r} source_revision does not match the registry"
+        )
+
+    count_field = {
+        POINTER_TABLE_FORMAT: "entry_count",
+        INCBIN_INVENTORY_FORMAT: "declaration_count",
+        DATA_TABLE_FORMAT: "entry_count",
+        DICTIONARY_INVENTORY_FORMAT: "fragment_count",
+        TEXT_MESSAGE_INDEX_FORMAT: "message_count",
+    }[record["format"]]
+    actual_count = payload.get(count_field)
+    if actual_count != record["record_count"]:
+        raise AssetLoadError(
+            f"registered asset {name!r} record_count is {record['record_count']}, "
+            f"but file contains {actual_count}"
+        )
+    return payload
+
+
 def _reject_nonstandard_constant(value: str) -> None:
     raise AssetLoadError(f"non-standard JSON constant is not allowed: {value}")
 

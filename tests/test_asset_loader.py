@@ -11,10 +11,13 @@ from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.asset_loader import (
+    ASSET_REGISTRY_FORMAT,
     DATA_TABLE_FORMAT,
     INCBIN_INVENTORY_FORMAT,
     POINTER_TABLE_FORMAT,
     AssetLoadError,
+    list_extracted_assets,
+    load_extracted_asset,
     load_source_export,
     validate_source_export,
 )
@@ -280,3 +283,129 @@ def test_cli_validate_source_export_success_and_failure(tmp_path: Path) -> None:
 
     assert failed.exit_code == 1
     assert "unsupported source export format" in failed.output
+
+
+
+def _test_asset_registry(tmp_path: Path, export: dict[str, Any]) -> Path:
+    asset_path = tmp_path / "sample-export.json"
+    asset_path.write_text(json.dumps(export), encoding="utf-8")
+    registry = {
+        "format": ASSET_REGISTRY_FORMAT,
+        "format_version": 1,
+        "assets": [
+            {
+                "name": "sample-export",
+                "file": asset_path.name,
+                "format": export["format"],
+                "source_revision": export["source_revision"],
+                "record_count": export.get("entry_count", 0),
+                "subsystem": "test",
+                "description": "Synthetic export used by registry tests.",
+            }
+        ],
+    }
+    registry_path = tmp_path / "manifest.json"
+    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+    return registry_path
+
+
+def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
+    repository_root = Path(__file__).resolve().parents[1]
+    registry_path = repository_root / "data" / "extracted" / "manifest.json"
+
+    assets = list_extracted_assets(registry_path)
+    names = {asset["name"] for asset in assets}
+
+    assert len(assets) == 8
+    assert names == {
+        "falling-prize-item-values",
+        "falling-prize-fall-heights",
+        "falling-prize-y-offsets",
+        "falling-prize-x-offsets",
+        "falling-prize-delay-timers",
+        "text-dictionary-pointers",
+        "text-dictionary-fragments",
+        "text-message-index",
+    }
+
+    loaded = {
+        asset["name"]: load_extracted_asset(asset["name"], registry_path)
+        for asset in assets
+    }
+    assert loaded["falling-prize-item-values"]["entry_count"] == 7
+    assert loaded["text-dictionary-pointers"]["entry_count"] == 98
+    assert loaded["text-dictionary-fragments"]["fragment_count"] == 98
+    assert loaded["text-message-index"]["message_count"] == 397
+
+
+def test_named_asset_loader_validates_registry_provenance_and_name(
+    tmp_path: Path,
+) -> None:
+    registry_path = _test_asset_registry(tmp_path, _pointer_export())
+
+    assert list_extracted_assets(registry_path)[0]["name"] == "sample-export"
+    assert load_extracted_asset("sample-export", registry_path) == _pointer_export()
+
+    with pytest.raises(AssetLoadError, match="unknown extracted asset"):
+        load_extracted_asset("missing-asset", registry_path)
+
+    with pytest.raises(AssetLoadError, match="lowercase kebab-case"):
+        load_extracted_asset("../sample-export", registry_path)
+
+
+def test_named_asset_loader_rejects_path_traversal_and_format_mismatch(
+    tmp_path: Path,
+) -> None:
+    export_path = tmp_path / "sample-export.json"
+    export_path.write_text(json.dumps(_pointer_export()), encoding="utf-8")
+    unsafe_registry = {
+        "format": ASSET_REGISTRY_FORMAT,
+        "format_version": 1,
+        "assets": [
+            {
+                "name": "sample-export",
+                "file": "../sample-export.json",
+                "format": POINTER_TABLE_FORMAT,
+                "source_revision": "deadbeef",
+                "record_count": 2,
+                "subsystem": "test",
+                "description": "Invalid path must be rejected.",
+            }
+        ],
+    }
+    registry_path = tmp_path / "unsafe-manifest.json"
+    registry_path.write_text(json.dumps(unsafe_registry), encoding="utf-8")
+
+    with pytest.raises(AssetLoadError, match="JSON filename inside the registry directory"):
+        list_extracted_assets(registry_path)
+
+    registry_path = _test_asset_registry(tmp_path, _pointer_export())
+    manifest = json.loads(registry_path.read_text(encoding="utf-8"))
+    manifest["assets"][0]["format"] = DATA_TABLE_FORMAT
+    registry_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(AssetLoadError, match="declares format"):
+        load_extracted_asset("sample-export", registry_path)
+
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("source_revision", "different-revision", "source_revision does not match"),
+        ("record_count", 99, "record_count is 99"),
+    ],
+)
+def test_named_asset_loader_rejects_stale_registry_provenance_or_count(
+    tmp_path: Path,
+    field: str,
+    value: Any,
+    message: str,
+) -> None:
+    registry_path = _test_asset_registry(tmp_path, _pointer_export())
+    manifest = json.loads(registry_path.read_text(encoding="utf-8"))
+    manifest["assets"][0][field] = value
+    registry_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(AssetLoadError, match=message):
+        load_extracted_asset("sample-export", registry_path)

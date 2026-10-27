@@ -1,10 +1,64 @@
-# Source-export asset loader
+# Named source-export asset loader
 
-The asset loader gives downstream tools one entry point for the versioned source
-exports produced by the Phase 1 inspection commands. It validates each payload
-before returning it to a caller.
+The asset loader gives downstream tools one entry point for versioned source
+exports, and a registry so callers can load committed data by stable name.
 
-## Python API
+## List and load by name
+
+From the repository root:
+
+```python
+from zelda_suite.extract import list_extracted_assets, load_extracted_asset
+
+for asset in list_extracted_assets():
+    print(asset["name"], asset["subsystem"], asset["record_count"])
+
+items = load_extracted_asset("falling-prize-item-values")
+messages = load_extracted_asset("text-message-index")
+print(items["entries"][0]["expression"])
+print(messages["message_count"])
+```
+
+The default registry is `data/extracted/manifest.json`. Tools using another
+workspace can pass an explicit registry path to either function:
+
+```python
+table = load_extracted_asset(
+    "text-dictionary-fragments",
+    registry_path="/workspace/project/data/extracted/manifest.json",
+)
+```
+
+`list_extracted_assets()` validates and returns registry metadata without
+opening each asset file. `load_extracted_asset(name)` resolves only a registered
+kebab-case name, loads the associated JSON, applies its format-specific source
+export validator, and checks that the export's format, source revision, and
+record count match the registry. Filenames must be simple JSON basenames that
+stay directly inside the registry directory; names or registry entries cannot
+request arbitrary filesystem paths.
+
+## Registry contract
+
+The registry file uses format `zelda-suite-asset-registry`, version 1. Each
+entry provides a stable name, relative JSON filename, supported export format,
+pinned source revision, record count, subsystem, and short description. The
+JSON shape is defined in
+[asset-registry.schema.json](./schemas/asset-registry.schema.json). The initial
+registry covers the five falling-prize lookup arrays, the 98-entry text
+dictionary pointer/fragment metadata, and the 397-entry source text message
+index.
+
+Add an asset by committing its validated export, adding exactly one registry
+entry, adding test coverage for its provenance/count, and documenting any
+known discrepancy. Do not register ROMs, ROM-derived byte slices, or decoded
+message payloads as source-only exports.
+
+## Explicit-path API
+
+The lower-level `load_source_export(path)` remains available when a tool is
+working with a temporary export that is not registered. It validates pointer
+tables, incbin inventories, scalar data tables, dictionary fragment inventories,
+and text message indexes before returning the parsed payload.
 
 ```python
 from zelda_suite.extract import load_source_export
@@ -13,42 +67,16 @@ export = load_source_export("/tmp/text-message-index.json")
 print(export["format"], export["format_version"])
 ```
 
-Supported version-1 formats are pointer-table exports from
-`zelda-suite inspect-pointer-table`, `incbin` inventories from
-`zelda-suite inspect-incbin`, scalar data-table exports from
-`zelda-suite inspect-data-table`, text dictionary fragment inventories from
-`zelda-suite inspect-text-dictionary`, and source text message indexes from
-`zelda-suite inspect-text-messages`.
+## Validation and scope
 
-The loader rejects unknown keys and unsupported versions, verifies record
-counts and source revisions, and checks cross-field invariants including entry
-index/offset sequences, directive widths, directive-vs-annotated source
-extents, and message starts computed from preceding directive byte counts.
-Offset annotations that disagree with source-derived sequential offsets are
-preserved as diagnostics; a `false` comparison flag is valid provenance for an
-unresolved source comment. Similarly, a message block whose declared byte
-total differs from its annotated range is recorded as a mismatch rather than
-rewritten.
-
-## CLI
-
-The same checks are available through:
+The CLI provides the same format checks:
 
 ```bash
-uv run zelda-suite validate-source-export /tmp/room-object-pointers.json
-uv run zelda-suite validate-source-export /tmp/text-dictionary-fragments.json
 uv run zelda-suite validate-source-export /tmp/text-message-index.json
 ```
 
-The command prints `[OK]` for a supported internally consistent export and
-returns a nonzero exit code with a diagnostic for invalid data. It does not
-claim that source address comments have been verified against a local ROM.
-
-## Scope
-
-This is the source-export validation foundation, not yet a loader for editable
-game data. It accepts metadata about source declarations and does not read ROM
-bytes, resolve symbols from ROM memory, open `incbin` payload paths, decode
-dictionary/message streams, perform extraction, or permit edits. Future schema
-versions and game-data formats should be added through explicit validators and
-fixture-backed tests rather than weakening current checks.
+This loader manages source-derived metadata, not editable game data. It does
+not read ROM bytes, resolve symbols from ROM memory, open incbin payload paths,
+decode dictionary/message streams, perform extraction, or permit edits. Future
+schemas should be added with explicit validators and fixture-backed tests
+rather than weakening current checks.

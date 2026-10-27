@@ -185,3 +185,24 @@ diff -u data/extracted/text-message-index.json /tmp/text-message-index.json
 The index is a metadata inventory, not a decoder or edit-ready text model.
 Message-pointer construction, decoder control-token semantics, and actual
 ROM verification remain separate roadmap tasks.
+
+
+## Named asset registry
+
+`data/extracted/manifest.json` registers the committed exports under stable
+names. Use the named asset loader from the repository root:
+
+```python
+from zelda_suite.extract import list_extracted_assets, load_extracted_asset
+
+assets = list_extracted_assets()
+message_index = load_extracted_asset("text-message-index")
+dictionary = load_extracted_asset("text-dictionary-fragments")
+```
+
+The registry records each relative filename, validated export format, source
+revision, record count, subsystem, and description. The loader rejects
+unregistered names, unsafe filenames, format/revision/count mismatches, and
+invalid source export payloads. See the
+[named asset loader guide](./asset-loader.md) and
+[registry schema](./schemas/asset-registry.schema.json).
