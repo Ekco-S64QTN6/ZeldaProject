@@ -13,7 +13,7 @@ from typing import Any
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
-DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-fragment-inventory"
+DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
 _DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
