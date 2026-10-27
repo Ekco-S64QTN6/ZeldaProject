@@ -329,8 +329,8 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
     _nullable_label = payload["parent_label"]
     if _nullable_label is not None:
         _identifier(_nullable_label, "parent_label")
-    table_label = _source_label(payload["table_label"], "table_label")
-    end_label = _nullable_source_label(payload["end_label"], "end_label")
+    _source_label(payload["table_label"], "table_label")
+    _nullable_source_label(payload["end_label"], "end_label")
 
     table_offset = _integer(payload["table_file_offset"], "table_file_offset", minimum=0)
     directive = payload["directive"]
