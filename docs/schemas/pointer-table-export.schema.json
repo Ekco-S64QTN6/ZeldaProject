@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite pointer-table source export",
+  "description": "Source-level Asar dl table entries. Target addresses are not resolved by this format.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "table_file_offset",
+    "entry_width",
+    "entry_count",
+    "entries"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-pointer-table"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "table_label": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "table_file_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "entry_width": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entry_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "pointer_entry_file_offset",
+        "source_line",
+        "pointer_expression",
+        "target_label",
+        "target_addend",
+        "is_empty_target",
+        "source_revision"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointer_entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pointer_expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_label": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "target_addend": {
+          "type": ["integer", "null"]
+        },
+        "is_empty_target": {
+          "type": "boolean"
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "target_label": {
+                "const": "RoomDataTiles_Empty"
+              }
+            },
+            "required": ["target_label"]
+          },
+          "then": {
+            "properties": {
+              "is_empty_target": {
+                "const": true
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "is_empty_target": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
