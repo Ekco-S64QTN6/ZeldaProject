@@ -12,7 +12,7 @@ from typing import Any
 _LABEL_RE = re.compile(r"^\s*(?P<label>[A-Za-z_][A-Za-z0-9_]*)\s*:\s*$")
 _ADDRESS_COMMENT_RE = re.compile(
     r"^\s*;\s*\$(?P<start>[0-9A-Fa-f]+)"
-    r"(?:\s*-\s*\$(?P<end>[0-9A-Fa-f]+))?(?:\s|$)"
+    r"(?:\\s*-\\s*\\$(?P<end>[0-9A-Fa-f]+))?(?:\\s+.*)?\\s*$"
 )
 _INCBIN_RE = re.compile(
     r'^\s*incbin\s+"(?P<path>[^"]+)"(?P<tail>.*)$',
