@@ -16,6 +16,7 @@ DATA_TABLE_FORMAT = "zelda-suite-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
 TEXT_MESSAGE_INDEX_FORMAT = "zelda-suite-text-message-index"
 SPRITE_DISPATCH_FORMAT = "zelda-suite-sprite-dispatch"
+MUSIC_TRACK_INDEX_FORMAT = "zelda-suite-music-track-index"
 _DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
@@ -955,6 +956,174 @@ def _validate_sprite_dispatch_export(payload: dict[str, Any]) -> None:
             )
 
 
+_MUSIC_TRACK_INDEX_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "block_label",
+    "base_expression",
+    "table_file_offset",
+    "table_end_offset",
+    "table_size_bytes",
+    "entry_width_bytes",
+    "track_index_start",
+    "track_index_end",
+    "entry_count",
+    "entries",
+}
+_MUSIC_TRACK_ENTRY_KEYS = {
+    "table_index",
+    "track_index",
+    "pointer_entry_file_offset",
+    "source_line",
+    "pointer_expression",
+    "target_label",
+    "is_empty",
+    "alias_of_track_index",
+    "source_comment_index",
+    "source_revision",
+}
+_MUSIC_POINTER_EXPRESSION_RE = re.compile(
+    r"(?:\$[0-9A-Fa-f]{4}|[A-Za-z_][A-Za-z0-9_]*)\Z"
+)
+
+
+def _validate_music_track_index_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _MUSIC_TRACK_INDEX_TOP_KEYS, "music track index")
+    if payload["format"] != MUSIC_TRACK_INDEX_FORMAT:
+        raise AssetLoadError("music track index has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported music track index version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+
+    _string(payload["source_file"], "source_file")
+    revision = _string(payload["source_revision"], "source_revision")
+    _identifier(payload["block_label"], "block_label")
+    _identifier(payload["base_expression"], "base_expression")
+    table_offset = _integer(
+        payload["table_file_offset"], "table_file_offset", minimum=0
+    )
+    table_end = _integer(payload["table_end_offset"], "table_end_offset", minimum=0)
+    table_size = _integer(payload["table_size_bytes"], "table_size_bytes", minimum=1)
+    width = _integer(payload["entry_width_bytes"], "entry_width_bytes", minimum=1)
+    if width != 2:
+        raise AssetLoadError("music track pointer entries must be two bytes")
+    if table_end != table_offset + table_size - 1:
+        raise AssetLoadError("table_end_offset is inconsistent with table range")
+    if table_size % width:
+        raise AssetLoadError("table_size_bytes must be divisible by entry_width_bytes")
+
+    start_index = _integer(
+        payload["track_index_start"], "track_index_start", minimum=0
+    )
+    end_index = _integer(payload["track_index_end"], "track_index_end", minimum=0)
+    entry_count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    entries = payload["entries"]
+    if not isinstance(entries, list) or not entries:
+        raise AssetLoadError("entries must be a non-empty array")
+    if entry_count != len(entries):
+        raise AssetLoadError(
+            f"entry_count is {entry_count}, but entries contains {len(entries)} records"
+        )
+    if table_size != entry_count * width:
+        raise AssetLoadError("table_size_bytes is inconsistent with entry_count")
+    if end_index != start_index + entry_count - 1:
+        raise AssetLoadError("track_index_end is inconsistent with the index range")
+
+    first_track_for_label: dict[str, int] = {}
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _MUSIC_TRACK_ENTRY_KEYS, context)
+
+        table_index = _integer(
+            entry["table_index"], f"{context}.table_index", minimum=0
+        )
+        if table_index != expected_index:
+            raise AssetLoadError(
+                f"{context}.table_index must be {expected_index}, got {table_index}"
+            )
+        expected_track_index = start_index + expected_index
+        track_index = _integer(
+            entry["track_index"], f"{context}.track_index", minimum=0
+        )
+        if track_index != expected_track_index:
+            raise AssetLoadError(
+                f"{context}.track_index must be {expected_track_index}, got {track_index}"
+            )
+        source_comment_index = _integer(
+            entry["source_comment_index"],
+            f"{context}.source_comment_index",
+            minimum=0,
+        )
+        if source_comment_index != track_index:
+            raise AssetLoadError(
+                f"{context}.source_comment_index does not match track_index"
+            )
+
+        pointer_offset = _integer(
+            entry["pointer_entry_file_offset"],
+            f"{context}.pointer_entry_file_offset",
+            minimum=0,
+        )
+        expected_offset = table_offset + expected_index * width
+        if pointer_offset != expected_offset:
+            raise AssetLoadError(
+                f"{context}.pointer_entry_file_offset must be {expected_offset}, got {pointer_offset}"
+            )
+        _integer(entry["source_line"], f"{context}.source_line", minimum=1)
+        expression = _string(
+            entry["pointer_expression"], f"{context}.pointer_expression"
+        )
+        if _MUSIC_POINTER_EXPRESSION_RE.fullmatch(expression) is None:
+            raise AssetLoadError(
+                f"{context}.pointer_expression must be a four-digit literal or assembly identifier"
+            )
+        is_empty = _boolean(entry["is_empty"], f"{context}.is_empty")
+        target = entry["target_label"]
+        if expression.upper() == "$0000":
+            if is_empty is not True or target is not None:
+                raise AssetLoadError(
+                    f"{context} zero pointer must have is_empty=true and target_label=null"
+                )
+        else:
+            _identifier(expression, f"{context}.pointer_expression")
+            if is_empty is not False or target != expression:
+                raise AssetLoadError(
+                    f"{context} symbolic pointer target does not match its expression"
+                )
+            first_index = first_track_for_label.get(expression)
+            alias = _nullable_integer(
+                entry["alias_of_track_index"],
+                f"{context}.alias_of_track_index",
+                minimum=0,
+            )
+            if alias != first_index:
+                raise AssetLoadError(
+                    f"{context}.alias_of_track_index does not match prior target aliases"
+                )
+            first_track_for_label.setdefault(expression, track_index)
+            target_revision = _string(entry["source_revision"], f"{context}.source_revision")
+            if target_revision != revision:
+                raise AssetLoadError(
+                    f"{context}.source_revision does not match top-level source_revision"
+                )
+            continue
+
+        alias = entry["alias_of_track_index"]
+        if alias is not None:
+            raise AssetLoadError(f"{context} empty pointer cannot be an alias")
+        target_revision = _string(entry["source_revision"], f"{context}.source_revision")
+        if target_revision != revision:
+            raise AssetLoadError(
+                f"{context}.source_revision does not match top-level source_revision"
+            )
+
+
 def validate_source_export(payload: Any) -> dict[str, Any]:
     """Validate an already-parsed source export and return it unchanged."""
     export = _object(payload, "source export")
@@ -971,6 +1140,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_text_message_index_export(export)
     elif format_name == SPRITE_DISPATCH_FORMAT:
         _validate_sprite_dispatch_export(export)
+    elif format_name == MUSIC_TRACK_INDEX_FORMAT:
+        _validate_music_track_index_export(export)
     else:
         raise AssetLoadError(f"unsupported source export format: {format_name!r}")
     return export
@@ -997,6 +1168,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     DICTIONARY_INVENTORY_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
     SPRITE_DISPATCH_FORMAT,
+    MUSIC_TRACK_INDEX_FORMAT,
 }
 
 
@@ -1120,6 +1292,7 @@ def load_extracted_asset(
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",
         TEXT_MESSAGE_INDEX_FORMAT: "message_count",
         SPRITE_DISPATCH_FORMAT: "entry_count",
+        MUSIC_TRACK_INDEX_FORMAT: "entry_count",
     }[record["format"]]
     actual_count = payload.get(count_field)
     if actual_count != record["record_count"]:
