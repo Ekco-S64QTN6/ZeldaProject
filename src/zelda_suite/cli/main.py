@@ -42,22 +42,28 @@ def _inspect_base_rom(path: Path) -> tuple[str, str]:
     if size == EXPECTED_US_ROM_SIZE + COPIER_HEADER_SIZE:
         return (
             "FAIL",
-            "ROM appears to include a 512-byte copier header "
-            f"({size:,} bytes); expected a headerless file "
-            f"({EXPECTED_US_ROM_SIZE:,} bytes).",
+            (
+                "ROM appears to include a 512-byte copier header "
+                f"({size:,} bytes); expected a headerless file "
+                f"({EXPECTED_US_ROM_SIZE:,} bytes)."
+            ),
         )
 
     if size % SNES_ROM_BANK_SIZE == COPIER_HEADER_SIZE:
         return (
             "FAIL",
-            f"file size ({size:,} bytes) has a 512-byte copier-header offset; "
-            "expected the clean, headerless US ROM.",
+            (
+                f"file size ({size:,} bytes) has a 512-byte copier-header offset; "
+                "expected the clean, headerless US ROM."
+            ),
         )
 
     return (
         "FAIL",
-        f"unexpected ROM size ({size:,} bytes); expected exactly "
-        f"{EXPECTED_US_ROM_SIZE:,} bytes for the headerless US ROM.",
+        (
+            f"unexpected ROM size ({size:,} bytes); expected exactly "
+            f"{EXPECTED_US_ROM_SIZE:,} bytes for the headerless US ROM."
+        ),
     )
 
 
