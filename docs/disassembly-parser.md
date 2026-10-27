@@ -1,7 +1,7 @@
 # Disassembly source-table inspection
 
 The `zelda-suite inspect-pointer-table` command parses a named brace-delimited
-Asar `dl` table and prints an audit-oriented JSON representation. It reads
+Asar `dw` or `dl` pointer table and prints an audit-oriented JSON representation. It reads
 assembly source only: it does not read ROM bytes, execute Asar, evaluate
 symbols, or resolve pointer targets.
 
@@ -34,11 +34,13 @@ The output includes:
   explicit empty-target flag, and source revision.
 - A stable key ordering, UTF-8 encoding, and final newline for easy diffing.
 
-The default three-byte entry width reflects Asar's `dl` data directive in this
-pointer table; `--entry-width` can override it when a separate source table is
-known to have another encoding. The table offset is an input supplied by the
-caller and must be verified against source comments and the canonical offset
-map; the command does not infer that offset by parsing comments.
+The default entry width follows the selected directive: `dl` uses three-byte
+entries and `dw` uses two-byte entries. Use `--directive dw` for word-pointer
+tables such as `OverworldData_HiddenItems` at `$0DC2F9`. The optional
+`--entry-width` can override calculated entry locations for a documented custom
+encoding, but it does not alter how expressions are parsed. The table offset is
+an input supplied by the caller and must be verified against source comments
+and the canonical offset map; the command does not infer it from comments.
 
 ## Safety and limitations
 
@@ -53,3 +55,24 @@ map; the command does not infer that offset by parsing comments.
   local clean US ROM and fixtures that verify parsed entries against its bytes.
 
 This is a building block for Phase 1 extraction, not a full room extractor.
+
+
+## Example: overworld hidden-item area pointers
+
+The pinned `Bank1B.asm` declares a 128-entry `dw` table at file offset
+`$0DC2F9`. To export the source expressions without resolving their targets:
+
+```bash
+uv run zelda-suite inspect-pointer-table \
+  reference/AsarUSALTTPDisassembly/Bank1B.asm \
+  OverworldData_HiddenItems \
+  --table-offset '$0DC2F9' \
+  --directive dw \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/hidden-item-pointers.json
+uv run zelda-suite validate-source-export /tmp/hidden-item-pointers.json
+```
+
+The export records a two-byte offset stride and the original `dw` expressions.
+It does not decode the pointed-to hidden-item records or establish record
+boundaries; see [the hidden-item discovery note](./schemas/overworld-hidden-items.md).
