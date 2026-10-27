@@ -14,6 +14,7 @@ REFERENCE = ROOT / "reference" / "AsarUSALTTPDisassembly"
 PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 BANK1F_PATH = REFERENCE / "Bank1F.asm"
 BANK0B_PATH = REFERENCE / "Bank0B.asm"
+BANK1B_PATH = REFERENCE / "Bank1B.asm"
 
 
 @pytest.mark.skipif(
@@ -91,7 +92,7 @@ def test_real_dw_hidden_item_export_loads_as_128_entries(tmp_path: Path) -> None
         cli,
         [
             "inspect-pointer-table",
-            str(BANK0B_PATH),
+            str(BANK1B_PATH),
             "OverworldData_HiddenItems",
             "--table-offset",
             "$0DC2F9",
