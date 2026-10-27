@@ -729,7 +729,7 @@ def _validate_text_message_index_export(payload: dict[str, Any]) -> None:
         if identity not in blocks:
             raise AssetLoadError(f"{context} refers to an unknown source block")
         block = blocks[identity]
-        source_line = _integer(message["source_line"], f"{context}.source_line", minimum=1)
+        _integer(message["source_line"], f"{context}.source_line", minimum=1)
         annotation = message["source_offset_annotation"]
         annotated_offset = _nullable_integer(
             message["annotated_file_offset"], f"{context}.annotated_file_offset", minimum=0
