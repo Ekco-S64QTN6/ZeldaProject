@@ -110,3 +110,40 @@ The `.You` fragment is annotated at `$0748D6`, with `.endOfTable` at
 `dw $18, $28, $2E`, which implies six bytes. The inventory preserves both facts
 and sets `source_extent_matches_directive=false`; it does not choose which
 annotation is wrong or claim that binary offsets have been validated.
+
+
+## Text dictionary fragment inventory
+
+`data/extracted/text-dictionary-fragments.json` joins the 98 symbolic entries
+in `DictionaryPointers` to fragment labels in `DictionaryEntries`. Each record
+contains the pointer index and entry offset, original target expression,
+fragment label and source line, annotated source file offset, the next label's
+offset, the extent implied by those labels, and the directive/element count
+declared in source. It intentionally omits the actual encoded fragment bytes
+and any decoded text.
+
+To regenerate the metadata from the pinned submodule:
+
+```bash
+uv run zelda-suite inspect-text-dictionary \
+  reference/AsarUSALTTPDisassembly/Bank0E.asm \
+  --pointer-table-offset '$074703' \
+  --data-offset '$0747C7' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/text-dictionary-fragments.json
+uv run zelda-suite validate-source-export /tmp/text-dictionary-fragments.json
+diff -u data/extracted/text-dictionary-fragments.json /tmp/text-dictionary-fragments.json
+```
+
+The current source declares 98 pointer targets, including `.endOfTable` at
+`$0748D8`. The inventory preserves one notable mismatch: `.You` begins at
+`$0748D6` and is followed by `.endOfTable` two bytes later, but its source
+directive is `dw` with three values (six declared bytes). This is reported as
+`source_extent_matches_directive: false`; no attempt is made to repair or
+reinterpret that source declaration. Validate this region against a clean local
+US ROM and the actual message decoder before using it as a writable schema.
+
+The JSON shape is described by
+[the dictionary fragment inventory schema](./schemas/dictionary-fragment-inventory.schema.json).
+CI checks that the committed inventory equals the metadata parsed from the
+pinned source, including the flagged extent discrepancy.
