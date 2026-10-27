@@ -117,6 +117,6 @@ the encoded fragment bytes. It also identifies an unresolved source mismatch
 at `.You`: the next label begins two bytes after it, while the source directive
 states three `dw` values (six bytes). See the
 [extract inventory notes](../extracted-data.md) and
-[export schema](./dictionary-fragment-inventory.schema.json).
+[export schema](./dictionary-inventory-export.schema.json).
 
 This inventory is not a text decoder and is not an edit-ready text representation.
