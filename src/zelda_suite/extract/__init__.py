@@ -15,6 +15,11 @@ from zelda_suite.extract.dictionary_inventory import (
     DictionaryInventoryError,
     parse_dictionary_fragment_inventory,
 )
+from zelda_suite.extract.dictionary_inventory import (
+    DictionaryFragment,
+    DictionaryInventoryError,
+    parse_dictionary_fragment_inventory,
+)
 from zelda_suite.extract.disassembly import (
     POINTER_DIRECTIVE_WIDTHS,
     DisassemblyParseError,
