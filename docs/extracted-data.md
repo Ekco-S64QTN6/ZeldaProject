@@ -144,6 +144,6 @@ reinterpret that source declaration. Validate this region against a clean local
 US ROM and the actual message decoder before using it as a writable schema.
 
 The JSON shape is described by
-[the dictionary fragment inventory schema](./schemas/dictionary-fragment-inventory.schema.json).
+[the dictionary fragment inventory schema](./schemas/dictionary-inventory-export.schema.json).
 CI checks that the committed inventory equals the metadata parsed from the
 pinned source, including the flagged extent discrepancy.
