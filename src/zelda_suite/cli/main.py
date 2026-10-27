@@ -11,9 +11,9 @@ from zelda_suite import __version__
 from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
+    DICTIONARY_INVENTORY_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
-    DICTIONARY_INVENTORY_FORMAT,
     ROMImageInspectionError,
     inspect_rom_image,
     load_source_export,
