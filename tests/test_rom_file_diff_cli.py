@@ -8,7 +8,7 @@ from pathlib import Path
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
-from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE, COPIER_HEADER_SIZE
+from zelda_suite.extract.rom_image import COPIER_HEADER_SIZE, EXPECTED_US_ROM_SIZE
 
 
 def _write_base_and_candidate(tmp_path: Path) -> tuple[Path, Path]:
@@ -35,6 +35,15 @@ def test_diff_rom_cli_reports_metadata_and_deterministic_regions(tmp_path: Path)
     payload = json.loads(result.output)
     assert payload["format"] == "zelda-suite-rom-file-diff"
     assert payload["format_version"] == 1
+    schema_path = (
+        Path(__file__).resolve().parents[1]
+        / "docs"
+        / "schemas"
+        / "rom-file-diff-export.schema.json"
+    )
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    assert set(payload) == set(schema["required"])
+    assert set(payload["diff"]) == set(schema["$defs"]["byte_diff"]["required"])
     assert payload["base_rom"]["filename"] == "base-us.smc"
     assert payload["base_rom"]["sha256"] == hashlib.sha256(base_before).hexdigest()
     assert payload["modified_rom"]["sha256"] == hashlib.sha256(modified_before).hexdigest()
