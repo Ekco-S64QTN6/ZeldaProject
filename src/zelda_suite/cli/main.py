@@ -10,11 +10,13 @@ import click
 from zelda_suite import __version__
 from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
+    DATA_DIRECTIVE_WIDTHS,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     ROMImageInspectionError,
     inspect_rom_image,
     load_source_export,
+    parse_data_table,
     parse_incbin_inventory,
     parse_source_pointer_table,
     read_rom_bytes,
@@ -205,6 +207,126 @@ def inspect_pointer_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} pointer-table entries to {output}")
+
+@cli.command(name="inspect-data-table")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("label")
+@click.option(
+    "--table-offset",
+    required=True,
+    help="Verified file offset of the first data-table entry (e.g. $048B90).",
+)
+@click.option(
+    "--directive",
+    type=click.Choice(["db", "dw", "dl"], case_sensitive=False),
+    default="db",
+    show_default=True,
+    help="Asar data directive that defines the table element width.",
+)
+@click.option(
+    "--entry-width",
+    type=click.IntRange(min=1),
+    default=None,
+    show_default=False,
+    help="Optional override for calculated entry locations.",
+)
+@click.option(
+    "--parent-label",
+    default=None,
+    help="Global label for the containing brace-delimited block; scopes local labels.",
+)
+@click.option(
+    "--end-label",
+    default=None,
+    help="Exclusive ending label when several tables share a block.",
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    show_default=False,
+    help="Revision to record; omitted values are marked unspecified.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_data_table(
+    source: Path,
+    label: str,
+    table_offset: str,
+    directive: str,
+    entry_width: int | None,
+    parent_label: str | None,
+    end_label: str | None,
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Export raw Asar db/dw/dl values and expressions without evaluating them."""
+    try:
+        offset = _parse_offset_text(table_offset)
+        source_text = source.read_text(encoding="utf-8")
+        recorded_revision = source_revision or "unspecified"
+        normalized_directive = directive.lower()
+        entries = parse_data_table(
+            source_text,
+            label,
+            offset,
+            directive=normalized_directive,
+            entry_width=entry_width,
+            parent_label=parent_label,
+            end_label=end_label,
+            source_revision=recorded_revision,
+        )
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    payload = {
+        "format": "zelda-suite-data-table",
+        "format_version": 1,
+        "source_file": source.name,
+        "source_revision": recorded_revision,
+        "parent_label": parent_label,
+        "table_label": label,
+        "end_label": end_label,
+        "table_file_offset": offset,
+        "directive": normalized_directive,
+        "entry_width": (
+            entry_width
+            if entry_width is not None
+            else DATA_DIRECTIVE_WIDTHS[normalized_directive]
+        ),
+        "entry_count": len(entries),
+        "entries": [entry.to_dict() for entry in entries],
+    }
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(f"Wrote {len(entries)} data-table entries to {output}")
+
 
 @cli.command(name="inspect-incbin")
 @click.argument(
