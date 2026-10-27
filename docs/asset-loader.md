@@ -57,7 +57,7 @@ message payloads as source-only exports.
 The lower-level `load_source_export(path)` remains available when a tool is
 working with a temporary export that is not registered. It validates pointer
 tables, incbin inventories, scalar data tables, dictionary fragment inventories,
-and text message indexes before returning the parsed payload.
+text message indexes, and sprite dispatch tables before returning the parsed payload.
 
 ```python
 from zelda_suite.extract import load_source_export
