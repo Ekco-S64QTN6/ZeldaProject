@@ -1,12 +1,14 @@
 """Entry point for the `zelda-suite` CLI."""
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 
 import click
 
 from zelda_suite import __version__
+from zelda_suite.extract import parse_dl_pointer_table
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
 
@@ -64,6 +66,113 @@ def _inspect_base_rom(path: Path) -> tuple[str, str]:
 def cli() -> None:
     """ZeldaProject authoring suite."""
 
+
+
+DISASSEMBLY_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
+
+
+def _parse_offset_text(value: str) -> int:
+    """Parse a decimal, 0x-prefixed, or Asar-style $-prefixed offset."""
+    try:
+        if value.startswith("$"):
+            return int(value[1:], 16)
+        return int(value, 0)
+    except ValueError as exc:
+        raise click.BadParameter(
+            "use a decimal, 0x-prefixed, or Asar-style $-prefixed integer"
+        ) from exc
+
+
+@cli.command(name="inspect-pointer-table")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("label")
+@click.option(
+    "--table-offset",
+    required=True,
+    help="Verified file offset of the first pointer entry (e.g. $0F8000).",
+)
+@click.option(
+    "--entry-width",
+    type=click.IntRange(min=1),
+    default=3,
+    show_default=True,
+    help="Bytes per source-table entry.",
+)
+@click.option(
+    "--source-revision",
+    default=DISASSEMBLY_REVISION,
+    show_default=True,
+    help="Pinned disassembly revision recorded in the output.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_pointer_table(
+    source: Path,
+    label: str,
+    table_offset: str,
+    entry_width: int,
+    source_revision: str,
+    output: Path | None,
+) -> None:
+    """Parse a source-level Asar dl table to auditable JSON records.
+
+    This command parses assembly text only. It does not read ROM bytes or
+    resolve symbols to target offsets.
+    """
+    try:
+        offset = _parse_offset_text(table_offset)
+        source_text = source.read_text(encoding="utf-8")
+        entries = parse_dl_pointer_table(
+            source_text,
+            label,
+            offset,
+            entry_width=entry_width,
+            source_revision=source_revision,
+        )
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    payload = {
+        "format": "zelda-suite-pointer-table",
+        "format_version": 1,
+        "source_file": source.name,
+        "source_revision": source_revision,
+        "table_label": label,
+        "table_file_offset": offset,
+        "entry_width": entry_width,
+        "entry_count": len(entries),
+        "entries": [entry.to_dict() for entry in entries],
+    }
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(f"Wrote {len(entries)} pointer-table entries to {output}")
 
 @cli.command(name="init")
 @click.argument("name")
