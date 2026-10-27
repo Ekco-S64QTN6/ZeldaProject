@@ -24,6 +24,8 @@ command records `unspecified` unless `--source-revision` is supplied; it
 cannot prove a file's Git revision from the source text alone. Always record the
 revision you actually inspected when producing an auditable export.
 
+The output format is specified by [the JSON Schema](./schemas/pointer-table-export.schema.json). The schema describes field types and basic invariants; table-index sequencing and offset arithmetic are documented semantic constraints checked by the parser/tests rather than by JSON Schema.
+
 The output includes:
 
 - `table_label`, `table_file_offset`, `entry_width`, and `entry_count`.
