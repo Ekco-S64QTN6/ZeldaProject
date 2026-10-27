@@ -8,6 +8,7 @@ ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 ## Source export contracts
 
 - [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
+- [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 
 ## Phase 1 discovery notes
 
