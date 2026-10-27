@@ -83,7 +83,7 @@ def test_real_incbin_inventory_export_round_trips_through_loader(
 
 
 @pytest.mark.skipif(
-    not BANK0B_PATH.is_file(),
+    not BANK1B_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",
 )
 def test_real_dw_hidden_item_export_loads_as_128_entries(tmp_path: Path) -> None:
