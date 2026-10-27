@@ -31,11 +31,13 @@ jobs:
           python -m ruff check
           src/zelda_suite/cli/main.py
           src/zelda_suite/extract
+          tests/test_asset_loader.py
           tests/test_disassembly.py
           tests/test_incbin_inventory.py
           tests/test_incbin_cli.py
           tests/test_pointer_table_cli.py
           tests/test_pinned_disassembly.py
           tests/test_pinned_incbin_inventory.py
+          tests/test_source_export_integration.py
       - name: Run tests
         run: python -m pytest -q
