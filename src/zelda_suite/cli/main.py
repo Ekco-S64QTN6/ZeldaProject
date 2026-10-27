@@ -8,7 +8,12 @@ from pathlib import Path
 import click
 
 from zelda_suite import __version__
-from zelda_suite.extract import AssetLoadError, load_source_export, parse_dl_pointer_table, parse_incbin_inventory
+from zelda_suite.extract import (
+    AssetLoadError,
+    load_source_export,
+    parse_dl_pointer_table,
+    parse_incbin_inventory,
+)
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
 
