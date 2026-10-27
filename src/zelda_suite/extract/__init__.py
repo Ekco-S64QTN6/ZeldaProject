@@ -5,6 +5,7 @@ from zelda_suite.extract.asset_loader import (
     validate_source_export,
 )
 from zelda_suite.extract.source_data_table import (
+    DATA_DIRECTIVE_WIDTHS,
     DataTableEntry,
     DataTableParseError,
     parse_source_data_table,
@@ -33,6 +34,7 @@ from zelda_suite.extract.rom_image import (
 )
 
 __all__ = [
+    "DATA_DIRECTIVE_WIDTHS",
     "POINTER_DIRECTIVE_WIDTHS",
     "AssetLoadError",
     "DataTableEntry",
