@@ -13,7 +13,7 @@ from typing import Any
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
-DICTIONARY_FRAGMENT_FORMAT = "zelda-suite-dictionary-fragment-inventory"
+DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-fragment-inventory"
 _DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
@@ -386,207 +386,6 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
                 f"{context}.source_revision does not match top-level source_revision"
             )
 
-_DICTIONARY_FRAGMENT_TOP_KEYS = {
-    "format",
-    "format_version",
-    "source_file",
-    "source_revision",
-    "pointer_table_label",
-    "pointer_table_file_offset",
-    "pointer_table_entry_width",
-    "data_label",
-    "data_file_offset",
-    "entry_count",
-    "entries",
-}
-_DICTIONARY_FRAGMENT_ENTRY_KEYS = {
-    "pointer_index",
-    "pointer_entry_file_offset",
-    "pointer_expression",
-    "fragment_label",
-    "fragment_source_line",
-    "fragment_file_offset",
-    "next_fragment_file_offset",
-    "source_extent_bytes",
-    "data_directive",
-    "directive_value_count",
-    "directive_width_bytes",
-    "declared_payload_bytes",
-    "source_extent_matches_directive",
-    "is_end_of_table",
-    "source_revision",
-}
-_DICTIONARY_POINTER_TARGET_RE = re.compile(
-    r"DictionaryEntries_(?P<suffix>[A-Za-z_][A-Za-z0-9_]*)\Z"
-)
-
-
-def _validate_dictionary_fragment_export(payload: dict[str, Any]) -> None:
-    _exact_keys(payload, _DICTIONARY_FRAGMENT_TOP_KEYS, "dictionary fragment export")
-    if payload["format"] != DICTIONARY_FRAGMENT_FORMAT:
-        raise AssetLoadError("dictionary fragment export has an invalid format identifier")
-    version = _integer(payload["format_version"], "format_version", minimum=1)
-    if version != SOURCE_EXPORT_FORMAT_VERSION:
-        raise AssetLoadError(
-            f"unsupported dictionary fragment format version {version}; "
-            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
-        )
-
-    _string(payload["source_file"], "source_file")
-    revision = _string(payload["source_revision"], "source_revision")
-    _identifier(payload["pointer_table_label"], "pointer_table_label")
-    pointer_offset = _integer(
-        payload["pointer_table_file_offset"], "pointer_table_file_offset", minimum=0
-    )
-    pointer_width = _integer(
-        payload["pointer_table_entry_width"], "pointer_table_entry_width", minimum=1
-    )
-    if pointer_width != 2:
-        raise AssetLoadError("dictionary pointer table entries must be two bytes")
-    _identifier(payload["data_label"], "data_label")
-    data_offset = _integer(payload["data_file_offset"], "data_file_offset", minimum=0)
-    if not data_offset:
-        raise AssetLoadError("data_file_offset must be positive")
-
-    count = _integer(payload["entry_count"], "entry_count", minimum=1)
-    entries = payload["entries"]
-    if not isinstance(entries, list) or not entries:
-        raise AssetLoadError("entries must be a non-empty array")
-    if count != len(entries):
-        raise AssetLoadError(
-            f"entry_count is {count}, but entries contains {len(entries)} records"
-        )
-
-    previous_fragment_offset: int | None = None
-    for expected_index, raw_entry in enumerate(entries):
-        context = f"entries[{expected_index}]"
-        entry = _object(raw_entry, context)
-        _exact_keys(entry, _DICTIONARY_FRAGMENT_ENTRY_KEYS, context)
-
-        index = _integer(entry["pointer_index"], f"{context}.pointer_index", minimum=0)
-        if index != expected_index:
-            raise AssetLoadError(f"{context}.pointer_index must be {expected_index}, got {index}")
-        pointer_entry_offset = _integer(
-            entry["pointer_entry_file_offset"],
-            f"{context}.pointer_entry_file_offset",
-            minimum=0,
-        )
-        expected_pointer_offset = pointer_offset + expected_index * pointer_width
-        if pointer_entry_offset != expected_pointer_offset:
-            raise AssetLoadError(
-                f"{context}.pointer_entry_file_offset must be "
-                f"{expected_pointer_offset}, got {pointer_entry_offset}"
-            )
-
-        pointer_expression = _string(
-            entry["pointer_expression"], f"{context}.pointer_expression"
-        )
-        target = _DICTIONARY_POINTER_TARGET_RE.fullmatch(pointer_expression)
-        if target is None:
-            raise AssetLoadError(
-                f"{context}.pointer_expression is not a supported dictionary symbol"
-            )
-        fragment_label = _string(entry["fragment_label"], f"{context}.fragment_label")
-        _source_label(fragment_label, f"{context}.fragment_label")
-        expected_label = f".{target.group('suffix')}"
-        if fragment_label != expected_label:
-            raise AssetLoadError(
-                f"{context}.fragment_label must match pointer expression target "
-                f"{expected_label!r}"
-            )
-
-        _integer(entry["fragment_source_line"], f"{context}.fragment_source_line", minimum=1)
-        fragment_offset = _integer(
-            entry["fragment_file_offset"], f"{context}.fragment_file_offset", minimum=0
-        )
-        if previous_fragment_offset is not None and fragment_offset <= previous_fragment_offset:
-            raise AssetLoadError("dictionary fragment offsets must be strictly increasing")
-        previous_fragment_offset = fragment_offset
-
-        next_offset = _nullable_integer(
-            entry["next_fragment_file_offset"],
-            f"{context}.next_fragment_file_offset",
-            minimum=0,
-        )
-        extent = _nullable_integer(
-            entry["source_extent_bytes"], f"{context}.source_extent_bytes", minimum=0
-        )
-        directive = entry["data_directive"]
-        if directive is not None and not isinstance(directive, str):
-            raise AssetLoadError(f"{context}.data_directive must be a string or null")
-        value_count = _integer(
-            entry["directive_value_count"], f"{context}.directive_value_count", minimum=0
-        )
-        width = _nullable_integer(
-            entry["directive_width_bytes"], f"{context}.directive_width_bytes", minimum=1
-        )
-        payload_bytes = _nullable_integer(
-            entry["declared_payload_bytes"], f"{context}.declared_payload_bytes", minimum=0
-        )
-        matches = entry["source_extent_matches_directive"]
-        if matches is not None:
-            _boolean(matches, f"{context}.source_extent_matches_directive")
-        is_end = _boolean(entry["is_end_of_table"], f"{context}.is_end_of_table")
-        if is_end is not (fragment_label == ".endOfTable"):
-            raise AssetLoadError(
-                f"{context}.is_end_of_table disagrees with fragment_label"
-            )
-
-        if next_offset is None:
-            expected_extent = None
-        else:
-            if next_offset <= fragment_offset:
-                raise AssetLoadError(
-                    f"{context}.next_fragment_file_offset must follow fragment_file_offset"
-                )
-            expected_extent = next_offset - fragment_offset
-        if extent != expected_extent:
-            raise AssetLoadError(
-                f"{context}.source_extent_bytes is inconsistent with fragment offsets"
-            )
-
-        if directive is None:
-            if value_count != 0 or width is not None or payload_bytes is not None or matches is not None:
-                raise AssetLoadError(
-                    f"{context} has directive metadata but no data directive"
-                )
-        else:
-            if directive not in _DATA_DIRECTIVE_WIDTHS:
-                raise AssetLoadError(f"{context}.data_directive must be db, dw, dl, or null")
-            expected_width = _DATA_DIRECTIVE_WIDTHS[directive]
-            if width != expected_width:
-                raise AssetLoadError(f"{context}.directive_width_bytes does not match directive")
-            if value_count < 1 or payload_bytes != value_count * expected_width:
-                raise AssetLoadError(
-                    f"{context}.declared_payload_bytes is inconsistent with directive count and width"
-                )
-            expected_match = (
-                expected_extent == payload_bytes if expected_extent is not None else None
-            )
-            if matches is not expected_match:
-                raise AssetLoadError(
-                    f"{context}.source_extent_matches_directive is inconsistent with source extent"
-                )
-
-        entry_revision = _string(entry["source_revision"], f"{context}.source_revision")
-        if entry_revision != revision:
-            raise AssetLoadError(
-                f"{context}.source_revision does not match top-level source_revision"
-            )
-
-        if expected_index == 0 and fragment_offset != data_offset:
-            raise AssetLoadError(
-                f"{context}.fragment_file_offset must equal top-level data_file_offset"
-            )
-        if expected_index > 0:
-            previous_entry = entries[expected_index - 1]
-            if previous_entry.get("next_fragment_file_offset") != fragment_offset:
-                raise AssetLoadError(
-                    f"entries[{expected_index - 1}].next_fragment_file_offset "
-                    "does not match the next fragment's start"
-                )
-
-
 _DICTIONARY_TOP_KEYS = {
     "format",
     "format_version",
@@ -804,8 +603,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_incbin_export(export)
     elif format_name == DATA_TABLE_FORMAT:
         _validate_data_table_export(export)
-    elif format_name == DICTIONARY_FRAGMENT_FORMAT:
-        _validate_dictionary_fragment_export(export)
+    elif format_name == DICTIONARY_INVENTORY_FORMAT:
+        _validate_dictionary_inventory_export(export)
     else:
         raise AssetLoadError(f"unsupported source export format: {format_name!r}")
     return export
