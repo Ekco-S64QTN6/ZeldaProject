@@ -29,6 +29,8 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/falling-prize-delay-timers.json`](../../data/extracted/falling-prize-delay-timers.json) — indexed delay timers.
 - [`data/extracted/text-dictionary-pointers.json`](../../data/extracted/text-dictionary-pointers.json) — 98 symbolic dictionary-fragment pointer expressions.
 - [`data/extracted/text-dictionary-fragments.json`](../../data/extracted/text-dictionary-fragments.json) — pointer-to-fragment metadata, including the unresolved `.You` source-size mismatch.
+- [`data/extracted/text-message-index.json`](../../data/extracted/text-message-index.json) — 397 message IDs with source-derived offsets and size diagnostics.
+- [`data/extracted/sprite-active3-dispatch.json`](../../data/extracted/sprite-active3-dispatch.json) — 68 source-mapped handler entries for sprite IDs `$79–$BC`.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
