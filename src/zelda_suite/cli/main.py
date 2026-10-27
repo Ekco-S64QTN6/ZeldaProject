@@ -9,9 +9,9 @@ import click
 
 from zelda_suite import __version__
 from zelda_suite.extract import (
+    POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     load_source_export,
-    POINTER_DIRECTIVE_WIDTHS,
     parse_incbin_inventory,
     parse_source_pointer_table,
 )
