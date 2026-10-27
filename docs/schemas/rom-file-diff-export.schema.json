@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite file-backed ROM diff export",
+  "description": "Audit metadata and deterministic byte differences between a base ROM file and candidate image.",
+  "type": "object",
+  "required": ["format", "format_version", "base_rom", "modified_rom", "diff"],
+  "properties": {
+    "format": {"const": "zelda-suite-rom-file-diff"},
+    "format_version": {"const": 1},
+    "base_rom": {"$ref": "#/$defs/image"},
+    "modified_rom": {"$ref": "#/$defs/image"},
+    "diff": {"$ref": "#/$defs/byte_diff"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "image": {
+      "type": "object",
+      "required": ["filename", "size_bytes", "sha256"],
+      "properties": {
+        "filename": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "byte_diff": {
+      "type": "object",
+      "required": [
+        "format",
+        "format_version",
+        "base_offset",
+        "original_size",
+        "modified_size",
+        "net_size_delta",
+        "changed_byte_count",
+        "region_count",
+        "regions"
+      ],
+      "properties": {
+        "format": {"const": "zelda-suite-byte-diff"},
+        "format_version": {"const": 1},
+        "base_offset": {"type": "integer", "minimum": 0},
+        "original_size": {"type": "integer", "minimum": 0},
+        "modified_size": {"type": "integer", "minimum": 0},
+        "net_size_delta": {"type": "integer"},
+        "changed_byte_count": {"type": "integer", "minimum": 0},
+        "region_count": {"type": "integer", "minimum": 0},
+        "regions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/region"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "region": {
+      "type": "object",
+      "required": [
+        "start_offset",
+        "end_offset_exclusive",
+        "original_hex",
+        "modified_hex",
+        "original_length",
+        "modified_length",
+        "changed_byte_count"
+      ],
+      "properties": {
+        "start_offset": {"type": "integer", "minimum": 0},
+        "end_offset_exclusive": {"type": "integer", "minimum": 0},
+        "original_hex": {"type": "string", "pattern": "^([0-9A-F]{2})*$"},
+        "modified_hex": {"type": "string", "pattern": "^([0-9A-F]{2})*$"},
+        "original_length": {"type": "integer", "minimum": 0},
+        "modified_length": {"type": "integer", "minimum": 0},
+        "changed_byte_count": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}
