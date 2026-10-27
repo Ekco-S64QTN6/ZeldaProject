@@ -174,7 +174,11 @@ def parse_source_data_table(
 
     lines = source.splitlines()
     target_line, opening_line, target_name = _find_target_label(lines, label)
-    start_line = target_line + 1
+    start_line = (
+        opening_line + 1
+        if opening_line is not None and opening_line > target_line
+        else target_line + 1
+    )
 
     if stop_before_label is not None:
         if not stop_before_label or any(c.isspace() for c in stop_before_label):
