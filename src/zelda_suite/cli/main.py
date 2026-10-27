@@ -8,7 +8,7 @@ from pathlib import Path
 import click
 
 from zelda_suite import __version__
-from zelda_suite.extract import parse_dl_pointer_table, parse_incbin_inventory
+from zelda_suite.extract import AssetLoadError, load_source_export, parse_dl_pointer_table, parse_incbin_inventory
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
 
@@ -244,6 +244,31 @@ def inspect_incbin(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(declarations)} incbin declarations to {output}")
+
+
+@cli.command(name="validate-source-export")
+@click.argument(
+    "source_export",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+def validate_source_export_command(source_export: Path) -> None:
+    """Validate a source-inspection JSON export before using it."""
+    try:
+        payload = load_source_export(source_export)
+    except AssetLoadError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    if payload["format"] == "zelda-suite-pointer-table":
+        record_count = payload["entry_count"]
+        record_label = "entries"
+    else:
+        record_count = payload["declaration_count"]
+        record_label = "declarations"
+
+    click.echo(
+        f"[OK] {payload['format']} v{payload['format_version']}: "
+        f"{record_count} {record_label} ({source_export})"
+    )
 
 
 @cli.command(name="init")
