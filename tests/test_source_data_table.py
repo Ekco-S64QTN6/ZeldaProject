@@ -8,7 +8,11 @@ import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
-from zelda_suite.extract.asset_loader import AssetLoadError, load_source_export
+from zelda_suite.extract.asset_loader import (
+    AssetLoadError,
+    load_source_export,
+    validate_source_export,
+)
 from zelda_suite.extract.source_data_table import (
     DataTableParseError,
     parse_source_data_table,
@@ -87,7 +91,16 @@ def test_preserves_non_literal_expression_without_evaluating_it() -> None:
         ({"entry_count": 0}, "positive"),
         ({"entry_count": True}, "integer"),
         ({"directive": "foo", "entry_count": 1}, "directive"),
-        ({"source": SAMPLE_SOURCE.replace("    .fall_height\\n    db $60, $80\\n", ""), "entry_count": 7, "stop_before_label": ".missing"}, "stop label"),
+        (
+            {
+                "source": SAMPLE_SOURCE.replace(
+                    "    .fall_height\\n    db $60, $80\\n", ""
+                ),
+                "entry_count": 7,
+                "stop_before_label": ".missing",
+            },
+            "stop label",
+        ),
     ],
 )
 def test_rejects_invalid_counts_directives_and_boundaries(
@@ -157,6 +170,11 @@ def test_cli_exports_validated_data_table_json(tmp_path: Path) -> None:
     assert payload["entries"][-1]["numeric_value"] == 0x20
     assert payload["entries"][1]["entry_file_offset"] == 0x1001
     assert load_source_export(output) == payload
+
+    malformed = json.loads(output.read_text(encoding="utf-8"))
+    malformed["entries"][0]["entry_file_offset"] += 1
+    with pytest.raises(AssetLoadError, match="entry_file_offset"):
+        validate_source_export(malformed)
 
     second = CliRunner().invoke(
         cli,
