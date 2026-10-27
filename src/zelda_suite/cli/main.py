@@ -7,7 +7,7 @@ from pathlib import Path
 import click
 
 from zelda_suite import __version__
-from zelda_suite.project import initialize_project
+from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
 
 US_ROM_FILENAME = BASE_ROM_FILENAME
@@ -84,6 +84,29 @@ def init_project(name: str, workspace: Path) -> None:
     click.echo(f"Created SQLite project: {database_path}")
     click.echo(f"Created JSON export:    {json_path}")
     click.echo("No ROM was read or copied. Game-system schemas will be added in Phase 1.")
+
+
+@cli.command(name="validate")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--json",
+    "json_path",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="JSON export path (defaults to the database path with a .json suffix).",
+)
+def validate(database: Path, json_path: Path | None) -> None:
+    """Validate a project's SQLite database and its JSON export without changing either."""
+    problems = validate_project(database, json_path)
+    if problems:
+        for problem in problems:
+            click.echo(f"[FAIL] {problem}", err=True)
+        raise click.exceptions.Exit(1)
+
+    click.echo(f"[OK] SQLite project and JSON export are consistent: {database}")
 
 
 @cli.command()

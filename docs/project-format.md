@@ -53,3 +53,23 @@ JSON. The top-level `format` and `format_version` identify the export contract;
 Project databases (`.db`) stay ignored by Git. JSON exports under `project/`
 are intentionally allowed by `.gitignore` so the canonical export can be
 reviewed and committed when appropriate.
+
+
+## Validate a project
+
+Run:
+
+```bash
+uv run zelda-suite validate project/my-hack.db
+```
+
+The validator opens SQLite in read-only mode and checks SQLite integrity,
+required metadata tables, foreign-key consistency, supported format/schema
+versions, canonical project-name/ROM metadata, and exact agreement with the JSON
+export. It returns a nonzero exit code and a `[FAIL]` line for problems; a
+consistent project prints `[OK]`. To check an export stored elsewhere, pass
+`--json PATH`.
+
+Validation never repairs or rewrites either artifact. To intentionally refresh
+an export after a controlled metadata change, call
+`export_project(database_path)` from Python; review the resulting JSON diff.
