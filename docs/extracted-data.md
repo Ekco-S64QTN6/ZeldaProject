@@ -147,3 +147,41 @@ The JSON shape is described by
 [the dictionary fragment inventory schema](./schemas/dictionary-inventory-export.schema.json).
 CI checks that the committed inventory equals the metadata parsed from the
 pinned source, including the flagged extent discrepancy.
+
+## Source text message index
+
+`data/extracted/text-message-index.json` indexes the 397 source labels across
+`Message_Data` in `Bank1C.asm` and `Message_DataExtra` in `Bank0E.asm` from
+pinned revision `347c23f9fc019c72d32da537c9cb235f468d021d`. It contains message
+IDs, source labels/lines, source offset comments, sequential source-derived
+offsets calculated from declared directive lengths, and declared byte counts.
+It intentionally does not include encoded message bytes or the source comments
+that render human-readable dialogue.
+
+The main block has 359 messages and its 32,554 declared bytes match the annotated
+range exactly. Six source offset annotations disagree with the sequential
+source-derived offsets; three of those annotations have malformed digit lengths.
+The index preserves the original annotation and records the sequential offset
+separately rather than correcting the disassembly.
+
+The extra block has 38 messages. It contains no per-message offset comments, so
+its message starts are inferred from the block start and preceding source
+directive byte counts. Those declarations total 3,809 bytes, one byte less than
+the annotated 3,810-byte block range. This is left as an explicit block-size
+mismatch pending a trusted local-ROM check.
+
+Regenerate the index with:
+
+```bash
+uv run zelda-suite inspect-text-messages \
+  --block reference/AsarUSALTTPDisassembly/Bank1C.asm Message_Data '$0E0000' '$0E7F29' \
+  --block reference/AsarUSALTTPDisassembly/Bank0E.asm Message_DataExtra '$075F40' '$076E21' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/text-message-index.json
+uv run zelda-suite validate-source-export /tmp/text-message-index.json
+diff -u data/extracted/text-message-index.json /tmp/text-message-index.json
+```
+
+The index is a metadata inventory, not a decoder or edit-ready text model.
+Message-pointer construction, decoder control-token semantics, and actual
+ROM verification remain separate roadmap tasks.
