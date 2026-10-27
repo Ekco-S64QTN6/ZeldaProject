@@ -10,12 +10,14 @@ import click
 from zelda_suite import __version__
 from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
+    DATA_DIRECTIVE_WIDTHS,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     ROMImageInspectionError,
     inspect_rom_image,
     load_source_export,
     parse_incbin_inventory,
+    parse_source_data_table,
     parse_source_pointer_table,
     read_rom_bytes,
     sha256_rom_bytes,
@@ -205,6 +207,111 @@ def inspect_pointer_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} pointer-table entries to {output}")
+
+@cli.command(name="inspect-data-table")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("label")
+@click.option(
+    "--table-offset",
+    required=True,
+    help="Verified file offset of the first value in the table.",
+)
+@click.option(
+    "--directive",
+    type=click.Choice(["db", "dw", "dl"], case_sensitive=False),
+    default="db",
+    show_default=True,
+    help="Asar data directive used by the table.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    required=True,
+    help="Exact number of values to parse; prevents reading adjacent tables.",
+)
+@click.option(
+    "--stop-before-label",
+    default=None,
+    help="Require a known following label as the table boundary, e.g. .fall_height.",
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    help="Revision to record; omitted values are marked unspecified.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_data_table(
+    source: Path,
+    label: str,
+    table_offset: str,
+    directive: str,
+    entry_count: int,
+    stop_before_label: str | None,
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Export a bounded source-level db/dw/dl scalar table as JSON."""
+    try:
+        offset = _parse_offset_text(table_offset)
+        source_text = source.read_text(encoding="utf-8")
+        recorded_revision = source_revision or "unspecified"
+        entries = parse_source_data_table(
+            source_text,
+            label,
+            offset,
+            directive=directive,
+            entry_count=entry_count,
+            stop_before_label=stop_before_label,
+            source_file=source.name,
+            source_revision=recorded_revision,
+        )
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    payload = {
+        "format": "zelda-suite-data-table",
+        "format_version": 1,
+        "source_file": source.name,
+        "source_revision": recorded_revision,
+        "table_label": label,
+        "table_file_offset": offset,
+        "directive": directive.lower(),
+        "entry_width": DATA_DIRECTIVE_WIDTHS[directive.lower()],
+        "entry_count": len(entries),
+        "entries": [entry.to_dict() for entry in entries],
+    }
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(f"Wrote {len(entries)} data-table values to {output}")
+
 
 @cli.command(name="inspect-incbin")
 @click.argument(
