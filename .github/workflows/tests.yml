@@ -48,5 +48,6 @@ jobs:
           tests/test_extracted_falling_prize_layout.py
           tests/test_extracted_text_dictionary.py
           tests/test_dictionary_inventory.py
+          tests/test_text_message_index.py
       - name: Run tests
         run: python -m pytest -q
