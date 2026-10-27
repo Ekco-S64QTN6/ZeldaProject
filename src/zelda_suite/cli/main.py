@@ -13,7 +13,6 @@ from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
-    TEXT_MESSAGE_INDEX_FORMAT,
     AssetLoadError,
     MessageSourceBlock,
     ROMImageInspectionError,
