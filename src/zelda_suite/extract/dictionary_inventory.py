@@ -278,7 +278,7 @@ def parse_dictionary_fragment_inventory(
         results.append(
             DictionaryFragment(
                 pointer_index=pointer.table_index,
-                pointer_entry_file_offset=pointer.pointer_entry_file_offset,
+                pointer_entry_file_offset=pointer.entry_file_offset,
                 pointer_expression=pointer.expression,
                 fragment_label=local_label,
                 fragment_source_line=fragment.label_line + 1,
