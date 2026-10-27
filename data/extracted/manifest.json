@@ -82,6 +82,15 @@
       "record_count": 68,
       "subsystem": "sprites",
       "description": "Sixty-eight source-mapped handlers for sprite type IDs $79-$BC, preserving aliases."
+    },
+    {
+      "name": "music-track-index",
+      "file": "music-track-index.json",
+      "format": "zelda-suite-music-track-index",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 35,
+      "subsystem": "audio",
+      "description": "Thirty-five source-indexed music pointer expressions, including empty entries and aliases."
     }
   ]
 }
