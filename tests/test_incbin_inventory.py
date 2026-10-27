@@ -123,3 +123,35 @@ Second:
     assert [record.label for record in records] == ["First", "Second"]
     assert [record.source_file_offset_start for record in records] == [0x3000, 0x3100]
     assert [record.source_range_size_matches for record in records] == [True, True]
+
+
+
+def test_zero_length_payload_has_no_computed_last_byte() -> None:
+    record = parse_incbin_inventory(
+        """; $5000-$5000 DATA
+EmptyPayload:
+    incbin "empty.bin" ; Size: 0
+"""
+    )[0]
+
+    assert record.declared_size_bytes == 0
+    assert record.computed_file_offset_end is None
+    assert record.source_range_size_matches is False
+
+
+def test_rejects_malformed_size_annotation() -> None:
+    with pytest.raises(IncbinInventoryError, match="invalid incbin size"):
+        parse_incbin_inventory(
+            """Blob:
+    incbin "blob.bin" ; Size: 0xZZ
+"""
+        )
+
+
+def test_rejects_negative_size_annotation() -> None:
+    with pytest.raises(IncbinInventoryError, match="non-negative"):
+        parse_incbin_inventory(
+            """Blob:
+    incbin "blob.bin" ; Size: -1
+"""
+        )
