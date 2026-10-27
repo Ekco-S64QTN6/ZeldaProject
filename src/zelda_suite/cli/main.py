@@ -11,16 +11,19 @@ from zelda_suite import __version__
 from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
+    DICTIONARY_INVENTORY_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     ROMImageInspectionError,
     inspect_rom_image,
     load_source_export,
     parse_data_table,
+    parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
     parse_source_pointer_table,
     read_rom_bytes,
     sha256_rom_bytes,
+    validate_source_export,
 )
 from zelda_suite.project import initialize_project, validate_project
 from zelda_suite.project.store import BASE_ROM_FILENAME
@@ -326,6 +329,118 @@ def inspect_data_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} data-table entries to {output}")
+
+
+@cli.command(name="inspect-text-dictionary")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--pointer-table-offset",
+    required=True,
+    help="Verified file offset of DictionaryPointers (e.g. $074703).",
+)
+@click.option(
+    "--data-offset",
+    required=True,
+    help="Verified file offset of DictionaryEntries (e.g. $0747C7).",
+)
+@click.option(
+    "--pointer-table-label",
+    default="DictionaryPointers",
+    show_default=True,
+    help="Global label for the dictionary pointer table.",
+)
+@click.option(
+    "--data-label",
+    default="DictionaryEntries",
+    show_default=True,
+    help="Global label for the dictionary fragment block.",
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    help="Pinned source revision to record in the export.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_text_dictionary(
+    source: Path,
+    pointer_table_offset: str,
+    data_offset: str,
+    pointer_table_label: str,
+    data_label: str,
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Inventory dictionary pointer targets and source-declared fragment extents."""
+    try:
+        pointer_offset = _parse_offset_text(pointer_table_offset)
+        fragment_offset = _parse_offset_text(data_offset)
+        source_text = source.read_text(encoding="utf-8")
+        recorded_revision = source_revision or "unspecified"
+        fragments = parse_dictionary_fragment_inventory(
+            source_text,
+            pointer_table_file_offset=pointer_offset,
+            data_file_offset=fragment_offset,
+            source_revision=recorded_revision,
+            pointer_table_label=pointer_table_label,
+            data_label=data_label,
+        )
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    payload = {
+        "format": DICTIONARY_INVENTORY_FORMAT,
+        "format_version": 1,
+        "source_file": source.name,
+        "source_revision": recorded_revision,
+        "pointer_table_label": pointer_table_label,
+        "pointer_table_file_offset": pointer_offset,
+        "data_label": data_label,
+        "data_file_offset": fragment_offset,
+        "fragment_count": len(fragments),
+        "fragments": [fragment.to_dict() for fragment in fragments],
+    }
+    try:
+        validate_source_export(payload)
+    except AssetLoadError as exc:
+        raise click.ClickException(f"internal export validation failed: {exc}") from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    mismatch_count = sum(
+        fragment.source_extent_matches_directive is False for fragment in fragments
+    )
+    click.echo(
+        f"Wrote {len(fragments)} dictionary fragments to {output} "
+        f"({mismatch_count} source extent mismatch(es) need review)"
+    )
 
 
 @cli.command(name="inspect-incbin")

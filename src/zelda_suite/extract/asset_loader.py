@@ -13,6 +13,8 @@ from typing import Any
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
+DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
+_DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
 _IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
@@ -384,6 +386,213 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
                 f"{context}.source_revision does not match top-level source_revision"
             )
 
+_DICTIONARY_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "pointer_table_label",
+    "pointer_table_file_offset",
+    "data_label",
+    "data_file_offset",
+    "fragment_count",
+    "fragments",
+}
+_DICTIONARY_FRAGMENT_KEYS = {
+    "pointer_index",
+    "pointer_entry_file_offset",
+    "pointer_expression",
+    "fragment_label",
+    "fragment_source_line",
+    "fragment_file_offset",
+    "next_fragment_file_offset",
+    "source_extent_bytes",
+    "data_directive",
+    "directive_value_count",
+    "directive_width_bytes",
+    "declared_payload_bytes",
+    "source_extent_matches_directive",
+    "is_end_of_table",
+    "source_revision",
+}
+_DICTIONARY_TARGET_RE = re.compile(r"DictionaryEntries_([A-Za-z_][A-Za-z0-9_]*)\Z")
+
+
+def _validate_dictionary_inventory_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _DICTIONARY_TOP_KEYS, "dictionary inventory export")
+    if payload["format"] != DICTIONARY_INVENTORY_FORMAT:
+        raise AssetLoadError("dictionary inventory export has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported dictionary inventory format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+
+    _string(payload["source_file"], "source_file")
+    revision = _string(payload["source_revision"], "source_revision")
+    pointer_label = _string(payload["pointer_table_label"], "pointer_table_label")
+    _identifier(pointer_label, "pointer_table_label")
+    pointer_offset = _integer(
+        payload["pointer_table_file_offset"], "pointer_table_file_offset", minimum=0
+    )
+    data_label = _string(payload["data_label"], "data_label")
+    _identifier(data_label, "data_label")
+    data_offset = _integer(payload["data_file_offset"], "data_file_offset", minimum=0)
+    fragment_count = _integer(payload["fragment_count"], "fragment_count", minimum=1)
+    fragments = payload["fragments"]
+    if not isinstance(fragments, list) or not fragments:
+        raise AssetLoadError("fragments must be a non-empty array")
+    if fragment_count != len(fragments):
+        raise AssetLoadError(
+            f"fragment_count is {fragment_count}, but fragments contains {len(fragments)} records"
+        )
+
+    seen_labels: set[str] = set()
+    last_file_offset = -1
+    end_marker_count = 0
+    width_by_directive = {"db": 1, "dw": 2, "dl": 3}
+
+    for expected_index, raw_fragment in enumerate(fragments):
+        context = f"fragments[{expected_index}]"
+        fragment = _object(raw_fragment, context)
+        _exact_keys(fragment, _DICTIONARY_FRAGMENT_KEYS, context)
+
+        index = _integer(fragment["pointer_index"], f"{context}.pointer_index", minimum=0)
+        if index != expected_index:
+            raise AssetLoadError(
+                f"{context}.pointer_index must be {expected_index}, got {index}"
+            )
+        pointer_offset_actual = _integer(
+            fragment["pointer_entry_file_offset"],
+            f"{context}.pointer_entry_file_offset",
+            minimum=0,
+        )
+        expected_pointer_offset = pointer_offset + expected_index * 2
+        if pointer_offset_actual != expected_pointer_offset:
+            raise AssetLoadError(
+                f"{context}.pointer_entry_file_offset must be "
+                f"{expected_pointer_offset}, got {pointer_offset_actual}"
+            )
+
+        pointer_expression = _string(
+            fragment["pointer_expression"], f"{context}.pointer_expression"
+        )
+        target_match = _DICTIONARY_TARGET_RE.fullmatch(pointer_expression)
+        if target_match is None:
+            raise AssetLoadError(
+                f"{context}.pointer_expression must reference a DictionaryEntries label"
+            )
+        expected_label = f".{target_match.group(1)}"
+        fragment_label = _source_label(fragment["fragment_label"], f"{context}.fragment_label")
+        if fragment_label != expected_label:
+            raise AssetLoadError(
+                f"{context}.fragment_label must match pointer target {expected_label}"
+            )
+        if fragment_label in seen_labels:
+            raise AssetLoadError(f"duplicate fragment label: {fragment_label}")
+        seen_labels.add(fragment_label)
+
+        _integer(fragment["fragment_source_line"], f"{context}.fragment_source_line", minimum=1)
+        fragment_offset = _integer(
+            fragment["fragment_file_offset"], f"{context}.fragment_file_offset", minimum=0
+        )
+        if expected_index == 0 and fragment_offset != data_offset:
+            raise AssetLoadError(
+                f"{context}.fragment_file_offset must match data_file_offset {data_offset}"
+            )
+        if fragment_offset <= last_file_offset:
+            raise AssetLoadError("fragment file offsets must be strictly increasing")
+        last_file_offset = fragment_offset
+
+        next_offset = _nullable_integer(
+            fragment["next_fragment_file_offset"],
+            f"{context}.next_fragment_file_offset",
+            minimum=0,
+        )
+        extent = _nullable_integer(
+            fragment["source_extent_bytes"],
+            f"{context}.source_extent_bytes",
+            minimum=0,
+        )
+        if next_offset is None:
+            expected_extent = None
+        else:
+            if next_offset <= fragment_offset:
+                raise AssetLoadError(
+                    f"{context}.next_fragment_file_offset must be greater than fragment_file_offset"
+                )
+            expected_extent = next_offset - fragment_offset
+        if extent != expected_extent:
+            raise AssetLoadError(
+                f"{context}.source_extent_bytes is inconsistent with fragment offsets"
+            )
+        if expected_index < fragment_count - 1:
+            next_fragment = fragments[expected_index + 1]
+            if next_offset != next_fragment.get("fragment_file_offset"):
+                raise AssetLoadError(
+                    f"{context}.next_fragment_file_offset does not match the next fragment"
+                )
+        elif next_offset is not None:
+            raise AssetLoadError("last fragment must not declare a next fragment offset")
+
+        directive = fragment["data_directive"]
+        value_count = _integer(
+            fragment["directive_value_count"], f"{context}.directive_value_count", minimum=0
+        )
+        width = _nullable_integer(
+            fragment["directive_width_bytes"], f"{context}.directive_width_bytes", minimum=1
+        )
+        declared_bytes = _nullable_integer(
+            fragment["declared_payload_bytes"], f"{context}.declared_payload_bytes", minimum=0
+        )
+        if directive is None:
+            if value_count != 0 or width is not None or declared_bytes is not None:
+                raise AssetLoadError(
+                    f"{context} has inconsistent fields for a fragment without a data directive"
+                )
+        else:
+            if directive not in width_by_directive:
+                raise AssetLoadError(f"{context}.data_directive must be db, dw, dl, or null")
+            if value_count <= 0:
+                raise AssetLoadError(f"{context}.directive_value_count must be positive")
+            if width != width_by_directive[directive]:
+                raise AssetLoadError(
+                    f"{context}.directive_width_bytes does not match data_directive"
+                )
+            if declared_bytes != value_count * width:
+                raise AssetLoadError(
+                    f"{context}.declared_payload_bytes does not match directive count and width"
+                )
+
+        extent_match = fragment["source_extent_matches_directive"]
+        if extent_match is not None:
+            _boolean(extent_match, f"{context}.source_extent_matches_directive")
+        expected_extent_match = (
+            extent == declared_bytes
+            if extent is not None and declared_bytes is not None
+            else None
+        )
+        if extent_match is not expected_extent_match:
+            raise AssetLoadError(
+                f"{context}.source_extent_matches_directive is inconsistent with the source extent"
+            )
+
+        end_marker = _boolean(fragment["is_end_of_table"], f"{context}.is_end_of_table")
+        if end_marker:
+            end_marker_count += 1
+            if fragment_label != ".endOfTable" or expected_index != fragment_count - 1:
+                raise AssetLoadError("end-of-table marker must be the final .endOfTable fragment")
+        entry_revision = _string(fragment["source_revision"], f"{context}.source_revision")
+        if entry_revision != revision:
+            raise AssetLoadError(
+                f"{context}.source_revision does not match top-level source_revision"
+            )
+
+    if end_marker_count != 1:
+        raise AssetLoadError("dictionary inventory must contain exactly one end-of-table marker")
+
+
 def validate_source_export(payload: Any) -> dict[str, Any]:
     """Validate an already-parsed source export and return it unchanged."""
     export = _object(payload, "source export")
@@ -394,6 +603,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_incbin_export(export)
     elif format_name == DATA_TABLE_FORMAT:
         _validate_data_table_export(export)
+    elif format_name == DICTIONARY_INVENTORY_FORMAT:
+        _validate_dictionary_inventory_export(export)
     else:
         raise AssetLoadError(f"unsupported source export format: {format_name!r}")
     return export

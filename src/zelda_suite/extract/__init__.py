@@ -1,5 +1,6 @@
 """ROM extraction, source parsing, asset loading, and image inspection helpers."""
 from zelda_suite.extract.asset_loader import (
+    DICTIONARY_INVENTORY_FORMAT,
     AssetLoadError,
     load_source_export,
     validate_source_export,
@@ -9,6 +10,11 @@ from zelda_suite.extract.data_table import (
     DataTableEntry,
     DataTableParseError,
     parse_data_table,
+)
+from zelda_suite.extract.dictionary_inventory import (
+    DictionaryFragment,
+    DictionaryInventoryError,
+    parse_dictionary_fragment_inventory,
 )
 from zelda_suite.extract.disassembly import (
     POINTER_DIRECTIVE_WIDTHS,
@@ -35,10 +41,13 @@ from zelda_suite.extract.rom_image import (
 
 __all__ = [
     "DATA_DIRECTIVE_WIDTHS",
+    "DICTIONARY_INVENTORY_FORMAT",
     "POINTER_DIRECTIVE_WIDTHS",
     "AssetLoadError",
     "DataTableEntry",
     "DataTableParseError",
+    "DictionaryFragment",
+    "DictionaryInventoryError",
     "DisassemblyParseError",
     "IncbinDeclaration",
     "IncbinInventoryError",
@@ -50,6 +59,7 @@ __all__ = [
     "load_source_export",
     "lorom_cpu_address",
     "parse_data_table",
+    "parse_dictionary_fragment_inventory",
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
