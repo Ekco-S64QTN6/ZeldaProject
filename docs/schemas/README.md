@@ -5,6 +5,10 @@ specified in [project-format.md](../project-format.md). Game-system schemas are
 introduced alongside Phase 1 extractors so that every field is grounded in the
 ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 
+## Source export contracts
+
+- [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
+
 ## Phase 1 discovery notes
 
 - [Dungeon rooms](./dungeons.md) — documents the discovered 320-entry room
