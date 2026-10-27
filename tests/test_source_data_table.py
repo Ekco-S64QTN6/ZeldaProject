@@ -242,3 +242,20 @@ def test_real_pinned_falling_prize_table_exports_seven_item_values(tmp_path: Pat
         ".bombos_medallion",
         ".crystal",
     ]
+
+
+
+def test_unbraced_table_does_not_consume_next_global_label() -> None:
+    source = """FirstValues:
+    db $01
+SecondValues:
+    db $02
+"""
+    with pytest.raises(DataTableParseError, match="reached next label"):
+        parse_source_data_table(
+            source,
+            "FirstValues",
+            0x400,
+            directive="db",
+            entry_count=2,
+        )
