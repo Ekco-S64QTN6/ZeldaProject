@@ -35,5 +35,6 @@ jobs:
           tests/test_incbin_inventory.py
           tests/test_pointer_table_cli.py
           tests/test_pinned_disassembly.py
+          tests/test_pinned_incbin_inventory.py
       - name: Run tests
         run: python -m pytest -q
