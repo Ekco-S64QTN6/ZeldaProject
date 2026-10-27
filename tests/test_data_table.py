@@ -90,7 +90,7 @@ def test_rejects_numeric_literal_that_exceeds_directive_width() -> None:
     .next
 }
 """
-    with pytest.raises(DataTableParseError, match="exceeds 1-byte width"):
+    with pytest.raises(DataTableParseError, match="exceeds 1-byte directive width"):
         parse_data_table(
             source,
             ".values",
@@ -122,3 +122,20 @@ def test_requires_valid_offset_and_directive() -> None:
         parse_data_table(SAMPLE_SOURCE, ".values", -1, parent_label="ParentTable")
     with pytest.raises(ValueError, match="db.*dw.*dl"):
         parse_data_table(SAMPLE_SOURCE, ".values", 0, directive="dd", parent_label="ParentTable")
+
+
+
+def test_entry_width_override_does_not_widen_directive_literal_range() -> None:
+    source = """Values:
+{
+    db $100
+}
+"""
+    with pytest.raises(DataTableParseError, match="exceeds 1-byte directive width"):
+        parse_data_table(
+            source,
+            "Values",
+            0x100,
+            directive="db",
+            entry_width=2,
+        )
