@@ -17,3 +17,6 @@ uv sync            # or: python -m venv .venv && .venv/bin/pip install -e ".[dev
 
 # 3. Verify tooling
 just doctor        # or: .venv/bin/zelda-suite doctor
+```
+
+See [`docs/doctor.md`](./docs/doctor.md) for the checks performed by `doctor`.
