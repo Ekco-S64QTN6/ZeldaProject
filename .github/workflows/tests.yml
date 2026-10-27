@@ -39,6 +39,7 @@ jobs:
           tests/test_pinned_disassembly.py
           tests/test_pinned_incbin_inventory.py
           tests/test_source_export_integration.py
+          tests/test_source_data_table.py
           tests/test_rom_image.py
           tests/test_rom_file_diff_cli.py
       - name: Run tests
