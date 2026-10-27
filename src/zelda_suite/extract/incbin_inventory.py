@@ -138,9 +138,9 @@ def parse_incbin_inventory(
         )
         computed_end = (
             current_start + declared_size - 1
-            if current_start is not None and declared_size is not None and declared_size > 0
-            else current_start
-            if current_start is not None and declared_size == 0
+            if current_start is not None
+            and declared_size is not None
+            and declared_size > 0
             else None
         )
 
