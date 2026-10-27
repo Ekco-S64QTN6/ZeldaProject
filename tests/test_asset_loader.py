@@ -11,9 +11,9 @@ from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.asset_loader import (
-    AssetLoadError,
     INCBIN_INVENTORY_FORMAT,
     POINTER_TABLE_FORMAT,
+    AssetLoadError,
     load_source_export,
     validate_source_export,
 )
