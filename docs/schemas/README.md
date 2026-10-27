@@ -14,6 +14,10 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 
+## Committed source-derived data
+
+- [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — validated seven-entry item-value table with pinned source provenance; see [reproduction instructions](../extracted-data.md).
+
 ## Phase 1 discovery notes
 
 - [Dungeon rooms](./dungeons.md) — documents the discovered 320-entry room
