@@ -58,4 +58,5 @@ def test_export_file_is_deterministic_json() -> None:
     raw = EXPORT_PATH.read_bytes()
     payload = json.loads(raw)
     assert raw.endswith(b"\n")
-    assert json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n" == raw.decode("utf-8")
+    rendered = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    assert rendered == raw.decode("utf-8")
