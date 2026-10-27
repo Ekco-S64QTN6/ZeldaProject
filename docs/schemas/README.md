@@ -16,7 +16,13 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 ## Committed source-derived data
 
-- [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — validated seven-entry item-value table with pinned source provenance; see [reproduction instructions](../extracted-data.md).
+- [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
+- [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
+- [`data/extracted/falling-prize-y-offsets.json`](../../data/extracted/falling-prize-y-offsets.json) — indexed Y offsets.
+- [`data/extracted/falling-prize-x-offsets.json`](../../data/extracted/falling-prize-x-offsets.json) — indexed X offsets.
+- [`data/extracted/falling-prize-delay-timers.json`](../../data/extracted/falling-prize-delay-timers.json) — indexed delay timers.
+
+All five seven-entry exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
 ## Phase 1 discovery notes
 

@@ -1,0 +1,78 @@
+{
+  "directive": "db",
+  "end_label": ".y_offsets",
+  "entries": [
+    {
+      "table_index": 0,
+      "entry_file_offset": 297879,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$60",
+      "literal_value": 96,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "table_index": 1,
+      "entry_file_offset": 297880,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$80",
+      "literal_value": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "table_index": 2,
+      "entry_file_offset": 297881,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$80",
+      "literal_value": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "table_index": 3,
+      "entry_file_offset": 297882,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$80",
+      "literal_value": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "table_index": 4,
+      "entry_file_offset": 297883,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$80",
+      "literal_value": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "table_index": 5,
+      "entry_file_offset": 297884,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$80",
+      "literal_value": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "table_index": 6,
+      "entry_file_offset": 297885,
+      "source_line": 1640,
+      "source_label": ".fall_height",
+      "expression": "$80",
+      "literal_value": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    }
+  ],
+  "entry_count": 7,
+  "entry_width": 1,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": "Pool_AddPendantOrCrystal",
+  "source_file": "ancilla_init.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 297879,
+  "table_label": ".fall_height"
+}
