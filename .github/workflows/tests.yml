@@ -33,6 +33,7 @@ jobs:
           src/zelda_suite/extract
           tests/test_disassembly.py
           tests/test_incbin_inventory.py
+          tests/test_incbin_cli.py
           tests/test_pointer_table_cli.py
           tests/test_pinned_disassembly.py
           tests/test_pinned_incbin_inventory.py
