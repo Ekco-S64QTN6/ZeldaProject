@@ -1,0 +1,59 @@
+# Raw Asar data-table inspection
+
+The `zelda-suite inspect-data-table` command exports source-level `db`,
+`dw`, or `dl` expressions into a stable version-1 JSON record. Numeric
+literals are additionally exposed as integers; unresolved expressions are
+preserved verbatim and are never evaluated.
+
+## Example: falling-prize item values
+
+With the pinned disassembly submodule checked out:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Ancilla/ancilla_init.asm \
+  .item_values \
+  --table-offset '$048B90' \
+  --directive db \
+  --parent-label Pool_AddPendantOrCrystal \
+  --end-label .fall_height \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/falling-prize-item-values.json
+
+uv run zelda-suite validate-source-export /tmp/falling-prize-item-values.json
+```
+
+The parser uses the parent block to scope local labels such as `.item_values`;
+the end label is exclusive, so the adjacent `.fall_height` table is not mixed
+into the item-value table. The caller supplies the verified file offset. The
+tool does not infer offsets from the comments.
+
+The pinned source yields seven one-byte values at `$048B90–$048B96`:
+`$10, $37, $39, $38, $26, $0F, $20`. The export preserves source labels and
+the original expression for each value. Use the labels as provenance, not as a
+claim that the table covers every item source in the game.
+
+## Supported table boundaries
+
+Use `--parent-label` when the requested label is local or might occur more
+than once. Use `--end-label` when multiple adjacent arrays live inside the
+same parent block. If no end label is supplied, a global brace-delimited table
+is bounded by its braces; other forms are bounded at the next global label.
+Ambiguous local labels fail instead of silently selecting the wrong table.
+
+The directive determines the legal literal range and default storage width:
+`db` is one byte, `dw` is two, and `dl` is three. `--entry-width` only
+overrides the calculated file-offset stride for a documented custom layout; it
+does not change the range of values allowed by the directive.
+
+The JSON contract is [data-table-export.schema.json](./schemas/data-table-export.schema.json).
+The asset loader validates the format version, record count, source revision,
+entry offsets, and literal-width invariants.
+
+## Safety and limitations
+
+This command parses assembly text only. It does not read ROM bytes, open
+`incbin` payloads, execute Asar, resolve symbol expressions, or write ROMs.
+The table file offset and the source revision are caller-supplied provenance
+and should be verified against the exact source revision and offset map. The
+parser is a raw-table foundation, not a semantic item catalog or an editor.
