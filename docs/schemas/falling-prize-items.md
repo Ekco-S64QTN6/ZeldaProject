@@ -33,13 +33,14 @@ lookup.
 
 ## Consumer evidence
 
-The `AddRecoveredFlute` / happiness-pond flow in the same source calls
-`Pool_AddPendantOrCrystal_item_values` with the index in `Y` to select the
-item value, and also indexes adjacent tables for fall height, X/Y offsets, and
-delay timers. The main falling-item routine is identified in the source as
-`AddReceivedItem` (special effect `$22`). See the pinned
-[`Ancilla/ancilla_init.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Ancilla/ancilla_init.asm)
-rather than treating the table as a standalone global item catalog.
+The source consumer is `AddPendantOrCrystal` (special-effect argument `A=$29`,
+described in the source as “pendants/crystals, etc.”). It saves the incoming
+index from `X` to `$02D8`, loads that index into `Y`, then reads
+`Pool_AddPendantOrCrystal_item_values, Y`. It also indexes adjacent tables
+for fall height, X/Y offsets, and delay timers. The source separately defines
+`AddReceivedItem` for special effect `$22`; do not conflate these routines or
+treat this seven-entry lookup as a global item catalog. See the pinned
+[`Ancilla/ancilla_init.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Ancilla/ancilla_init.asm).
 
 The surrounding `Pool_AddPendantOrCrystal` region also documents these
 associated per-index arrays:
