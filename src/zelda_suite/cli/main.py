@@ -534,9 +534,12 @@ def validate_source_export_command(source_export: Path) -> None:
     if payload["format"] == "zelda-suite-pointer-table":
         record_count = payload["entry_count"]
         record_label = "entries"
-    else:
+    elif payload["format"] == "zelda-suite-incbin-inventory":
         record_count = payload["declaration_count"]
         record_label = "declarations"
+    else:
+        record_count = payload["entry_count"]
+        record_label = "entries"
 
     click.echo(
         f"[OK] {payload['format']} v{payload['format_version']}: "
