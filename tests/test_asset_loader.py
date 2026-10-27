@@ -386,3 +386,26 @@ def test_named_asset_loader_rejects_path_traversal_and_format_mismatch(
 
     with pytest.raises(AssetLoadError, match="declares format"):
         load_extracted_asset("sample-export", registry_path)
+
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("source_revision", "different-revision", "source_revision does not match"),
+        ("record_count", 99, "record_count is 99"),
+    ],
+)
+def test_named_asset_loader_rejects_stale_registry_provenance_or_count(
+    tmp_path: Path,
+    field: str,
+    value: Any,
+    message: str,
+) -> None:
+    registry_path = _test_asset_registry(tmp_path, _pointer_export())
+    manifest = json.loads(registry_path.read_text(encoding="utf-8"))
+    manifest["assets"][0][field] = value
+    registry_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(AssetLoadError, match=message):
+        load_extracted_asset("sample-export", registry_path)
