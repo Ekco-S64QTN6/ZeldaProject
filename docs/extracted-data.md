@@ -70,3 +70,43 @@ diff -u data/extracted/text-dictionary-pointers.json /tmp/text-dictionary-pointe
 CI checks that all 98 records match the parsed pinned source exactly. The
 source-derived JSON is metadata only; no message, dictionary, or ROM bytes are
 copied into the project.
+
+## Text dictionary fragment inventory
+
+`zelda-suite inspect-text-dictionary` links the 98 symbolic entries in
+`DictionaryPointers` to their corresponding `DictionaryEntries` labels.
+The inventory is committed at
+`data/extracted/text-dictionary-fragments.json`, pinned to
+`347c23f9fc019c72d32da537c9cb235f468d021d`.
+
+The inventory stores source metadata only:
+
+- Pointer index, pointer-entry file offset, and raw symbol expression.
+- Matching local fragment label, source line, and source-annotated file offset.
+- Distance to the next fragment label, data directive width/count, and declared byte count.
+- A comparison flag indicating whether the annotated extent agrees with the directive length.
+
+It does not store fragment byte values or text comments, and it does not resolve a
+source symbol by reading ROM memory. The JSON export is schema-validated by the
+source asset loader.
+
+Reproduce it with:
+
+```bash
+uv run zelda-suite inspect-text-dictionary \
+  reference/AsarUSALTTPDisassembly/Bank0E.asm \
+  --pointer-table-offset '$074703' \
+  --data-offset '$0747C7' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/text-dictionary-fragments.json
+uv run zelda-suite validate-source-export /tmp/text-dictionary-fragments.json
+diff -u data/extracted/text-dictionary-fragments.json /tmp/text-dictionary-fragments.json
+```
+
+### Known source-layout discrepancy
+
+The `.You` fragment is annotated at `$0748D6`, with `.endOfTable` at
+`$0748D8`, so its source-comment extent is two bytes. The same source declares
+`dw $18, $28, $2E`, which implies six bytes. The inventory preserves both facts
+and sets `source_extent_matches_directive=false`; it does not choose which
+annotation is wrong or claim that binary offsets have been validated.
