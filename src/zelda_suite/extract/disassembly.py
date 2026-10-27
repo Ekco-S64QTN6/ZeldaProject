@@ -31,6 +31,7 @@ class PointerTableEntry:
     target_label: str
     target_addend: int | None
     is_empty_target: bool
+    source_revision: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable record."""
@@ -60,6 +61,7 @@ def parse_dl_pointer_table(
     table_file_offset: int,
     *,
     entry_width: int = 3,
+    source_revision: str | None = None,
 ) -> list[PointerTableEntry]:
     """Parse a brace-delimited Asar `dl` block into auditable source records.
 
@@ -161,6 +163,7 @@ def parse_dl_pointer_table(
                     target_label=target_label,
                     target_addend=target_addend,
                     is_empty_target=target_label == "RoomDataTiles_Empty",
+                    source_revision=source_revision,
                 )
             )
 
