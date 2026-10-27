@@ -15,6 +15,7 @@ INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
 TEXT_MESSAGE_INDEX_FORMAT = "zelda-suite-text-message-index"
+SPRITE_DISPATCH_FORMAT = "zelda-suite-sprite-dispatch"
 _DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
@@ -630,6 +631,10 @@ _TEXT_MESSAGE_KEYS = {
 }
 _MESSAGE_LABEL_RE = re.compile(r"Message_([0-9A-Fa-f]{4})\Z")
 _MESSAGE_OFFSET_ANNOTATION_RE = re.compile(r"\$([0-9A-Fa-f]+)\Z")
+_SPRITE_HANDLER_RE = re.compile(r"Sprite_[A-Za-z0-9_]+\Z")
+_SPRITE_COMMENT_RE = re.compile(
+    r"0x(?P<sprite_id>[0-9A-Fa-f]+)\s*-\s*\$(?P<address>[0-9A-Fa-f]+)\s*(?P<description>.*)\Z"
+)
 
 
 def _validate_text_message_index_export(payload: dict[str, Any]) -> None:
@@ -801,6 +806,154 @@ def _validate_text_message_index_export(payload: dict[str, Any]) -> None:
             )
 
 
+_SPRITE_DISPATCH_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "table_file_offset",
+    "table_end_offset",
+    "table_size_bytes",
+    "entry_width_bytes",
+    "sprite_type_id_start",
+    "sprite_type_id_end",
+    "entry_count",
+    "entries",
+}
+_SPRITE_DISPATCH_ENTRY_KEYS = {
+    "table_index",
+    "sprite_type_id",
+    "pointer_entry_file_offset",
+    "source_line",
+    "handler_expression",
+    "handler_label",
+    "source_comment_sprite_type_id",
+    "source_handler_address_annotation",
+    "source_description",
+    "source_comment",
+    "source_revision",
+}
+
+
+def _validate_sprite_dispatch_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _SPRITE_DISPATCH_TOP_KEYS, "sprite dispatch export")
+    if payload["format"] != SPRITE_DISPATCH_FORMAT:
+        raise AssetLoadError("sprite dispatch export has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported sprite dispatch format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    _string(payload["source_file"], "source_file")
+    revision = _string(payload["source_revision"], "source_revision")
+    table_label = _string(payload["table_label"], "table_label")
+    _identifier(table_label, "table_label")
+    table_start = _integer(payload["table_file_offset"], "table_file_offset", minimum=0)
+    table_end = _integer(payload["table_end_offset"], "table_end_offset", minimum=0)
+    if table_end < table_start:
+        raise AssetLoadError("table_end_offset precedes table_file_offset")
+    table_size = _integer(payload["table_size_bytes"], "table_size_bytes", minimum=1)
+    if table_size != table_end - table_start + 1:
+        raise AssetLoadError("table_size_bytes is inconsistent with table offsets")
+    entry_width = _integer(payload["entry_width_bytes"], "entry_width_bytes", minimum=1)
+    if entry_width != 2:
+        raise AssetLoadError("sprite dispatch entry_width_bytes must be 2")
+    if table_size % entry_width:
+        raise AssetLoadError("table_size_bytes must be divisible by entry_width_bytes")
+
+    sprite_start = _integer(payload["sprite_type_id_start"], "sprite_type_id_start", minimum=0)
+    sprite_end = _integer(payload["sprite_type_id_end"], "sprite_type_id_end", minimum=0)
+    if sprite_start > 0xFFFF or sprite_end > 0xFFFF:
+        raise AssetLoadError("sprite type ID range must fit in 16 bits")
+    count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    if count != table_size // entry_width:
+        raise AssetLoadError("entry_count is inconsistent with table size and entry width")
+    if sprite_end != sprite_start + count - 1:
+        raise AssetLoadError("sprite_type_id_end is inconsistent with start ID and entry count")
+
+    entries = payload["entries"]
+    if not isinstance(entries, list) or not entries:
+        raise AssetLoadError("entries must be a non-empty array")
+    if len(entries) != count:
+        raise AssetLoadError(
+            f"entry_count is {count}, but entries contains {len(entries)} records"
+        )
+
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _SPRITE_DISPATCH_ENTRY_KEYS, context)
+        index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
+        if index != expected_index:
+            raise AssetLoadError(
+                f"{context}.table_index must be {expected_index}, got {index}"
+            )
+        sprite_id = _integer(entry["sprite_type_id"], f"{context}.sprite_type_id", minimum=0)
+        expected_sprite_id = sprite_start + expected_index
+        if sprite_id != expected_sprite_id:
+            raise AssetLoadError(
+                f"{context}.sprite_type_id must be {expected_sprite_id:#x}, got {sprite_id:#x}"
+            )
+        comment_sprite_id = _integer(
+            entry["source_comment_sprite_type_id"],
+            f"{context}.source_comment_sprite_type_id",
+            minimum=0,
+        )
+        if comment_sprite_id != sprite_id:
+            raise AssetLoadError(
+                f"{context}.source_comment_sprite_type_id does not match sprite_type_id"
+            )
+        pointer_offset = _integer(
+            entry["pointer_entry_file_offset"],
+            f"{context}.pointer_entry_file_offset",
+            minimum=0,
+        )
+        expected_offset = table_start + expected_index * entry_width
+        if pointer_offset != expected_offset:
+            raise AssetLoadError(
+                f"{context}.pointer_entry_file_offset must be {expected_offset}, got {pointer_offset}"
+            )
+        _integer(entry["source_line"], f"{context}.source_line", minimum=1)
+        expression = _string(entry["handler_expression"], f"{context}.handler_expression")
+        handler_label = _string(entry["handler_label"], f"{context}.handler_label")
+        if _SPRITE_HANDLER_RE.fullmatch(expression) is None:
+            raise AssetLoadError(
+                f"{context}.handler_expression must be a Sprite_ handler label"
+            )
+        if handler_label != expression:
+            raise AssetLoadError(f"{context}.handler_label must match handler_expression")
+
+        source_comment = _string(entry["source_comment"], f"{context}.source_comment")
+        comment_match = _SPRITE_COMMENT_RE.fullmatch(source_comment)
+        if comment_match is None:
+            raise AssetLoadError(f"{context}.source_comment is malformed")
+        comment_address = "$" + comment_match.group("address")
+        handler_address = _string(
+            entry["source_handler_address_annotation"],
+            f"{context}.source_handler_address_annotation",
+        )
+        if comment_address != handler_address:
+            raise AssetLoadError(
+                f"{context}.source_handler_address_annotation does not match source_comment"
+            )
+        if int(comment_match.group("sprite_id"), 16) != sprite_id:
+            raise AssetLoadError(
+                f"{context}.source_comment sprite ID does not match sprite_type_id"
+            )
+        description = entry["source_description"]
+        if not isinstance(description, str) or description != comment_match.group("description"):
+            raise AssetLoadError(
+                f"{context}.source_description does not match source_comment"
+            )
+        entry_revision = _string(entry["source_revision"], f"{context}.source_revision")
+        if entry_revision != revision:
+            raise AssetLoadError(
+                f"{context}.source_revision does not match top-level source_revision"
+            )
+
+
 def validate_source_export(payload: Any) -> dict[str, Any]:
     """Validate an already-parsed source export and return it unchanged."""
     export = _object(payload, "source export")
@@ -815,6 +968,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_dictionary_inventory_export(export)
     elif format_name == TEXT_MESSAGE_INDEX_FORMAT:
         _validate_text_message_index_export(export)
+    elif format_name == SPRITE_DISPATCH_FORMAT:
+        _validate_sprite_dispatch_export(export)
     else:
         raise AssetLoadError(f"unsupported source export format: {format_name!r}")
     return export
@@ -840,6 +995,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     DATA_TABLE_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
+    SPRITE_DISPATCH_FORMAT,
 }
 
 
@@ -962,6 +1118,7 @@ def load_extracted_asset(
         DATA_TABLE_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",
         TEXT_MESSAGE_INDEX_FORMAT: "message_count",
+        SPRITE_DISPATCH_FORMAT: "entry_count",
     }[record["format"]]
     actual_count = payload.get(count_field)
     if actual_count != record["record_count"]:
