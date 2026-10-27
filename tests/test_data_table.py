@@ -67,8 +67,8 @@ def test_rejects_mixed_directives_inside_table() -> None:
 {
     .values
     db $01
-    .next
     dw $0002
+    .next
 }
 """
     with pytest.raises(DataTableParseError, match="expected db directive but found dw"):
