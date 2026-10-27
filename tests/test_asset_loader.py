@@ -11,6 +11,7 @@ from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.asset_loader import (
+    DATA_TABLE_FORMAT,
     INCBIN_INVENTORY_FORMAT,
     POINTER_TABLE_FORMAT,
     AssetLoadError,
@@ -92,7 +93,44 @@ def _incbin_export() -> dict[str, Any]:
     }
 
 
-@pytest.mark.parametrize("payload", [_pointer_export(), _incbin_export()])
+def _data_table_export() -> dict[str, Any]:
+    entries = [
+        {
+            "table_index": 0,
+            "entry_file_offset": 0x048B90,
+            "source_line": 8,
+            "source_label": ".ether_medallion",
+            "expression": "$10",
+            "literal_value": 0x10,
+            "source_revision": "pinned-sha",
+        },
+        {
+            "table_index": 1,
+            "entry_file_offset": 0x048B91,
+            "source_line": 12,
+            "source_label": ".pendants",
+            "expression": "$37",
+            "literal_value": 0x37,
+            "source_revision": "pinned-sha",
+        },
+    ]
+    return {
+        "format": DATA_TABLE_FORMAT,
+        "format_version": 1,
+        "source_file": "ancilla_init.asm",
+        "source_revision": "pinned-sha",
+        "parent_label": "Pool_AddPendantOrCrystal",
+        "table_label": ".item_values",
+        "end_label": ".fall_height",
+        "table_file_offset": 0x048B90,
+        "directive": "db",
+        "entry_width": 1,
+        "entry_count": 2,
+        "entries": entries,
+    }
+
+
+@pytest.mark.parametrize("payload", [_pointer_export(), _incbin_export(), _data_table_export()])
 def test_validate_accepts_supported_export_formats(payload: dict[str, Any]) -> None:
     result = validate_source_export(payload)
     assert result is payload
@@ -186,6 +224,36 @@ def test_loader_rejects_unknown_format_and_non_object_json(tmp_path: Path) -> No
     array.write_text("[]", encoding="utf-8")
     with pytest.raises(AssetLoadError, match="must be a JSON object"):
         load_source_export(array)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda p: p.update(entry_count=8), "entry_count"),
+        (
+            lambda p: p["entries"][1].update(entry_file_offset=0x5000),
+            "entry_file_offset",
+        ),
+        (
+            lambda p: p["entries"][0].update(source_revision="stale"),
+            "source_revision",
+        ),
+        (
+            lambda p: p["entries"][0].update(literal_value=0x100),
+            "does not fit the db directive",
+        ),
+        (lambda p: p.update(format_version=2), "unsupported data-table format version"),
+        (lambda p: p.update(extra_field=True), "unexpected field"),
+    ],
+)
+def test_validate_rejects_inconsistent_data_table_export(
+    mutation: Any, message: str
+) -> None:
+    payload = copy.deepcopy(_data_table_export())
+    mutation(payload)
+
+    with pytest.raises(AssetLoadError, match=message):
+        validate_source_export(payload)
 
 
 def test_validate_rejects_boolean_values_as_integer_fields() -> None:
