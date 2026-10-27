@@ -16,6 +16,8 @@ from zelda_suite.extract.rom_image import (
     format_lorom_cpu_address,
     inspect_rom_image,
     lorom_cpu_address,
+    read_rom_bytes,
+    sha256_rom_bytes,
 )
 
 
@@ -125,3 +127,17 @@ def test_inspect_rom_cli_emits_metadata_json_and_creates_new_output(
     refused = runner.invoke(cli, ["inspect-rom", str(image), "--output", str(output)])
     assert refused.exit_code != 0
     assert "refusing to overwrite existing output" in refused.output
+
+
+
+def test_rom_byte_reader_and_hash_helper_are_read_only(tmp_path: Path) -> None:
+    image = tmp_path / "synthetic.smc"
+    contents = b"synthetic bytes"
+    image.write_bytes(contents)
+
+    before = image.read_bytes()
+    loaded = read_rom_bytes(image)
+
+    assert loaded == contents
+    assert sha256_rom_bytes(loaded) == hashlib.sha256(contents).hexdigest()
+    assert image.read_bytes() == before
