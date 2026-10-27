@@ -10,6 +10,11 @@ from zelda_suite.extract.data_table import (
     DataTableParseError,
     parse_data_table,
 )
+from zelda_suite.extract.dictionary_inventory import (
+    DictionaryFragment,
+    DictionaryInventoryError,
+    parse_dictionary_fragment_inventory,
+)
 from zelda_suite.extract.disassembly import (
     POINTER_DIRECTIVE_WIDTHS,
     DisassemblyParseError,
@@ -39,6 +44,8 @@ __all__ = [
     "AssetLoadError",
     "DataTableEntry",
     "DataTableParseError",
+    "DictionaryFragment",
+    "DictionaryInventoryError",
     "DisassemblyParseError",
     "IncbinDeclaration",
     "IncbinInventoryError",
@@ -50,6 +57,7 @@ __all__ = [
     "load_source_export",
     "lorom_cpu_address",
     "parse_data_table",
+    "parse_dictionary_fragment_inventory",
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
