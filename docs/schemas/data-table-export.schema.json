@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite raw Asar data-table export",
+  "description": "Source expressions from db/dw/dl declarations; expressions are not evaluated.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "parent_label",
+    "table_label",
+    "end_label",
+    "table_file_offset",
+    "directive",
+    "entry_width",
+    "entry_count",
+    "entries"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-data-table"},
+    "format_version": {"const": 1},
+    "source_file": {"type": "string", "minLength": 1},
+    "source_revision": {"type": "string", "minLength": 1},
+    "parent_label": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "table_label": {
+      "type": "string",
+      "pattern": "^\\.?[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "end_label": {
+      "type": ["string", "null"],
+      "pattern": "^\\.?[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "table_file_offset": {"type": "integer", "minimum": 0},
+    "directive": {"enum": ["db", "dw", "dl"]},
+    "entry_width": {"type": "integer", "minimum": 1},
+    "entry_count": {"type": "integer", "minimum": 1},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/entry"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "entry_file_offset",
+        "source_line",
+        "source_label",
+        "expression",
+        "literal_value",
+        "source_revision"
+      ],
+      "properties": {
+        "table_index": {"type": "integer", "minimum": 0},
+        "entry_file_offset": {"type": "integer", "minimum": 0},
+        "source_line": {"type": "integer", "minimum": 1},
+        "source_label": {
+          "type": ["string", "null"],
+          "pattern": "^\\.?[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "expression": {"type": "string", "minLength": 1},
+        "literal_value": {"type": ["integer", "null"], "minimum": 0},
+        "source_revision": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}
