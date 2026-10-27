@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import asdict, dataclass
+from itertools import pairwise
 from typing import Any
 
 from zelda_suite.extract.data_table import parse_data_table
@@ -198,7 +199,7 @@ def _scan_fragment_sources(
             )
         )
 
-    for current, following in zip(fragments, fragments[1:], strict=False):
+    for current, following in pairwise(fragments):
         if following.file_offset <= current.file_offset:
             raise DictionaryInventoryError(
                 f"fragment offsets are not strictly increasing at {current.label!r}"
