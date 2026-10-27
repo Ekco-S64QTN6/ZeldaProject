@@ -93,7 +93,7 @@ def test_preserves_non_literal_expression_without_evaluating_it() -> None:
         ({"directive": "foo", "entry_count": 1}, "directive"),
         (
             {
-                "source": SAMPLE_SOURCE.replace(
+                "source": SAMPLE_SOURCE.replace("    .fall_height\n    db $60, $80\n", ""),
                     "    .fall_height\\n    db $60, $80\\n", ""
                 ),
                 "entry_count": 7,
