@@ -13,6 +13,7 @@ from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
+    TEXT_MESSAGE_INDEX_FORMAT,
     AssetLoadError,
     ROMImageInspectionError,
     inspect_rom_image,
@@ -21,6 +22,8 @@ from zelda_suite.extract import (
     parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
     parse_source_pointer_table,
+    parse_text_message_index,
+    MessageSourceBlock,
     read_rom_bytes,
     sha256_rom_bytes,
     validate_source_export,
@@ -329,6 +332,100 @@ def inspect_data_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} data-table entries to {output}")
+
+
+@cli.command(name="inspect-text-messages")
+@click.option(
+    "--block",
+    "blocks",
+    type=click.Tuple(
+        [
+            click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+            str,
+            str,
+            str,
+        ]
+    ),
+    multiple=True,
+    required=True,
+    help=(
+        "Repeat for each source block: --block SOURCE BLOCK_LABEL START_OFFSET END_OFFSET. "
+        "Offsets are the inclusive range annotated in the disassembly."
+    ),
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    help="Pinned source revision to record in the export.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_text_messages(
+    blocks: tuple[tuple[Path, str, str, str], ...],
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Index message IDs and source sizes without exporting encoded dialogue bytes."""
+    try:
+        recorded_revision = source_revision or "unspecified"
+        source_specs = []
+        for source_path, block_label, start_text, end_text in blocks:
+            source_specs.append(
+                MessageSourceBlock(
+                    source_file=source_path.name,
+                    block_label=block_label,
+                    block_start_offset=_parse_offset_text(start_text),
+                    block_end_offset=_parse_offset_text(end_text),
+                    source_text=source_path.read_text(encoding="utf-8"),
+                )
+            )
+        index = parse_text_message_index(
+            source_specs,
+            source_revision=recorded_revision,
+        )
+        payload = index.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    mismatch_count = sum(
+        message.source_offset_matches_sequential is False
+        for message in index.messages
+    )
+    block_mismatch_count = sum(
+        not block.declared_bytes_match_block_size for block in index.source_blocks
+    )
+    click.echo(
+        f"Wrote {len(index.messages)} source message records to {output}; "
+        f"{mismatch_count} offset annotation mismatch(es), "
+        f"{block_mismatch_count} block size mismatch(es) need review"
+    )
 
 
 @cli.command(name="inspect-text-dictionary")
