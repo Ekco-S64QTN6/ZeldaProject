@@ -35,3 +35,38 @@ Validate the exports and compare them with the reviewed versions under `data/ext
 CI loads all five committed exports through `load_source_export()` and compares their entry lists with `parse_data_table()` output from the pinned submodule. All tables must contain seven entries, but widths differ: `db` entries are one byte and `dw` entries two bytes. These tests validate source metadata and entry arithmetic; they do not verify the source offsets against a local ROM image.
 
 The `AddPendantOrCrystal` values are used by a specific falling-prize routine. They should not be treated as the complete chest, shop, overworld-secret, or inventory item tables.
+
+
+## Text dictionary pointer table
+
+`data/extracted/text-dictionary-pointers.json` records the 98 `dw` expressions
+in `DictionaryPointers` from `Bank0E.asm` at pinned revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`.
+
+- Source file-offset range: `$074703–$0747C6`.
+- Entry width/count: 98 two-byte `dw` expressions.
+- Source indices: `$00–$61`, including `DictionaryEntries_endOfTable` at index `$61`.
+- Each row retains the symbolic target expression; target file offsets are not resolved.
+
+This table is part of the game's encoded text system. Adjacent pointer values
+are used as bounds for variable-length dictionary fragments. The export records
+the pointer declarations only; it does not decode dictionary bytes, decode
+message streams, or translate encoded tokens into display text.
+
+To regenerate the export from the pinned submodule:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Bank0E.asm \
+  DictionaryPointers \
+  --table-offset '$074703' \
+  --directive dw \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/text-dictionary-pointers.json
+uv run zelda-suite validate-source-export /tmp/text-dictionary-pointers.json
+diff -u data/extracted/text-dictionary-pointers.json /tmp/text-dictionary-pointers.json
+```
+
+CI checks that all 98 records match the parsed pinned source exactly. The
+source-derived JSON is metadata only; no message, dictionary, or ROM bytes are
+copied into the project.

@@ -21,8 +21,9 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/falling-prize-y-offsets.json`](../../data/extracted/falling-prize-y-offsets.json) — indexed Y offsets.
 - [`data/extracted/falling-prize-x-offsets.json`](../../data/extracted/falling-prize-x-offsets.json) — indexed X offsets.
 - [`data/extracted/falling-prize-delay-timers.json`](../../data/extracted/falling-prize-delay-timers.json) — indexed delay timers.
+- [`data/extracted/text-dictionary-pointers.json`](../../data/extracted/text-dictionary-pointers.json) — 98 symbolic dictionary-fragment pointer expressions.
 
-All five seven-entry exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
+All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
 ## Phase 1 discovery notes
 
