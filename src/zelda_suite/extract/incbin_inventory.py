@@ -19,7 +19,7 @@ _INCBIN_RE = re.compile(
     re.IGNORECASE,
 )
 _SIZE_RE = re.compile(
-    r"\bSize\s*:\s*(?P<size>\$[0-9A-Fa-f]+|0x[0-9A-Fa-f]+|[0-9]+)",
+    r"\bSize\s*:\s*(?P<size>[^\s;]+)",
     re.IGNORECASE,
 )
 
