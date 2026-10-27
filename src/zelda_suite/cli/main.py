@@ -11,6 +11,8 @@ from zelda_suite import __version__
 from zelda_suite.extract import (
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
+    ROMImageInspectionError,
+    inspect_rom_image,
     load_source_export,
     parse_incbin_inventory,
     parse_source_pointer_table,
@@ -263,6 +265,49 @@ def inspect_incbin(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(declarations)} incbin declarations to {output}")
+
+
+@cli.command(name="inspect-rom")
+@click.argument(
+    "rom_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write metadata JSON to a new file instead of stdout.",
+)
+def inspect_rom(rom_path: Path, output: Path | None) -> None:
+    """Inspect a local ROM's size, SHA-256, header assessment, and LoROM mapping."""
+    try:
+        inspection = inspect_rom_image(rom_path)
+    except ROMImageInspectionError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        inspection.to_dict(),
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(f"Wrote ROM inspection metadata to {output}")
 
 
 @cli.command(name="validate-source-export")
