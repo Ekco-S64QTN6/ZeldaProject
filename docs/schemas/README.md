@@ -15,8 +15,11 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
 - [Text message index](./text-message-index.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-messages`.
+- [Named asset registry](./asset-registry.schema.json) — version 1 catalog schema for `data/extracted/manifest.json`.
 
 ## Committed source-derived data
+
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the eight named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
