@@ -36,8 +36,8 @@ must use that revision rather than silently updating to a newer upstream tree.
    `inspect-text-dictionary`, `inspect-text-messages`,
    `inspect-sprite-dispatch`, `inspect-music-track-index`, or
    `inspect-overworld-hidden-items` for the pinned hidden-item source layout.
-   Do not add a
-   second parser for a format that the existing parser already represents.
+   Do not add a second parser for a format that the existing parser already
+   represents.
    If a new format is necessary, define a strict, versioned export contract.
 3. **Preserve source facts.** Keep raw expressions, labels, source lines,
    source revision, explicit source annotations, and nullable/unknown values.
