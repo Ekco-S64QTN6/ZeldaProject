@@ -36,6 +36,7 @@ def test_registered_audit_joins_raw_receipt_slots_by_index() -> None:
         "maximum_price_value": 500,
         "receipt_layout_entry_count": 76,
         "receipt_indexes_within_layout": 7,
+        "receipt_indexes_with_comment_id_mismatch": 2,
     }
     assert [
         (
@@ -50,6 +51,15 @@ def test_registered_audit_joins_raw_receipt_slots_by_index() -> None:
         row["receipt_slot"]["table_index"] for row in report["rows"]
     ] == [46, 4, 5, 66, 68, 49, 14]
     assert report["rows"][0]["receipt_slot"]["item_value"]["expression"] == "$FF"
+    heart = report["rows"][3]["receipt_slot"]["graphics_index_annotation"]
+    assert heart["table_index"] == 0x42
+    assert heart["source_comment_item_id"] == 0x43
+    assert heart["source_comment_label"] == "HEART"
+    assert heart["source_comment_id_matches_table_index"] is False
+    arrows = report["rows"][4]["receipt_slot"]["graphics_index_annotation"]
+    assert arrows["source_comment_item_id"] == 0x45
+    assert arrows["source_comment_label"] == "10 ARROWS"
+    assert arrows["annotation_id_delta"] == 1
     assert report["evidence"] == {
         "source_only": True,
         "rom_bytes_read": False,
@@ -59,6 +69,8 @@ def test_registered_audit_joins_raw_receipt_slots_by_index() -> None:
         "receipt_item_names_resolved": False,
         "room_specific_shop_stock_resolved": False,
         "receipt_slot_semantics_verified": False,
+        "source_comment_ids_are_canonical": False,
+        "source_comment_labels_are_raw_annotations": True,
     }
     assert report == audit_shop_item_handlers(MANIFEST)
 

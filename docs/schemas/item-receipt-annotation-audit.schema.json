@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite item-receipt comment annotation audit",
+  "description": "Source-only audit of comment IDs on the dense 76-entry receive-item graphics-index table. Comment IDs and labels remain raw annotations and are not normalized into canonical item IDs.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "asset_name", "source_file",
+    "source_revision", "table_label", "entry_count", "entries",
+    "mismatched_entries", "missing_source_comment_ids",
+    "duplicate_source_comment_ids", "summary", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-item-receipt-annotation-audit" },
+    "format_version": { "const": 1 },
+    "registry": { "type": "string", "minLength": 1 },
+    "asset_name": { "const": "item-receipt-graphics-indices" },
+    "source_file": { "const": "ancilla_init.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "table_label": { "const": ".item_graphics_indices" },
+    "entry_count": { "const": 76 },
+    "entries": {
+      "type": "array",
+      "minItems": 76,
+      "maxItems": 76,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "mismatched_entries": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+    "missing_source_comment_ids": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 255 } },
+    "duplicate_source_comment_ids": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 255 } },
+    "summary": { "$ref": "#/$defs/summary" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index", "entry_file_offset", "expression", "literal_value",
+        "source_line", "source_comment", "source_comment_item_id",
+        "source_comment_label", "source_comment_annotation_parsed",
+        "source_comment_id_matches_table_index", "annotation_id_delta"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0, "maximum": 75 },
+        "entry_file_offset": { "type": "integer", "minimum": 0 },
+        "expression": { "type": "string", "minLength": 1 },
+        "literal_value": { "type": ["integer", "null"] },
+        "source_line": { "type": "integer", "minimum": 1 },
+        "source_comment": { "type": ["string", "null"] },
+        "source_comment_item_id": { "type": ["integer", "null"], "minimum": 0, "maximum": 255 },
+        "source_comment_label": { "type": ["string", "null"] },
+        "source_comment_annotation_parsed": { "type": "boolean" },
+        "source_comment_id_matches_table_index": { "type": ["boolean", "null"] },
+        "annotation_id_delta": { "type": ["integer", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "table_entry_count", "parsed_source_comment_count",
+        "source_comment_parse_failure_count",
+        "source_comment_ids_matching_table_index_count",
+        "source_comment_ids_mismatched_count", "missing_source_comment_id_count",
+        "duplicate_source_comment_id_count", "first_mismatched_table_index",
+        "last_mismatched_table_index"
+      ],
+      "properties": {
+        "table_entry_count": { "const": 76 },
+        "parsed_source_comment_count": { "type": "integer", "minimum": 0, "maximum": 76 },
+        "source_comment_parse_failure_count": { "type": "integer", "minimum": 0, "maximum": 76 },
+        "source_comment_ids_matching_table_index_count": { "type": "integer", "minimum": 0, "maximum": 76 },
+        "source_comment_ids_mismatched_count": { "type": "integer", "minimum": 0, "maximum": 76 },
+        "missing_source_comment_id_count": { "type": "integer", "minimum": 0 },
+        "duplicate_source_comment_id_count": { "type": "integer", "minimum": 0 },
+        "first_mismatched_table_index": { "type": ["integer", "null"], "minimum": 0 },
+        "last_mismatched_table_index": { "type": ["integer", "null"], "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "canonical_item_ids_resolved",
+        "semantic_item_names_resolved", "source_comments_corrected"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "canonical_item_ids_resolved": { "const": false },
+        "semantic_item_names_resolved": { "const": false },
+        "source_comments_corrected": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

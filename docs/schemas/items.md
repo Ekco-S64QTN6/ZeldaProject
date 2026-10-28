@@ -48,6 +48,34 @@ names. The strict schemas are
 [`shop-item-handlers-export.schema.json`](./shop-item-handlers-export.schema.json)
 and [`shop-item-handlers-audit.schema.json`](./shop-item-handlers-audit.schema.json).
 
+## Receive-item graphics comment annotations
+
+The registered `item-receipt-graphics-indices` table has 76 dense entries, indexed
+by its position from `$00` through `$4B`. Source comments identify slots
+`$00–$3F`, then resume at comment ID `$41`; the comment ID `$40` is absent.
+Consequently, table positions `$40–$4B` retain source comment IDs `$41–$4C`.
+The source-derived audit preserves this discrepancy and does not rewrite either
+the table indexes or the comments.
+
+Run:
+
+```bash
+uv run zelda-suite audit-item-receipt-annotations
+uv run zelda-suite audit-item-receipt-annotations --output /tmp/item-receipt-annotation-audit.json
+```
+
+The audit reports 76 parsed comments, 64 comment IDs equal to their dense table
+indexes, 12 mismatches (all with a +1 delta), and missing source-comment ID
+`$40`. These are annotations in pinned source, not canonical item IDs or
+verified runtime item names. The shop-handler audit now shows the raw graphics
+expression, comment ID, comment label, and mismatch flag for each positional
+receipt selector; in particular, selectors `$42` and `$44` point to entries
+whose comments say `0x43 - HEART` and `0x45 - 10 ARROWS`. No automatic
+renumbering or semantic correction is applied.
+
+See the [annotation audit schema](./item-receipt-annotation-audit.schema.json)
+and the [shop-handler audit schema](./shop-item-handlers-audit.schema.json).
+
 ## Source-only audit
 
 Run:

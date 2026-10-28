@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add `audit-item-receipt-annotations`, which audits the 76 dense `.item_graphics_indices` slots against source-comment IDs and labels, reports missing comment ID `$40` and 12 positional/comment-ID mismatches, and exposes raw annotations in shop handler audit rows without promoting them to canonical IDs.
+
 - Add `shop-item-handlers`, a seven-entry source catalog of standard `Sprite_ShopKeeper` purchases. `inspect-shop-item-handlers` preserves A/Y price literals and source lines; `audit-shop-item-handlers` joins receipt selectors to raw receive-item layout slots. Source handler addresses/prices remain unverified against a ROM, and the catalog does not infer room-specific shop stock or semantic item names.
 
 - Register 168 packed `Dungeon_ChestData` records and add `inspect-dungeon-chest-data` plus `audit-dungeon-chest-data`. The export preserves raw three-byte values and exposes the source-commented top-byte item value, low-15-bit room value, and bit-15 big-chest flag. The audit reports repeated room values and item-value frequencies; offsets and item names remain unverified.

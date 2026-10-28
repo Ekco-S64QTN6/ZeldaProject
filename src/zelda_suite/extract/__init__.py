@@ -65,6 +65,11 @@ from zelda_suite.extract.incbin_inventory_audit import (
     IncbinInventoryAuditError,
     audit_incbin_inventories,
 )
+from zelda_suite.extract.item_receipt_annotation_audit import (
+    ITEM_RECEIPT_ANNOTATION_AUDIT_FORMAT,
+    ItemReceiptAnnotationAuditError,
+    audit_item_receipt_annotations,
+)
 from zelda_suite.extract.item_receipt_layout import (
     ItemReceiptLayoutError,
     build_item_receipt_layout,
@@ -188,6 +193,7 @@ __all__ = [
     "DUNGEON_CHEST_DATA_FORMAT",
     "DUNGEON_ROOM_ASSET_AUDIT_FORMAT",
     "INCBIN_INVENTORY_AUDIT_FORMAT",
+    "ITEM_RECEIPT_ANNOTATION_AUDIT_FORMAT",
     "ITEM_RECEIPT_LAYOUT_FORMAT",
     "MIXED_DATA_TABLE_FORMAT",
     "MUSIC_ASSET_AUDIT_FORMAT",
@@ -223,6 +229,7 @@ __all__ = [
     "IncbinDeclaration",
     "IncbinInventoryAuditError",
     "IncbinInventoryError",
+    "ItemReceiptAnnotationAuditError",
     "ItemReceiptLayoutError",
     "MessageSourceBlock",
     "MixedDataField",
@@ -263,6 +270,7 @@ __all__ = [
     "audit_dungeon_chest_data",
     "audit_dungeon_room_assets",
     "audit_incbin_inventories",
+    "audit_item_receipt_annotations",
     "audit_music_assets",
     "audit_oam_allocation",
     "audit_shop_item_handlers",

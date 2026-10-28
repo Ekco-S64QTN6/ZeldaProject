@@ -56,7 +56,8 @@ receive-item arrays plus a separate 14-word mask table; it does not resolve
 canonical item IDs. The
 `item-receipt-graphics-indices` asset preserves all 76 bytes and inline
 comments in version 2, including the gap between the `0x3F` and `0x41`
-comment IDs.
+comment IDs. `zelda-suite audit-item-receipt-annotations` counts dense slots
+separately from those comment IDs and reports all twelve shifted annotations.
 
 Add an asset by committing its validated export, adding exactly one registry
 entry, adding test coverage for its provenance/count, and documenting any
@@ -69,8 +70,9 @@ The lower-level `load_source_export(path)` remains available when a tool is
 working with a temporary export that is not registered. It validates pointer
 tables, incbin inventories, scalar data tables, joined receive-item layouts,
 dictionary fragment inventories, text message indexes, sprite dispatch tables,
-music-track indexes, packed dungeon chest data, shop-item handler catalogs, and
-mixed-width source tables before returning the parsed payload.
+music-track indexes, packed dungeon chest data, item-receipt annotation audits,
+shop-item handler catalogs, and mixed-width source tables before returning the
+parsed payload.
 
 ```python
 from zelda_suite.extract import load_source_export
