@@ -19,7 +19,6 @@ from zelda_suite.extract import (
     ROMImageInspectionError,
     ROMTableVerificationError,
     inspect_rom_image,
-    verify_registered_scalar_tables,
     load_source_export,
     parse_data_table,
     parse_dictionary_fragment_inventory,
@@ -32,6 +31,7 @@ from zelda_suite.extract import (
     sha256_rom_bytes,
     validate_overworld_payload_pairs,
     validate_source_export,
+    verify_registered_scalar_tables,
 )
 from zelda_suite.project import (
     get_source_asset,
