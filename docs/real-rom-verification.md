@@ -155,8 +155,11 @@ SHA-256, table name, and mismatch offsets in the local test notes.
 The repeatable `verify-rom-tables` command compares direct numeric values in
 registered `zelda-suite-data-table` exports against the local ROM. It uses
 each entry's declared file offset, the `db`/`dw`/`dl` directive width for
-the literal bytes, and the export's entry stride for indexing. Unresolved
-expressions are skipped rather than guessed.
+the literal bytes, and the export's entry stride for indexing. Simple negative
+decimal literals (such as `db -5`) are checked as two's-complement values
+within the signed range of that directive; symbolic or otherwise unresolved
+expressions are skipped rather than guessed. The source exports are not
+rewritten or normalized by this check.
 
 Run from the repository root:
 
@@ -186,8 +189,9 @@ printf 'Verification report: %s\n' "$TEST_DIR/scalar-table-verification.json"
 ```
 
 The command is read-only and never writes ROM bytes. It verifies only direct
-numeric source-table literals at their recorded offsets; it does not decode
-semantics, validate skipped expressions, or establish canonical ROM identity.
+numeric source-table literals plus simple negative decimal literals at their
+recorded offsets; it does not decode semantics, validate skipped expressions,
+or establish canonical ROM identity.
 Review mismatches instead of shifting offsets or normalizing expressions
 speculatively.
 
