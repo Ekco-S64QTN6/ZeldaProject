@@ -1,6 +1,6 @@
 # Overworld hidden-item data: source discovery
 
-Status: **Phase 1 source discovery; no local-ROM pointer/byte verification or editable record export yet.**
+Status: **Phase 1 source layout and read-only verifier implemented; verification against the user's local ROM remains to be run. No editable item schema is claimed.**
 This note captures the table layout described by the pinned disassembly and its
 ROM-analysis log. It is not an extraction implementation.
 
@@ -55,10 +55,13 @@ terminator before the next screen label. Because the reader stops on the
 `$FFFF` word rather than on a source label or brace boundary, a label block
 must not automatically be treated as a complete, independent record array.
 
-**Remaining gate:** preserve pointer expressions and the source-level reader
-rule, but do not claim ROM-verified pointer targets, record offsets, per-area
-record counts, or value semantics until the source layout is compared with a
-trusted local US ROM.
+**Remaining gate:** the new `zelda-suite verify-overworld-hidden-items ROM`
+command computes the source record offsets, resolves each pointer expression
+to a low-bank LoROM word, derives lists by the consumer's sentinel rule, and
+checks the pointer/data bytes against a supplied local image. It has synthetic
+regression coverage, but has not yet been run by the user against their ROM.
+Do not call the result a canonical-ROM or provenance check; semantic value
+meanings also remain unresolved.
 
 ## Proposed raw extraction record
 
@@ -90,20 +93,21 @@ transform used by a future API.
 2. Source review now identifies `Overworld_RevealSecret` as the reader: it
    advances by three bytes and stops on a leading `$FFFF` word. Regression
    tests preserve this source pattern and the declaration-size accounting.
-3. Compare all 128 pointer entries with their corresponding two-byte entries
-   in a locally supplied clean US ROM; resolve bank-relative pointers using the
-   verified runtime mapping, not assumptions about label addresses.
-4. Determine the meaning of the value byte from the code that consumes it.
+3. Run `zelda-suite verify-overworld-hidden-items "$ROM"` against the local
+   image to compare 128 pointer words, 351 three-byte records, 67 sentinel words,
+   and four replacement Map16 words. Review all mismatches without modifying
+   source offsets speculatively.
+4. The verifier derives the 128 area lists by scanning three-byte records until
+   a leading `$FFFF` sentinel. Confirm the reported grouping against a trusted
+   ROM before treating per-area record counts as validated data.
+5. Determine the meaning of the value byte from the code that consumes it.
    Preserve unknown values as raw numbers in the meantime.
-5. The source declarations account for the documented range as 351
-   three-byte entries plus 67 two-byte sentinel words. Compare that layout
-   against a trusted local US ROM and establish record grouping across source
-   labels before asserting per-area counts or exposing CRUD operations.
 6. Keep ROMs and partial ROM slices local. Tests should use synthetic byte
    fixtures or user-supplied local fixtures, never committed ROM data.
 
-This note and its source-only regression coverage do not read, copy, or modify
-ROM bytes.
+The source parser and synthetic tests do not use a user's ROM. The verification
+command reads a locally supplied ROM and writes only its JSON report; it never
+changes, copies, or stores ROM bytes in the repository.
 
 
 ## Export the source pointer table
@@ -142,3 +146,23 @@ labels into file offsets or verify any of the pointed-to data against a local
 ROM. The source-level byte accounting matches the documented range, but pointer
 resolution, record bytes, and per-area grouping remain unverified against a
 local ROM.
+
+
+## Read-only ROM verification command
+
+The `verify-overworld-hidden-items` command can be run from the repository
+root after the ROM variable is set as described in
+[`real-rom-verification.md`](../real-rom-verification.md):
+
+```bash
+uv run zelda-suite verify-overworld-hidden-items "$ROM" \\
+  --output /tmp/overworld-hidden-item-verification.json
+```
+
+The report format is described by
+[`overworld-hidden-item-verification.schema.json`](./overworld-hidden-item-verification.schema.json).
+It checks 550 expected byte spans and provides the source-derived record index
+list for each of the 128 area pointers. The JSON's `provenance_verified` field
+is deliberately false: matching known table declarations does not establish a
+canonical ROM dump. Test against a real local image before accepting the
+source-commented offsets as verified for that image.
