@@ -24,7 +24,7 @@ from zelda_suite.extract.rom_image import (
 
 ROM_TABLE_VERIFICATION_FORMAT = "zelda-suite-rom-table-verification"
 DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
-remove classifierclass ROMTableVerificationError(ValueError):
+class ROMTableVerificationError(ValueError):
     """Raised when a ROM or registry cannot be used for scalar-table verification."""
 
 
