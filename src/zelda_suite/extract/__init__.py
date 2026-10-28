@@ -110,6 +110,13 @@ from zelda_suite.extract.text_dictionary_pointer_verification import (
     TextDictionaryPointerVerificationError,
     verify_text_dictionary_pointers,
 )
+from zelda_suite.extract.text_message_byte_verification import (
+    PINNED_TEXT_SOURCE_REVISION,
+    TEXT_MESSAGE_BYTE_VERIFICATION_FORMAT,
+    TextMessageByteVerificationError,
+    default_text_message_source_blocks,
+    verify_text_message_bytes,
+)
 from zelda_suite.extract.text_message_index import (
     MessageSourceBlock,
     TextMessageBlockRecord,
@@ -122,13 +129,6 @@ from zelda_suite.extract.text_message_index_audit import (
     TEXT_MESSAGE_INDEX_AUDIT_FORMAT,
     TextMessageIndexAuditError,
     audit_text_message_index,
-)
-from zelda_suite.extract.text_message_byte_verification import (
-    PINNED_TEXT_SOURCE_REVISION,
-    TEXT_MESSAGE_BYTE_VERIFICATION_FORMAT,
-    TextMessageByteVerificationError,
-    default_text_message_source_blocks,
-    verify_text_message_bytes,
 )
 
 __all__ = [
