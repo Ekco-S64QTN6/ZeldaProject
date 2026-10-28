@@ -168,6 +168,7 @@ def test_preserves_inline_comments_only_when_requested_in_json_records() -> None
     assert entries[0].to_dict(include_inline_comment=True)["inline_comment"] == "first group"
     assert entries[-1].to_dict(include_inline_comment=True)["inline_comment"] is None
 
+
 def test_expected_entry_count_accepts_exact_count_and_rejects_mismatch() -> None:
     entries = parse_data_table(
         SAMPLE_SOURCE,
