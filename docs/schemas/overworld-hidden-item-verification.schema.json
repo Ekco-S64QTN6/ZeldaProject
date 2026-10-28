@@ -63,7 +63,7 @@
         "three_byte_record_count": {"const": 351},
         "two_byte_sentinel_count": {"const": 67},
         "replacement_word_count": {"const": 4},
-        "data_start_offset": {"const": 901113},
+        "data_start_offset": {"const": 902137},
         "data_end_exclusive": {"const": 903324},
         "data_region_size_bytes": {"const": 1187}
       },
