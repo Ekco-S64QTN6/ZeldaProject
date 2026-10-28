@@ -116,6 +116,17 @@ from zelda_suite.extract.rom_table_verification import (
     ROMTableVerificationError,
     verify_registered_scalar_tables,
 )
+from zelda_suite.extract.shop_item_handlers import (
+    ShopItemHandlerEntry,
+    ShopItemHandlersParseError,
+    ShopItemHandlersTable,
+    parse_shop_item_handlers,
+)
+from zelda_suite.extract.shop_item_handlers_audit import (
+    SHOP_ITEM_HANDLERS_AUDIT_FORMAT,
+    ShopItemHandlersAuditError,
+    audit_shop_item_handlers,
+)
 from zelda_suite.extract.source_expression_audit import (
     SOURCE_EXPRESSION_AUDIT_FORMAT,
     SourceExpressionAuditError,
@@ -137,17 +148,6 @@ from zelda_suite.extract.sprite_prep_dispatch_audit import (
     SPRITE_PREP_DISPATCH_AUDIT_FORMAT,
     SpritePrepDispatchAuditError,
     audit_sprite_prep_dispatch,
-)
-from zelda_suite.extract.shop_item_handlers import (
-    ShopItemHandlerEntry,
-    ShopItemHandlersParseError,
-    ShopItemHandlersTable,
-    parse_shop_item_handlers,
-)
-from zelda_suite.extract.shop_item_handlers_audit import (
-    SHOP_ITEM_HANDLERS_AUDIT_FORMAT,
-    ShopItemHandlersAuditError,
-    audit_shop_item_handlers,
 )
 from zelda_suite.extract.text_dictionary_audit import (
     TEXT_DICTIONARY_AUDIT_FORMAT,
