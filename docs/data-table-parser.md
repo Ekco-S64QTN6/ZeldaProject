@@ -101,7 +101,7 @@ Use `--output PATH` to save a new JSON report, or `--fail-on-unresolved` for CI/
 
 ## Current registered expression-audit baseline
 
-The integration test pins the current 15 registered `zelda-suite-data-table`
+The integration test pins the current 16 registered `zelda-suite-data-table`
 assets (689 entries, all from disassembly revision
 `347c23f9fc019c72d32da537c9cb235f468d021d`). The current metadata contains 514
 direct numeric literals, 77 bare negative decimal literals, and 98 unresolved
