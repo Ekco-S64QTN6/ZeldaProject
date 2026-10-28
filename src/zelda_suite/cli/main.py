@@ -25,7 +25,6 @@ from zelda_suite.extract import (
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
-    SHOP_ITEM_HANDLERS_FORMAT,
     ShopItemHandlersAuditError,
     SourceExpressionAuditError,
     SpritePrepDispatchAuditError,
