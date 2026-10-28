@@ -1,7 +1,7 @@
-"""SQLite project initialization and canonical JSON export.
+"""SQLite project metadata, validated source assets, migrations, and JSON export.
 
-Schema version 1 deliberately stores only project metadata. Game-system tables
-will be added alongside the Phase 1 extractors that define their semantics.
+Schema v2 stores project metadata and validated source-export snapshots.
+Semantic game-system tables and ROM writing remain future work.
 """
 from __future__ import annotations
 
