@@ -13,6 +13,7 @@ from typing import Any
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
+DUNGEON_CHEST_DATA_FORMAT = "zelda-suite-dungeon-chest-data"
 MIXED_DATA_TABLE_FORMAT = "zelda-suite-mixed-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
 TEXT_MESSAGE_INDEX_FORMAT = "zelda-suite-text-message-index"
@@ -90,6 +91,45 @@ _DATA_TABLE_ENTRY_KEYS = {
     "source_revision",
 }
 _DATA_TABLE_ENTRY_V2_KEYS = _DATA_TABLE_ENTRY_KEYS | {"inline_comment"}
+
+_DUNGEON_CHEST_DATA_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "source_range_annotation",
+    "source_annotated_start_offset",
+    "source_annotated_end_offset",
+    "table_size_bytes",
+    "entry_width_bytes",
+    "entry_count",
+    "entries",
+    "evidence",
+}
+_DUNGEON_CHEST_DATA_ENTRY_KEYS = {
+    "table_index",
+    "candidate_entry_offset",
+    "source_line",
+    "expression",
+    "literal_value",
+    "item_value",
+    "room_value",
+    "is_big_chest",
+    "source_revision",
+}
+_DUNGEON_CHEST_DATA_EVIDENCE_KEYS = {
+    "source_only",
+    "rom_bytes_read",
+    "source_range_offsets_verified",
+    "item_value_names_resolved",
+    "room_values_verified_against_rom",
+}
+_DUNGEON_CHEST_RANGE_RE = re.compile(
+    r"\$(?P<start>[0-9A-Fa-f]+)-\$(?P<end>[0-9A-Fa-f]+)\Z"
+)
+_DUNGEON_CHEST_LITERAL_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
+
 
 _MIXED_DATA_TABLE_TOP_KEYS = {
     "format",
@@ -483,6 +523,115 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
                 f"{context}.source_revision does not match top-level source_revision"
             )
 
+
+
+
+def _validate_dungeon_chest_data_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _DUNGEON_CHEST_DATA_TOP_KEYS, "dungeon chest data export")
+    if payload["format"] != DUNGEON_CHEST_DATA_FORMAT:
+        raise AssetLoadError("dungeon chest data has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported dungeon chest data format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    if _string(payload["source_file"], "source_file") != "Bank01.asm":
+        raise AssetLoadError("dungeon chest data source_file must be 'Bank01.asm'")
+    revision = _string(payload["source_revision"], "source_revision")
+    if _string(payload["table_label"], "table_label") != "Dungeon_ChestData":
+        raise AssetLoadError("dungeon chest data table_label must be 'Dungeon_ChestData'")
+
+    annotation = _string(
+        payload["source_range_annotation"], "source_range_annotation"
+    )
+    match = _DUNGEON_CHEST_RANGE_RE.fullmatch(annotation)
+    if match is None:
+        raise AssetLoadError("source_range_annotation must be '$start-$end'")
+    annotation_start = int(match.group("start"), 16)
+    annotation_end = int(match.group("end"), 16)
+    start = _integer(
+        payload["source_annotated_start_offset"],
+        "source_annotated_start_offset",
+        minimum=0,
+    )
+    end = _integer(
+        payload["source_annotated_end_offset"],
+        "source_annotated_end_offset",
+        minimum=0,
+    )
+    if (start, end) != (annotation_start, annotation_end):
+        raise AssetLoadError(
+            "source_annotated_start/end_offset do not match source_range_annotation"
+        )
+    if end < start:
+        raise AssetLoadError("source_annotated_end_offset precedes start offset")
+
+    table_size = _integer(payload["table_size_bytes"], "table_size_bytes", minimum=1)
+    if table_size != end - start + 1:
+        raise AssetLoadError("table_size_bytes is inconsistent with source range")
+    entry_width = _integer(
+        payload["entry_width_bytes"], "entry_width_bytes", minimum=1
+    )
+    if entry_width != 3:
+        raise AssetLoadError("dungeon chest data entry_width_bytes must be 3")
+    count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    if table_size != count * entry_width:
+        raise AssetLoadError("table_size_bytes is inconsistent with entry count")
+
+    entries = payload["entries"]
+    if not isinstance(entries, list) or len(entries) != count:
+        raise AssetLoadError("entry_count does not match the chest data entries")
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _DUNGEON_CHEST_DATA_ENTRY_KEYS, context)
+        index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
+        if index != expected_index:
+            raise AssetLoadError(f"{context}.table_index must be {expected_index}")
+        candidate_offset = _integer(
+            entry["candidate_entry_offset"],
+            f"{context}.candidate_entry_offset",
+            minimum=0,
+        )
+        expected_offset = start + expected_index * entry_width
+        if candidate_offset != expected_offset:
+            raise AssetLoadError(
+                f"{context}.candidate_entry_offset must be {expected_offset:#x}"
+            )
+        _integer(entry["source_line"], f"{context}.source_line", minimum=1)
+        expression = _string(entry["expression"], f"{context}.expression")
+        if _DUNGEON_CHEST_LITERAL_RE.fullmatch(expression) is None:
+            raise AssetLoadError(f"{context}.expression must be a six-digit hex literal")
+        literal = _integer(entry["literal_value"], f"{context}.literal_value", minimum=0)
+        if literal > 0xFFFFFF:
+            raise AssetLoadError(f"{context}.literal_value must fit in 24 bits")
+        if int(expression[1:], 16) != literal:
+            raise AssetLoadError(f"{context}.literal_value does not match expression")
+        item_value = _integer(entry["item_value"], f"{context}.item_value", minimum=0)
+        if item_value > 0xFF or item_value != ((literal >> 16) & 0xFF):
+            raise AssetLoadError(f"{context}.item_value does not match the top byte")
+        room_value = _integer(entry["room_value"], f"{context}.room_value", minimum=0)
+        if room_value > 0x7FFF or room_value != (literal & 0x7FFF):
+            raise AssetLoadError(f"{context}.room_value does not match the low 15 bits")
+        is_big_chest = _boolean(entry["is_big_chest"], f"{context}.is_big_chest")
+        if is_big_chest is not (bool(literal & 0x8000)):
+            raise AssetLoadError(f"{context}.is_big_chest does not match bit 15")
+        if _string(entry["source_revision"], f"{context}.source_revision") != revision:
+            raise AssetLoadError(f"{context}.source_revision does not match top-level source_revision")
+
+    evidence = _object(payload["evidence"], "evidence")
+    _exact_keys(evidence, _DUNGEON_CHEST_DATA_EVIDENCE_KEYS, "evidence")
+    if _boolean(evidence["source_only"], "evidence.source_only") is not True:
+        raise AssetLoadError("evidence.source_only must be true")
+    for field in (
+        "rom_bytes_read",
+        "source_range_offsets_verified",
+        "item_value_names_resolved",
+        "room_values_verified_against_rom",
+    ):
+        if _boolean(evidence[field], f"evidence.{field}") is not False:
+            raise AssetLoadError(f"evidence.{field} must be false")
 
 
 def _validate_mixed_data_table_export(payload: dict[str, Any]) -> None:
@@ -1632,6 +1781,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_incbin_export(export)
     elif format_name == DATA_TABLE_FORMAT:
         _validate_data_table_export(export)
+    elif format_name == DUNGEON_CHEST_DATA_FORMAT:
+        _validate_dungeon_chest_data_export(export)
     elif format_name == MIXED_DATA_TABLE_FORMAT:
         _validate_mixed_data_table_export(export)
     elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
@@ -1669,6 +1820,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     POINTER_TABLE_FORMAT,
     INCBIN_INVENTORY_FORMAT,
     DATA_TABLE_FORMAT,
+    DUNGEON_CHEST_DATA_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
@@ -1796,6 +1948,7 @@ def load_extracted_asset(
         POINTER_TABLE_FORMAT: "entry_count",
         INCBIN_INVENTORY_FORMAT: "declaration_count",
         DATA_TABLE_FORMAT: "entry_count",
+        DUNGEON_CHEST_DATA_FORMAT: "entry_count",
         MIXED_DATA_TABLE_FORMAT: "record_count",
         ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",

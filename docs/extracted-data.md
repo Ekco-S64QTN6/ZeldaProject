@@ -678,6 +678,38 @@ The joined view is registered as a 76-record asset. It is a convenience layout,
 not a canonical item catalog or a ROM-derived payload.
 
 
+## Packed dungeon chest records
+
+The registered [`dungeon-chest-data`](../data/extracted/dungeon-chest-data.json)
+export preserves all 168 `dl` records under `Dungeon_ChestData` from pinned
+`Bank01.asm` revision `347c23f9fc019c72d32da537c9cb235f468d021d`. The source
+comments annotate `$00E96E-$00EB65`, a 504-byte span. The export records
+candidate per-entry offsets from that range but does not verify them against a
+local ROM.
+
+The source comments define the packed value: the top byte is the item value,
+the low 15 bits are the room value, and bit 15 (`0x8000`) marks a big chest.
+The source consumer iterates three-byte entries, matches the room field, reads
+the top-byte item value, and tests the big-chest flag. The JSON keeps item and
+room values raw; it does not resolve item names or claim verified room IDs.
+
+Run the source parser and audit:
+
+```bash
+uv run zelda-suite inspect-dungeon-chest-data reference/AsarUSALTTPDisassembly/Bank01.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --entry-count 168 --output /tmp/dungeon-chest-data.json
+uv run zelda-suite validate-source-export /tmp/dungeon-chest-data.json
+diff -u data/extracted/dungeon-chest-data.json /tmp/dungeon-chest-data.json
+uv run zelda-suite audit-dungeon-chest-data
+```
+
+The source-only audit counts 106 distinct room values, 32 room values with
+multiple entries, 11 entries with the big-chest bit set, 157 without it, and 33
+distinct raw item values. Repeated room values are retained because the source
+consumer iterates among multiple chest records for one room. See the
+[item/chest discovery guide](./schemas/items.md), the
+[export schema](./schemas/dungeon-chest-data-export.schema.json), and the
+[audit schema](./schemas/dungeon-chest-data-audit.schema.json).
+
 ## Dungeon room object-pointer table
 
 `data/extracted/dungeon-room-object-pointers.json` records the 320

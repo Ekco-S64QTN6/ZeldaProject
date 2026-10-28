@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite Dungeon chest data audit",
+  "description": "Source-only summary of packed chest item/room values, repeated room values, and big-chest flags. No item names or ROM offsets are verified.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "asset_name", "source_file",
+    "source_revision", "table_label", "source_range_annotation",
+    "source_annotated_start_offset", "source_annotated_end_offset",
+    "room_groups", "duplicate_room_groups", "item_value_distribution",
+    "summary", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-dungeon-chest-data-audit" },
+    "format_version": { "const": 1 },
+    "registry": { "type": "string", "minLength": 1 },
+    "asset_name": { "type": "string", "minLength": 1 },
+    "source_file": { "const": "Bank01.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "table_label": { "const": "Dungeon_ChestData" },
+    "source_range_annotation": { "type": "string", "minLength": 1 },
+    "source_annotated_start_offset": { "type": "integer", "minimum": 0 },
+    "source_annotated_end_offset": { "type": "integer", "minimum": 0 },
+    "room_groups": { "type": "array", "items": { "$ref": "#/$defs/room_group" } },
+    "duplicate_room_groups": { "type": "array", "items": { "$ref": "#/$defs/room_group" } },
+    "item_value_distribution": { "type": "array", "items": { "$ref": "#/$defs/item_distribution" } },
+    "summary": { "$ref": "#/$defs/summary" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "room_group": {
+      "type": "object",
+      "required": ["room_value", "entry_count", "entry_indexes", "item_values", "big_chest_entry_indexes"],
+      "properties": {
+        "room_value": { "type": "integer", "minimum": 0, "maximum": 32767 },
+        "entry_count": { "type": "integer", "minimum": 1 },
+        "entry_indexes": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+        "item_values": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 255 } },
+        "big_chest_entry_indexes": { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+      },
+      "additionalProperties": false
+    },
+    "item_distribution": {
+      "type": "object",
+      "required": ["item_value", "entry_count", "entry_indexes"],
+      "properties": {
+        "item_value": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "entry_count": { "type": "integer", "minimum": 1 },
+        "entry_indexes": { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "entry_count", "unique_room_value_count", "room_values_with_multiple_entries",
+        "big_chest_count", "small_chest_count", "distinct_item_value_count"
+      ],
+      "properties": {
+        "entry_count": { "type": "integer", "minimum": 1 },
+        "unique_room_value_count": { "type": "integer", "minimum": 1 },
+        "room_values_with_multiple_entries": { "type": "integer", "minimum": 0 },
+        "big_chest_count": { "type": "integer", "minimum": 0 },
+        "small_chest_count": { "type": "integer", "minimum": 0 },
+        "distinct_item_value_count": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "source_range_offsets_verified",
+        "item_value_names_resolved", "room_values_verified_against_rom"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "source_range_offsets_verified": { "const": false },
+        "item_value_names_resolved": { "const": false },
+        "room_values_verified_against_rom": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

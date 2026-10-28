@@ -16,6 +16,7 @@ from zelda_suite.extract import (
     PINNED_TEXT_SOURCE_REVISION,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
+    DungeonChestDataAuditError,
     DungeonRoomAssetAuditError,
     IncbinInventoryAuditError,
     MessageSourceBlock,
@@ -30,6 +31,7 @@ from zelda_suite.extract import (
     TextDictionaryPointerVerificationError,
     TextMessageByteVerificationError,
     TextMessageIndexAuditError,
+    audit_dungeon_chest_data,
     audit_dungeon_room_assets,
     audit_incbin_inventories,
     audit_music_assets,
@@ -43,6 +45,7 @@ from zelda_suite.extract import (
     load_source_export,
     parse_data_table,
     parse_dictionary_fragment_inventory,
+    parse_dungeon_chest_data,
     parse_incbin_inventory,
     parse_mixed_data_table,
     parse_music_track_index,
@@ -1732,6 +1735,139 @@ def verify_rom_tables_command(
 
     if report["summary"]["mismatches"]:
         raise click.exceptions.Exit(1)
+
+
+
+@cli.command(name="inspect-dungeon-chest-data")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    required=True,
+    help="Pinned disassembly revision to record in the export.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=168,
+    show_default=True,
+    help="Expected number of packed three-byte chest entries.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON export to a new file instead of stdout.",
+)
+def inspect_dungeon_chest_data(
+    source: Path,
+    source_revision: str,
+    entry_count: int,
+    output: Path | None,
+) -> None:
+    """Export raw room/item fields from Dungeon_ChestData without ROM reads."""
+    try:
+        source_text = source.read_text(encoding="utf-8")
+        table = parse_dungeon_chest_data(
+            source_text,
+            source_revision=source_revision,
+            source_file=source.name,
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    click.echo(
+        f"Wrote {len(table.entries)} chest entries to {output}; "
+        "source-range offsets remain unverified"
+    )
+
+
+@cli.command(name="audit-dungeon-chest-data")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--asset",
+    "asset_name",
+    default="dungeon-chest-data",
+    show_default=True,
+    help="Registered packed dungeon chest data asset name.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+def audit_dungeon_chest_data_command(
+    registry_path: Path | None,
+    asset_name: str,
+    output: Path | None,
+) -> None:
+    """Summarize raw chest-room values, big-chest flags, and repeated rooms."""
+    try:
+        report = audit_dungeon_chest_data(
+            registry_path or "data/extracted/manifest.json",
+            asset_name=asset_name,
+        )
+    except (DungeonChestDataAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote dungeon chest data audit to {output}; "
+        f"entries={summary['entry_count']}, "
+        f"unique_rooms={summary['unique_room_value_count']}, "
+        f"repeated_rooms={summary['room_values_with_multiple_entries']}, "
+        f"big_chests={summary['big_chest_count']}"
+    )
 
 
 @cli.command(name="audit-dungeon-room-assets")
