@@ -212,3 +212,47 @@ def test_cli_writes_report_refuses_overwrite_and_exits_nonzero_on_mismatch(
     failed = runner.invoke(cli, arguments)
     assert failed.exit_code == 1
     assert '"mismatch_byte_count": 1' in failed.output
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PINNED_SOURCE_ROOT = ROOT / "reference" / "AsarUSALTTPDisassembly"
+
+
+@pytest.mark.skipif(
+    not all(
+        (PINNED_SOURCE_ROOT / name).is_file()
+        for name in ("Bank1C.asm", "Bank0E.asm")
+    ),
+    reason="AsarUSALTTPDisassembly submodule is not checked out",
+)
+def test_pinned_source_blocks_parse_all_messages_and_preserve_source_warnings(
+    tmp_path: Path,
+) -> None:
+    """Exercise the strict literal-byte parser on the pinned full source blocks."""
+    from zelda_suite.extract.text_message_byte_verification import (
+        default_text_message_source_blocks,
+    )
+
+    main_source = (PINNED_SOURCE_ROOT / "Bank1C.asm").read_text(encoding="utf-8")
+    extra_source = (PINNED_SOURCE_ROOT / "Bank0E.asm").read_text(encoding="utf-8")
+    source_blocks = default_text_message_source_blocks(main_source, extra_source)
+
+    rom_path = tmp_path / "synthetic-zero-image.smc"
+    rom_path.write_bytes(bytes(EXPECTED_US_ROM_SIZE))
+    report = verify_text_message_bytes(rom_path, source_blocks)
+
+    summary = report["summary"]
+    assert report["source_revision"] == PINNED_SOURCE_REVISION
+    assert summary["source_block_count"] == 2
+    assert summary["message_count"] == 397
+    assert summary["checked_byte_count"] > 0
+    assert summary["mismatch_byte_count"] > 0  # A zero-filled synthetic image is not a ROM fixture.
+    assert summary["block_size_mismatch_count"] == 1
+    assert summary["offset_annotation_mismatch_count"] == 6
+    assert summary["invalid_offset_annotation_count"] == 3
+    assert summary["missing_offset_annotation_count"] == 38
+    assert summary["source_finding_count"] == 7
+    assert report["semantic_text_decoded"] is False
+    assert report["rom_provenance_verified"] is False
+    assert report["source_offsets_verified"] is False
+    assert report["rom_modified"] is False
