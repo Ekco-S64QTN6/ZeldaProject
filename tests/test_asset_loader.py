@@ -316,8 +316,9 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 29
+    assert len(assets) == 30
     assert names == {
+        "crystal-switch-palette-selectors",
         "falling-prize-item-values",
         "falling-prize-fall-heights",
         "falling-prize-y-offsets",
@@ -353,6 +354,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         asset["name"]: load_extracted_asset(asset["name"], registry_path)
         for asset in assets
     }
+    assert loaded["crystal-switch-palette-selectors"]["entry_count"] == 2
     assert loaded["falling-prize-item-values"]["entry_count"] == 7
     assert loaded["text-dictionary-pointers"]["entry_count"] == 98
     assert loaded["text-dictionary-fragments"]["fragment_count"] == 98
