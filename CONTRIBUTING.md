@@ -137,3 +137,6 @@ For text dictionary changes, also run `uv run zelda-suite audit-text-dictionary`
 
 
 For text-message index changes, also run `uv run zelda-suite audit-text-message-index`. Review malformed/mismatched offset annotations and block-size differences, but do not “repair” source-derived metadata without checking the pinned source and a trusted local ROM. The audit does not read ROM bytes or decode messages.
+
+
+For music source-index or payload-inventory changes, also run `uv run zelda-suite audit-music-assets`. Review unmatched target labels, unreferenced declarations, and missing size annotations; do not infer payload availability or semantic audio meaning from source labels alone.

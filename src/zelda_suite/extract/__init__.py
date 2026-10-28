@@ -49,6 +49,11 @@ from zelda_suite.extract.item_receipt_layout import (
     ItemReceiptLayoutError,
     build_item_receipt_layout,
 )
+from zelda_suite.extract.music_asset_audit import (
+    MUSIC_ASSET_AUDIT_FORMAT,
+    MusicAssetAuditError,
+    audit_music_assets,
+)
 from zelda_suite.extract.music_track_index import (
     MusicTrackEntry,
     MusicTrackIndex,
@@ -115,6 +120,7 @@ __all__ = [
     "DICTIONARY_INVENTORY_FORMAT",
     "INCBIN_INVENTORY_AUDIT_FORMAT",
     "ITEM_RECEIPT_LAYOUT_FORMAT",
+    "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "PINNED_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
@@ -136,6 +142,7 @@ __all__ = [
     "IncbinInventoryError",
     "ItemReceiptLayoutError",
     "MessageSourceBlock",
+    "MusicAssetAuditError",
     "MusicTrackEntry",
     "MusicTrackIndex",
     "MusicTrackIndexError",
@@ -156,6 +163,7 @@ __all__ = [
     "TextMessageIndexError",
     "TextMessageRecord",
     "audit_incbin_inventories",
+    "audit_music_assets",
     "audit_text_dictionary_assets",
     "audit_text_message_index",
     "audit_unresolved_table_expressions",
