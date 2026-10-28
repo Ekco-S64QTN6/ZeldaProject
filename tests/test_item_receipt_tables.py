@@ -174,3 +174,20 @@ def test_receive_item_values_preserve_raw_negative_sentinels() -> None:
     # The table stores byte patterns. Signed-byte write suppression remains
     # consumer behavior; this export does not replace the values with meanings.
     assert payload["entries"][0]["expression"] == "$01"
+
+
+
+def test_signed_decimal_parallel_values_remain_raw_expressions() -> None:
+    y_offsets = load_source_export(
+        ROOT / "data" / "extracted" / "item-receipt-y-offsets.json"
+    )
+    properties = load_source_export(
+        ROOT / "data" / "extracted" / "item-receipt-properties.json"
+    )
+
+    assert y_offsets["entries"][0]["expression"] == "-5"
+    assert y_offsets["entries"][0]["literal_value"] is None
+    negative_property = next(
+        entry for entry in properties["entries"] if entry["expression"] == "-1"
+    )
+    assert negative_property["literal_value"] is None
