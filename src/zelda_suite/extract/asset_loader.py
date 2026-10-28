@@ -15,6 +15,7 @@ INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
 SHOP_ITEM_HANDLERS_FORMAT = "zelda-suite-shop-item-handlers"
 POTION_SHOP_TRANSACTIONS_FORMAT = "zelda-suite-potion-shop-transactions"
+SPECIAL_SHOP_TRANSACTIONS_FORMAT = "zelda-suite-special-shop-transactions"
 DUNGEON_CHEST_DATA_FORMAT = "zelda-suite-dungeon-chest-data"
 MIXED_DATA_TABLE_FORMAT = "zelda-suite-mixed-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
@@ -233,6 +234,37 @@ _POTION_SHOP_RANGE_RE = re.compile(
 _POTION_SHOP_WORD_RE = re.compile(r"\$[0-9A-Fa-f]{4}\Z")
 _POTION_SHOP_BYTE_RE = re.compile(r"\$[0-9A-Fa-f]{2}\Z")
 _POTION_SHOP_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
+
+
+_SPECIAL_SHOP_TRANSACTIONS_TOP_KEYS = {
+    "format", "format_version", "source_revision", "source_file", "entry_count", "entries", "evidence",
+}
+_SPECIAL_SHOP_TRANSACTION_ENTRY_KEYS = {
+    "table_index", "transaction_label", "shop_type", "source_file",
+    "source_handler_label", "source_handler_range_annotation", "source_handler_label_line",
+    "reward_handler_label", "reward_handler_range_annotation", "reward_handler_label_line",
+    "price_mode", "price_value", "price_low_expression", "price_low_source_line",
+    "price_high_expression", "price_high_source_line", "price_compare_expression",
+    "price_compare_source_line", "price_deduction_expression", "price_deduction_source_line",
+    "rupee_balance_address_expression", "payment_call_source_line", "receipt_method",
+    "receipt_item_index", "receipt_index_expression", "receipt_selector_source_line",
+    "receipt_call_source_line", "source_item_annotation", "source_item_annotation_line",
+    "reward_flag_address_expression", "reward_flag_value_expression", "reward_flag_source_line",
+    "source_reward_comment", "tagalong_spawn_source_line", "source_revision",
+}
+_SPECIAL_SHOP_TRANSACTIONS_EVIDENCE_KEYS = {
+    "source_only", "rom_bytes_read", "source_range_annotations_verified",
+    "price_behavior_runtime_verified", "receipt_item_names_resolved",
+    "room_specific_shop_stock_resolved", "canonical_item_ids_resolved",
+    "special_bomb_reward_runtime_verified",
+}
+_SPECIAL_SHOP_RANGE_RE = re.compile(
+    r"\$(?P<start>[0-9A-Fa-f]+)-\$(?P<end>[0-9A-Fa-f]+)(?: LOCAL)? JUMP LOCATION\Z",
+    re.IGNORECASE,
+)
+_SPECIAL_SHOP_BYTE_RE = re.compile(r"\$[0-9A-Fa-f]{2}\Z")
+_SPECIAL_SHOP_WORD_RE = re.compile(r"\$[0-9A-Fa-f]{4}\Z")
+_SPECIAL_SHOP_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
 
 
 _MIXED_DATA_TABLE_TOP_KEYS = {
@@ -993,6 +1025,158 @@ def _validate_potion_shop_transactions_export(payload: dict[str, Any]) -> None:
         "receipt_item_names_resolved",
         "room_specific_shop_stock_resolved",
         "canonical_item_ids_resolved",
+    ):
+        if _boolean(evidence[field], f"evidence.{field}") is not False:
+            raise AssetLoadError(f"evidence.{field} must be false")
+
+
+
+def _validate_special_shop_transactions_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _SPECIAL_SHOP_TRANSACTIONS_TOP_KEYS, "special-shop transactions export")
+    if payload["format"] != SPECIAL_SHOP_TRANSACTIONS_FORMAT:
+        raise AssetLoadError("special-shop transactions has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported special-shop transactions format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    revision = _string(payload["source_revision"], "source_revision")
+    source_file = _string(payload["source_file"], "source_file")
+    count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    if count != 3:
+        raise AssetLoadError("special-shop transactions entry_count must be 3")
+    entries = payload["entries"]
+    if not isinstance(entries, list) or len(entries) != count:
+        raise AssetLoadError("entry_count does not match special-shop transaction entries")
+
+    expected = (
+        ("Bomb Shop Bomb", "bomb-shop", "sprite_bomb_shop_entity.asm",
+         "Sprite_BombShopBomb", "Sprite_BombShopBomb", "shopkeeper-a-y-registers",
+         "ShopItem_HandleReceipt", 0x28, "$0F6190-$0F61DE JUMP LOCATION"),
+        ("Bomb Shop Super Bomb", "bomb-shop", "sprite_bomb_shop_entity.asm",
+         "Sprite_BombShopSuperBomb", "Sprite_BombShopSuperBomb", "shopkeeper-a-y-registers",
+         "special-bomb-flag-and-tagalong", None, "$0F61DF-$0F6215 JUMP LOCATION"),
+        ("Bottle Vendor Bottle Sale", "bottle-vendor", "sprite_bottle_vendor.asm",
+         "BottleVendor_SellingBottle", "BottleVendor_GiveBottle",
+         "wallet-balance-compare-and-deduction", "Link_ReceiveItem", 0x16,
+         "$02EAED-$02EB16 JUMP LOCATION"),
+    )
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _SPECIAL_SHOP_TRANSACTION_ENTRY_KEYS, context)
+        (expected_label, expected_shop, expected_file, expected_handler, expected_reward,
+         expected_mode, expected_receipt_method, expected_receipt_index, _expected_range) = expected[expected_index]
+        if _integer(entry["table_index"], f"{context}.table_index", minimum=0) != expected_index:
+            raise AssetLoadError(f"{context}.table_index must be {expected_index}")
+        fixed_strings = {
+            "transaction_label": expected_label,
+            "shop_type": expected_shop,
+            "source_file": expected_file,
+            "source_handler_label": expected_handler,
+            "reward_handler_label": expected_reward,
+            "price_mode": expected_mode,
+            "receipt_method": expected_receipt_method,
+        }
+        for field, expected_value in fixed_strings.items():
+            if _string(entry[field], f"{context}.{field}") != expected_value:
+                raise AssetLoadError(f"{context}.{field} must be {expected_value!r}")
+        if _string(entry["source_revision"], f"{context}.source_revision") != revision:
+            raise AssetLoadError(f"{context}.source_revision does not match top-level source_revision")
+        for field in ("source_handler_range_annotation", "reward_handler_range_annotation"):
+            value = _string(entry[field], f"{context}.{field}")
+            if _SPECIAL_SHOP_RANGE_RE.fullmatch(value) is None:
+                raise AssetLoadError(f"{context}.{field} is malformed")
+        for field in ("source_handler_label_line", "reward_handler_label_line"):
+            _integer(entry[field], f"{context}.{field}", minimum=1)
+
+        price = _integer(entry["price_value"], f"{context}.price_value", minimum=1)
+        if price != 100:
+            raise AssetLoadError(f"{context}.price_value must be 100")
+
+        nullable_int_fields = (
+            "price_low_source_line", "price_high_source_line", "price_compare_source_line",
+            "price_deduction_source_line", "payment_call_source_line",
+            "receipt_selector_source_line", "receipt_call_source_line",
+            "source_item_annotation_line", "reward_flag_source_line", "tagalong_spawn_source_line",
+        )
+        for field in nullable_int_fields:
+            if entry[field] is not None:
+                _integer(entry[field], f"{context}.{field}", minimum=1)
+        nullable_string_fields = (
+            "price_low_expression", "price_high_expression", "price_compare_expression",
+            "price_deduction_expression", "rupee_balance_address_expression",
+            "receipt_index_expression", "source_item_annotation",
+            "reward_flag_address_expression", "reward_flag_value_expression", "source_reward_comment",
+        )
+        for field in nullable_string_fields:
+            if entry[field] is not None:
+                _string(entry[field], f"{context}.{field}")
+
+        if expected_index < 2:
+            low = _string(entry["price_low_expression"], f"{context}.price_low_expression")
+            high = _string(entry["price_high_expression"], f"{context}.price_high_expression")
+            if _SPECIAL_SHOP_BYTE_RE.fullmatch(low) is None or _SPECIAL_SHOP_BYTE_RE.fullmatch(high) is None:
+                raise AssetLoadError(f"{context} A/Y price expressions must be two-digit hex bytes")
+            if ((int(high[1:], 16) << 8) | int(low[1:], 16)) != price:
+                raise AssetLoadError(f"{context}.price_value does not match A/Y price expressions")
+            if (low.upper(), high.upper()) != ("$64", "$00"):
+                raise AssetLoadError(f"{context} Bomb Shop price registers must preserve $64/$00")
+            if entry["price_compare_expression"] is not None or entry["price_deduction_expression"] is not None:
+                raise AssetLoadError(f"{context} must not use Bottle Vendor price fields")
+            if entry["payment_call_source_line"] is None:
+                raise AssetLoadError(f"{context}.payment_call_source_line is required")
+        else:
+            compare = _string(entry["price_compare_expression"], f"{context}.price_compare_expression")
+            deduction = _string(entry["price_deduction_expression"], f"{context}.price_deduction_expression")
+            if _SPECIAL_SHOP_WORD_RE.fullmatch(compare) is None or _SPECIAL_SHOP_WORD_RE.fullmatch(deduction) is None:
+                raise AssetLoadError(f"{context} compare/deduction expressions must be four-digit hex words")
+            if compare.upper() != deduction.upper() or int(compare[1:], 16) != price:
+                raise AssetLoadError(f"{context} Bottle Vendor compare/deduction literals do not match price")
+            balance = _string(entry["rupee_balance_address_expression"], f"{context}.rupee_balance_address_expression")
+            if _SPECIAL_SHOP_ADDRESS_RE.fullmatch(balance) is None or balance.upper() != "$7EF360":
+                raise AssetLoadError(f"{context}.rupee_balance_address_expression must preserve $7EF360")
+            if entry["price_low_expression"] is not None or entry["price_high_expression"] is not None:
+                raise AssetLoadError(f"{context} must not use Bomb Shop price fields")
+            if entry["source_item_annotation"] != "Bottle":
+                raise AssetLoadError(f"{context}.source_item_annotation must preserve source comment Bottle")
+
+        receipt_index = entry["receipt_item_index"]
+        if expected_receipt_index is None:
+            if receipt_index is not None or entry["receipt_index_expression"] is not None:
+                raise AssetLoadError(f"{context} Super Bomb reward must not claim a receipt selector")
+            if entry["receipt_selector_source_line"] is not None or entry["receipt_call_source_line"] is not None:
+                raise AssetLoadError(f"{context} Super Bomb reward must not claim a receipt call")
+            if entry["reward_flag_address_expression"] != "$7EF3CC":
+                raise AssetLoadError(f"{context} Super Bomb flag address must be $7EF3CC")
+            if entry["reward_flag_value_expression"] != "$0D":
+                raise AssetLoadError(f"{context} Super Bomb flag value must be $0D")
+            if entry["source_reward_comment"] != "Super Bomb sprite":
+                raise AssetLoadError(f"{context} must preserve the Super Bomb source comment")
+            if entry["reward_flag_source_line"] is None or entry["tagalong_spawn_source_line"] is None:
+                raise AssetLoadError(f"{context} Super Bomb flag/tagalong source lines are required")
+        else:
+            if receipt_index != expected_receipt_index:
+                raise AssetLoadError(f"{context}.receipt_item_index must be {expected_receipt_index:#04x}")
+            expr = _string(entry["receipt_index_expression"], f"{context}.receipt_index_expression")
+            if _SPECIAL_SHOP_BYTE_RE.fullmatch(expr) is None or int(expr[1:], 16) != receipt_index:
+                raise AssetLoadError(f"{context}.receipt_index_expression does not match receipt_item_index")
+            if entry["receipt_selector_source_line"] is None or entry["receipt_call_source_line"] is None:
+                raise AssetLoadError(f"{context} receipt selector/call source lines are required")
+
+    expected_source_file = ";".join(sorted({entry["source_file"] for entry in entries}))
+    if source_file != expected_source_file:
+        raise AssetLoadError("source_file must be the sorted semicolon-joined set of entry source files")
+
+    evidence = _object(payload["evidence"], "evidence")
+    _exact_keys(evidence, _SPECIAL_SHOP_TRANSACTIONS_EVIDENCE_KEYS, "evidence")
+    if _boolean(evidence["source_only"], "evidence.source_only") is not True:
+        raise AssetLoadError("evidence.source_only must be true")
+    for field in (
+        "rom_bytes_read", "source_range_annotations_verified", "price_behavior_runtime_verified",
+        "receipt_item_names_resolved", "room_specific_shop_stock_resolved",
+        "canonical_item_ids_resolved", "special_bomb_reward_runtime_verified",
     ):
         if _boolean(evidence[field], f"evidence.{field}") is not False:
             raise AssetLoadError(f"evidence.{field} must be false")
@@ -2151,6 +2335,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_shop_item_handlers_export(export)
     elif format_name == POTION_SHOP_TRANSACTIONS_FORMAT:
         _validate_potion_shop_transactions_export(export)
+    elif format_name == SPECIAL_SHOP_TRANSACTIONS_FORMAT:
+        _validate_special_shop_transactions_export(export)
     elif format_name == MIXED_DATA_TABLE_FORMAT:
         _validate_mixed_data_table_export(export)
     elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
@@ -2191,6 +2377,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     DUNGEON_CHEST_DATA_FORMAT,
     SHOP_ITEM_HANDLERS_FORMAT,
     POTION_SHOP_TRANSACTIONS_FORMAT,
+    SPECIAL_SHOP_TRANSACTIONS_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
@@ -2321,6 +2508,7 @@ def load_extracted_asset(
         DUNGEON_CHEST_DATA_FORMAT: "entry_count",
         SHOP_ITEM_HANDLERS_FORMAT: "entry_count",
         POTION_SHOP_TRANSACTIONS_FORMAT: "entry_count",
+        SPECIAL_SHOP_TRANSACTIONS_FORMAT: "entry_count",
         MIXED_DATA_TABLE_FORMAT: "record_count",
         ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",

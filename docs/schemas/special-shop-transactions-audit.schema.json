@@ -1,0 +1,790 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite special-shop transaction audit",
+  "description": "Source-only join from Bomb Shop and Bottle Vendor receipt selectors to raw receive-item records and graphics comments. The Super Bomb reward has no receive-item slot and is represented separately.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "registry",
+    "asset_name",
+    "receipt_asset_name",
+    "graphics_annotation_asset_name",
+    "source_revision",
+    "transaction_count",
+    "rows",
+    "summary",
+    "evidence"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-special-shop-transactions-audit"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "registry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "asset_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt_asset_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "graphics_annotation_asset_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transaction_count": {
+      "const": 3
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "transaction_index",
+          "transaction_label",
+          "shop_type",
+          "source_file",
+          "source_handler_label",
+          "source_handler_range_annotation",
+          "source_handler_label_line",
+          "reward_handler_label",
+          "reward_handler_range_annotation",
+          "reward_handler_label_line",
+          "price_mode",
+          "price_value",
+          "price_low_expression",
+          "price_low_source_line",
+          "price_high_expression",
+          "price_high_source_line",
+          "price_compare_expression",
+          "price_compare_source_line",
+          "price_deduction_expression",
+          "price_deduction_source_line",
+          "rupee_balance_address_expression",
+          "payment_call_source_line",
+          "receipt_method",
+          "receipt_item_index",
+          "receipt_index_expression",
+          "receipt_selector_source_line",
+          "receipt_call_source_line",
+          "source_item_annotation",
+          "source_item_annotation_line",
+          "reward_flag_address_expression",
+          "reward_flag_value_expression",
+          "reward_flag_source_line",
+          "source_reward_comment",
+          "tagalong_spawn_source_line",
+          "receipt_slot"
+        ],
+        "properties": {
+          "transaction_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2
+          },
+          "transaction_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "shop_type": {
+            "enum": [
+              "bomb-shop",
+              "bottle-vendor"
+            ]
+          },
+          "source_file": {
+            "enum": [
+              "sprite_bomb_shop_entity.asm",
+              "sprite_bottle_vendor.asm"
+            ]
+          },
+          "source_handler_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_handler_range_annotation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_handler_label_line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reward_handler_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reward_handler_range_annotation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reward_handler_label_line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price_mode": {
+            "type": "string",
+            "minLength": 1
+          },
+          "price_value": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          },
+          "price_low_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_low_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_high_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_high_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_compare_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{4}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_compare_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_deduction_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{4}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_deduction_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rupee_balance_address_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{6}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payment_call_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt_method": {
+            "type": "string",
+            "minLength": 1
+          },
+          "receipt_item_index": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt_index_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt_selector_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt_call_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_item_annotation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_item_annotation_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reward_flag_address_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{6}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reward_flag_value_expression": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\$[0-9A-Fa-f]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reward_flag_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_reward_comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tagalong_spawn_source_line": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt_slot": {
+            "anyOf": [
+              {
+                "type": "object",
+                "required": [
+                  "table_index",
+                  "item_value",
+                  "target_address",
+                  "wide_item_flag",
+                  "properties",
+                  "x_offset",
+                  "y_offset",
+                  "graphics_index_annotation"
+                ],
+                "properties": {
+                  "table_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "item_value": {
+                    "type": "object",
+                    "required": [
+                      "entry_file_offset",
+                      "expression",
+                      "literal_value",
+                      "source_label"
+                    ],
+                    "properties": {
+                      "entry_file_offset": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "target_address": {
+                    "type": "object",
+                    "required": [
+                      "entry_file_offset",
+                      "expression",
+                      "literal_value",
+                      "source_label"
+                    ],
+                    "properties": {
+                      "entry_file_offset": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "wide_item_flag": {
+                    "type": "object",
+                    "required": [
+                      "entry_file_offset",
+                      "expression",
+                      "literal_value",
+                      "source_label"
+                    ],
+                    "properties": {
+                      "entry_file_offset": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "properties": {
+                    "type": "object",
+                    "required": [
+                      "entry_file_offset",
+                      "expression",
+                      "literal_value",
+                      "source_label"
+                    ],
+                    "properties": {
+                      "entry_file_offset": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "x_offset": {
+                    "type": "object",
+                    "required": [
+                      "entry_file_offset",
+                      "expression",
+                      "literal_value",
+                      "source_label"
+                    ],
+                    "properties": {
+                      "entry_file_offset": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "y_offset": {
+                    "type": "object",
+                    "required": [
+                      "entry_file_offset",
+                      "expression",
+                      "literal_value",
+                      "source_label"
+                    ],
+                    "properties": {
+                      "entry_file_offset": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_label": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "graphics_index_annotation": {
+                    "type": "object",
+                    "required": [
+                      "table_index",
+                      "expression",
+                      "literal_value",
+                      "source_comment",
+                      "source_comment_item_id",
+                      "source_comment_label",
+                      "source_comment_annotation_parsed",
+                      "source_comment_id_matches_table_index",
+                      "annotation_id_delta"
+                    ],
+                    "properties": {
+                      "table_index": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "expression": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "literal_value": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_comment": {
+                        "type": "string"
+                      },
+                      "source_comment_item_id": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_comment_label": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "source_comment_annotation_parsed": {
+                        "type": "boolean"
+                      },
+                      "source_comment_id_matches_table_index": {
+                        "anyOf": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "annotation_id_delta": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "transaction_count",
+        "receipt_transaction_count",
+        "distinct_receipt_item_index_count",
+        "non_receipt_reward_count",
+        "minimum_price_value",
+        "maximum_price_value",
+        "receipt_layout_entry_count",
+        "receipt_indexes_within_layout"
+      ],
+      "properties": {
+        "transaction_count": {
+          "const": 3
+        },
+        "receipt_transaction_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distinct_receipt_item_index_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "non_receipt_reward_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minimum_price_value": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maximum_price_value": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "receipt_layout_entry_count": {
+          "const": 76
+        },
+        "receipt_indexes_within_layout": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only",
+        "rom_bytes_read",
+        "source_range_annotations_verified",
+        "price_behavior_runtime_verified",
+        "receipt_item_names_resolved",
+        "room_specific_shop_stock_resolved",
+        "canonical_item_ids_resolved",
+        "special_bomb_reward_runtime_verified",
+        "receipt_slot_semantics_verified"
+      ],
+      "properties": {
+        "source_only": {
+          "const": true
+        },
+        "rom_bytes_read": {
+          "const": false
+        },
+        "source_range_annotations_verified": {
+          "const": false
+        },
+        "price_behavior_runtime_verified": {
+          "const": false
+        },
+        "receipt_item_names_resolved": {
+          "const": false
+        },
+        "room_specific_shop_stock_resolved": {
+          "const": false
+        },
+        "canonical_item_ids_resolved": {
+          "const": false
+        },
+        "special_bomb_reward_runtime_verified": {
+          "const": false
+        },
+        "receipt_slot_semantics_verified": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

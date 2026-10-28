@@ -8,6 +8,7 @@ from zelda_suite.extract.asset_loader import (
     MUSIC_TRACK_INDEX_FORMAT,
     POTION_SHOP_TRANSACTIONS_FORMAT,
     SHOP_ITEM_HANDLERS_FORMAT,
+    SPECIAL_SHOP_TRANSACTIONS_FORMAT,
     SPRITE_DISPATCH_FORMAT,
     SPRITE_PREP_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
@@ -149,6 +150,17 @@ from zelda_suite.extract.source_expression_audit import (
     SourceExpressionAuditError,
     audit_unresolved_table_expressions,
 )
+from zelda_suite.extract.special_shop_transactions import (
+    SpecialShopTransactionEntry,
+    SpecialShopTransactionsParseError,
+    SpecialShopTransactionsTable,
+    parse_special_shop_transactions,
+)
+from zelda_suite.extract.special_shop_transactions_audit import (
+    SPECIAL_SHOP_TRANSACTIONS_AUDIT_FORMAT,
+    SpecialShopTransactionsAuditError,
+    audit_special_shop_transactions,
+)
 from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchEntry,
     SpriteDispatchParseError,
@@ -220,6 +232,8 @@ __all__ = [
     "SHOP_ITEM_HANDLERS_AUDIT_FORMAT",
     "SHOP_ITEM_HANDLERS_FORMAT",
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
+    "SPECIAL_SHOP_TRANSACTIONS_AUDIT_FORMAT",
+    "SPECIAL_SHOP_TRANSACTIONS_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "SPRITE_PREP_DISPATCH_AUDIT_FORMAT",
     "SPRITE_PREP_DISPATCH_FORMAT",
@@ -270,6 +284,10 @@ __all__ = [
     "ShopItemHandlersParseError",
     "ShopItemHandlersTable",
     "SourceExpressionAuditError",
+    "SpecialShopTransactionEntry",
+    "SpecialShopTransactionsAuditError",
+    "SpecialShopTransactionsParseError",
+    "SpecialShopTransactionsTable",
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
@@ -293,6 +311,7 @@ __all__ = [
     "audit_oam_allocation",
     "audit_potion_shop_transactions",
     "audit_shop_item_handlers",
+    "audit_special_shop_transactions",
     "audit_sprite_prep_dispatch",
     "audit_text_dictionary_assets",
     "audit_text_message_index",
@@ -317,6 +336,7 @@ __all__ = [
     "parse_potion_shop_transactions",
     "parse_shop_item_handlers",
     "parse_source_pointer_table",
+    "parse_special_shop_transactions",
     "parse_sprite_dispatch_table",
     "parse_sprite_prep_dispatch_table",
     "parse_text_message_index",

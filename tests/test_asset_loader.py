@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 38
+    assert len(assets) == 39
     assert names == {
         "crystal-maiden-message-ids",
         "crystal-maiden-palette-words",
@@ -332,6 +332,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "sprite-active3-dispatch",
         "sprite-prep-dispatch",
         "shop-item-handlers",
+        "special-shop-transactions",
         "landmine-oam-groups",
         "mad-batter-pseudo-attack-palettes",
         "music-track-index",
@@ -373,6 +374,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["sprite-prep-dispatch"]["entry_count"] == 243
     assert loaded["shop-item-handlers"]["entry_count"] == 7
     assert loaded["potion-shop-transactions"]["entry_count"] == 3
+    assert loaded["special-shop-transactions"]["entry_count"] == 3
     assert loaded["landmine-oam-groups"]["record_count"] == 2
     assert loaded["mad-batter-pseudo-attack-palettes"]["entry_count"] == 8
     assert loaded["music-track-index"]["entry_count"] == 35

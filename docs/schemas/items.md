@@ -76,6 +76,23 @@ which potion transactions are stocked in particular rooms. See the
 [potion transaction export schema](./potion-shop-transactions-export.schema.json)
 and [audit schema](./potion-shop-transactions-audit.schema.json).
 
+## Bomb Shop and Bottle Vendor transactions
+
+The registered [`special-shop-transactions`](../../data/extracted/special-shop-transactions.json) export adds three source-coded purchase paths. Both Bomb Shop handlers pass `$64/$00` as their price bytes (100 rupees) to the payment helper. The Bomb Shop Bomb then uses receipt selector `$28`; the Super Bomb instead writes `$0D` to `$7EF3CC` and spawns a tagalong, so its receipt selector is intentionally null.
+
+The Bottle Vendor flow compares the wallet balance with `$0064`, grants the bottle through `Link_ReceiveItem` with selector `$16`, and deducts `$0064`. Its source annotation `\item(Bottle)` is preserved as a source comment, not promoted to a canonical item ID.
+
+Run:
+
+```bash
+uv run zelda-suite inspect-special-shop-transactions reference/AsarUSALTTPDisassembly/Sprites/sprite_bomb_shop_entity.asm reference/AsarUSALTTPDisassembly/Sprites/sprite_bottle_vendor.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --entry-count 3 --output /tmp/special-shop-transactions.json
+uv run zelda-suite validate-source-export /tmp/special-shop-transactions.json
+diff -u data/extracted/special-shop-transactions.json /tmp/special-shop-transactions.json
+uv run zelda-suite audit-special-shop-transactions
+```
+
+The audit cross-references only receipt selectors `$28` and `$16` against raw `item-receipt-layout` entries and their graphics comment annotations. It reports no canonical semantic item IDs, room-specific shop stock, runtime price validation, or verified ROM offsets. The Super Bomb reward remains a separate state-flag/tagalong action. See the [export schema](./special-shop-transactions-export.schema.json) and [audit schema](./special-shop-transactions-audit.schema.json).
+
 ## Receive-item graphics comment annotations
 
 The registered `item-receipt-graphics-indices` table has 76 dense entries, indexed
