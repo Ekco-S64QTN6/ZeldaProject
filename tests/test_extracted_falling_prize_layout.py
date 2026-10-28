@@ -109,10 +109,10 @@ def test_committed_parallel_tables_match_the_pinned_source() -> None:
 def test_falling_prize_consumer_uses_aligned_parallel_table_indexes() -> None:
     """Keep the source-table consumer relationship covered by a pinned-source test."""
     source = SOURCE_PATH.read_text(encoding="utf-8")
-    label = "AddPendantOrCrystal:\\n{"
+    label = "AddPendantOrCrystal:\n{"
     first_routine_marker = source.index(label)
     routine_start = source.index(label, first_routine_marker + len(label))
-    routine_end = source.index("\\n}\\n", routine_start)
+    routine_end = source.index("\n}\n", routine_start)
     routine = source[routine_start:routine_end]
 
     # Byte tables use the original selector index loaded from $02D8.
