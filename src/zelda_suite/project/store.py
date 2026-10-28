@@ -88,6 +88,31 @@ def _reject_nonstandard_constant(value: str) -> None:
     raise ValueError(f"non-standard JSON numeric constant: {value}")
 
 
+def _source_file_metadata(payload: dict[str, Any]) -> str:
+    """Return deterministic provenance for single- and multi-source exports."""
+    source_file = payload.get("source_file")
+    if isinstance(source_file, str) and source_file:
+        return source_file
+
+    source_blocks = payload.get("source_blocks")
+    if isinstance(source_blocks, list):
+        source_files = sorted(
+            {
+                block["source_file"]
+                for block in source_blocks
+                if isinstance(block, dict)
+                and isinstance(block.get("source_file"), str)
+                and block["source_file"]
+            }
+        )
+        if source_files:
+            return ";".join(source_files)
+
+    raise ValueError(
+        "source export must include source_file or source_blocks with source_file values"
+    )
+
+
 def _read_source_asset_row(row: sqlite3.Row) -> dict[str, Any]:
     """Decode and verify a persisted source-asset record."""
     asset_key = str(row["asset_key"])
@@ -114,7 +139,7 @@ def _read_source_asset_row(row: sqlite3.Row) -> dict[str, Any]:
     metadata_checks = (
         ("asset_format", payload.get("format")),
         ("asset_format_version", payload.get("format_version")),
-        ("source_file", payload.get("source_file")),
+        ("source_file", _source_file_metadata(payload)),
         ("source_revision", payload.get("source_revision")),
     )
     for column, value in metadata_checks:
@@ -479,7 +504,7 @@ def _persist_source_asset_payload(
                         asset_key,
                         payload["format"],
                         payload["format_version"],
-                        payload["source_file"],
+                        _source_file_metadata(payload),
                         payload["source_revision"],
                         payload_hash,
                         imported_at,
@@ -496,7 +521,7 @@ def _persist_source_asset_payload(
                     (
                         payload["format"],
                         payload["format_version"],
-                        payload["source_file"],
+                        _source_file_metadata(payload),
                         payload["source_revision"],
                         payload_hash,
                         imported_at,
