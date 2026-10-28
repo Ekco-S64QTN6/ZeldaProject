@@ -305,6 +305,13 @@ diff -u data/extracted/overworld-hidden-item-pointers.json /tmp/overworld-hidden
 The parser parity test ensures all 128 pointer records match the pinned source;
 it does not mark the hidden-item list data as fully extracted or editable.
 
+A separate submodule-independent CI regression test pins all 128 committed
+pointer slots, their sequential two-byte offsets, all 80 distinct target labels,
+and the repeated-label distribution (64 labels used once and 16 used four times).
+This catches drift in the committed export even when the source parser parity
+test is skipped because the reference submodule is absent. It does not resolve
+any target to a binary file offset or verify ROM bytes.
+
 For a source-only view of the full mixed-width declaration region, run:
 
 ```bash
