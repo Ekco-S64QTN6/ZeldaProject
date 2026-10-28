@@ -41,7 +41,11 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.
   - 35 music-track pointer expressions and 15 music payload declarations.
-  - 128 overworld hidden-item pointer expressions.
+  - 128 overworld hidden-item pointer expressions. Pinned-source inspection
+    identifies a reader that advances in three-byte strides and stops on a
+    leading `$FFFF` word; the declared region accounts for 351 three-byte
+    entries plus 67 two-byte sentinels. ROM pointer/data verification and
+    per-area grouping are still open.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`; usable-room count and target resolution remain unverified.
   - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.

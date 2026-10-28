@@ -41,6 +41,9 @@ does not imply that any release has been published.
   not proof that a dump exists or is valid; made the agent instructions and
   human-facing quickstart consistent with the still-open ROM/tool verification
   gates.
+- Reconciled the hidden-item source region's byte accounting with the pinned
+  reader's three-byte stride and `$FFFF` termination. Local-ROM verification
+  and per-area grouping remain open.
 - Documented the seven-entry falling-prize lookup as a joined source-only view
   over its five parallel arrays, while preserving the open local-ROM byte
   verification gate.
@@ -53,7 +56,8 @@ does not imply that any release has been published.
 - Added and expanded parser-parity, export-validation, project migration,
   registered-asset round-trip, dungeon-label cross-reference, music-label
   cross-reference, overworld pair-integrity, source-comment, setup fallback
-  orchestration, and falling-prize source-consumer indexing tests.
+  orchestration, falling-prize consumer, and hidden-item sentinel/accounting
+  source tests.
 - The main-branch CI suite checks Python syntax, Ruff across all Python files
   in `src` and `tests`, strict MyPy types for `src`, and the full pytest suite.
 - Linux and Windows CI smoke tests execute the POSIX and PowerShell setup

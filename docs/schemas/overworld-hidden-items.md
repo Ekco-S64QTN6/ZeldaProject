@@ -1,6 +1,6 @@
 # Overworld hidden-item data: source discovery
 
-Status: **Phase 1 discovery; pointer decoding and record boundaries are not yet verified against a local ROM.**
+Status: **Phase 1 source discovery; no local-ROM pointer/byte verification or editable record export yet.**
 This note captures the table layout described by the pinned disassembly and its
 ROM-analysis log. It is not an extraction implementation.
 
@@ -31,18 +31,34 @@ semantic item enum: the authoring model must not assign human-readable item
 names without cross-referencing the relevant handlers and validating them in
 the game.
 
-## A size discrepancy to resolve
+## Source-level byte accounting and reader behavior
 
-The stated hidden-item-record range has an inclusive size of `0x4A3` bytes
-(1,187 bytes). That is not evenly divisible into three-byte records:
-395 triples account for 1,185 bytes, leaving two bytes unexplained. This may
-reflect a sentinel, alignment, or a discrepancy in the source log, but the
-available text alone does not establish which.
+The inclusive range `$0DC3F9–$0DC89B` contains `0x4A3` bytes (1,187 bytes).
+Counting the pinned `Bank1B.asm` declarations in that region yields 351
+`dw $xxxx : db $yy` entries (three bytes each) and 67 standalone
+`dw $FFFF` words (two bytes each). Their declared widths sum to
+`351 × 3 + 67 × 2 = 1,187` bytes, exactly matching the source-reported range.
+The earlier “two-byte tail” calculation incorrectly treated the whole region
+as a flat array of three-byte entries and did not account for sentinel words.
 
-**Do not derive a final record count from this range yet.** Before building a
-parser, inspect the exact source labels and consumers, then compare the table
-against a local clean US ROM. Record the unexplained bytes explicitly until
-their purpose is verified.
+The pinned `Overworld_RevealSecret` consumer provides the source-level read
+pattern. It indexes the pointer table with the area index multiplied by two,
+loads the selected pointer, advances through candidate entries in three-byte
+strides, and compares the leading word with `$FFFF` to stop. For a matching
+coordinate it advances two more bytes and reads the one-byte value. This
+describes the source routine; it does not independently verify bytes in a
+locally supplied ROM.
+
+There are 80 distinct `OverworldData_HiddenItems_Screen_XX` target labels,
+but only 67 `dw $FFFF` declarations. Thirteen label blocks have no local
+terminator before the next screen label. Because the reader stops on the
+`$FFFF` word rather than on a source label or brace boundary, a label block
+must not automatically be treated as a complete, independent record array.
+
+**Remaining gate:** preserve pointer expressions and the source-level reader
+rule, but do not claim ROM-verified pointer targets, record offsets, per-area
+record counts, or value semantics until the source layout is compared with a
+trusted local US ROM.
 
 ## Proposed raw extraction record
 
@@ -71,19 +87,23 @@ transform used by a future API.
 
 1. Locate `OverworldData_HiddenItems` and its target labels in the pinned
    source. Preserve the exact table expressions and source revision.
-2. Identify the code that reads an area pointer and iterates hidden-item
-   records, including the actual termination condition.
+2. Source review now identifies `Overworld_RevealSecret` as the reader: it
+   advances by three bytes and stops on a leading `$FFFF` word. Regression
+   tests preserve this source pattern and the declaration-size accounting.
 3. Compare all 128 pointer entries with their corresponding two-byte entries
    in a locally supplied clean US ROM; resolve bank-relative pointers using the
    verified runtime mapping, not assumptions about label addresses.
 4. Determine the meaning of the value byte from the code that consumes it.
    Preserve unknown values as raw numbers in the meantime.
-5. Explain the two-byte tail discrepancy in the stated data range before
-   asserting a record count or exposing CRUD operations.
+5. The source declarations account for the documented range as 351
+   three-byte entries plus 67 two-byte sentinel words. Compare that layout
+   against a trusted local US ROM and establish record grouping across source
+   labels before asserting per-area counts or exposing CRUD operations.
 6. Keep ROMs and partial ROM slices local. Tests should use synthetic byte
    fixtures or user-supplied local fixtures, never committed ROM data.
 
-This is documentation only. No ROM bytes are read, copied, or modified.
+This note and its source-only regression coverage do not read, copy, or modify
+ROM bytes.
 
 
 ## Export the source pointer table
@@ -119,5 +139,6 @@ CI compares the committed records with `parse_dw_pointer_table()` output from
 the pinned submodule. This validates table count, source expressions, source
 line numbers, and the two-byte source entry stride. It does not resolve target
 labels into file offsets or verify any of the pointed-to data against a local
-ROM. The two-byte unexplained tail in the documented hidden-item record range
-is still unresolved.
+ROM. The source-level byte accounting matches the documented range, but pointer
+resolution, record bytes, and per-area grouping remain unverified against a
+local ROM.

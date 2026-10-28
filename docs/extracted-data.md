@@ -279,11 +279,14 @@ expressions, line numbers, table indices, pointer-entry offsets, and source
 revision, and it is registered as `overworld-hidden-item-pointers`.
 
 This is strictly a pointer-table asset. It does not resolve targets to binary
-file offsets, decode any hidden-item list, infer a final record count, or
-interpret the one-byte value semantics. The documented records range
-`$0DC3F9–$0DC89B` is `0x4A3` bytes—two bytes beyond 395 three-byte records.
-That discrepancy remains open pending consumer/source analysis and comparison
-with a local clean US ROM.
+file offsets, decode hidden-item lists, or interpret the one-byte value
+semantics. Pinned-source accounting for `$0DC3F9–$0DC89B` finds 351 three-byte
+`dw $xxxx : db $yy` entries and 67 two-byte `dw $FFFF` words, totaling the
+full `0x4A3`-byte range. The `Overworld_RevealSecret` source reader scans in
+three-byte strides until a leading `$FFFF` word; it does not stop at source
+label boundaries. This is source-level evidence only: the pointer targets,
+record bytes, and per-area grouping still need comparison with a trusted local
+US ROM before the list data is considered extracted or editable.
 
 Regenerate the source metadata with:
 
