@@ -9,6 +9,10 @@ Run from the repository root in a POSIX shell. Keep the ROM in the gitignored
 `base_game_roms/` directory. Never commit ROM images, partial slices, or
 ROM-derived binary fixtures.
 
+The `ROM` shell variable used by later commands must be set in the same
+terminal session. If you open a new terminal, repeat the assignment in step 1
+before running a snippet that passes `"$ROM"` to Python.
+
 ## 1. Confirm the local input
 
 ```bash
@@ -77,8 +81,21 @@ python - "$ROM" <<'PY'
 from pathlib import Path
 import sys
 
+if len(sys.argv) != 2:
+    print("STOP: pass the ROM path as the first argument.", file=sys.stderr)
+    raise SystemExit(2)
+
 rom_path = Path(sys.argv[1])
-rom = rom_path.read_bytes()
+if not rom_path.is_file():
+    print(f"STOP: ROM path is not a file: {rom_path}", file=sys.stderr)
+    print("Set ROM in this same shell and rerun the command.", file=sys.stderr)
+    raise SystemExit(2)
+
+try:
+    rom = rom_path.read_bytes()
+except OSError as exc:
+    print(f"STOP: could not read ROM path {rom_path}: {exc}", file=sys.stderr)
+    raise SystemExit(2)
 
 EXPECTED_SIZE = 1_048_576
 if len(rom) != EXPECTED_SIZE:
@@ -149,8 +166,21 @@ import json
 from pathlib import Path
 import sys
 
+if len(sys.argv) != 2:
+    print("STOP: pass the ROM path as the first argument.", file=sys.stderr)
+    raise SystemExit(2)
+
 rom_path = Path(sys.argv[1])
-rom = rom_path.read_bytes()
+if not rom_path.is_file():
+    print(f"STOP: ROM path is not a file: {rom_path}", file=sys.stderr)
+    print("Set ROM in this same shell and rerun the command.", file=sys.stderr)
+    raise SystemExit(2)
+
+try:
+    rom = rom_path.read_bytes()
+except OSError as exc:
+    print(f"STOP: could not read ROM path {rom_path}: {exc}", file=sys.stderr)
+    raise SystemExit(2)
 root = Path.cwd()
 manifest = json.loads(
     (root / "data/extracted/manifest.json").read_text(encoding="utf-8")
