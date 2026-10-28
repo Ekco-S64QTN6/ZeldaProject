@@ -5,6 +5,7 @@ A Claude-driven, RPG Maker-style authoring suite for *The Legend of Zelda: A Lin
 - **Agent instructions:** see [`CLAUDE.md`](./CLAUDE.md)
 - **Plan:** see [`ROADMAP.md`](./ROADMAP.md)
 - **Tool/project catalog:** see [`RESEARCH.md`](./RESEARCH.md)
+- **Contributing:** see [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 
 **Project status:** Early-stage foundation and source-metadata tooling. The repository has a SQLite project store with explicit schema migration and validated source-export persistence, source-only extractors, a validated named-asset registry, read-only ROM inspection, and file-based byte-diff utilities. The source inventory now includes the 320-entry dungeon room pointer table and all 266 source-labelled room payload declarations across Bank03, Bank0A, and Bank1F. Semantic game editing and ROM writing/rebuilding are **not implemented yet**. Source inventories preserve unknowns and mismatched source annotations rather than guessing at binary meanings. See the [current roadmap](./ROADMAP.md) and [extracted-data catalog](./docs/extracted-data.md). To import a committed asset by its validated registry name, run `uv run zelda-suite import-extracted-asset project/my-hack.db falling-prize-item-values`. The overworld High/Low source inventories can be checked with `uv run zelda-suite validate-overworld-payload-pairs data/extracted/overworld-payloads-bank0b.json data/extracted/overworld-payloads-bank0c.json`.
 
