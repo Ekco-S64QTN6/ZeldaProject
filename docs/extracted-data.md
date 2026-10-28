@@ -566,3 +566,16 @@ difference of one byte. This audit reads validated JSON metadata only; it does
 not read ROM bytes, decode encoded text, or verify that source offsets match a
 trusted ROM. See [the text schema notes](./schemas/text.md) and the
 [text-message index audit schema](./schemas/text-message-index-audit.schema.json).
+
+
+## Audit music pointer/payload cross-references
+
+Use `uv run zelda-suite audit-music-assets --output /tmp/music-audit.json`
+to cross-check the 35-entry symbolic music pointer table against the 15
+registered payload declarations. It reports the unmatched `Song0B_FairyTheme`
+target and the three declarations missing explicit size annotations, while
+retaining empty slots and four alias entries. This is a source metadata
+diagnostic, not evidence that audio bytes are present or missing in a ROM; the
+pinned reference does not track the included `bin/music/` payload files. See
+[`docs/schemas/audio.md`](./schemas/audio.md) and the
+[music audit schema](./schemas/music-asset-audit.schema.json).
