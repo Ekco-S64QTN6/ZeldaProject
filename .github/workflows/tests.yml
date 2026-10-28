@@ -108,3 +108,28 @@ jobs:
           if (-not (Test-Path $database)) { throw "Setup did not create the SQLite project." }
           if (-not (Test-Path $jsonExport)) { throw "Setup did not create the JSON export." }
           Write-Host "PowerShell setup created and validated project files without a ROM."
+
+  package-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel --outdir "$RUNNER_TEMP/wheelhouse"
+      - name: Install wheel in a clean environment and smoke-test CLI
+        run: |
+          venv="$RUNNER_TEMP/zelda-wheel-venv"
+          workspace="$RUNNER_TEMP/zelda-wheel-smoke"
+          python -m venv "$venv"
+          "$venv/bin/python" -m pip install "$RUNNER_TEMP"/wheelhouse/*.whl
+          "$venv/bin/zelda-suite" --version
+          "$venv/bin/zelda-suite" --help >/dev/null
+          mkdir -p "$workspace"
+          "$venv/bin/zelda-suite" init wheel-smoke --workspace "$workspace"
+          "$venv/bin/zelda-suite" validate "$workspace/project/wheel-smoke.db"

@@ -47,3 +47,5 @@ does not imply that any release has been published.
 - Linux and Windows CI smoke tests execute the POSIX and PowerShell setup
   scripts respectively, create and validate SQLite/JSON project files in
   temporary workspaces, and do not require a ROM.
+- CI builds the Python wheel, installs it into a clean virtual environment, and
+  smoke-tests the installed CLI by initializing and validating a project.
