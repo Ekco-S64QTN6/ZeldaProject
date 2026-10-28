@@ -60,8 +60,8 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 - [Overworld payloads](./overworld.md) — high/low per-screen `incbin` layout,
   source-declared offsets/sizes, and limits of the current evidence.
 - [Overworld hidden items](./overworld-hidden-items.md) — 128-entry pointer
-  table and three-byte record description, including an unresolved size-tail
-  discrepancy that must be reconciled before parsing.
+  table, source-level three-byte reader/sentinel behavior, and declared-width
+  accounting; ROM pointer/data verification and per-area grouping remain open.
 - [Falling-prize item lookup](./falling-prize-items.md) — seven-entry
   `AddPendantOrCrystal` item-value table and the adjacent indexed arrays.
 - [Audio](./audio.md) — source music pointer index, payload declarations, and the unmatched `Song0B_FairyTheme` target; payload binaries are not tracked.
