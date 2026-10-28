@@ -17,6 +17,7 @@ from zelda_suite.extract.text_dictionary_audit import (
     audit_text_dictionary_assets,
 )
 
+TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT = "zelda-suite-text-dictionary-pointer-verification"
 TEXT_DICTIONARY_SOURCE_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 TEXT_DICTIONARY_POINTER_ASSET = "text-dictionary-pointers"
 TEXT_DICTIONARY_FRAGMENT_ASSET = "text-dictionary-fragments"
@@ -188,7 +189,7 @@ def verify_text_dictionary_pointers(
     ]
 
     return {
-        "format": "zelda-suite-text-dictionary-pointer-verification",
+        "format": TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT,
         "format_version": 1,
         "rom": {
             "filename": image_path.name,
