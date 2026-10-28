@@ -73,9 +73,9 @@ guessing their semantics:
 | `area_index` | Pointer-table index, integer `0–127` |
 | `pointer_entry_file_offset` | Entry location, `0x0DC2F9 + area_index * 2` |
 | `pointer_expression` | Original `dw` expression retained verbatim |
-| `target_label` | Parsed target label; not a resolved file offset |
+| `target_label` | Parsed target label; the verifier calculates a candidate file offset from the source declaration widths |
 | `source_revision` | Pinned disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` |
-| `record_file_offset` | Nullable until pointer decoding is verified |
+| `record_file_offset` | Candidate file offset derived by the verifier; it is not trusted-ROM verified until a local byte comparison passes |
 | `records` | Ordered raw records, preserving the original two-byte coordinate and one-byte value |
 | `unparsed_tail_bytes` | Any bytes not explained by verified record structure |
 | `replacement_map16_values` | Four raw two-byte values from the documented replacement region |
