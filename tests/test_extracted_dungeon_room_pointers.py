@@ -53,6 +53,8 @@ def test_committed_dungeon_pointer_export_matches_pinned_source() -> None:
 BANK03_PATH = ROOT / "reference" / "AsarUSALTTPDisassembly" / "Bank03.asm"
 BANK0A_PATH = ROOT / "reference" / "AsarUSALTTPDisassembly" / "Bank0A.asm"
 ROOM_PAYLOAD_EXPORT_PATH = ROOT / "data" / "extracted" / "dungeon-room-payload-inventory.json"
+ROOM_PAYLOAD_BANK03_EXPORT_PATH = ROOT / "data" / "extracted" / "dungeon-room-payloads-bank03.json"
+ROOM_PAYLOAD_BANK1F_EXPORT_PATH = ROOT / "data" / "extracted" / "dungeon-room-payloads-bank1f.json"
 
 
 @pytest.mark.skipif(
@@ -92,6 +94,27 @@ def test_all_dungeon_pointer_targets_have_pinned_source_definitions() -> None:
         "RoomDataTiles_Zarby89",
         "RoomDataTiles_Zarby90",
     ]
+    payload_exports = [
+        room_payloads,
+        load_source_export(ROOM_PAYLOAD_BANK03_EXPORT_PATH),
+        load_source_export(ROOM_PAYLOAD_BANK1F_EXPORT_PATH),
+    ]
+    payload_labels = {
+        declaration["label"]
+        for payload in payload_exports
+        for declaration in payload["declarations"]
+    }
+
+    # The three registered payload inventories account for every source label.
+    # All pointer targets are among those labels; only three definitions are not
+    # referenced by the table. This remains source-symbol verification only.
+    assert payload_labels == source_labels
+    assert target_labels <= payload_labels
+    assert payload_labels - target_labels == {
+        "RoomDataTiles_Orphan",
+        "RoomDataTiles_Zarby89",
+        "RoomDataTiles_Zarby90",
+    }
     assert {
         declaration["label"] for declaration in room_payloads["declarations"]
     } <= target_labels
