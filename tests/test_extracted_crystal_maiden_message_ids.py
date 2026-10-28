@@ -21,9 +21,27 @@ PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 TABLE_LABEL = "CrystalMaiden_ShowMessage_message_ids"
 TABLE_FILE_OFFSET = 0x0F4EBC
 EXPECTED_EXPRESSIONS = [
-    "$0133", "$0132", "$0137", "$0134", "$0136", "$0132", "$0135", "$0138", "$013c"
+    "$0133",
+    "$0132",
+    "$0137",
+    "$0134",
+    "$0136",
+    "$0132",
+    "$0135",
+    "$0138",
+    "$013c",
 ]
-EXPECTED_VALUES = [0x0133, 0x0132, 0x0137, 0x0134, 0x0136, 0x0132, 0x0135, 0x0138, 0x013C]
+EXPECTED_VALUES = [
+    0x0133,
+    0x0132,
+    0x0137,
+    0x0134,
+    0x0136,
+    0x0132,
+    0x0135,
+    0x0138,
+    0x013C,
+]
 EXPECTED_MESSAGE_LABELS = {
     0x0132: "Message_0132",
     0x0133: "Message_0133",
