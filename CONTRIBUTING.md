@@ -87,6 +87,13 @@ must use that revision rather than silently updating to a newer upstream tree.
   source export. Replacing an existing project key requires the explicit
   `--replace` flag.
 
+## Versioning and change notes
+
+Record each behavior or contract change under `[Unreleased]` in
+[`CHANGELOG.md`](./CHANGELOG.md). Use [the versioning policy](./docs/versioning.md)
+to distinguish package releases, project JSON, SQLite schema, registry, and
+source-export format versions; do not bump one merely because another changed.
+
 ## Pull request checklist
 
 Before requesting review, confirm that the change:
@@ -96,6 +103,7 @@ Before requesting review, confirm that the change:
 - [ ] Includes synthetic tests and pinned-source parity tests where applicable.
 - [ ] Updates the manifest/schema/loader and Ruff test list when needed.
 - [ ] Updates relevant documentation and regeneration commands.
+- [ ] Updates `CHANGELOG.md` and any version/schema contract described by the change.
 - [ ] Adds no ROM or ROM-derived binary data.
 - [ ] Passes `python -m compileall -q src tests`, Ruff on the changed Python
       components, and `python -m pytest -q`.
