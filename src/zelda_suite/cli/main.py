@@ -593,7 +593,6 @@ def inspect_sprite_dispatch(
     )
 
 
-
 @cli.command(name="audit-text-message-index")
 @click.option(
     "--registry",
