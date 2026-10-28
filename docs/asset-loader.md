@@ -76,8 +76,10 @@ uv run zelda-suite validate-source-export /tmp/text-message-index.json
 
 The source-export loader is also the validation boundary used by
 [project source-asset persistence](./project-assets.md). The project store can
-snapshot a validated export into SQLite with provenance and a content digest,
-but this does not turn source metadata into editable game-system records.
+snapshot a validated export into SQLite with provenance and a content digest.
+For committed assets, `import-extracted-asset` accepts the registered manifest
+name and retains the registry's format/revision/count checks before persisting.
+This does not turn source metadata into editable game-system records.
 
 The loader and project asset store do not read ROM bytes, resolve symbols from
 ROM memory, open incbin payload paths, decode dictionary/message streams, or
