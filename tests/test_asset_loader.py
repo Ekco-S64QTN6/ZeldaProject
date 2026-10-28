@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 22
+    assert len(assets) == 23
     assert names == {
         "falling-prize-item-values",
         "falling-prize-fall-heights",
@@ -331,6 +331,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "music-payload-inventory",
         "overworld-hidden-item-pointers",
         "dungeon-room-object-pointers",
+        "dungeon-room-payload-inventory",
         "overworld-payloads-bank0b",
         "overworld-payloads-bank0c",
         "item-receipt-target-addresses",
@@ -355,6 +356,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["music-payload-inventory"]["declaration_count"] == 15
     assert loaded["overworld-hidden-item-pointers"]["entry_count"] == 128
     assert loaded["dungeon-room-object-pointers"]["entry_count"] == 320
+    assert loaded["dungeon-room-payload-inventory"]["declaration_count"] == 75
     assert loaded["overworld-payloads-bank0b"]["declaration_count"] == 164
     assert loaded["overworld-payloads-bank0c"]["declaration_count"] == 84
     assert loaded["item-receipt-target-addresses"]["entry_count"] == 76
