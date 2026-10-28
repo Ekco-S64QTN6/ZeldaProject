@@ -245,7 +245,7 @@ def test_loader_rejects_unknown_format_and_non_object_json(tmp_path: Path) -> No
             lambda p: p["entries"][0].update(literal_value=0x100),
             "does not fit the db directive",
         ),
-        (lambda p: p.update(format_version=2), "unsupported data-table format version"),
+        (lambda p: p.update(format_version=3), "unsupported data-table format version"),
         (lambda p: p.update(extra_field=True), "unexpected field"),
     ],
 )
