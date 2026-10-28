@@ -97,3 +97,19 @@ parser is a raw-table foundation, not a semantic item catalog or an editor.
 Use `uv run zelda-suite audit-unresolved-table-expressions` to enumerate unresolved expressions across all registered scalar data-table exports. The report includes each raw expression, table index, source line, file offset, and a conservative syntax-shape classification. Bare negative decimal literals are counted separately because `verify-rom-tables` already handles their bounded two's-complement encoding; other unresolved expressions are never evaluated or guessed.
 
 Use `--output PATH` to save a new JSON report, or `--fail-on-unresolved` for CI/workflows that should return status 1 when any unresolved expressions remain. This command reads committed source metadata only; it does not need a ROM, execute Asar, or read payload bytes. The report contract is [source-expression-audit.schema.json](./schemas/source-expression-audit.schema.json).
+
+
+## Current registered expression-audit baseline
+
+The integration test pins the current 14 registered `zelda-suite-data-table`
+assets (679 entries, all from disassembly revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`). The current metadata contains 504
+direct numeric literals, 77 bare negative decimal literals, and 98 unresolved
+expressions. Those 98 unresolved records are all classified as simple symbols
+and belong to `text-dictionary-pointers`; they remain raw symbols and were not
+resolved or evaluated. The 77 negative decimal literals are counted separately
+because the ROM verifier can compare their bounded two's-complement encodings.
+
+These counts describe the committed source exports, not bytes checked against a
+ROM. Update the baseline and this section together when source exports
+intentionally change, after reviewing the diff and their source-parity tests.

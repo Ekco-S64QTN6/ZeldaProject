@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add an integration regression baseline for all 14 registered scalar-table
+  exports: 679 entries, 504 direct numeric literals, 77 negative decimal literals,
+  and 98 unresolved symbols. The baseline is source-only and does not claim that
+  any skipped expression has been resolved or verified against ROM bytes.
+
 - Pin the current six-inventory `audit-incbin-inventory` summary in an integration test, so metadata gaps, range/size discrepancies, and candidate-overlap counts cannot drift silently. The baseline is source-only and does not verify ROM offsets.
 
 - ROM-independent `zelda-suite audit-unresolved-table-expressions` report
