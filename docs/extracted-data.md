@@ -435,39 +435,50 @@ are absent from the pinned submodule tree; no ROM bytes are committed.
 
 ## Dungeon room payload declarations
 
-`data/extracted/dungeon-room-payload-inventory.json` records 75 labelled
-`incbin` declarations from pinned `Bank0A.asm` at revision
-`347c23f9fc019c72d32da537c9cb235f468d021d`. The records link source labels
-such as `RoomDataTiles_0000` to their `bin/rooms/*.bin` include path and keep
-the source line, declared size, source-commented start offset, and a separate
-computed end offset.
+Three source-only inventories cover all labelled room payload `incbin`
+declarations in the pinned source banks that define `RoomDataTiles_*` labels:
 
-All 75 declarations in this file have a start-offset comment and a `Size:`
-annotation but no explicit source-commented end offset. Therefore
-`source_file_offset_end` and `source_range_size_matches` remain null, while
-`computed_file_offset_end` is only arithmetic from the annotated start plus
-the declared size. It must not be treated as independently verified against a
-ROM. The referenced room binaries are absent from the pinned submodule tree.
+| Asset | Source file | Declarations |
+| --- | --- | ---: |
+| `dungeon-room-payloads-bank03` | `Bank03.asm` | 34 |
+| `dungeon-room-payload-inventory` | `Bank0A.asm` | 75 |
+| `dungeon-room-payloads-bank1f` | `Bank1F.asm` | 157 |
+| **Total** | **three pinned banks** | **266** |
 
-This is the Bank0A subset of the room payload declarations, not a one-to-one
-listing of the 320 entries in `RoomData_ObjectDataPointers`; room payload
-labels also occur across the disassembly and pointer targets are not resolved
-by this export.
+Each export links a source label to its `bin/rooms/*.bin` include path and
+retains the source line, declared `Size:`, source-commented start offset, and
+a separate computed end offset. All 266 declarations have start-offset
+comments and size annotations but no explicit source-commented end offset.
+Therefore `source_file_offset_end` and `source_range_size_matches` remain
+null, while `computed_file_offset_end` is only arithmetic from the annotated
+start plus the declared size. It must not be treated as independently verified
+against a ROM. The referenced room binaries are absent from the pinned
+submodule tree.
 
-Regenerate, validate, and diff the metadata with:
+Across these three files, all 263 distinct labels referenced by
+`RoomData_ObjectDataPointers` are defined in the source. Three additional
+labels (`RoomDataTiles_Orphan`, `RoomDataTiles_Zarby89`, and
+`RoomDataTiles_Zarby90`) are defined but not referenced by that pointer
+table. This confirms symbol coverage, not resolved ROM addresses or the set of
+playable rooms; the 296-versus-320 count discrepancy remains open.
+
+Regenerate, validate, and diff each export with `zelda-suite inspect-incbin`.
+For example:
 
 ```bash
 uv run zelda-suite inspect-incbin \
-  reference/AsarUSALTTPDisassembly/Bank0A.asm \
+  reference/AsarUSALTTPDisassembly/Bank03.asm \
   --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
-  --output /tmp/dungeon-room-payload-inventory.json
-uv run zelda-suite validate-source-export /tmp/dungeon-room-payload-inventory.json
-diff -u data/extracted/dungeon-room-payload-inventory.json /tmp/dungeon-room-payload-inventory.json
+  --output /tmp/dungeon-room-payloads-bank03.json
+uv run zelda-suite validate-source-export /tmp/dungeon-room-payloads-bank03.json
+diff -u data/extracted/dungeon-room-payloads-bank03.json /tmp/dungeon-room-payloads-bank03.json
 ```
 
-CI compares the committed inventory with `parse_incbin_inventory()` over the
-pinned source and loads it through the named registry. It does not open the
-referenced binary payload files or verify offsets against a local ROM.
+Use the same command with `Bank0A.asm` and `Bank1F.asm` and the corresponding
+export filename for the other two inventories. CI compares all three committed
+inventories with `parse_incbin_inventory()` over the pinned source and loads
+them through the named registry. It does not open the referenced binary payload
+files or verify offsets against a local ROM.
 
 
 ### Dungeon pointer/payload source-label coverage
