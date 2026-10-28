@@ -685,7 +685,6 @@ def inspect_text_messages(
     )
 
 
-
 @cli.command(name="audit-text-dictionary")
 @click.option(
     "--registry",
