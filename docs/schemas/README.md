@@ -2,6 +2,8 @@
 
 The project database uses schema v2 for project metadata and validated source-export snapshots; see [project-format.md](../project-format.md). Editable game-system schemas are introduced alongside Phase 1 extractors so that every field is grounded in the ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 
+[Version and compatibility rules](../versioning.md) explain how the registry, project format, SQLite schema, and source-export formats evolve.
+
 ## Source export contracts
 
 The versioned source exports can be loaded and validated with the [asset loader](../asset-loader.md); data-table exports support versions 1 and 2.
