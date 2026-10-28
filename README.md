@@ -32,5 +32,7 @@ only confirm executables are on `PATH`. Run `zelda-suite inspect-rom PATH`
 for read-only size, SHA-256, header assessment, and LoROM mapping diagnostics.
 These checks have not been established by repository CI; see the open Phase 0
 gates in [`ROADMAP.md`](./ROADMAP.md). Setup and CI remain ROM-independent.
+For a staged, read-only local-ROM smoke test and selected table-byte checks,
+follow [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
 
 See [`docs/install.md`](./docs/install.md) for setup details, [`docs/doctor.md`](./docs/doctor.md) for diagnostics, [`docs/project-format.md`](./docs/project-format.md) for the SQLite/JSON project format, [`docs/disassembly-parser.md`](./docs/disassembly-parser.md) for pointer-table inspection, [`docs/data-table-parser.md`](./docs/data-table-parser.md) for raw `db`/`dw`/`dl` tables, [`docs/asset-loader.md`](./docs/asset-loader.md) for validating source-export JSON, [`docs/project-assets.md`](./docs/project-assets.md) for importing validated source exports into a project, [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md) for local ROM metadata and LoROM offset mapping, [`docs/rom-diff.md`](./docs/rom-diff.md) for file-backed ROM diff usage, and [`docs/extracted-data.md`](./docs/extracted-data.md) for committed source-derived table exports.
