@@ -24,6 +24,7 @@ from zelda_suite.extract import (
     MusicAssetAuditError,
     OAMAllocationAuditError,
     OverworldPayloadPairError,
+    PotionShopTransactionsAuditError,
     ROMImageInspectionError,
     ROMTableVerificationError,
     ShopItemHandlersAuditError,
@@ -39,6 +40,7 @@ from zelda_suite.extract import (
     audit_item_receipt_annotations,
     audit_music_assets,
     audit_oam_allocation,
+    audit_potion_shop_transactions,
     audit_shop_item_handlers,
     audit_sprite_prep_dispatch,
     audit_text_dictionary_assets,
@@ -54,6 +56,7 @@ from zelda_suite.extract import (
     parse_mixed_data_table,
     parse_music_track_index,
     parse_overworld_hidden_item_source,
+    parse_potion_shop_transactions,
     parse_shop_item_handlers,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
@@ -2004,6 +2007,147 @@ def audit_item_receipt_annotations_command(
         f"entries={summary['table_entry_count']}, "
         f"comment_id_mismatches={summary['source_comment_ids_mismatched_count']}, "
         f"missing_comment_ids={report['missing_source_comment_ids']}"
+    )
+
+
+
+@cli.command(name="inspect-potion-shop-transactions")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    required=True,
+    help="Pinned disassembly revision to record in the export.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=3,
+    show_default=True,
+    help="Expected number of priced potion-shop transactions.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_potion_shop_transactions(
+    source: Path,
+    source_revision: str,
+    entry_count: int,
+    output: Path | None,
+) -> None:
+    """Export source-coded rupee prices and receipt selectors for the potion shop."""
+    try:
+        table = parse_potion_shop_transactions(
+            source.read_text(encoding="utf-8"),
+            source_revision=source_revision,
+            source_file=source.name,
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    click.echo(
+        f"Wrote {len(table.entries)} potion-shop transactions to {output}; "
+        "price behavior and receipt item names remain unverified"
+    )
+
+
+@cli.command(name="audit-potion-shop-transactions")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--asset",
+    "asset_name",
+    default="potion-shop-transactions",
+    show_default=True,
+    help="Registered potion-shop transaction asset.",
+)
+@click.option(
+    "--receipt-asset",
+    "receipt_asset_name",
+    default="item-receipt-layout",
+    show_default=True,
+    help="Registered positional receive-item layout used by receipt selectors.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+def audit_potion_shop_transactions_command(
+    registry_path: Path | None,
+    asset_name: str,
+    receipt_asset_name: str,
+    output: Path | None,
+) -> None:
+    """Join potion-shop transactions to raw receive-item slots by position."""
+    try:
+        report = audit_potion_shop_transactions(
+            registry_path or "data/extracted/manifest.json",
+            asset_name=asset_name,
+            receipt_asset_name=receipt_asset_name,
+        )
+    except (PotionShopTransactionsAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote potion-shop transaction audit to {output}; "
+        f"transactions={summary['transaction_count']}, "
+        f"receipt_slots={summary['distinct_receipt_item_index_count']}, "
+        f"price_range={summary['minimum_price_value']}-{summary['maximum_price_value']}, "
+        f"comment_id_mismatches={summary['receipt_indexes_with_comment_id_mismatch']}"
     )
 
 

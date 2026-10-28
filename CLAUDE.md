@@ -234,6 +234,8 @@ When changing `sprite_shopkeeper.asm` purchase-handler data, run `tests/test_sho
 
 When changing `Pool_AddReceiveItem` graphics-index comments, run `tests/test_item_receipt_annotation_audit.py` and `zelda-suite audit-item-receipt-annotations`. Preserve the distinction between dense table indexes and source-comment IDs; the missing `$40` comment is documented evidence, not permission to renumber or repair the source.
 
+When changing `sprite_potion_shop.asm` transaction data, run `tests/test_potion_shop_transactions.py`, `tests/test_extracted_potion_shop_transactions.py`, and `tests/test_potion_shop_transactions_audit.py`; run `zelda-suite audit-potion-shop-transactions` to protect the three source-coded prices, compare/deduction parity, empty-bottle check lines, and receipt indexes. Do not promote source range comments to verified ROM offsets, receipt slots to canonical item IDs, or this catalog to room-specific shop stock.
+
 When changing `SpritePrep_Main` dispatch data, run `tests/test_sprite_prep_dispatch.py` and `tests/test_extracted_sprite_prep_dispatch.py`, then run `zelda-suite audit-sprite-prep-dispatch`. Preserve all 243 IDs and source comments, leave the inline-table offset unset unless independent evidence establishes it, and do not equate source address annotations with verified handler pointers or infer equivalence with SpriteActive3 runtime behavior.
 
 When changing `landmine-oam-groups`, run `tests/test_mixed_data_table.py`, `tests/test_mixed_data_table_cli.py`, and `tests/test_extracted_landmine_oam_groups.py`. The `inspect-mixed-data-table` parser preserves per-row `db`/`dw`/`dl` widths and offsets; do not turn its raw fields into decoded OAM semantics or verified ROM bytes.

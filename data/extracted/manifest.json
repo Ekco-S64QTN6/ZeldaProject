@@ -280,6 +280,15 @@
       "subsystem": "overworld"
     },
     {
+      "description": "Three priced potion-shop transactions parsed from Sprite_GreenPotionItem, Sprite_BluePotionItem, and Sprite_RedPotionItem. Preserves source rupee comparison/deduction literals, receipt selectors, and handler range annotations without runtime/ROM verification.",
+      "file": "potion-shop-transactions.json",
+      "format": "zelda-suite-potion-shop-transactions",
+      "name": "potion-shop-transactions",
+      "record_count": 3,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
       "description": "Seven source-mapped standard-shopkeeper purchase handlers from Sprite_ShopKeeper, including source-derived A/Y price literals and raw receive-item slot selectors. Handler address annotations and price behavior remain unverified; this is not room-specific stock.",
       "file": "shop-item-handlers.json",
       "format": "zelda-suite-shop-item-handlers",

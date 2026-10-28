@@ -141,7 +141,9 @@ For text-message index changes, also run `uv run zelda-suite audit-text-message-
 
 For `Dungeon_ChestData` changes, run the pinned-source parser tests and `uv run zelda-suite audit-dungeon-chest-data`; preserve three-byte entry order, the top-byte/low-15-bit/bit-15 split, all 168 entries, and source-only offset caveats. Do not map raw item values to semantic names without evidence.
 
-For standard shopkeeper purchase-handler changes, run the pinned-source parser tests and `uv run zelda-suite audit-shop-item-handlers`. Preserve the seven handler IDs, raw A/Y price encoding, receipt selector indexes, the slot-index join to `item-receipt-layout`, and the source-comment annotation alongside each slot. Also run `uv run zelda-suite audit-item-receipt-annotations`; the missing `$40` comment and shifted comment IDs are reported, not corrected. Do not infer canonical item names or room-specific stock from these source-only catalogs.
+For standard shopkeeper purchase-handler changes, run the pinned-source parser tests and `uv run zelda-suite audit-shop-item-handlers`. Preserve the seven handler IDs, raw A/Y price encoding, receipt selector indexes, the slot-index join to `item-receipt-layout`, and the source-comment annotation alongside each slot. Also run `uv run zelda-suite audit-item-receipt-annotations`; the missing `$40` comment and shifted comment IDs are reported, not corrected.
+
+For potion-shop transaction changes, run `tests/test_potion_shop_transactions.py`, `tests/test_extracted_potion_shop_transactions.py`, and `tests/test_potion_shop_transactions_audit.py`, plus `uv run zelda-suite audit-potion-shop-transactions`. Preserve source compare/deduction bytes, empty-bottle checks, and receipt selectors `$2F/$30/$2E`; do not claim runtime price verification, semantic item-name resolution, or room-specific shop stock.
 
 For SpritePrep dispatch changes, run the pinned-source parser tests, `tests/test_extracted_sprite_prep_dispatch.py`, and `uv run zelda-suite audit-sprite-prep-dispatch`. Treat the shared SpritePrep/SpriteActive3 IDs as index coverage only; neither source address annotations nor handler semantic equivalence are verified.
 

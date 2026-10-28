@@ -27,6 +27,8 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Shop-item handlers export](./shop-item-handlers-export.schema.json) — version 1 source export for seven `Sprite_ShopKeeper` purchase handlers, including source-coded prices and receipt selectors.
 - [Shop-item handlers audit](./shop-item-handlers-audit.schema.json) — version 1 cross-reference from receipt indexes to raw `item-receipt-layout` slots; now includes raw graphics-table comment annotations without treating them as canonical IDs.
 - [Item-receipt annotation audit](./item-receipt-annotation-audit.schema.json) — version 1 source-only report of the missing `0x40` comment ID and the 12 source-comment IDs that differ from dense table indexes.
+- [Potion-shop transaction export](./potion-shop-transactions-export.schema.json) — version 1 source catalog for three priced potion-shop handlers, retaining source literals and receipt selectors.
+- [Potion-shop transaction audit](./potion-shop-transactions-audit.schema.json) — version 1 cross-reference from potion receipt selectors to raw receive-item slots and comment annotations.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
@@ -45,7 +47,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-seven named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-eight named source exports and their expected formats, counts, and pinned revision.
 - [`data/extracted/crystal-maiden-message-ids.json`](../../data/extracted/crystal-maiden-message-ids.json) — nine source-declared `dw` message IDs cross-referenced to the text-message index; linkage to the routine's local `.message_ids` remains unresolved.
 - [`data/extracted/crystal-maiden-palette-words.json`](../../data/extracted/crystal-maiden-palette-words.json) — eight raw 16-bit words, with linkage to the routine's local `.palette` reference unresolved.
 - [`data/extracted/crystal-switch-palette-selectors.json`](../../data/extracted/crystal-switch-palette-selectors.json) — two source-derived selector bytes, not decoded color values or ROM-verified bytes.
@@ -106,7 +108,7 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 
 - `overworld.md` — full editable map schema (tiles, layers, palettes, warps); the current file is discovery-only.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
-- [`items.md`](./items.md) — source-only packed chest/purchase-handler inventories, receive-item comment-ID discrepancy, and remaining gaps before a complete editable item/chest/shop schema.
+- [`items.md`](./items.md) — source-only packed chest, standard/potion purchase transactions, receive-item comment-ID discrepancy, and remaining gaps before a complete editable item/chest/shop schema.
 - `text.md` — message table, encoding, compression.
 - `sprites.md` — sprite types, placements, gfx banks.
 - `audio.md` — source discovery for music pointer and payload inventories; semantic audio schema and payload decoding remain future work.

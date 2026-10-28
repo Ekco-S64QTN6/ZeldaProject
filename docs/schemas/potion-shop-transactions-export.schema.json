@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite potion-shop transaction source export",
+  "description": "Source-only inventory of the green, blue, and red potion-shop transaction handlers. Source range annotations and price behavior are not verified against ROM bytes or runtime.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "source_file", "source_revision",
+    "entry_count", "entries", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-potion-shop-transactions" },
+    "format_version": { "const": 1 },
+    "source_file": { "const": "sprite_potion_shop.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "entry_count": { "const": 3 },
+    "entries": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index", "handler_label", "source_handler_range_annotation",
+        "source_handler_label_line", "rupee_balance_address_expression",
+        "price_compare_expression", "price_compare_source_line",
+        "price_deduction_expression", "price_deduction_source_line", "price_value",
+        "receipt_index_expression", "receipt_item_index",
+        "receipt_selector_source_line", "receipt_call_source_line",
+        "empty_bottle_check_source_line", "source_revision"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "handler_label": {
+          "enum": ["Sprite_GreenPotionItem", "Sprite_BluePotionItem", "Sprite_RedPotionItem"]
+        },
+        "source_handler_range_annotation": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-Fa-f]+-\\$[0-9A-Fa-f]+(?: LOCAL)? JUMP LOCATION$"
+        },
+        "source_handler_label_line": { "type": "integer", "minimum": 1 },
+        "rupee_balance_address_expression": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-Fa-f]{6}$"
+        },
+        "price_compare_expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{4}$" },
+        "price_compare_source_line": { "type": "integer", "minimum": 1 },
+        "price_deduction_expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{4}$" },
+        "price_deduction_source_line": { "type": "integer", "minimum": 1 },
+        "price_value": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "receipt_index_expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{2}$" },
+        "receipt_item_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "receipt_selector_source_line": { "type": "integer", "minimum": 1 },
+        "receipt_call_source_line": { "type": "integer", "minimum": 1 },
+        "empty_bottle_check_source_line": { "type": "integer", "minimum": 1 },
+        "source_revision": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "price_behavior_runtime_verified",
+        "source_range_annotations_verified", "receipt_item_names_resolved",
+        "room_specific_shop_stock_resolved", "canonical_item_ids_resolved"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "price_behavior_runtime_verified": { "const": false },
+        "source_range_annotations_verified": { "const": false },
+        "receipt_item_names_resolved": { "const": false },
+        "room_specific_shop_stock_resolved": { "const": false },
+        "canonical_item_ids_resolved": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

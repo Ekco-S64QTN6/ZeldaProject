@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite potion-shop transaction audit",
+  "description": "Source-only join of priced potion-shop handlers to raw receive-item slots by dense index. Inline graphics comments are retained as annotations, not canonical item names.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "asset_name", "receipt_asset_name",
+    "graphics_annotation_asset_name", "source_file", "source_revision",
+    "transaction_count", "rows", "summary", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-potion-shop-transactions-audit" },
+    "format_version": { "const": 1 },
+    "registry": { "type": "string", "minLength": 1 },
+    "asset_name": { "const": "potion-shop-transactions" },
+    "receipt_asset_name": { "const": "item-receipt-layout" },
+    "graphics_annotation_asset_name": { "const": "item-receipt-graphics-indices" },
+    "source_file": { "const": "sprite_potion_shop.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "transaction_count": { "const": 3 },
+    "rows": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/row" }
+    },
+    "summary": { "$ref": "#/$defs/summary" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "slot_field": {
+      "type": "object",
+      "required": ["entry_file_offset", "expression", "literal_value", "source_label"],
+      "properties": {
+        "entry_file_offset": { "type": "integer", "minimum": 0 },
+        "expression": { "type": "string" },
+        "literal_value": { "type": ["integer", "null"] },
+        "source_label": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "graphics_index_annotation": {
+      "type": "object",
+      "required": [
+        "table_index", "expression", "literal_value", "source_comment",
+        "source_comment_item_id", "source_comment_label",
+        "source_comment_annotation_parsed", "source_comment_id_matches_table_index",
+        "annotation_id_delta"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "expression": { "type": "string", "minLength": 1 },
+        "literal_value": { "type": ["integer", "null"] },
+        "source_comment": { "type": ["string", "null"] },
+        "source_comment_item_id": { "type": ["integer", "null"], "minimum": 0, "maximum": 255 },
+        "source_comment_label": { "type": ["string", "null"] },
+        "source_comment_annotation_parsed": { "type": "boolean" },
+        "source_comment_id_matches_table_index": { "type": ["boolean", "null"] },
+        "annotation_id_delta": { "type": ["integer", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "receipt_slot": {
+      "type": "object",
+      "required": [
+        "table_index", "item_value", "target_address", "wide_item_flag",
+        "properties", "x_offset", "y_offset", "graphics_index_annotation"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "item_value": { "$ref": "#/$defs/slot_field" },
+        "target_address": { "$ref": "#/$defs/slot_field" },
+        "wide_item_flag": { "$ref": "#/$defs/slot_field" },
+        "properties": { "$ref": "#/$defs/slot_field" },
+        "x_offset": { "$ref": "#/$defs/slot_field" },
+        "y_offset": { "$ref": "#/$defs/slot_field" },
+        "graphics_index_annotation": { "$ref": "#/$defs/graphics_index_annotation" }
+      },
+      "additionalProperties": false
+    },
+    "row": {
+      "type": "object",
+      "required": [
+        "transaction_index", "handler_label", "source_handler_range_annotation",
+        "source_handler_label_line", "price_value", "price_compare_expression",
+        "price_compare_source_line", "price_deduction_expression",
+        "price_deduction_source_line", "rupee_balance_address_expression",
+        "receipt_item_index", "receipt_index_expression", "receipt_selector_source_line",
+        "receipt_call_source_line", "empty_bottle_check_source_line", "receipt_slot"
+      ],
+      "properties": {
+        "transaction_index": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "handler_label": { "type": "string", "minLength": 1 },
+        "source_handler_range_annotation": { "type": "string", "minLength": 1 },
+        "source_handler_label_line": { "type": "integer", "minimum": 1 },
+        "price_value": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "price_compare_expression": { "type": "string", "minLength": 1 },
+        "price_compare_source_line": { "type": "integer", "minimum": 1 },
+        "price_deduction_expression": { "type": "string", "minLength": 1 },
+        "price_deduction_source_line": { "type": "integer", "minimum": 1 },
+        "rupee_balance_address_expression": { "type": "string", "minLength": 1 },
+        "receipt_item_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "receipt_index_expression": { "type": "string", "minLength": 1 },
+        "receipt_selector_source_line": { "type": "integer", "minimum": 1 },
+        "receipt_call_source_line": { "type": "integer", "minimum": 1 },
+        "empty_bottle_check_source_line": { "type": "integer", "minimum": 1 },
+        "receipt_slot": { "$ref": "#/$defs/receipt_slot" }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "transaction_count", "distinct_receipt_item_index_count", "minimum_price_value",
+        "maximum_price_value", "receipt_layout_entry_count",
+        "receipt_indexes_within_layout", "receipt_indexes_with_comment_id_mismatch"
+      ],
+      "properties": {
+        "transaction_count": { "const": 3 },
+        "distinct_receipt_item_index_count": { "type": "integer", "minimum": 1 },
+        "minimum_price_value": { "type": "integer", "minimum": 1 },
+        "maximum_price_value": { "type": "integer", "minimum": 1 },
+        "receipt_layout_entry_count": { "const": 76 },
+        "receipt_indexes_within_layout": { "type": "integer", "minimum": 1 },
+        "receipt_indexes_with_comment_id_mismatch": { "type": "integer", "minimum": 0, "maximum": 3 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "price_behavior_runtime_verified",
+        "source_range_annotations_verified", "receipt_item_names_resolved",
+        "room_specific_shop_stock_resolved", "canonical_item_ids_resolved",
+        "source_comment_ids_are_canonical", "source_comment_labels_are_raw_annotations"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "price_behavior_runtime_verified": { "const": false },
+        "source_range_annotations_verified": { "const": false },
+        "receipt_item_names_resolved": { "const": false },
+        "room_specific_shop_stock_resolved": { "const": false },
+        "canonical_item_ids_resolved": { "const": false },
+        "source_comment_ids_are_canonical": { "const": false },
+        "source_comment_labels_are_raw_annotations": { "const": true }
+      },
+      "additionalProperties": false
+    }
+  }
+}

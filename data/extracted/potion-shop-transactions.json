@@ -1,0 +1,72 @@
+{
+  "entries": [
+    {
+      "empty_bottle_check_source_line": 257,
+      "handler_label": "Sprite_GreenPotionItem",
+      "price_compare_expression": "$003C",
+      "price_compare_source_line": 256,
+      "price_deduction_expression": "$003C",
+      "price_deduction_source_line": 266,
+      "price_value": 60,
+      "receipt_call_source_line": 274,
+      "receipt_index_expression": "$2F",
+      "receipt_item_index": 47,
+      "receipt_selector_source_line": 270,
+      "rupee_balance_address_expression": "$7EF360",
+      "source_handler_label_line": 231,
+      "source_handler_range_annotation": "$02F68E-$02F6FF LOCAL JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "empty_bottle_check_source_line": 344,
+      "handler_label": "Sprite_BluePotionItem",
+      "price_compare_expression": "$00A0",
+      "price_compare_source_line": 343,
+      "price_deduction_expression": "$00A0",
+      "price_deduction_source_line": 352,
+      "price_value": 160,
+      "receipt_call_source_line": 358,
+      "receipt_index_expression": "$30",
+      "receipt_item_index": 48,
+      "receipt_selector_source_line": 356,
+      "rupee_balance_address_expression": "$7EF360",
+      "source_handler_label_line": 319,
+      "source_handler_range_annotation": "$02F72B-$02F79C JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "empty_bottle_check_source_line": 430,
+      "handler_label": "Sprite_RedPotionItem",
+      "price_compare_expression": "$0078",
+      "price_compare_source_line": 429,
+      "price_deduction_expression": "$0078",
+      "price_deduction_source_line": 438,
+      "price_value": 120,
+      "receipt_call_source_line": 444,
+      "receipt_index_expression": "$2E",
+      "receipt_item_index": 46,
+      "receipt_selector_source_line": 442,
+      "rupee_balance_address_expression": "$7EF360",
+      "source_handler_label_line": 405,
+      "source_handler_range_annotation": "$02F7D0-$02F83D JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    }
+  ],
+  "entry_count": 3,
+  "evidence": {
+    "canonical_item_ids_resolved": false,
+    "price_behavior_runtime_verified": false,
+    "receipt_item_names_resolved": false,
+    "rom_bytes_read": false,
+    "room_specific_shop_stock_resolved": false,
+    "source_only": true,
+    "source_range_annotations_verified": false
+  },
+  "format": "zelda-suite-potion-shop-transactions",
+  "format_version": 1,
+  "source_file": "sprite_potion_shop.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+}
