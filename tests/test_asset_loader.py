@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 35
+    assert len(assets) == 36
     assert names == {
         "crystal-maiden-message-ids",
         "crystal-maiden-palette-words",
@@ -337,6 +337,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "music-payload-inventory",
         "oam-buffer-position-table",
         "overworld-hidden-item-pointers",
+        "dungeon-chest-data",
         "dungeon-room-door-pointers",
         "dungeon-room-object-pointers",
         "dungeon-room-payloads-bank03",
@@ -374,6 +375,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["oam-buffer-position-table"]["entry_count"] == 54
     assert loaded["music-payload-inventory"]["declaration_count"] == 15
     assert loaded["overworld-hidden-item-pointers"]["entry_count"] == 128
+    assert loaded["dungeon-chest-data"]["entry_count"] == 168
     assert loaded["dungeon-room-door-pointers"]["entry_count"] == 320
     assert loaded["dungeon-room-object-pointers"]["entry_count"] == 320
     assert loaded["dungeon-room-payloads-bank03"]["declaration_count"] == 34

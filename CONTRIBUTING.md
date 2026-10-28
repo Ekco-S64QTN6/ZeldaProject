@@ -139,6 +139,8 @@ For text dictionary changes, also run `uv run zelda-suite audit-text-dictionary`
 For text-message index changes, also run `uv run zelda-suite audit-text-message-index`. Review malformed/mismatched offset annotations and block-size differences, but do not “repair” source-derived metadata without checking the pinned source and a trusted local ROM. The audit does not read ROM bytes or decode messages.
 
 
+For `Dungeon_ChestData` changes, run the pinned-source parser tests and `uv run zelda-suite audit-dungeon-chest-data`; preserve three-byte entry order, the top-byte/low-15-bit/bit-15 split, all 168 entries, and source-only offset caveats. Do not map raw item values to semantic names without evidence.
+
 For SpritePrep dispatch changes, run the pinned-source parser tests, `tests/test_extracted_sprite_prep_dispatch.py`, and `uv run zelda-suite audit-sprite-prep-dispatch`. Treat the shared SpritePrep/SpriteActive3 IDs as index coverage only; neither source address annotations nor handler semantic equivalence are verified.
 
 For music source-index or payload-inventory changes, also run `uv run zelda-suite audit-music-assets`. Review unmatched target labels, unreferenced declarations, and missing size annotations; do not infer payload availability or semantic audio meaning from source labels alone. For `oam-buffer-position-table` changes, also run `zelda-suite audit-oam-allocation` and keep the six limits, all 48 fallback entries, per-region grouping, and source-only caveats in regression tests.

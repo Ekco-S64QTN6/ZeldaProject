@@ -28,6 +28,15 @@
       "subsystem": "sprites"
     },
     {
+      "description": "168 packed Dungeon_ChestData records. Each three-byte expression preserves the source-commented top-byte item value, low-15-bit room value, and bit-15 big-chest flag; source range offsets are unverified candidates.",
+      "file": "dungeon-chest-data.json",
+      "format": "zelda-suite-dungeon-chest-data",
+      "name": "dungeon-chest-data",
+      "record_count": 168,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "dungeons"
+    },
+    {
       "description": "320 source-indexed RoomData_DoorDataPointers long-pointer expressions; payload target labels match object-pointer slots, while addends and ROM offsets remain unverified source metadata.",
       "file": "dungeon-room-door-pointers.json",
       "format": "zelda-suite-pointer-table",

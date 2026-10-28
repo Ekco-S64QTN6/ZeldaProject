@@ -22,6 +22,8 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Joined receive-item layout](./item-receipt-layout.schema.json) — version 1 positional join of six raw receive-item tables, with the 14 dungeon masks retained separately and canonical item IDs explicitly unresolved.
 - [Mixed-width data-table export](./mixed-data-table-export.schema.json) — version 1 schema for colon-separated `db`/`dw`/`dl` source fields, emitted by `zelda-suite inspect-mixed-data-table`.
 - [OAM allocation audit](./oam-allocation-audit.schema.json) — version 1 source-only report grouping six OAM limits and 48 fallback points into six regions.
+- [Dungeon chest data export](./dungeon-chest-data-export.schema.json) — version 1 packed three-byte `Dungeon_ChestData` records with raw item/room values and the big-chest flag.
+- [Dungeon chest data audit](./dungeon-chest-data-audit.schema.json) — version 1 source-only repeated-room, raw item-value frequency, and big-chest summary.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
@@ -40,7 +42,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-five named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-six named source exports and their expected formats, counts, and pinned revision.
 - [`data/extracted/crystal-maiden-message-ids.json`](../../data/extracted/crystal-maiden-message-ids.json) — nine source-declared `dw` message IDs cross-referenced to the text-message index; linkage to the routine's local `.message_ids` remains unresolved.
 - [`data/extracted/crystal-maiden-palette-words.json`](../../data/extracted/crystal-maiden-palette-words.json) — eight raw 16-bit words, with linkage to the routine's local `.palette` reference unresolved.
 - [`data/extracted/crystal-switch-palette-selectors.json`](../../data/extracted/crystal-switch-palette-selectors.json) — two source-derived selector bytes, not decoded color values or ROM-verified bytes.
@@ -62,6 +64,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) — 320 source-indexed 24-bit dungeon room pointer expressions; a read-only verifier compares candidate addresses from the registered payload inventories, but local-ROM verification remains open.
 - [`data/extracted/dungeon-room-door-pointers.json`](../../data/extracted/dungeon-room-door-pointers.json) — 320 source-indexed `RoomData_DoorDataPointers` expressions with numeric addends; target labels match object-pointer slots, but addend meaning and local-ROM verification remain open.
 - [`data/extracted/landmine-oam-groups.json`](../../data/extracted/landmine-oam-groups.json) — two mixed-width Landmine OAM rows; raw field widths and offsets only, not decoded OAM semantics.
+- [`data/extracted/dungeon-chest-data.json`](../../data/extracted/dungeon-chest-data.json) — 168 packed chest records with raw item/room fields and source-commented big-chest flags; range offsets remain unverified.
 - [`data/extracted/oam-buffer-position-table.json`](../../data/extracted/oam-buffer-position-table.json) — 54 OAM allocator words: six limits and 48 fallback entries grouped into six source-derived regions; not runtime- or ROM-verified.
 - [`data/extracted/dungeon-room-payloads-bank03.json`](../../data/extracted/dungeon-room-payloads-bank03.json) — 34 Bank03 room `incbin` declarations with source start offsets and size annotations.
 - [`data/extracted/dungeon-room-payload-inventory.json`](../../data/extracted/dungeon-room-payload-inventory.json) — 75 Bank0A room `incbin` declarations with start-offset and size annotations.
@@ -99,7 +102,7 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 
 - `overworld.md` — full editable map schema (tiles, layers, palettes, warps); the current file is discovery-only.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
-- `items.md` — item table, chest table, shop table.
+- [`items.md`](./items.md) — source-only packed dungeon chest inventory and remaining gaps before a complete editable item/chest/shop schema.
 - `text.md` — message table, encoding, compression.
 - `sprites.md` — sprite types, placements, gfx banks.
 - `audio.md` — source discovery for music pointer and payload inventories; semantic audio schema and payload decoding remain future work.

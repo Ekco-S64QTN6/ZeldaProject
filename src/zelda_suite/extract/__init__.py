@@ -16,6 +16,7 @@ from zelda_suite.extract.asset_loader import (
 )
 from zelda_suite.extract.data_table import (
     DATA_DIRECTIVE_WIDTHS,
+    DUNGEON_CHEST_DATA_FORMAT,
     DataTableEntry,
     DataTableParseError,
     parse_data_table,
@@ -32,6 +33,17 @@ from zelda_suite.extract.disassembly import (
     parse_dl_pointer_table,
     parse_dw_pointer_table,
     parse_source_pointer_table,
+)
+from zelda_suite.extract.dungeon_chest_data import (
+    DungeonChestDataEntry,
+    DungeonChestDataParseError,
+    DungeonChestDataTable,
+    parse_dungeon_chest_data,
+)
+from zelda_suite.extract.dungeon_chest_data_audit import (
+    DUNGEON_CHEST_DATA_AUDIT_FORMAT,
+    DungeonChestDataAuditError,
+    audit_dungeon_chest_data,
 )
 from zelda_suite.extract.dungeon_room_asset_audit import (
     DUNGEON_ROOM_ASSET_AUDIT_FORMAT,
@@ -159,6 +171,8 @@ from zelda_suite.extract.text_message_index_audit import (
 __all__ = [
     "ASSET_REGISTRY_FORMAT",
     "DATA_DIRECTIVE_WIDTHS",
+    "DUNGEON_CHEST_DATA_AUDIT_FORMAT",
+    "DUNGEON_CHEST_DATA_FORMAT",
     "DICTIONARY_INVENTORY_FORMAT",
     "DUNGEON_ROOM_ASSET_AUDIT_FORMAT",
     "INCBIN_INVENTORY_AUDIT_FORMAT",
@@ -182,6 +196,10 @@ __all__ = [
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
     "DataTableEntry",
+    "DungeonChestDataAuditError",
+    "DungeonChestDataEntry",
+    "DungeonChestDataParseError",
+    "DungeonChestDataTable",
     "DataTableParseError",
     "DictionaryFragment",
     "DictionaryInventoryError",
@@ -224,6 +242,7 @@ __all__ = [
     "TextMessageIndexAuditError",
     "TextMessageIndexError",
     "TextMessageRecord",
+    "audit_dungeon_chest_data",
     "audit_dungeon_room_assets",
     "audit_incbin_inventories",
     "audit_music_assets",
@@ -241,6 +260,7 @@ __all__ = [
     "load_source_export",
     "lorom_cpu_address",
     "parse_data_table",
+    "parse_dungeon_chest_data",
     "parse_dictionary_fragment_inventory",
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",

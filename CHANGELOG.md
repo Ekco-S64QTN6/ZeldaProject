@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Register 168 packed `Dungeon_ChestData` records and add `inspect-dungeon-chest-data` plus `audit-dungeon-chest-data`. The export preserves raw three-byte values and exposes the source-commented top-byte item value, low-15-bit room value, and bit-15 big-chest flag. The audit reports repeated room values and item-value frequencies; offsets and item names remain unverified.
+
 - Export the 243 source-commented `SpritePrep_Main` dispatch entries and add strict source-export validation, an `inspect-sprite-prep-dispatch` command, and `audit-sprite-prep-dispatch` to join sprite IDs with the existing 68-entry SpriteActive3 export. Preserve the routine range annotation and wrapped comments; the inline table offset, handler address annotations, and semantic equivalence of the two dispatch stages remain unverified.
 
 - Register the 54-word `oam-buffer-position-table` and add `zelda-suite audit-oam-allocation`, a versioned structured report grouping six region limits with 48 fallback points. Tests pin A–F selector values, all eight slots per region, the source lookup arithmetic, and refusal to overwrite reports; this remains source metadata, not runtime or ROM verification.

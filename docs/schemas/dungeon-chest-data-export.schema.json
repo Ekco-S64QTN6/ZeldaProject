@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite Dungeon_ChestData source export",
+  "description": "Source-only export of 168 packed three-byte chest records. Values retain the source-commented top-byte item field, low-15-bit room field, and bit-15 big-chest flag; annotated offsets are candidates, not verified ROM offsets.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "source_file", "source_revision", "table_label",
+    "source_range_annotation", "source_annotated_start_offset",
+    "source_annotated_end_offset", "table_size_bytes", "entry_width_bytes",
+    "entry_count", "entries", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-dungeon-chest-data" },
+    "format_version": { "const": 1 },
+    "source_file": { "const": "Bank01.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "table_label": { "const": "Dungeon_ChestData" },
+    "source_range_annotation": {
+      "type": "string",
+      "pattern": "^\\$[0-9A-Fa-f]+-\\$[0-9A-Fa-f]+$"
+    },
+    "source_annotated_start_offset": { "type": "integer", "minimum": 0 },
+    "source_annotated_end_offset": { "type": "integer", "minimum": 0 },
+    "table_size_bytes": { "type": "integer", "minimum": 3 },
+    "entry_width_bytes": { "const": 3 },
+    "entry_count": { "type": "integer", "minimum": 1 },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index", "candidate_entry_offset", "source_line", "expression",
+        "literal_value", "item_value", "room_value", "is_big_chest", "source_revision"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "candidate_entry_offset": { "type": "integer", "minimum": 0 },
+        "source_line": { "type": "integer", "minimum": 1 },
+        "expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{6}$" },
+        "literal_value": { "type": "integer", "minimum": 0, "maximum": 16777215 },
+        "item_value": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "room_value": { "type": "integer", "minimum": 0, "maximum": 32767 },
+        "is_big_chest": { "type": "boolean" },
+        "source_revision": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "source_range_offsets_verified",
+        "item_value_names_resolved", "room_values_verified_against_rom"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "source_range_offsets_verified": { "const": false },
+        "item_value_names_resolved": { "const": false },
+        "room_values_verified_against_rom": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}
