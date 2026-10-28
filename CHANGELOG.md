@@ -9,6 +9,9 @@ does not imply that any release has been published.
 
 ### Added
 
+- A staged, read-only local-ROM verification runbook covering file inspection,
+  self-diff smoke testing, selected source-table byte comparisons, and
+  external-tool capability checks.
 - Source-derived, manifest-registered metadata inventories for the currently
   covered falling-prize, text, sprite dispatch, music, overworld, receive-item,
   and dungeon room-pointer/payload declarations. Source annotations and
@@ -34,9 +37,10 @@ does not imply that any release has been published.
 
 - Reconciled `ROADMAP.md`, `README.md`, `CLAUDE.md`, and subsystem
   documentation with the implemented parser, registry, project-store, and
-  source-inventory capabilities. Local-ROM and external-tool verification gates
-  remain open until they are actually run against a trusted, locally supplied
-  ROM and installed tools.
+  source-inventory capabilities. Local-ROM checks now include a user-run
+  byte comparison that matched all five falling-prize arrays at source-
+  annotated offsets; canonical ROM provenance and external-tool verification
+  remain open.
 - Clarified that the documented US ROM path is only a local setup convention,
   not proof that a dump exists or is valid; made the agent instructions and
   human-facing quickstart consistent with the still-open ROM/tool verification

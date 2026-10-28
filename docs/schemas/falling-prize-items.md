@@ -5,7 +5,7 @@ The pinned disassembly defines a compact, source-backed lookup for items
 spawned by the falling-prize routine. This is a useful first item-table fixture
 candidate because both the data labels and a consumer are visible in the source.
 
-## Source-declared table (ROM verification pending)
+## Source-declared table (selected local byte check passed)
 
 In the pinned
 [`Ancilla/ancilla_init.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Ancilla/ancilla_init.asm),
@@ -26,11 +26,12 @@ from 0 through 6.
 | 5 | `$048B95` | `.bombos_medallion` | `$0F` | Bombos medallion |
 | 6 | `$048B96` | `.crystal` | `$20` | Crystal |
 
-The offsets and values above follow the pinned source declarations and source
-annotations. They have **not** been independently checked against bytes from a
-locally supplied ROM. Names and values are recorded as the disassembly
-identifies them; this does not claim that every chest or dropped-item source
-uses this lookup.
+A user-run read-only check on 2026-10-28 matched all seven item bytes and the
+four adjacent arrays against the local ROM at the source-annotated offsets
+(5/5 arrays matched). This provides evidence for these specific bytes in that
+local file, but does not establish the file's canonical provenance. Names and
+values are recorded as the disassembly identifies them; this does not claim
+that every chest or dropped-item source uses this lookup.
 
 ## Consumer evidence
 
@@ -44,8 +45,10 @@ treat this seven-entry lookup as a global item catalog. See the pinned
 [`Ancilla/ancilla_init.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Ancilla/ancilla_init.asm).
 
 The surrounding `Pool_AddPendantOrCrystal` region defines four more
-parallel arrays. These values are retained as source-declared data, not as
-ROM-verified facts:
+parallel arrays. The same local check matched the item-value, fall-height,
+Y-offset, X-offset, and delay-timer arrays at the following source-annotated
+offsets. Values remain raw source declarations; this test does not establish
+canonical ROM provenance or runtime semantics:
 
 | Array | Source-annotated range | Directive / count | Raw source values |
 | --- | --- | --- | --- |
@@ -69,9 +72,10 @@ combined source view is therefore:
 | 6 | `.crystal` | `$20` | `$80` | `$0078` | `$0078` | `$00` |
 
 This joined view makes index alignment explicit without assigning units to the
-raw offset words or normalizing `$FF` into a semantic timer value. Each array
-retains its own element width and meaning; source offsets and values still
-require local-ROM verification before being treated as confirmed ROM facts.
+raw offset words or normalizing `$FF` into a semantic timer value. The
+2026-10-28 local byte check matched each array at its listed offset; no claim
+is made about the local file's provenance, other game systems, or semantic
+meaning beyond the source consumer.
 
 ## Suggested extraction record
 

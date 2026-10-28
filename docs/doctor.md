@@ -18,3 +18,7 @@ YAZE/z3ed or z3cli and do not claim that either can successfully parse the ROM.
 
 The ROM check uses filesystem metadata only; it does not read or modify ROM
 bytes. Keep ROMs local and never commit them.
+
+For a staged local-ROM workflow, including a self-diff smoke test and a
+read-only cross-check of selected source-annotated table bytes, see
+[`real-rom-verification.md`](./real-rom-verification.md).

@@ -10,7 +10,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Establish the canonical ROM, workspace layout, project format, and low-level access primitives.
 
-- [ ] Verify that a clean US ROM is available locally and is the only base-game ROM used by the build. ROMs are intentionally untracked and are not included in CI.
+- [ ] Verify the provenance of the local US ROM and establish it as the canonical base-game ROM. ROMs remain untracked and are not included in CI. Start with [the local-ROM verification runbook](./docs/real-rom-verification.md); expected size and a SHA-256 fingerprint alone do not prove authenticity.
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
 - [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
@@ -35,8 +35,11 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 25 assets covering:
   - Five seven-entry falling-prize parallel arrays. Pinned-source tests verify
     their shared indexes, and `AddPendantOrCrystal` reads the same selector
-    index from each; the joined view remains source-only until offsets and
-    values are compared with a trusted local US ROM.
+    index from each. A local check run reported on 2026-10-28 matched all five
+    arrays against the user's ROM at the source-annotated offsets; this is
+    evidence for those bytes only, not a trusted ROM-provenance check or CI
+    fixture. The repeatable procedure is documented in
+    [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.
@@ -118,6 +121,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Obtain access to a locally supplied, authorized clean US ROM and complete the Phase 0 provenance/header/tool checks. The documented path is not evidence of file presence or validity; keep these gates open until the checks are actually run.
+1. Complete ROM provenance validation and external-tool smoke tests. A user-run
+   local check has already matched the five falling-prize arrays; record that
+   result without treating it as canonical-ROM proof. Continue with the staged
+   tests in [`docs/real-rom-verification.md`](./docs/real-rom-verification.md);
+   keep provenance and YAZE/z3ed/z3cli gates open until independently resolved.
 2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
 3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
