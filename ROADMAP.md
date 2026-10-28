@@ -26,9 +26,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
 - [x] Commit the source-only 320-entry dungeon room pointer table with pinned-source parser-parity coverage; do not treat its count as the number of playable rooms or as resolved ROM targets.
+- [x] Commit the source-only 75-entry Bank0A room payload `incbin` inventory with pinned-source parser-parity coverage; the source has only start-offset and size annotations, so end ranges remain unverified.
 - [x] Import source exports into project SQLite databases by explicit file path or validated registry name; manifest imports recheck registered format, source revision, and record count before storage. Integration tests round-trip every registered asset through SQLite and the canonical project JSON export.
 - [x] Persist validated source-export snapshots in project SQLite databases with explicit v1-to-v2 migration, duplicate-key protection, source provenance, canonical JSON, and SHA-256 integrity checks. This is source metadata persistence, not a semantic game-data schema.
-- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 22 assets covering:
+- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 23 assets covering:
   - Five seven-entry falling-prize parallel arrays.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
@@ -36,6 +37,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 35 music-track pointer expressions and 15 music payload declarations.
   - 128 overworld hidden-item pointer expressions.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`; usable-room count and target resolution remain unverified.
+  - 75 labelled `Bank0A.asm` room payload `incbin` declarations with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
   - Seven raw `Pool_AddReceiveItem` arrays: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
@@ -106,6 +108,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Use a locally supplied clean US ROM and source consumers to resolve the four source annotation issues without changing the source export facts.
-2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
-3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
+1. Cross-reference the 320 room-pointer expressions against source payload labels across the disassembly; document coverage and missing labels without resolving targets to ROM offsets.
+2. Use a locally supplied clean US ROM and source consumers to resolve the known source annotation issues without changing the source export facts.
+3. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
+4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
