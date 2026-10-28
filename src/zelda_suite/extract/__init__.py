@@ -145,6 +145,11 @@ from zelda_suite.extract.shop_item_handlers_audit import (
     ShopItemHandlersAuditError,
     audit_shop_item_handlers,
 )
+from zelda_suite.extract.source_expression_audit import (
+    SOURCE_EXPRESSION_AUDIT_FORMAT,
+    SourceExpressionAuditError,
+    audit_unresolved_table_expressions,
+)
 from zelda_suite.extract.special_shop_transactions import (
     SpecialShopTransactionEntry,
     SpecialShopTransactionsParseError,
@@ -155,11 +160,6 @@ from zelda_suite.extract.special_shop_transactions_audit import (
     SPECIAL_SHOP_TRANSACTIONS_AUDIT_FORMAT,
     SpecialShopTransactionsAuditError,
     audit_special_shop_transactions,
-)
-from zelda_suite.extract.source_expression_audit import (
-    SOURCE_EXPRESSION_AUDIT_FORMAT,
-    SourceExpressionAuditError,
-    audit_unresolved_table_expressions,
 )
 from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchEntry,
