@@ -474,6 +474,42 @@ establish the playable-room set. The referenced `bin/rooms/*.bin` payloads
 are absent from the pinned submodule tree; no ROM bytes are committed.
 
 
+## Dungeon room door-data pointer table
+
+`data/extracted/dungeon-room-door-pointers.json` records all 320
+`dl` expressions under `RoomData_DoorDataPointers` in the pinned
+`Bank1F.asm` revision `347c23f9fc019c72d32da537c9cb235f468d021d`.
+
+- Source-commented range: `$0F83C0–$0F877F` (960 bytes).
+- Entry width/count: three bytes × 320 entries; indices `0x000–0x13F`.
+- First pointer expression: `RoomDataTiles_0000+$004D`; final expression:
+  `RoomDataTiles_Empty+$0008`.
+- The export retains every raw expression, parsed target label and numeric
+  addend, source line, and pinned revision. All 320 target labels agree with
+  the corresponding `RoomData_ObjectDataPointers` slot; 263 distinct labels
+  are present, including 39 references to `RoomDataTiles_Empty`.
+- This is source metadata only. The addends are not promoted to verified door
+  offsets or decoded semantics; the referenced payload binaries are absent and
+  no local-ROM byte comparison has been performed.
+
+Regenerate and compare the source-only export with:
+
+```bash
+uv run zelda-suite inspect-pointer-table \
+  reference/AsarUSALTTPDisassembly/Bank1F.asm \
+  RoomData_DoorDataPointers \
+  --table-offset '$0F83C0' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/dungeon-room-door-pointers.json
+uv run zelda-suite validate-source-export /tmp/dungeon-room-door-pointers.json
+diff -u data/extracted/dungeon-room-door-pointers.json /tmp/dungeon-room-door-pointers.json
+```
+
+The parser-parity test checks the complete export against the pinned assembly
+source when the submodule is available. A separate regression checks slot-wise
+target-label alignment with the committed object-pointer table independently
+of the submodule.
+
 ## Dungeon room payload declarations
 
 Three source-only inventories cover all labelled room payload `incbin`

@@ -1,6 +1,15 @@
 {
   "assets": [
     {
+      "description": "320 source-indexed RoomData_DoorDataPointers long-pointer expressions; payload target labels match object-pointer slots, while addends and ROM offsets remain unverified source metadata.",
+      "file": "dungeon-room-door-pointers.json",
+      "format": "zelda-suite-pointer-table",
+      "name": "dungeon-room-door-pointers",
+      "record_count": 320,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "dungeons"
+    },
+    {
       "description": "320 source-indexed 24-bit RoomData_ObjectDataPointers expressions; target resolution and playable-room count remain unverified.",
       "file": "dungeon-room-object-pointers.json",
       "format": "zelda-suite-pointer-table",

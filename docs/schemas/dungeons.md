@@ -21,6 +21,32 @@ This formula locates the pointer entry, not the room-data target. The file
 offset follows the canonical headerless LoROM mapping described in
 [`rom-offsets.md`](../references/rom-offsets.md).
 
+## Companion door-data pointer table
+
+The same pinned `Bank1F.asm` declares `RoomData_DoorDataPointers` at
+`$0F83C0–$0F877F`, immediately after the object-pointer table. This is another
+320-entry table of three-byte `dl` expressions, with pointer-entry offsets
+calculated as:
+
+```text
+pointer_entry_file_offset = 0x0F83C0 + (i * 3)
+```
+
+The committed source export is
+[`dungeon-room-door-pointers.json`](../../data/extracted/dungeon-room-door-pointers.json),
+registered as `dungeon-room-door-pointers`. All 320 entries have numeric
+addends and their parsed target labels align slot-for-slot with
+`RoomData_ObjectDataPointers`: 263 distinct target labels, including 39
+`RoomDataTiles_Empty` entries. The regression test protects that relationship
+without needing the source submodule at runtime; the pinned-source parser test
+also checks all 320 records when the submodule is present.
+
+Preserve both the complete original pointer expression and parsed addend.
+Although the label names correspond across the two tables, the addends have
+not been semantically decoded or verified against a local ROM. Do not treat
+them as confirmed door-data offsets or use either table to infer a playable-room
+count.
+
 ## Count discrepancy to resolve
 
 The roadmap currently refers to 296 dungeon rooms, while this disassembly table
