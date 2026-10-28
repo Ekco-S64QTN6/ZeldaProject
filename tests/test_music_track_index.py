@@ -18,6 +18,7 @@ from zelda_suite.extract.asset_loader import AssetLoadError, validate_source_exp
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_PATH = ROOT / "reference" / "AsarUSALTTPDisassembly" / "Bank1B.asm"
 EXPORT_PATH = ROOT / "data" / "extracted" / "music-track-index.json"
+PAYLOAD_EXPORT_PATH = ROOT / "data" / "extracted" / "music-payload-inventory.json"
 REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 
@@ -141,6 +142,28 @@ def test_committed_music_index_matches_pinned_source() -> None:
     cave_alias = next(entry for entry in payload["entries"] if entry["track_index"] == 0x18)
     assert cave_alias["pointer_expression"] == "Song12_Cave"
     assert cave_alias["alias_of_track_index"] == 0x12
+
+
+def test_music_pointer_targets_cross_reference_payload_inventory() -> None:
+    index = load_source_export(EXPORT_PATH)
+    inventory = load_source_export(PAYLOAD_EXPORT_PATH)
+
+    target_labels = {
+        entry["target_label"]
+        for entry in index["entries"]
+        if entry["target_label"] is not None
+    }
+    payload_labels = {
+        declaration["label"] for declaration in inventory["declarations"]
+    }
+
+    assert index["source_revision"] == inventory["source_revision"]
+    assert index["entry_count"] == 35
+    assert inventory["declaration_count"] == 15
+    assert len(target_labels) == 16
+    assert len(payload_labels) == 15
+    assert payload_labels <= target_labels
+    assert target_labels - payload_labels == {"Song0B_FairyTheme"}
 
 
 def test_music_index_is_registered_and_loadable_by_name() -> None:
