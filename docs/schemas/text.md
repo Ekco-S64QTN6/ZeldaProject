@@ -141,19 +141,17 @@ runtime message-pointer construction.
 
 Run `uv run zelda-suite audit-text-dictionary` to join the registered
 `text-dictionary-pointers` and `text-dictionary-fragments` exports without
-requiring the disassembly submodule. The report checks that each pointer symbol
-maps to the corresponding local fragment label, that both exports agree on
-source revision, table offsets, expression and index, and that the final
-`endOfTable` sentinel agrees in both files.
+reading a ROM. The audit checks source provenance, pointer/fragment labels,
+indexes and entry offsets, plus the adjacency of each fragment's next offset
+and the following record's start offset. When source extents are present, it
+also checks that each extent equals the difference between those two offsets.
+These checks validate internal metadata relationships only; they do not verify
+source offsets against ROM bytes or resolve symbolic pointers.
 
-The current baseline has 98 pointer entries and 98 fragment records with no
-cross-reference errors. It retains one warning at pointer index 96
-(`DictionaryEntries_You`): the next source offset implies a 2-byte extent,
-while the source directive declaration describes 6 bytes. The audit preserves
-both annotations instead of selecting which one is correct. These checks join
-source metadata only; they do not resolve pointer words, read fragment bytes,
-decode text, or verify offsets against a ROM. See the
-[text dictionary audit schema](./text-dictionary-audit.schema.json).
+The existing `.You` source extent discrepancy remains a warning: the next
+source offset implies a 2-byte extent, while the directive declares 6 bytes.
+The audit preserves both values and does not inspect fragment payload bytes.
+See the [text dictionary audit schema](./text-dictionary-audit.schema.json).
 
 
 ## Audit known message-index discrepancies

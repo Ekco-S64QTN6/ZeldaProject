@@ -4,10 +4,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
-from zelda_suite.extract.text_dictionary_audit import audit_text_dictionary_assets
+from zelda_suite.extract.text_dictionary_audit import (
+    TextDictionaryAuditError,
+    audit_text_dictionary_assets,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTERED_MANIFEST = ROOT / "data" / "extracted" / "manifest.json"
@@ -222,6 +226,42 @@ def test_cli_writes_report_and_fails_on_findings_without_overwriting(
     assert overwrite.exit_code != 0
     assert "refusing to overwrite existing output" in overwrite.output
     assert output.read_text(encoding="utf-8") == "do not replace"
+
+
+def _rewrite_json(path: Path, payload: dict[str, object]) -> None:
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def test_audit_rejects_fragment_next_offset_mismatch(tmp_path: Path) -> None:
+    registry = _fixture_registry(tmp_path)
+    fragment_path = registry.parent / "text-dictionary-fragments.json"
+    payload = json.loads(fragment_path.read_text(encoding="utf-8"))
+    payload["fragments"][0]["next_fragment_file_offset"] = 0x1003
+    payload["fragments"][0]["source_extent_bytes"] = 3
+    _rewrite_json(fragment_path, payload)
+
+    with pytest.raises(
+        TextDictionaryAuditError,
+        match=r"fragments\[0\]\.next_fragment_file_offset does not match the next fragment",
+    ):
+        audit_text_dictionary_assets(registry)
+
+
+def test_audit_rejects_fragment_extent_mismatch(tmp_path: Path) -> None:
+    registry = _fixture_registry(tmp_path)
+    fragment_path = registry.parent / "text-dictionary-fragments.json"
+    payload = json.loads(fragment_path.read_text(encoding="utf-8"))
+    payload["fragments"][0]["source_extent_bytes"] = 3
+    _rewrite_json(fragment_path, payload)
+
+    with pytest.raises(
+        TextDictionaryAuditError,
+        match=r"fragments\[0\]\.source_extent_bytes is inconsistent with fragment offsets",
+    ):
+        audit_text_dictionary_assets(registry)
 
 
 def test_audit_pins_committed_dictionary_cross_reference_baseline() -> None:
