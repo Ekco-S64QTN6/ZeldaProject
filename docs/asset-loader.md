@@ -17,6 +17,9 @@ items = load_extracted_asset("falling-prize-item-values")
 messages = load_extracted_asset("text-message-index")
 print(items["entries"][0]["expression"])
 print(messages["message_count"])
+receipt_layout = load_extracted_asset("item-receipt-layout")
+print(receipt_layout["entries"][0]["target_address"]["expression"])
+print(receipt_layout["dungeon_mask_count"])
 ```
 
 The default registry is `data/extracted/manifest.json`. Tools using another
@@ -43,9 +46,12 @@ The registry file uses format `zelda-suite-asset-registry`, version 1. Each
 entry provides a stable name, relative JSON filename, supported export format,
 pinned source revision, record count, subsystem, and short description. The
 JSON shape is defined in
-[asset-registry.schema.json](./schemas/asset-registry.schema.json). The initial
-registry covers the five falling-prize lookup arrays, the 98-entry text
-dictionary pointer/fragment metadata, the 397-entry source text message index, and the 68-entry SpriteActive3 dispatch table.
+[asset-registry.schema.json](./schemas/asset-registry.schema.json). The current
+registry has 26 named exports across item lookup/receive tables, text, sprite
+dispatch, music, overworld, and dungeon source inventories. The
+`item-receipt-layout` asset is a validated positional join of six raw
+receive-item arrays plus a separate 14-word mask table; it does not resolve
+canonical item IDs.
 
 Add an asset by committing its validated export, adding exactly one registry
 entry, adding test coverage for its provenance/count, and documenting any
@@ -56,8 +62,9 @@ message payloads as source-only exports.
 
 The lower-level `load_source_export(path)` remains available when a tool is
 working with a temporary export that is not registered. It validates pointer
-tables, incbin inventories, scalar data tables, dictionary fragment inventories,
-text message indexes, and sprite dispatch tables before returning the parsed payload.
+tables, incbin inventories, scalar data tables, joined receive-item layouts,
+dictionary fragment inventories, text message indexes, sprite dispatch tables,
+and music-track indexes before returning the parsed payload.
 
 ```python
 from zelda_suite.extract import load_source_export
