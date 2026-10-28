@@ -141,6 +141,8 @@ computed ends are not independently verified ROM offsets. The referenced
 binary payload files are absent from the pinned submodule.
 
 The 266 definitions cover all 263 distinct pointer-table target labels, plus
-three labels that are not referenced by the table. This verifies symbolic
-coverage in the source only; it does not resolve `dl` values to ROM addresses,
-establish the user-facing playable room set, or close the 296/320 count issue.
+three labels that are not referenced by the table. A regression test unions the
+three inventories and asserts exact equality with the source label set, and
+checks that all pointer targets are covered. This verifies symbolic coverage in
+the source only; it does not resolve `dl` values to ROM addresses, establish the
+user-facing playable room set, or close the 296/320 count issue.
