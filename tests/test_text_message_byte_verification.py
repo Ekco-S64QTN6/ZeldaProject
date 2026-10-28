@@ -11,6 +11,7 @@ from zelda_suite.cli.main import cli
 from zelda_suite.extract.text_message_index import MessageSourceBlock
 from zelda_suite.extract.text_message_byte_verification import (
     TextMessageByteVerificationError,
+    default_text_message_source_blocks,
     verify_text_message_bytes,
 )
 from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE
@@ -229,10 +230,6 @@ def test_pinned_source_blocks_parse_all_messages_and_preserve_source_warnings(
     tmp_path: Path,
 ) -> None:
     """Exercise the strict literal-byte parser on the pinned full source blocks."""
-    from zelda_suite.extract.text_message_byte_verification import (
-        default_text_message_source_blocks,
-    )
-
     main_source = (PINNED_SOURCE_ROOT / "Bank1C.asm").read_text(encoding="utf-8")
     extra_source = (PINNED_SOURCE_ROOT / "Bank0E.asm").read_text(encoding="utf-8")
     source_blocks = default_text_message_source_blocks(main_source, extra_source)
