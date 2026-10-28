@@ -529,3 +529,8 @@ is referenced by the pointer table.
 This cross-reference is tested from the pinned source tree. It verifies symbol
 coverage only; it does not resolve pointer values to ROM offsets or prove
 playable-room semantics.
+
+
+## Cross-inventory incbin audit
+
+Run `uv run zelda-suite audit-incbin-inventory --output /tmp/incbin-audit.json` to summarize the registered music, overworld, and dungeon-room `incbin` inventories in one deterministic report. It lists missing source starts/sizes, explicit range/size discrepancies, and intersections between candidate spans calculated from source annotations. These findings are diagnostic: the command does not correct comments, verify ROM offsets, open payload files, or read ROM bytes. See [`docs/incbin-inventory.md`](./incbin-inventory.md) and the [audit report schema](./schemas/incbin-inventory-audit.schema.json).
