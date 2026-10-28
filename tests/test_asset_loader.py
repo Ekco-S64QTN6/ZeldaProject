@@ -450,3 +450,29 @@ def test_named_asset_loader_rejects_stale_registry_provenance_or_count(
 
     with pytest.raises(AssetLoadError, match=message):
         load_extracted_asset("sample-export", registry_path)
+
+
+
+def test_every_registered_export_is_canonical_sorted_json() -> None:
+    """Ensure committed exports are byte-stable under the project JSON convention."""
+    repository_root = Path(__file__).resolve().parents[1]
+    registry_path = repository_root / "data" / "extracted" / "manifest.json"
+    assets = list_extracted_assets(registry_path)
+
+    assert assets
+    for asset in assets:
+        export_path = registry_path.parent / asset["file"]
+        raw = export_path.read_text(encoding="utf-8")
+        payload = load_source_export(export_path)
+        canonical = json.dumps(
+            payload,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        ) + "\n"
+
+        assert raw == canonical, (
+            f"{asset['name']} is not canonical sorted JSON; "
+            "regenerate or normalize the export without reordering arrays"
+        )

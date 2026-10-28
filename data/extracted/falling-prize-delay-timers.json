@@ -3,67 +3,67 @@
   "end_label": null,
   "entries": [
     {
-      "table_index": 0,
       "entry_file_offset": 297914,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$40",
       "literal_value": 64,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
     },
     {
-      "table_index": 1,
       "entry_file_offset": 297915,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$00",
       "literal_value": 0,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
     },
     {
-      "table_index": 2,
       "entry_file_offset": 297916,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$00",
       "literal_value": 0,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
     },
     {
-      "table_index": 3,
       "entry_file_offset": 297917,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$00",
       "literal_value": 0,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
     },
     {
-      "table_index": 4,
       "entry_file_offset": 297918,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$00",
       "literal_value": 0,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
     },
     {
-      "table_index": 5,
       "entry_file_offset": 297919,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$FF",
       "literal_value": 255,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
     },
     {
-      "table_index": 6,
       "entry_file_offset": 297920,
-      "source_line": 1652,
-      "source_label": ".delay_timers",
       "expression": "$00",
       "literal_value": 0,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".delay_timers",
+      "source_line": 1652,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
     }
   ],
   "entry_count": 7,
