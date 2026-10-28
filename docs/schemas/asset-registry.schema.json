@@ -50,6 +50,7 @@
             "zelda-suite-pointer-table",
             "zelda-suite-incbin-inventory",
             "zelda-suite-data-table",
+            "zelda-suite-item-receipt-layout",
             "zelda-suite-dictionary-inventory",
             "zelda-suite-text-message-index",
             "zelda-suite-sprite-dispatch",
