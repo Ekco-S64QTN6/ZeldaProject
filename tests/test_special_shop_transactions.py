@@ -62,6 +62,7 @@ def test_parser_preserves_each_special_shop_reward_mechanism() -> None:
     payload = table.to_dict()
 
     assert payload["entry_count"] == 3
+    assert payload["source_file"] == "sprite_bomb_shop_entity.asm;sprite_bottle_vendor.asm"
     assert [entry["price_value"] for entry in payload["entries"]] == [100, 100, 100]
     assert [entry["receipt_item_index"] for entry in payload["entries"]] == [0x28, None, 0x16]
     assert payload["entries"][0]["receipt_method"] == "ShopItem_HandleReceipt"

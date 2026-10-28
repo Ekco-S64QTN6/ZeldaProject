@@ -119,6 +119,7 @@ class SpecialShopTransactionsTable:
             "format": SPECIAL_SHOP_TRANSACTIONS_FORMAT,
             "format_version": 1,
             "source_revision": self.source_revision,
+            "source_file": ";".join(sorted({entry.source_file for entry in self.entries})),
             "entry_count": len(self.entries),
             "entries": [entry.to_dict() for entry in self.entries],
             "evidence": {

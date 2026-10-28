@@ -237,7 +237,7 @@ _POTION_SHOP_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
 
 
 _SPECIAL_SHOP_TRANSACTIONS_TOP_KEYS = {
-    "format", "format_version", "source_revision", "entry_count", "entries", "evidence",
+    "format", "format_version", "source_revision", "source_file", "entry_count", "entries", "evidence",
 }
 _SPECIAL_SHOP_TRANSACTION_ENTRY_KEYS = {
     "table_index", "transaction_label", "shop_type", "source_file",
@@ -1042,6 +1042,7 @@ def _validate_special_shop_transactions_export(payload: dict[str, Any]) -> None:
             f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
         )
     revision = _string(payload["source_revision"], "source_revision")
+    source_file = _string(payload["source_file"], "source_file")
     count = _integer(payload["entry_count"], "entry_count", minimum=1)
     if count != 3:
         raise AssetLoadError("special-shop transactions entry_count must be 3")
@@ -1163,6 +1164,10 @@ def _validate_special_shop_transactions_export(payload: dict[str, Any]) -> None:
                 raise AssetLoadError(f"{context}.receipt_index_expression does not match receipt_item_index")
             if entry["receipt_selector_source_line"] is None or entry["receipt_call_source_line"] is None:
                 raise AssetLoadError(f"{context} receipt selector/call source lines are required")
+
+    expected_source_file = ";".join(sorted({entry["source_file"] for entry in entries}))
+    if source_file != expected_source_file:
+        raise AssetLoadError("source_file must be the sorted semicolon-joined set of entry source files")
 
     evidence = _object(payload["evidence"], "evidence")
     _exact_keys(evidence, _SPECIAL_SHOP_TRANSACTIONS_EVIDENCE_KEYS, "evidence")

@@ -125,5 +125,6 @@
   },
   "format": "zelda-suite-special-shop-transactions",
   "format_version": 1,
+  "source_file": "sprite_bomb_shop_entity.asm;sprite_bottle_vendor.asm",
   "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
 }

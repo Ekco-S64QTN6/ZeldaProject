@@ -18,6 +18,7 @@ PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 def test_registered_special_shop_export_pins_source_transactions() -> None:
     payload = load_source_export(EXPORT_PATH)
     assert payload["source_revision"] == PINNED_REVISION
+    assert payload["source_file"] == "sprite_bomb_shop_entity.asm;sprite_bottle_vendor.asm"
     assert payload["entry_count"] == 3
     assert [
         (entry["transaction_label"], entry["price_value"], entry["receipt_item_index"])

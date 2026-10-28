@@ -7,6 +7,7 @@
     "format",
     "format_version",
     "source_revision",
+    "source_file",
     "entry_count",
     "entries",
     "evidence"
@@ -35,6 +36,11 @@
     },
     "evidence": {
       "$ref": "#/$defs/evidence"
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Sorted, semicolon-separated set of source files referenced by the entries."
     }
   },
   "additionalProperties": false,
