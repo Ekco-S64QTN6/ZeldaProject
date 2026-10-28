@@ -48,6 +48,7 @@ def test_hidden_item_pointer_export_is_registered_by_name() -> None:
     assert payload["entry_count"] == 128
     assert payload["table_label"] == "OverworldData_HiddenItems"
 
+
 @pytest.mark.skipif(
     not SOURCE_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",
