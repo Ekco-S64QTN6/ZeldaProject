@@ -1110,7 +1110,10 @@ def init_project(name: str, workspace: Path) -> None:
 
     click.echo(f"Created SQLite project: {database_path}")
     click.echo(f"Created JSON export:    {json_path}")
-    click.echo("No ROM was read or copied. Game-system schemas will be added in Phase 1.")
+    click.echo(
+        "No ROM was read or copied. Validated source exports can be imported; "
+        "semantic game-system schemas and ROM writing remain future work."
+    )
 
 
 @cli.command(name="validate")
