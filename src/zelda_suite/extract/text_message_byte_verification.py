@@ -249,6 +249,33 @@ def verify_text_message_bytes(
     except (TextMessageIndexError, OSError, UnicodeError, TypeError, ValueError) as exc:
         raise TextMessageByteVerificationError(str(exc)) from exc
 
+    ordered_blocks = sorted(
+        index.source_blocks,
+        key=lambda block: block.block_start_offset,
+    )
+    for block in ordered_blocks:
+        if block.block_end_offset >= len(rom):
+            raise TextMessageByteVerificationError(
+                f"{block.source_file}:{block.data_block_label} declared range "
+                f"0x{block.block_start_offset:06X}–0x{block.block_end_offset:06X} "
+                "extends beyond the ROM image"
+            )
+        if block.declared_byte_count_total > block.block_size_bytes:
+            excess = block.declared_byte_count_total - block.block_size_bytes
+            raise TextMessageByteVerificationError(
+                f"{block.source_file}:{block.data_block_label} contains "
+                f"{excess} literal byte(s) beyond its declared source block range"
+            )
+    for previous, current in zip(ordered_blocks, ordered_blocks[1:]):
+        if current.block_start_offset <= previous.block_end_offset:
+            raise TextMessageByteVerificationError(
+                "source block offset ranges overlap: "
+                f"{previous.source_file}:{previous.data_block_label} "
+                f"(0x{previous.block_start_offset:06X}–0x{previous.block_end_offset:06X}) and "
+                f"{current.source_file}:{current.data_block_label} "
+                f"(0x{current.block_start_offset:06X}–0x{current.block_end_offset:06X})"
+            )
+
     source_bytes_by_label: dict[tuple[str, str, str], bytes] = {}
     for block in source_blocks:
         block_messages = [
