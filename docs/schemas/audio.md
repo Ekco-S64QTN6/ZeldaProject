@@ -131,3 +131,33 @@ diff -u data/extracted/music-track-index.json /tmp/music-track-index.json
 The JSON schema for the export is
 [`music-track-index.schema.json`](./music-track-index.schema.json). The named
 asset loader exposes it as `load_extracted_asset("music-track-index")`.
+
+
+## Music payload source inventory
+
+`data/extracted/music-payload-inventory.json` contains the 15 labelled
+`incbin` declarations for `bin/music/` in pinned `Bank1B.asm`. It is
+separate from the `SONG_POINTERS` index because these declarations describe
+payload storage ranges, not song-index relationships.
+
+Twelve main-song declarations include explicit `Size:` annotations on their
+`incbin` lines, and each matches its source-commented inclusive file range.
+The three auxiliary declarations—`Song1D_AgahnimEscapes`,
+`Song1F_KingOfThieves`, and `Song1E_MeetingGanon`—have source-commented
+start/end offsets but no inline `Size:` annotation. Their recorded
+`declared_size_bytes`, computed end, and source-range comparison remain null
+instead of treating a calculated range length as a source-declared size.
+
+Regenerate the file with the existing source-only inventory command:
+
+```bash
+uv run zelda-suite inspect-incbin \
+  reference/AsarUSALTTPDisassembly/Bank1B.asm \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/music-payload-inventory.json
+uv run zelda-suite validate-source-export /tmp/music-payload-inventory.json
+diff -u data/extracted/music-payload-inventory.json /tmp/music-payload-inventory.json
+```
+
+The inventory does not open `bin/music/` files. Those payloads are absent from
+the pinned submodule, and no audio bytes are included in the project.
