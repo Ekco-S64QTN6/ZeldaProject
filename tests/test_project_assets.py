@@ -207,6 +207,9 @@ def test_every_registered_asset_round_trips_through_project_storage(
         assert stored["payload"] == committed
         assert stored["sha256"] == metadata["sha256"]
         assert stored["source_revision"] == metadata["source_revision"]
+        assert stored["source_file"] == metadata["source_file"]
+        if metadata["key"] == "text-message-index":
+            assert metadata["source_file"] == "Bank0E.asm;Bank1C.asm"
 
     assert validate_project(database) == []
 
