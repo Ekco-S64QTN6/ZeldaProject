@@ -10,6 +10,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
+- [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
 - [Text message index](./text-message-index.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-messages`.
 - [Named asset registry](./asset-registry.schema.json) — version 1 catalog schema for `data/extracted/manifest.json`.
