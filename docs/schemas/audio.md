@@ -161,3 +161,28 @@ diff -u data/extracted/music-payload-inventory.json /tmp/music-payload-inventory
 
 The inventory does not open `bin/music/` files. Those payloads are absent from
 the pinned submodule, and no audio bytes are included in the project.
+
+
+## Pointer-index and payload-label cross-reference
+
+The 35-slot `SONG_POINTERS` export contains 16 distinct non-empty target
+symbols. Every one of the 15 labels in the committed `incbin` payload inventory
+also appears in that pointer index, including the repeated targets for
+`Song12_Cave`, `Song1D_AgahnimEscapes`, `Song1E_MeetingGanon`, and
+`Song1F_KingOfThieves`.
+
+One additional target symbol, `Song0B_FairyTheme`, is not a label in the
+15-declaration `music-payload-inventory`. The source-only cross-reference test
+records this exact set difference. It does **not** establish that the song is
+absent, that its payload is missing from the ROM, or that the source expression
+resolves to a particular file offset; the 15-row inventory only describes the
+`incbin` declarations captured from this source block.
+
+Recheck the relationship with:
+
+```bash
+uv run pytest tests/test_music_track_index.py
+```
+
+This is source-symbol consistency only. It does not read the untracked
+`bin/music/*.bin` paths or validate any address against a local ROM.
