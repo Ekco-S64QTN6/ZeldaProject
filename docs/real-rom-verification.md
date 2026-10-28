@@ -410,13 +410,17 @@ ranges only, not proof of a canonical ROM or verified message semantics.
 Currently available: ROM metadata inspection, file-backed byte-diffing,
 source-only table/pointer/inventory export, export validation, read-only
 verification of registered scalar-table literals, the overworld hidden-item
-pointer/record region, and the dungeon-room long-pointer table, plus ROM-free
-project initialization/storage tests.
+pointer/record region, the dungeon-room long-pointer table, text-dictionary
+pointer words, and raw encoded text-message bytes, plus ROM-free project
+initialization/storage tests. The text verifier commands report candidate
+byte comparisons only; their source offsets and ROM provenance are not
+independently verified, and the message command does not decode text.
 
 Not yet implemented/verified: general semantic ROM extraction into editable
 overworld/dungeon/item schemas; an edit-to-ROM build pipeline; ROM writer and
 patch generation; emulator boot/smoke tests; trusted US-ROM hash validation;
-and successful YAZE/z3ed or z3cli operations against the local image.
+local-ROM runs for the dictionary/message commands; and successful
+YAZE/z3ed or z3cli operations against the local image.
 
 Record the outputs from steps 1–7 and tool help from step 9 when reporting
 results. Do not upload or commit the ROM, a ROM slice, or a raw binary dump.
