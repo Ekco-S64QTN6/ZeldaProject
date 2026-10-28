@@ -24,6 +24,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 **Objective:** Build a source-traceable, queryable metadata model without treating unverified source comments as confirmed ROM facts.
 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
+- [x] Cross-reference the 35-slot music pointer index against the 15 declared payload labels: all 15 payload labels appear in the pointer target set, plus the distinct `Song0B_FairyTheme` target, which has no matching entry in the current `incbin` inventory. The difference is documented but not interpreted as ROM-level absence or pointer resolution.
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
 - [x] Commit the source-only 320-entry dungeon room pointer table with pinned-source parser-parity coverage; do not treat its count as the number of playable rooms or as resolved ROM targets.
 - [x] Cross-reference the 320 dungeon pointer slots with all three payload inventories and pinned Bank03/Bank0A/Bank1F source labels: the inventories cover all 266 definitions, all 263 distinct pointer target labels are included, and exactly three definitions are not referenced by the table. This remains source-symbol verification, not ROM pointer resolution.
