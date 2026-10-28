@@ -213,6 +213,10 @@ def parse_music_track_index(
                 f"expected {expected_index:#04x}"
             )
         expression = pointer.group("expression")
+        if expression.startswith("$") and expression.upper() != "$0000":
+            raise MusicTrackIndexError(
+                f"unsupported numeric pointer expression on line {index + 1}: {expression}"
+            )
         parsed_rows.append((index + 1, source_index, expression))
 
     if len(parsed_rows) != expected_entry_count:
