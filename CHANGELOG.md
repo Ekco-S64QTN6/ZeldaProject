@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Register the eight-word `crystal-maiden-palette-words` export from pinned `Sprites/sprite_crystal_maiden.asm` with parser parity and literal baselines. Preserve the raw 16-bit values and explicitly document the unresolved relationship between `CrystalMaiden_Configure_palette` and the routine's `.palette` reference; no color decoding or ROM verification is claimed.
+
 - Register the two-entry `crystal-switch-palette-selectors` table with pinned-source parser parity for both the data bytes and its bit-indexed consumer. The values are sprite-property selector bits, not decoded palette colors or locally verified ROM bytes.
 
 - Register the eight-byte `mad-batter-pseudo-attack-palettes` table with pinned-source parser parity and a literal-value baseline. The bytes select sprite palette fields; they are not decoded color-palette data and have not been verified against a local ROM.
@@ -68,12 +70,12 @@ does not imply that any release has been published.
   `zelda-suite audit-text-dictionary` runs. The known `.You` source-extent
   mismatch remains a diagnostic warning; the checks do not verify ROM offsets.
 
-- Add an integration regression baseline for all 16 registered scalar-table
-  exports: 689 entries, 514 direct numeric literals, 77 negative decimal literals,
-  and 98 unresolved symbols. The Mad Batter and Crystal Switch selector tables
-  contribute ten direct numeric literals total; the baseline remains source-only
-  and does not claim that any skipped expression has been resolved or verified
-  against ROM bytes.
+- Add an integration regression baseline for all 17 registered scalar-table
+  exports: 697 entries, 522 direct numeric literals, 77 negative decimal literals,
+  and 98 unresolved symbols. The Mad Batter, Crystal Switch, and Crystal Maiden
+  tables contribute eighteen direct numeric literals total; the baseline remains
+  source-only and does not claim any skipped expression has been resolved or
+  verified against ROM bytes.
 
 - Pin the current six-inventory `audit-incbin-inventory` summary in an integration test, so metadata gaps, range/size discrepancies, and candidate-overlap counts cannot drift silently. The baseline is source-only and does not verify ROM offsets.
 
