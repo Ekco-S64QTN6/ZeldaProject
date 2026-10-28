@@ -9,7 +9,7 @@ from zelda_suite.extract import (
     lorom_cpu_address,
     parse_overworld_hidden_item_source,
     verify_overworld_hidden_items,
- )
+)
 from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE
 
 ROOT = Path(__file__).resolve().parents[1]
