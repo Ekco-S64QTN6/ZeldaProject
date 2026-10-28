@@ -102,6 +102,7 @@ def test_committed_parallel_tables_match_the_pinned_source() -> None:
         )
         assert payload["entries"] == [entry.to_dict() for entry in parsed]
 
+
 @pytest.mark.skipif(
     not SOURCE_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",
