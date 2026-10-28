@@ -167,3 +167,24 @@ It is strictly read-only and deliberately reports
 `playable_room_set_resolved: false`. Run it against a local image and review
 mismatches; a successful comparison does not independently prove that the
 source-commented target offsets are canonical.
+
+
+## Cross-reference committed pointer and payload inventories
+
+Run `uv run zelda-suite audit-dungeon-room-assets` to join the registered
+`dungeon-room-object-pointers` export with the Bank03, Bank0A, and Bank1F
+room-payload inventories. The report checks label uniqueness and source
+provenance, shows each pointer slot's matching payload declaration, and lists
+unreferenced payload labels or pointer targets without a unique declaration.
+
+The committed metadata baseline contains 320 pointer entries, 39 entries to
+`RoomDataTiles_Empty`, 263 distinct pointer target labels, and 266 payload
+declarations. All 263 target labels have exactly one matching declaration.
+Three declarations—`RoomDataTiles_Orphan`, `RoomDataTiles_Zarby89`, and
+`RoomDataTiles_Zarby90`—are not referenced by the pointer table. This is a
+source-symbol relationship only. The reported offsets are source-commented
+candidate inputs; the command reads neither ROM bytes nor room payload bytes,
+and it does not resolve the 296-versus-320 playable-room count discrepancy.
+The separate `verify-dungeon-room-pointers` command still requires a local ROM
+for pointer-byte comparisons. See the
+[dungeon-room asset audit schema](./dungeon-room-asset-audit.schema.json).

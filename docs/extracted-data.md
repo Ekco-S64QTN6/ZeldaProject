@@ -586,3 +586,19 @@ diagnostic, not evidence that audio bytes are present or missing in a ROM; the
 pinned reference does not track the included `bin/music/` payload files. See
 [`docs/schemas/audio.md`](./schemas/audio.md) and the
 [music audit schema](./schemas/music-asset-audit.schema.json).
+
+
+## Cross-check dungeon room pointer and payload assets
+
+Run `uv run zelda-suite audit-dungeon-room-assets --output /tmp/dungeon-room-asset-audit.json`
+to join the committed 320-entry long-pointer export with the three registered
+room payload inventories (34 Bank03, 75 Bank0A, and 157 Bank1F declarations).
+The current source-only baseline finds 263 distinct pointer target labels and
+266 unique payload labels: no pointer targets are missing, and exactly three
+payload labels are unreferenced (`RoomDataTiles_Orphan`,
+`RoomDataTiles_Zarby89`, and `RoomDataTiles_Zarby90`). The command reads
+committed JSON only and works without the disassembly submodule. It does not
+read ROM or payload bytes, turn source-commented starts into verified
+addresses, or determine the playable-room set. See
+[`docs/schemas/dungeons.md`](./schemas/dungeons.md) and the
+[dungeon-room asset audit schema](./schemas/dungeon-room-asset-audit.schema.json).

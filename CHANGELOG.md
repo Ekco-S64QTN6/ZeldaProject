@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add source-only `zelda-suite audit-dungeon-room-assets` and a version-1
+  schema to cross-reference the 320 dungeon pointer slots with the three
+  registered room payload inventories. The report preserves the three known
+  unreferenced payload labels and does not read ROM or room bytes.
+
 - Normalize eight older registered JSON exports to canonical sorted-key JSON and
   add a registry-wide regression test for byte-stable serialization across all
   registered assets, preserving array order and source values.

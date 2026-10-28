@@ -31,6 +31,11 @@ from zelda_suite.extract.disassembly import (
     parse_dw_pointer_table,
     parse_source_pointer_table,
 )
+from zelda_suite.extract.dungeon_room_asset_audit import (
+    DUNGEON_ROOM_ASSET_AUDIT_FORMAT,
+    DungeonRoomAssetAuditError,
+    audit_dungeon_room_assets,
+)
 from zelda_suite.extract.dungeon_room_pointer_verification import (
     DungeonRoomPointerVerificationError,
     verify_dungeon_room_pointers,
@@ -118,6 +123,7 @@ __all__ = [
     "ASSET_REGISTRY_FORMAT",
     "DATA_DIRECTIVE_WIDTHS",
     "DICTIONARY_INVENTORY_FORMAT",
+    "DUNGEON_ROOM_ASSET_AUDIT_FORMAT",
     "INCBIN_INVENTORY_AUDIT_FORMAT",
     "ITEM_RECEIPT_LAYOUT_FORMAT",
     "MUSIC_ASSET_AUDIT_FORMAT",
@@ -136,6 +142,7 @@ __all__ = [
     "DictionaryFragment",
     "DictionaryInventoryError",
     "DisassemblyParseError",
+    "DungeonRoomAssetAuditError",
     "DungeonRoomPointerVerificationError",
     "IncbinDeclaration",
     "IncbinInventoryAuditError",
@@ -162,6 +169,7 @@ __all__ = [
     "TextMessageIndexAuditError",
     "TextMessageIndexError",
     "TextMessageRecord",
+    "audit_dungeon_room_assets",
     "audit_incbin_inventories",
     "audit_music_assets",
     "audit_text_dictionary_assets",

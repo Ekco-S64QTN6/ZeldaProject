@@ -229,3 +229,5 @@ When changing registered music data, run `zelda-suite audit-music-assets`. It jo
 The committed `sprite-active3-dispatch` export is checked independently of the disassembly submodule; preserve its 68-entry `$79–$BC` range, contiguous source offsets, and six explicit handler alias groups in tests. Do not promote source handler-address comments into verified ROM targets.
 
 For `overworld-hidden-item-pointers`, preserve the full source-label set and repeated-target distribution pinned by `tests/test_overworld_hidden_item_pointer_baseline.py`. That test covers committed JSON independently of the disassembly submodule and must not be described as ROM target verification.
+
+When changing dungeon room pointer or payload inventory exports, run `zelda-suite audit-dungeon-room-assets`. Preserve the three known unreferenced payload labels unless the registered source exports change with evidence; the audit uses source metadata and must not be described as ROM pointer verification.

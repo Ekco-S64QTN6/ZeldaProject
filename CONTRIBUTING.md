@@ -154,3 +154,6 @@ two-space indentation, sorted object keys, array order preserved, no non-standar
 numbers, and a final newline. Prefer regenerating exports through their parser
 CLI; if normalizing an older export, review that the change is key order or
 formatting only and that no data values or arrays changed.
+
+
+For changes to the dungeon pointer table or room payload inventories, also run `uv run zelda-suite audit-dungeon-room-assets`. Review missing/duplicate targets and unreferenced payload labels as source-symbol findings; source-commented offsets remain candidates until the separate local-ROM verifier is run.

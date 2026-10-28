@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite dungeon-room asset cross-reference audit",
+  "description": "Source-only join between the 320-slot dungeon room pointer table and the three registered room payload inventories. Candidate offsets are source annotations, not verified ROM addresses; room payload bytes are not read.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "pointer_asset_name", "payload_asset_names",
+    "pointer_source_file", "pointer_table_label", "pointer_table_file_offset",
+    "pointer_entry_width_bytes", "payload_source_files", "source_revision", "cross_references",
+    "missing_payload_targets", "unreferenced_payload_labels", "payloads_missing_start_offset",
+    "payloads_missing_size", "findings", "summary", "evidence"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-dungeon-room-asset-audit"},
+    "format_version": {"const": 1},
+    "registry": {"type": "string", "minLength": 1},
+    "pointer_asset_name": {"type": "string", "minLength": 1},
+    "payload_asset_names": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "pointer_source_file": {"type": "string", "minLength": 1},
+    "pointer_table_label": {"type": "string", "minLength": 1},
+    "pointer_table_file_offset": {"type": "integer", "minimum": 0},
+    "pointer_entry_width_bytes": {"type": "integer", "minimum": 1},
+    "payload_source_files": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "source_revision": {"type": "string", "minLength": 1},
+    "cross_references": {"type": "array", "items": {"$ref": "#/$defs/cross_reference"}},
+    "missing_payload_targets": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "unreferenced_payload_labels": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "payloads_missing_start_offset": {"type": "array", "items": {"$ref": "#/$defs/payload_gap"}},
+    "payloads_missing_size": {"type": "array", "items": {"$ref": "#/$defs/payload_gap"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "room_payload_bytes_read",
+        "pointer_values_resolved", "offsets_verified", "payload_bytes_verified"
+      ],
+      "properties": {
+        "source_only": {"const": true},
+        "rom_bytes_read": {"const": false},
+        "room_payload_bytes_read": {"const": false},
+        "pointer_values_resolved": {"const": false},
+        "offsets_verified": {"const": false},
+        "payload_bytes_verified": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "cross_reference": {
+      "type": "object",
+      "required": [
+        "table_index", "pointer_entry_file_offset", "pointer_expression", "target_label",
+        "is_empty_target", "payload_declaration_count", "payload_declaration_found",
+        "payload_asset_name", "payload_source_file", "incbin_path",
+        "source_file_offset_start", "declared_size_bytes"
+      ],
+      "properties": {
+        "table_index": {"type": "integer", "minimum": 0},
+        "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+        "pointer_expression": {"type": "string", "minLength": 1},
+        "target_label": {"type": "string", "minLength": 1},
+        "is_empty_target": {"type": "boolean"},
+        "payload_declaration_count": {"type": "integer", "minimum": 0},
+        "payload_declaration_found": {"type": "boolean"},
+        "payload_asset_name": {"type": ["string", "null"]},
+        "payload_source_file": {"type": ["string", "null"]},
+        "incbin_path": {"type": ["string", "null"]},
+        "source_file_offset_start": {"type": ["integer", "null"], "minimum": 0},
+        "declared_size_bytes": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "payload_gap": {
+      "type": "object",
+      "required": ["label", "payload_asset_name", "source_file", "incbin_path"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1},
+        "payload_asset_name": {"type": "string", "minLength": 1},
+        "source_file": {"type": "string", "minLength": 1},
+        "incbin_path": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "code", "severity", "message", "pointer_index", "target_label",
+        "payload_label", "payload_asset_name", "incbin_path"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "pointer_table_metadata_mismatch", "source_provenance_mismatch",
+            "duplicate_payload_label", "missing_payload_declaration",
+            "unreferenced_payload_declaration", "payload_start_offset_missing",
+            "payload_size_missing", "payload_source_range_mismatch"
+          ]
+        },
+        "severity": {"enum": ["error", "warning"]},
+        "message": {"type": "string", "minLength": 1},
+        "pointer_index": {"type": ["integer", "null"], "minimum": 0},
+        "target_label": {"type": ["string", "null"]},
+        "payload_label": {"type": ["string", "null"]},
+        "payload_asset_name": {"type": ["string", "null"]},
+        "incbin_path": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "pointer_entry_count", "empty_pointer_count", "unique_pointer_target_label_count",
+        "payload_declaration_count", "unique_payload_label_count", "matched_target_label_count",
+        "missing_payload_target_count", "missing_payload_reference_count", "unreferenced_payload_count",
+        "duplicate_payload_label_count", "payload_start_offset_missing_count",
+        "payload_without_size_count", "payload_source_range_mismatch_count",
+        "error_count", "warning_count", "finding_count"
+      ],
+      "properties": {
+        "pointer_entry_count": {"type": "integer", "minimum": 0},
+        "empty_pointer_count": {"type": "integer", "minimum": 0},
+        "unique_pointer_target_label_count": {"type": "integer", "minimum": 0},
+        "payload_declaration_count": {"type": "integer", "minimum": 0},
+        "unique_payload_label_count": {"type": "integer", "minimum": 0},
+        "matched_target_label_count": {"type": "integer", "minimum": 0},
+        "missing_payload_target_count": {"type": "integer", "minimum": 0},
+        "missing_payload_reference_count": {"type": "integer", "minimum": 0},
+        "unreferenced_payload_count": {"type": "integer", "minimum": 0},
+        "duplicate_payload_label_count": {"type": "integer", "minimum": 0},
+        "payload_start_offset_missing_count": {"type": "integer", "minimum": 0},
+        "payload_without_size_count": {"type": "integer", "minimum": 0},
+        "payload_source_range_mismatch_count": {"type": "integer", "minimum": 0},
+        "error_count": {"type": "integer", "minimum": 0},
+        "warning_count": {"type": "integer", "minimum": 0},
+        "finding_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  }
+}
