@@ -9,6 +9,12 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add read-only `zelda-suite verify-text-dictionary-pointers` and a strict
+  version-1 report schema to compare the 98 dictionary pointer words with
+  source-offset-derived LoROM candidates. Synthetic fixtures test matching and
+  mismatching bytes; ROM provenance, source offsets, fragment payload bytes,
+  and the runtime symbol-name mapping remain unverified.
+
 - Add source-only `zelda-suite audit-dungeon-room-assets` and a version-1
   schema to cross-reference the 320 dungeon pointer slots with the three
   registered room payload inventories. The report preserves the three known
