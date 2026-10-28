@@ -12,7 +12,6 @@ from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
-    PINNED_SOURCE_REVISION,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     MessageSourceBlock,
@@ -1065,12 +1064,6 @@ def verify_rom_tables_command(
     help="Pinned Bank1B.asm source used to derive pointer targets and record offsets.",
 )
 @click.option(
-    "--source-revision",
-    default=PINNED_SOURCE_REVISION,
-    show_default=True,
-    help="Source revision to record in the report.",
-)
-@click.option(
     "--output",
     type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
     default=None,
@@ -1079,7 +1072,6 @@ def verify_rom_tables_command(
 def verify_overworld_hidden_items_command(
     rom_path: Path,
     source_path: Path,
-    source_revision: str,
     output: Path | None,
 ) -> None:
     """Verify source-derived overworld hidden-item pointers, records, sentinels and Map16 words."""
@@ -1088,7 +1080,6 @@ def verify_overworld_hidden_items_command(
         report = verify_overworld_hidden_items(
             rom_path,
             source,
-            source_revision=source_revision,
         )
     except (OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
