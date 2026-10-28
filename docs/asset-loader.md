@@ -47,8 +47,10 @@ entry provides a stable name, relative JSON filename, supported export format,
 pinned source revision, record count, subsystem, and short description. The
 JSON shape is defined in
 [asset-registry.schema.json](./schemas/asset-registry.schema.json). The current
-registry has 33 named exports across item lookup/receive tables, text, sprite
-dispatch, music, overworld, and dungeon source inventories. The
+registry has 35 named exports across item lookup/receive tables, text, sprite
+dispatch, OAM allocator inventories, music, overworld, and dungeon source inventories.
+The 243-entry SpritePrep table uses a strict source-export validator; its inline
+table offset remains unset because the source only annotates the containing routine range. The
 `item-receipt-layout` asset is a validated positional join of six raw
 receive-item arrays plus a separate 14-word mask table; it does not resolve
 canonical item IDs. The

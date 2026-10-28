@@ -405,6 +405,47 @@ CI compares the committed records against the pinned source parser and checks
 the eight literal values and sequential offsets. This is source-parity evidence,
 not a local-ROM check or a complete sprite/color-palette extraction.
 
+## SpritePrep_Main inline dispatch table
+
+`data/extracted/sprite-prep-dispatch.json` preserves the 243 `dw` entries
+after `UseImplicitRegIndexedLocalJumpTable` in `SpritePrep_Main` from pinned
+`Sprites/sprite_prep.asm` revision `347c23f9fc019c72d32da537c9cb235f468d021d`.
+The source-commented routine region is `$03064D-$030840 JUMP LOCATION`, but it
+does not establish the exact start offset of this inline table. The export
+therefore records `table_file_offset: null` and
+`table_offset_established: false`, rather than deriving an offset from the
+routine's total range.
+
+Each entry preserves its source line, ID comment, raw handler expression,
+optional symbol label, address annotation, description and wrapped continuation
+comments. The literal `$0000` entry is retained as a literal with no handler
+label. These handler address annotations are source comments, not confirmed
+ROM pointers.
+
+Inspect/regenerate from the pinned source:
+
+```bash
+uv run zelda-suite inspect-sprite-prep-dispatch \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_prep.asm \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --entry-count 243 \
+  --output /tmp/sprite-prep-dispatch.json
+uv run zelda-suite validate-source-export /tmp/sprite-prep-dispatch.json
+diff -u data/extracted/sprite-prep-dispatch.json /tmp/sprite-prep-dispatch.json
+uv run zelda-suite audit-sprite-prep-dispatch
+```
+
+The audit cross-references the 243 preparation IDs with the 68
+`SpriteActive3_Table` IDs (`$79–$BC`): all 68 lie in the prep-table ID range.
+The report joins rows by ID only. Prep dispatch and active-loop dispatch are
+different stages; the report does not claim their handlers are semantically
+equivalent, and it does not read ROM bytes or verify either source-commented
+handler address.
+
+See the [sprite discovery guide](./schemas/sprites.md) and the
+[source-export schema](./schemas/sprite-prep-dispatch-export.schema.json) and
+[audit schema](./schemas/sprite-prep-dispatch-audit.schema.json).
+
 ## SpriteActive3 handler dispatch
 
 `data/extracted/sprite-active3-dispatch.json` indexes the 68 `dw` entries in

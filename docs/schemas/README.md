@@ -32,13 +32,15 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Text-message byte verification](./text-message-byte-verification.schema.json) — version 1 read-only comparison of source-literal message bytes against a local ROM; does not decode text or establish ROM provenance/source-offset trust.
 - [Named asset registry](./asset-registry.schema.json) — version 1 catalog schema for `data/extracted/manifest.json`.
 - [Sprite dispatch export](./sprite-dispatch-export.schema.json) — version 1 schema for `zelda-suite inspect-sprite-dispatch`.
+- [SpritePrep dispatch export](./sprite-prep-dispatch-export.schema.json) — version 1 schema for the inline, source-commented 243-entry `SpritePrep_Main` table, whose exact table offset remains unset.
+- [SpritePrep/SpriteActive3 cross-reference audit](./sprite-prep-dispatch-audit.schema.json) — version 1 source-only join by sprite ID, not a handler-semantics equivalence claim.
 - [Music track index](./music-track-index.schema.json) — version 1 schema for `zelda-suite inspect-music-track-index`.
 - [Music asset cross-reference audit](./music-asset-audit.schema.json) — version 1 source-only join between registered music pointer targets and payload declarations.
 - [Overworld High/Low pair check](./overworld.md) — validates that each source-local screen token has one High and one Low payload declaration.
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-four named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-five named source exports and their expected formats, counts, and pinned revision.
 - [`data/extracted/crystal-maiden-message-ids.json`](../../data/extracted/crystal-maiden-message-ids.json) — nine source-declared `dw` message IDs cross-referenced to the text-message index; linkage to the routine's local `.message_ids` remains unresolved.
 - [`data/extracted/crystal-maiden-palette-words.json`](../../data/extracted/crystal-maiden-palette-words.json) — eight raw 16-bit words, with linkage to the routine's local `.palette` reference unresolved.
 - [`data/extracted/crystal-switch-palette-selectors.json`](../../data/extracted/crystal-switch-palette-selectors.json) — two source-derived selector bytes, not decoded color values or ROM-verified bytes.
@@ -53,6 +55,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [`data/extracted/text-dictionary-fragments.json`](../../data/extracted/text-dictionary-fragments.json) — pointer-to-fragment metadata, including the unresolved `.You` source-size mismatch.
 - [`data/extracted/text-message-index.json`](../../data/extracted/text-message-index.json) — 397 message IDs with source-derived offsets and size diagnostics.
 - [`data/extracted/sprite-active3-dispatch.json`](../../data/extracted/sprite-active3-dispatch.json) — 68 source-mapped handler entries for sprite IDs `$79–$BC`.
+- [`data/extracted/sprite-prep-dispatch.json`](../../data/extracted/sprite-prep-dispatch.json) — 243 source-commented prep-dispatch entries for IDs `$00–$F2`; the inline-table file offset remains unestablished.
 - [`data/extracted/music-track-index.json`](../../data/extracted/music-track-index.json) — 35 source-indexed music pointer expressions, with empty entries and aliases.
 - [`data/extracted/music-payload-inventory.json`](../../data/extracted/music-payload-inventory.json) — 15 song payload `incbin` declarations with source ranges and size diagnostics.
 - [`data/extracted/overworld-hidden-item-pointers.json`](../../data/extracted/overworld-hidden-item-pointers.json) — 128 area-to-hidden-item-list pointers; record boundaries remain unresolved.

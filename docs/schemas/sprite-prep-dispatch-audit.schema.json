@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite SpritePrep/SpriteActive3 ID cross-reference audit",
+  "description": "Source-only joins between the SpritePrep_Main and SpriteActive3 dispatch exports by sprite ID. A shared ID does not establish equivalent handler semantics or verified address mappings.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "prep_asset_name",
+    "active3_asset_name", "source_revision", "prep_routine_label",
+    "prep_routine_source_range_annotation", "prep_table_file_offset",
+    "active3_table_file_offset", "rows", "prep_only_sprite_ids",
+    "active3_only_sprite_ids", "summary", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-sprite-prep-dispatch-audit" },
+    "format_version": { "const": 1 },
+    "registry": { "type": "string", "minLength": 1 },
+    "prep_asset_name": { "type": "string", "minLength": 1 },
+    "active3_asset_name": { "type": "string", "minLength": 1 },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "prep_routine_label": { "const": "SpritePrep_Main" },
+    "prep_routine_source_range_annotation": { "type": "string", "minLength": 1 },
+    "prep_table_file_offset": { "type": "null" },
+    "active3_table_file_offset": { "type": "integer", "minimum": 0 },
+    "rows": { "type": "array", "items": { "$ref": "#/$defs/row" } },
+    "prep_only_sprite_ids": {
+      "type": "array", "items": { "type": "integer", "minimum": 0 }
+    },
+    "active3_only_sprite_ids": {
+      "type": "array", "items": { "type": "integer", "minimum": 0 }
+    },
+    "summary": { "$ref": "#/$defs/summary" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stage_entry": {
+      "type": "object",
+      "required": [
+        "handler_expression", "handler_label",
+        "source_handler_address_annotation", "source_description", "source_line"
+      ],
+      "properties": {
+        "handler_expression": { "type": "string", "minLength": 1 },
+        "handler_label": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "source_handler_address_annotation": { "type": "string", "minLength": 1 },
+        "source_description": { "type": "string" },
+        "source_comment_continuations": {
+          "type": "array", "items": { "type": "string" }
+        },
+        "source_line": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "row": {
+      "type": "object",
+      "required": ["sprite_type_id", "sprite_id_hex", "prep", "active3"],
+      "properties": {
+        "sprite_type_id": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "sprite_id_hex": { "type": "string", "pattern": "^0x[0-9A-F]{2,4}$" },
+        "prep": { "$ref": "#/$defs/stage_entry" },
+        "active3": { "$ref": "#/$defs/stage_entry" }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "prep_entry_count", "active3_entry_count", "shared_sprite_id_count",
+        "prep_only_sprite_id_count", "active3_only_sprite_id_count"
+      ],
+      "properties": {
+        "prep_entry_count": { "type": "integer", "minimum": 1 },
+        "active3_entry_count": { "type": "integer", "minimum": 1 },
+        "shared_sprite_id_count": { "type": "integer", "minimum": 0 },
+        "prep_only_sprite_id_count": { "type": "integer", "minimum": 0 },
+        "active3_only_sprite_id_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "table_offsets_verified",
+        "handler_address_annotations_verified", "same_runtime_handler_semantics_asserted"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "table_offsets_verified": { "const": false },
+        "handler_address_annotations_verified": { "const": false },
+        "same_runtime_handler_semantics_asserted": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -25,6 +25,7 @@ from zelda_suite.extract import (
     ROMImageInspectionError,
     ROMTableVerificationError,
     SourceExpressionAuditError,
+    SpritePrepDispatchAuditError,
     TextDictionaryAuditError,
     TextDictionaryPointerVerificationError,
     TextMessageByteVerificationError,
@@ -33,6 +34,7 @@ from zelda_suite.extract import (
     audit_incbin_inventories,
     audit_music_assets,
     audit_oam_allocation,
+    audit_sprite_prep_dispatch,
     audit_text_dictionary_assets,
     audit_text_message_index,
     audit_unresolved_table_expressions,
@@ -47,6 +49,7 @@ from zelda_suite.extract import (
     parse_overworld_hidden_item_source,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
+    parse_sprite_prep_dispatch_table,
     parse_text_message_index,
     read_rom_bytes,
     sha256_rom_bytes,
@@ -655,6 +658,154 @@ def inspect_music_track_index(
     click.echo(
         f"Wrote {len(table.entries)} music track pointers to {output}; "
         f"{empty_count} empty and {alias_count} aliased entries"
+    )
+
+
+
+@cli.command(name="inspect-sprite-prep-dispatch")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    required=True,
+    help="Pinned disassembly revision to record in the export.",
+)
+@click.option(
+    "--routine-label",
+    default="SpritePrep_Main",
+    show_default=True,
+    help="Routine containing the inline prep dispatch table.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=243,
+    show_default=True,
+    help="Expected number of source-commented dispatch entries.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_sprite_prep_dispatch(
+    source: Path,
+    source_revision: str,
+    routine_label: str,
+    entry_count: int,
+    output: Path | None,
+) -> None:
+    """Export source metadata for the inline SpritePrep_Main dispatch table."""
+    try:
+        source_text = source.read_text(encoding="utf-8")
+        table = parse_sprite_prep_dispatch_table(
+            source_text,
+            source_revision=source_revision,
+            source_file=source.name,
+            routine_label=routine_label,
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    click.echo(
+        f"Wrote {len(table.entries)} SpritePrep dispatch entries to {output}; "
+        "inline table offset remains unestablished"
+    )
+
+
+@cli.command(name="audit-sprite-prep-dispatch")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--prep-asset",
+    default="sprite-prep-dispatch",
+    show_default=True,
+    help="Registered source prep-dispatch asset.",
+)
+@click.option(
+    "--active3-asset",
+    default="sprite-active3-dispatch",
+    show_default=True,
+    help="Registered SpriteActive3-dispatch asset.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the cross-reference report to a new file instead of stdout.",
+)
+def audit_sprite_prep_dispatch_command(
+    registry_path: Path | None,
+    prep_asset: str,
+    active3_asset: str,
+    output: Path | None,
+) -> None:
+    """Cross-reference the prep and active-loop sprite indexes by sprite ID."""
+    try:
+        report = audit_sprite_prep_dispatch(
+            registry_path or "data/extracted/manifest.json",
+            prep_asset_name=prep_asset,
+            active3_asset_name=active3_asset,
+        )
+    except (SpritePrepDispatchAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote sprite prep cross-reference to {output}; "
+        f"prep={summary['prep_entry_count']}, "
+        f"active3={summary['active3_entry_count']}, "
+        f"shared_ids={summary['shared_sprite_id_count']}, "
+        f"active3_only={summary['active3_only_sprite_id_count']}"
     )
 
 

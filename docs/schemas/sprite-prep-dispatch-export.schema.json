@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite SpritePrep dispatch source export",
+  "description": "Source-only export of the inline SpritePrep_Main word table. The table start offset is intentionally unknown; handler addresses are source comments, not verified ROM pointers.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "source_file", "source_revision",
+    "routine_label", "routine_source_range_annotation", "table_file_offset",
+    "table_offset_established", "sprite_type_id_start", "sprite_type_id_end",
+    "entry_count", "entries", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-sprite-prep-dispatch" },
+    "format_version": { "const": 1 },
+    "source_file": { "type": "string", "minLength": 1 },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "routine_label": { "const": "SpritePrep_Main" },
+    "routine_source_range_annotation": {
+      "type": "string",
+      "pattern": "^\\$[0-9A-Fa-f]+-\\$[0-9A-Fa-f]+ JUMP LOCATION$"
+    },
+    "table_file_offset": { "type": "null" },
+    "table_offset_established": { "const": false },
+    "sprite_type_id_start": { "const": 0 },
+    "sprite_type_id_end": { "const": 242 },
+    "entry_count": { "const": 243 },
+    "entries": {
+      "type": "array",
+      "minItems": 243,
+      "maxItems": 243,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index", "sprite_type_id", "source_line", "handler_expression",
+        "handler_label", "source_comment_sprite_type_id",
+        "source_handler_address_annotation", "source_description",
+        "source_comment", "source_comment_continuations", "source_revision"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0, "maximum": 242 },
+        "sprite_type_id": { "type": "integer", "minimum": 0, "maximum": 242 },
+        "source_line": { "type": "integer", "minimum": 1 },
+        "handler_expression": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z_][A-Za-z0-9_]*|\\$[0-9A-Fa-f]{1,4})$"
+        },
+        "handler_label": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+            { "type": "null" }
+          ]
+        },
+        "source_comment_sprite_type_id": {
+          "type": "integer", "minimum": 0, "maximum": 242
+        },
+        "source_handler_address_annotation": {
+          "type": "string", "pattern": "^\\$[0-9A-Fa-f]{4}$"
+        },
+        "source_description": { "type": "string" },
+        "source_comment": { "type": "string", "minLength": 1 },
+        "source_comment_continuations": {
+          "type": "array", "items": { "type": "string" }
+        },
+        "source_revision": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "table_offset_established",
+        "handler_address_annotations_verified", "runtime_behavior_verified"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "table_offset_established": { "const": false },
+        "handler_address_annotations_verified": { "const": false },
+        "runtime_behavior_verified": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}
