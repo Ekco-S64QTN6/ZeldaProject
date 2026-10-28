@@ -314,22 +314,24 @@ def verify_text_message_bytes(
         }
 
     source_findings: list[dict[str, Any]] = []
-    for block in index.source_blocks:
-        if not block.declared_bytes_match_block_size:
-            difference = block.block_size_bytes - block.declared_byte_count_total
+    for block_record in index.source_blocks:
+        if not block_record.declared_bytes_match_block_size:
+            difference = (
+                block_record.block_size_bytes - block_record.declared_byte_count_total
+            )
             source_findings.append({
                 "code": "block_size_mismatch",
                 "severity": "warning",
-                "source_file": block.source_file,
-                "block_label": block.data_block_label,
-                "block_start_offset": block.block_start_offset,
-                "block_end_offset": block.block_end_offset,
-                "block_range_byte_count": block.block_size_bytes,
-                "source_literal_byte_count": block.declared_byte_count_total,
+                "source_file": block_record.source_file,
+                "block_label": block_record.data_block_label,
+                "block_start_offset": block_record.block_start_offset,
+                "block_end_offset": block_record.block_end_offset,
+                "block_range_byte_count": block_record.block_size_bytes,
+                "source_literal_byte_count": block_record.declared_byte_count_total,
                 "difference_bytes": difference,
                 "message": (
-                    f"Source block range spans {block.block_size_bytes} byte(s), while "
-                    f"its literal message data contains {block.declared_byte_count_total} "
+                    f"Source block range spans {block_record.block_size_bytes} byte(s), while "
+                    f"its literal message data contains {block_record.declared_byte_count_total} "
                     f"byte(s); range exceeds source bytes by {difference} byte(s)."
                 ),
             })
