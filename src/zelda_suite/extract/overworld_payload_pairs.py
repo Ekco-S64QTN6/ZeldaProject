@@ -41,6 +41,8 @@ def validate_overworld_payload_pairs(
             raise OverworldPayloadPairError(
                 f"{context}.format must be {INCBIN_INVENTORY_FORMAT!r}"
             )
+        if payload.get("format_version") != 1:
+            raise OverworldPayloadPairError(f"{context}.format_version must be 1")
         source_file = payload.get("source_file")
         if not isinstance(source_file, str) or not source_file.strip():
             raise OverworldPayloadPairError(
@@ -97,6 +99,11 @@ def validate_overworld_payload_pairs(
             if declaration.get("source_file") != source_file:
                 raise OverworldPayloadPairError(
                     f"{declaration_context}.source_file does not match {source_file!r}"
+                )
+            if declaration.get("source_revision") != revision:
+                raise OverworldPayloadPairError(
+                    f"{declaration_context}.source_revision does not match "
+                    f"{revision!r}"
                 )
             incbin_path = declaration.get("incbin_path")
             if not isinstance(incbin_path, str) or not incbin_path.startswith(
