@@ -19,7 +19,9 @@ from zelda_suite.extract import (
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
+    SourceExpressionAuditError,
     audit_incbin_inventories,
+    audit_unresolved_table_expressions,
     build_item_receipt_layout,
     inspect_rom_image,
     load_source_export,
@@ -856,6 +858,71 @@ def inspect_incbin(
 
     click.echo(f"Wrote {len(declarations)} incbin declarations to {output}")
 
+
+
+
+@cli.command(name="audit-unresolved-table-expressions")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+@click.option(
+    "--fail-on-unresolved",
+    is_flag=True,
+    help="Return exit status 1 when unresolved expressions are present.",
+)
+def audit_unresolved_table_expressions_command(
+    registry_path: Path | None,
+    output: Path | None,
+    fail_on_unresolved: bool,
+) -> None:
+    """Classify skipped data-table expressions without requiring a ROM."""
+    try:
+        report = audit_unresolved_table_expressions(
+            registry_path or "data/extracted/manifest.json",
+        )
+    except (SourceExpressionAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote source-expression audit to {output}; "
+            f"tables={summary['table_asset_count']}, "
+            f"entries={summary['entry_count']}, "
+            f"unresolved={summary['unresolved_expression_count']}"
+        )
+
+    if fail_on_unresolved and report["summary"]["unresolved_expression_count"]:
+        raise click.exceptions.Exit(1)
 
 
 @cli.command(name="audit-incbin-inventory")
