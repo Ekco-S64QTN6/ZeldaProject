@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Source-only `zelda-suite audit-incbin-inventory` report and strict version-1
+  schema for metadata gaps, source range/size mismatches, and candidate span
+  overlaps across registered `incbin` inventories. Findings are diagnostic and
+  do not verify ROM offsets or payload bytes.
+
 - Opt-in `zelda-suite verify-rom-tables --include-skipped-expressions` report
   format v2, which enumerates unresolved expressions with source table indices,
   lines, offsets, and conservative syntax classifications without evaluating

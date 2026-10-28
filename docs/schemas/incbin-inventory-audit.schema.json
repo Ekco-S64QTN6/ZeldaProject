@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite incbin inventory audit report",
+  "description": "Source-only report that summarizes metadata gaps, explicit source-range/size discrepancies, and candidate overlapping spans in registered incbin inventories. Candidate spans are not verified ROM addresses.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "registry",
+    "inventories",
+    "metadata_gaps",
+    "range_mismatches",
+    "candidate_spans",
+    "candidate_overlaps",
+    "summary",
+    "evidence"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-incbin-inventory-audit"},
+    "format_version": {"const": 1},
+    "registry": {"type": "string", "minLength": 1},
+    "inventories": {"type": "array", "items": {"$ref": "#/$defs/inventory"}},
+    "metadata_gaps": {"type": "array", "items": {"$ref": "#/$defs/metadata_gap"}},
+    "range_mismatches": {"type": "array", "items": {"$ref": "#/$defs/range_mismatch"}},
+    "candidate_spans": {"type": "array", "items": {"$ref": "#/$defs/span"}},
+    "candidate_overlaps": {"type": "array", "items": {"$ref": "#/$defs/overlap"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "evidence": {
+      "type": "object",
+      "required": ["source_only", "rom_bytes_read", "payload_bytes_read", "offsets_verified"],
+      "properties": {
+        "source_only": {"const": true},
+        "rom_bytes_read": {"const": false},
+        "payload_bytes_read": {"const": false},
+        "offsets_verified": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "inventory": {
+      "type": "object",
+      "required": ["asset_name", "source_file", "source_revision", "declaration_count", "missing_start_count", "missing_size_count", "range_mismatch_count"],
+      "properties": {
+        "asset_name": {"type": "string", "minLength": 1},
+        "source_file": {"type": "string", "minLength": 1},
+        "source_revision": {"type": "string", "minLength": 1},
+        "declaration_count": {"type": "integer", "minimum": 0},
+        "missing_start_count": {"type": "integer", "minimum": 0},
+        "missing_size_count": {"type": "integer", "minimum": 0},
+        "range_mismatch_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "metadata_gap": {
+      "type": "object",
+      "required": ["asset_name", "source_file", "source_revision", "label", "source_line", "missing_fields"],
+      "properties": {
+        "asset_name": {"type": "string", "minLength": 1},
+        "source_file": {"type": "string", "minLength": 1},
+        "source_revision": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "source_line": {"type": "integer", "minimum": 1},
+        "missing_fields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["source_file_offset_start", "declared_size_bytes"]}
+        }
+      },
+      "additionalProperties": false
+    },
+    "range_mismatch": {
+      "type": "object",
+      "required": ["asset_name", "source_file", "source_revision", "label", "source_line", "source_file_offset_start", "source_file_offset_end", "declared_size_bytes", "computed_file_offset_end"],
+      "properties": {
+        "asset_name": {"type": "string", "minLength": 1},
+        "source_file": {"type": "string", "minLength": 1},
+        "source_revision": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "source_line": {"type": "integer", "minimum": 1},
+        "source_file_offset_start": {"type": "integer", "minimum": 0},
+        "source_file_offset_end": {"type": "integer", "minimum": 0},
+        "declared_size_bytes": {"type": "integer", "minimum": 0},
+        "computed_file_offset_end": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "span": {
+      "type": "object",
+      "required": ["asset_name", "source_file", "source_revision", "label", "source_line", "file_offset_start", "file_offset_end", "declared_size_bytes", "source_file_offset_end_annotation"],
+      "properties": {
+        "asset_name": {"type": "string", "minLength": 1},
+        "source_file": {"type": "string", "minLength": 1},
+        "source_revision": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "source_line": {"type": "integer", "minimum": 1},
+        "file_offset_start": {"type": "integer", "minimum": 0},
+        "file_offset_end": {"type": "integer", "minimum": 0},
+        "declared_size_bytes": {"type": "integer", "minimum": 1},
+        "source_file_offset_end_annotation": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "overlap": {
+      "type": "object",
+      "required": ["left", "right", "overlap_start", "overlap_end", "overlap_size_bytes"],
+      "properties": {
+        "left": {"$ref": "#/$defs/span"},
+        "right": {"$ref": "#/$defs/span"},
+        "overlap_start": {"type": "integer", "minimum": 0},
+        "overlap_end": {"type": "integer", "minimum": 0},
+        "overlap_size_bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["inventory_count", "declaration_count", "located_declaration_count", "missing_start_count", "missing_size_count", "metadata_gap_count", "range_mismatch_count", "candidate_span_count", "candidate_overlap_count", "finding_count"],
+      "properties": {
+        "inventory_count": {"type": "integer", "minimum": 1},
+        "declaration_count": {"type": "integer", "minimum": 0},
+        "located_declaration_count": {"type": "integer", "minimum": 0},
+        "missing_start_count": {"type": "integer", "minimum": 0},
+        "missing_size_count": {"type": "integer", "minimum": 0},
+        "metadata_gap_count": {"type": "integer", "minimum": 0},
+        "range_mismatch_count": {"type": "integer", "minimum": 0},
+        "candidate_span_count": {"type": "integer", "minimum": 0},
+        "candidate_overlap_count": {"type": "integer", "minimum": 0},
+        "finding_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  }
+}

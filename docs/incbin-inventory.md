@@ -82,3 +82,9 @@ preserve their source-range mismatches rather than correcting them. See the
 [extracted-data catalog](./extracted-data.md) and
 [dungeon schema discovery note](./schemas/dungeons.md) for details and
 regeneration commands.
+
+## Audit registered inventories
+
+Run `uv run zelda-suite audit-incbin-inventory` to summarize all registered `zelda-suite-incbin-inventory` assets. The version-1 JSON report lists missing source starts/sizes, explicit range-versus-size discrepancies, calculated candidate spans, and overlaps between those candidate spans. Use `--output PATH` to save a new report and `--fail-on-findings` for automation that should return status 1 when any diagnostic finding exists. See the [audit report schema](./schemas/incbin-inventory-audit.schema.json).
+
+A candidate span is calculated as `source_file_offset_start` through `source_file_offset_start + declared_size_bytes - 1`. Overlaps and range mismatches identify annotations worth reviewing; they do not establish ROM offsets, payload contents, or which source annotation is correct. The audit reads committed metadata only, never opens `incbin` payloads, and never reads a ROM.

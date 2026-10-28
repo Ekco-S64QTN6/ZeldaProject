@@ -53,6 +53,10 @@ must use that revision rather than silently updating to a newer upstream tree.
 5. **Validate the export.** Generate to a temporary output path, run
    `zelda-suite validate-source-export`, and compare it with the committed
    version. CLI output paths intentionally refuse to overwrite existing files.
+   When working with registered `incbin` exports, also run
+   `zelda-suite audit-incbin-inventory` and review metadata gaps, source-range
+   mismatches, and candidate overlaps. These are diagnostics only and must not
+   be used to silently rewrite source annotations or claim ROM verification.
 6. **Register the asset.** Add a unique kebab-case entry and unique JSON file
    in `data/extracted/manifest.json`, with the correct format, source revision,
    record count, subsystem, and concise description. Extend the loader's
