@@ -1,0 +1,3076 @@
+{
+  "dungeon_mask_count": 14,
+  "dungeon_masks": [
+    {
+      "entry_file_offset": 296396,
+      "expression": "$8000",
+      "literal_value": 32768,
+      "source_label": ".item_masks",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 296398,
+      "expression": "$4000",
+      "literal_value": 16384,
+      "source_label": ".item_masks",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 296400,
+      "expression": "$2000",
+      "literal_value": 8192,
+      "source_label": ".item_masks",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 296402,
+      "expression": "$1000",
+      "literal_value": 4096,
+      "source_label": ".item_masks",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 296404,
+      "expression": "$0800",
+      "literal_value": 2048,
+      "source_label": ".item_masks",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 296406,
+      "expression": "$0400",
+      "literal_value": 1024,
+      "source_label": ".item_masks",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 296408,
+      "expression": "$0200",
+      "literal_value": 512,
+      "source_label": ".item_masks",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 296410,
+      "expression": "$0100",
+      "literal_value": 256,
+      "source_label": ".item_masks",
+      "table_index": 7
+    },
+    {
+      "entry_file_offset": 296412,
+      "expression": "$0080",
+      "literal_value": 128,
+      "source_label": ".item_masks",
+      "table_index": 8
+    },
+    {
+      "entry_file_offset": 296414,
+      "expression": "$0040",
+      "literal_value": 64,
+      "source_label": ".item_masks",
+      "table_index": 9
+    },
+    {
+      "entry_file_offset": 296416,
+      "expression": "$0020",
+      "literal_value": 32,
+      "source_label": ".item_masks",
+      "table_index": 10
+    },
+    {
+      "entry_file_offset": 296418,
+      "expression": "$0010",
+      "literal_value": 16,
+      "source_label": ".item_masks",
+      "table_index": 11
+    },
+    {
+      "entry_file_offset": 296420,
+      "expression": "$0008",
+      "literal_value": 8,
+      "source_label": ".item_masks",
+      "table_index": 12
+    },
+    {
+      "entry_file_offset": 296422,
+      "expression": "$0004",
+      "literal_value": 4,
+      "source_label": ".item_masks",
+      "table_index": 13
+    }
+  ],
+  "entries": [
+    {
+      "item_value": {
+        "entry_file_offset": 296320,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296092,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 0,
+      "target_address": {
+        "entry_file_offset": 296168,
+        "expression": "$F359",
+        "literal_value": 62297,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296016,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295864,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295788,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296321,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296093,
+        "expression": "-1",
+        "literal_value": null,
+        "source_label": ".properties"
+      },
+      "table_index": 1,
+      "target_address": {
+        "entry_file_offset": 296170,
+        "expression": "$F359",
+        "literal_value": 62297,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296017,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295865,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295789,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296322,
+        "expression": "$03",
+        "literal_value": 3,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296094,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 2,
+      "target_address": {
+        "entry_file_offset": 296172,
+        "expression": "$F359",
+        "literal_value": 62297,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296018,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295866,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295790,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296323,
+        "expression": "$04",
+        "literal_value": 4,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296095,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 3,
+      "target_address": {
+        "entry_file_offset": 296174,
+        "expression": "$F359",
+        "literal_value": 62297,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296019,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295867,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295791,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296324,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296096,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 4,
+      "target_address": {
+        "entry_file_offset": 296176,
+        "expression": "$F35A",
+        "literal_value": 62298,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296020,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295868,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295792,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296325,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296097,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 5,
+      "target_address": {
+        "entry_file_offset": 296178,
+        "expression": "$F35A",
+        "literal_value": 62298,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296021,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295869,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295793,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296326,
+        "expression": "$03",
+        "literal_value": 3,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296098,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 6,
+      "target_address": {
+        "entry_file_offset": 296180,
+        "expression": "$F35A",
+        "literal_value": 62298,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296022,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295870,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295794,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296327,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296099,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 7,
+      "target_address": {
+        "entry_file_offset": 296182,
+        "expression": "$F345",
+        "literal_value": 62277,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296023,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295871,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295795,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296328,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296100,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 8,
+      "target_address": {
+        "entry_file_offset": 296184,
+        "expression": "$F346",
+        "literal_value": 62278,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296024,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295872,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295796,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296329,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296101,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 9,
+      "target_address": {
+        "entry_file_offset": 296186,
+        "expression": "$F34B",
+        "literal_value": 62283,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296025,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295873,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295797,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296330,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296102,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 10,
+      "target_address": {
+        "entry_file_offset": 296188,
+        "expression": "$F342",
+        "literal_value": 62274,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296026,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295874,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295798,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296331,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296103,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 11,
+      "target_address": {
+        "entry_file_offset": 296190,
+        "expression": "$F340",
+        "literal_value": 62272,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296027,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295875,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295799,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296332,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296104,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 12,
+      "target_address": {
+        "entry_file_offset": 296192,
+        "expression": "$F341",
+        "literal_value": 62273,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296028,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295876,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295800,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296333,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296105,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 13,
+      "target_address": {
+        "entry_file_offset": 296194,
+        "expression": "$F344",
+        "literal_value": 62276,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296029,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295877,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295801,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296334,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296106,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 14,
+      "target_address": {
+        "entry_file_offset": 296196,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296030,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295878,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295802,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296335,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296107,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 15,
+      "target_address": {
+        "entry_file_offset": 296198,
+        "expression": "$F347",
+        "literal_value": 62279,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296031,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295879,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295803,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296336,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296108,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 16,
+      "target_address": {
+        "entry_file_offset": 296200,
+        "expression": "$F348",
+        "literal_value": 62280,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296032,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295880,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295804,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296337,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296109,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 17,
+      "target_address": {
+        "entry_file_offset": 296202,
+        "expression": "$F349",
+        "literal_value": 62281,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296033,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295881,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295805,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296338,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296110,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 18,
+      "target_address": {
+        "entry_file_offset": 296204,
+        "expression": "$F34A",
+        "literal_value": 62282,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296034,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295882,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295806,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296339,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296111,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 19,
+      "target_address": {
+        "entry_file_offset": 296206,
+        "expression": "$F34C",
+        "literal_value": 62284,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296035,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295883,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295807,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296340,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296112,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 20,
+      "target_address": {
+        "entry_file_offset": 296208,
+        "expression": "$F34C",
+        "literal_value": 62284,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296036,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295884,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295808,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296341,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296113,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 21,
+      "target_address": {
+        "entry_file_offset": 296210,
+        "expression": "$F350",
+        "literal_value": 62288,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296037,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295885,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295809,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296342,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296114,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 22,
+      "target_address": {
+        "entry_file_offset": 296212,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296038,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295886,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295810,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296343,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296115,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 23,
+      "target_address": {
+        "entry_file_offset": 296214,
+        "expression": "$F36B",
+        "literal_value": 62315,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296039,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295887,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295811,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296344,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296116,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 24,
+      "target_address": {
+        "entry_file_offset": 296216,
+        "expression": "$F351",
+        "literal_value": 62289,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296040,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295888,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295812,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296345,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296117,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 25,
+      "target_address": {
+        "entry_file_offset": 296218,
+        "expression": "$F352",
+        "literal_value": 62290,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296041,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295889,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295813,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296346,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296118,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 26,
+      "target_address": {
+        "entry_file_offset": 296220,
+        "expression": "$F353",
+        "literal_value": 62291,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296042,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295890,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295814,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296347,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296119,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 27,
+      "target_address": {
+        "entry_file_offset": 296222,
+        "expression": "$F354",
+        "literal_value": 62292,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296043,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295891,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295815,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296348,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296120,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 28,
+      "target_address": {
+        "entry_file_offset": 296224,
+        "expression": "$F354",
+        "literal_value": 62292,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296044,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295892,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295816,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296349,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296121,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 29,
+      "target_address": {
+        "entry_file_offset": 296226,
+        "expression": "$F34E",
+        "literal_value": 62286,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296045,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295893,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295817,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296350,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296122,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 30,
+      "target_address": {
+        "entry_file_offset": 296228,
+        "expression": "$F356",
+        "literal_value": 62294,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296046,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295894,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295818,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296351,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296123,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 31,
+      "target_address": {
+        "entry_file_offset": 296230,
+        "expression": "$F357",
+        "literal_value": 62295,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296047,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295895,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295819,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296352,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296124,
+        "expression": "6",
+        "literal_value": 6,
+        "source_label": ".properties"
+      },
+      "table_index": 32,
+      "target_address": {
+        "entry_file_offset": 296232,
+        "expression": "$F37A",
+        "literal_value": 62330,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296048,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295896,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295820,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296353,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296125,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 33,
+      "target_address": {
+        "entry_file_offset": 296234,
+        "expression": "$F34D",
+        "literal_value": 62285,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296049,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295897,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295821,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296354,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296126,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 34,
+      "target_address": {
+        "entry_file_offset": 296236,
+        "expression": "$F35B",
+        "literal_value": 62299,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296050,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295898,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295822,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296355,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296127,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 35,
+      "target_address": {
+        "entry_file_offset": 296238,
+        "expression": "$F35B",
+        "literal_value": 62299,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296051,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295899,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295823,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296356,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296128,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 36,
+      "target_address": {
+        "entry_file_offset": 296240,
+        "expression": "$F36F",
+        "literal_value": 62319,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296052,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295900,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295824,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296357,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296129,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 37,
+      "target_address": {
+        "entry_file_offset": 296242,
+        "expression": "$F364",
+        "literal_value": 62308,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296053,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295901,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295825,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296358,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296130,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 38,
+      "target_address": {
+        "entry_file_offset": 296244,
+        "expression": "$F36C",
+        "literal_value": 62316,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296054,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295902,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295826,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296359,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296131,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 39,
+      "target_address": {
+        "entry_file_offset": 296246,
+        "expression": "$F375",
+        "literal_value": 62325,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296055,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295903,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295827,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296360,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296132,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 40,
+      "target_address": {
+        "entry_file_offset": 296248,
+        "expression": "$F375",
+        "literal_value": 62325,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296056,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295904,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295828,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296361,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296133,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 41,
+      "target_address": {
+        "entry_file_offset": 296250,
+        "expression": "$F344",
+        "literal_value": 62276,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296057,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295905,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295829,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296362,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296134,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 42,
+      "target_address": {
+        "entry_file_offset": 296252,
+        "expression": "$F341",
+        "literal_value": 62273,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296058,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295906,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295830,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296363,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296135,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 43,
+      "target_address": {
+        "entry_file_offset": 296254,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296059,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295907,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295831,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296364,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296136,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 44,
+      "target_address": {
+        "entry_file_offset": 296256,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296060,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295908,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295832,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296365,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296137,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 45,
+      "target_address": {
+        "entry_file_offset": 296258,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296061,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295909,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295833,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296366,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296138,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 46,
+      "target_address": {
+        "entry_file_offset": 296260,
+        "expression": "$F36D",
+        "literal_value": 62317,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296062,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295910,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295834,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296367,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296139,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 47,
+      "target_address": {
+        "entry_file_offset": 296262,
+        "expression": "$F36E",
+        "literal_value": 62318,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296063,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295911,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295835,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296368,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296140,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 48,
+      "target_address": {
+        "entry_file_offset": 296264,
+        "expression": "$F36E",
+        "literal_value": 62318,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296064,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295912,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295836,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296369,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296141,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 49,
+      "target_address": {
+        "entry_file_offset": 296266,
+        "expression": "$F375",
+        "literal_value": 62325,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296065,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295913,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295837,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296370,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296142,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 50,
+      "target_address": {
+        "entry_file_offset": 296268,
+        "expression": "$F366",
+        "literal_value": 62310,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296066,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295914,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295838,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296371,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296143,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 51,
+      "target_address": {
+        "entry_file_offset": 296270,
+        "expression": "$F368",
+        "literal_value": 62312,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296067,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295915,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295839,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296372,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296144,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 52,
+      "target_address": {
+        "entry_file_offset": 296272,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296068,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295916,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295840,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296373,
+        "expression": "$FB",
+        "literal_value": 251,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296145,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 53,
+      "target_address": {
+        "entry_file_offset": 296274,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296069,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295917,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295841,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296374,
+        "expression": "$EC",
+        "literal_value": 236,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296146,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 54,
+      "target_address": {
+        "entry_file_offset": 296276,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296070,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295918,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295842,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296375,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296147,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 55,
+      "target_address": {
+        "entry_file_offset": 296278,
+        "expression": "$F374",
+        "literal_value": 62324,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296071,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295919,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295843,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296376,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296148,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 56,
+      "target_address": {
+        "entry_file_offset": 296280,
+        "expression": "$F374",
+        "literal_value": 62324,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296072,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295920,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295844,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296377,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296149,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 57,
+      "target_address": {
+        "entry_file_offset": 296282,
+        "expression": "$F374",
+        "literal_value": 62324,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296073,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295921,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295845,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296378,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296150,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 58,
+      "target_address": {
+        "entry_file_offset": 296284,
+        "expression": "$F340",
+        "literal_value": 62272,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296074,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295922,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295846,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296379,
+        "expression": "$03",
+        "literal_value": 3,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296151,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 59,
+      "target_address": {
+        "entry_file_offset": 296286,
+        "expression": "$F340",
+        "literal_value": 62272,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296075,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295923,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295847,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296380,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296152,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 60,
+      "target_address": {
+        "entry_file_offset": 296288,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296076,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295924,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295848,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296381,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296153,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 61,
+      "target_address": {
+        "entry_file_offset": 296290,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296077,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295925,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295849,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296382,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296154,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 62,
+      "target_address": {
+        "entry_file_offset": 296292,
+        "expression": "$F36C",
+        "literal_value": 62316,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296078,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295926,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295850,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296383,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296155,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 63,
+      "target_address": {
+        "entry_file_offset": 296294,
+        "expression": "$F36C",
+        "literal_value": 62316,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296079,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295927,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295851,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296384,
+        "expression": "$9C",
+        "literal_value": 156,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296156,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 64,
+      "target_address": {
+        "entry_file_offset": 296296,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296080,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295928,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295852,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296385,
+        "expression": "$CE",
+        "literal_value": 206,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296157,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 65,
+      "target_address": {
+        "entry_file_offset": 296298,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296081,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295929,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295853,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296386,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296158,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 66,
+      "target_address": {
+        "entry_file_offset": 296300,
+        "expression": "$F372",
+        "literal_value": 62322,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296082,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295930,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295854,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296387,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296159,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 67,
+      "target_address": {
+        "entry_file_offset": 296302,
+        "expression": "$F376",
+        "literal_value": 62326,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296083,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295931,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295855,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296388,
+        "expression": "$0A",
+        "literal_value": 10,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296160,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 68,
+      "target_address": {
+        "entry_file_offset": 296304,
+        "expression": "$F376",
+        "literal_value": 62326,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296084,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295932,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295856,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296389,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296161,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 69,
+      "target_address": {
+        "entry_file_offset": 296306,
+        "expression": "$F373",
+        "literal_value": 62323,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296085,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295933,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295857,
+        "expression": "-2",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296390,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296162,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 70,
+      "target_address": {
+        "entry_file_offset": 296308,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296086,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295934,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295858,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296391,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296163,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".properties"
+      },
+      "table_index": 71,
+      "target_address": {
+        "entry_file_offset": 296310,
+        "expression": "$F360",
+        "literal_value": 62304,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296087,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295935,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295859,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296392,
+        "expression": "$FF",
+        "literal_value": 255,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296164,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 72,
+      "target_address": {
+        "entry_file_offset": 296312,
+        "expression": "$F35C",
+        "literal_value": 62300,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296088,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295936,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295860,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296393,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296165,
+        "expression": "5",
+        "literal_value": 5,
+        "source_label": ".properties"
+      },
+      "table_index": 73,
+      "target_address": {
+        "entry_file_offset": 296314,
+        "expression": "$F359",
+        "literal_value": 62297,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296089,
+        "expression": "$00",
+        "literal_value": 0,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295937,
+        "expression": "4",
+        "literal_value": 4,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295861,
+        "expression": "-5",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296394,
+        "expression": "$03",
+        "literal_value": 3,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296166,
+        "expression": "2",
+        "literal_value": 2,
+        "source_label": ".properties"
+      },
+      "table_index": 74,
+      "target_address": {
+        "entry_file_offset": 296316,
+        "expression": "$F34C",
+        "literal_value": 62284,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296090,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295938,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295862,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    },
+    {
+      "item_value": {
+        "entry_file_offset": 296395,
+        "expression": "$01",
+        "literal_value": 1,
+        "source_label": ".item_values"
+      },
+      "properties": {
+        "entry_file_offset": 296167,
+        "expression": "1",
+        "literal_value": 1,
+        "source_label": ".properties"
+      },
+      "table_index": 75,
+      "target_address": {
+        "entry_file_offset": 296318,
+        "expression": "$F355",
+        "literal_value": 62293,
+        "source_label": ".item_target_addr"
+      },
+      "wide_item_flag": {
+        "entry_file_offset": 296091,
+        "expression": "$02",
+        "literal_value": 2,
+        "source_label": ".wide_item_flag"
+      },
+      "x_offset": {
+        "entry_file_offset": 295939,
+        "expression": "0",
+        "literal_value": 0,
+        "source_label": ".x_offsets"
+      },
+      "y_offset": {
+        "entry_file_offset": 295863,
+        "expression": "-4",
+        "literal_value": null,
+        "source_label": ".y_offsets"
+      }
+    }
+  ],
+  "entry_count": 76,
+  "format": "zelda-suite-item-receipt-layout",
+  "format_version": 1,
+  "parent_label": "Pool_AddReceiveItem",
+  "semantic_item_ids_resolved": false,
+  "source_file": "ancilla_init.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+}
