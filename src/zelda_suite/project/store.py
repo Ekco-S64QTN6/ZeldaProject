@@ -102,9 +102,7 @@ def _read_source_asset_row(row: sqlite3.Row) -> dict[str, Any]:
             f"stored source asset {asset_key!r} has invalid payload: {exc}"
         ) from exc
 
-    canonical = json.dumps(
-        payload, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False
-    ) + "\\n"
+    canonical = _render_json(payload)
     if str(row["payload_json"]) != canonical:
         raise ValueError(f"stored source asset {asset_key!r} is not canonical JSON")
     expected_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -452,9 +450,7 @@ def import_source_asset(
     except (OSError, AssetLoadError, json.JSONDecodeError) as exc:
         raise ValueError(f"could not load source export: {exc}") from exc
 
-    canonical = json.dumps(
-        payload, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False
-    ) + "\\n"
+    canonical = _render_json(payload)
     payload_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     imported_at = _utc_timestamp()
     db_path = Path(database_path)
