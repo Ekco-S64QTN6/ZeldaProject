@@ -100,6 +100,15 @@
       "record_count": 15,
       "subsystem": "audio",
       "description": "Fifteen source-labeled music incbin declarations with annotated file ranges and size diagnostics."
+    },
+    {
+      "name": "overworld-hidden-item-pointers",
+      "file": "overworld-hidden-item-pointers.json",
+      "format": "zelda-suite-pointer-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 128,
+      "subsystem": "overworld",
+      "description": "One hundred twenty-eight symbolic pointers for overworld hidden-item lists; record boundaries remain unresolved."
     }
   ]
 }
