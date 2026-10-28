@@ -468,3 +468,19 @@ diff -u data/extracted/dungeon-room-payload-inventory.json /tmp/dungeon-room-pay
 CI compares the committed inventory with `parse_incbin_inventory()` over the
 pinned source and loads it through the named registry. It does not open the
 referenced binary payload files or verify offsets against a local ROM.
+
+
+### Dungeon pointer/payload source-label coverage
+
+The 320-entry `dungeon-room-object-pointers` inventory has 263 distinct
+target labels, including the explicit `RoomDataTiles_Empty` label. The pinned
+source defines all 263 labels across `Bank03.asm`, `Bank0A.asm`, and
+`Bank1F.asm` (34, 75, and 157 unique `RoomDataTiles_*` definitions
+respectively). Three defined labels are not referenced by the pointer table:
+`RoomDataTiles_Orphan`, `RoomDataTiles_Zarby89`, and
+`RoomDataTiles_Zarby90`. Every label from the Bank0A room payload inventory
+is referenced by the pointer table.
+
+This cross-reference is tested from the pinned source tree. It verifies symbol
+coverage only; it does not resolve pointer values to ROM offsets or prove
+playable-room semantics.
