@@ -222,7 +222,14 @@ for asset in manifest["assets"]:
     checked_total += checked
     skipped_total += skipped
     mismatch_total += len(mismatches)
-    status = "PASS" if not mismatches else "FAIL"
+    if mismatches:
+        status = "FAIL"
+    elif checked == 0:
+        status = "SKIP"
+    elif skipped:
+        status = "PASS (partial)"
+    else:
+        status = "PASS"
     print(f"{status} {asset['name']}: checked={checked}, skipped={skipped}, "
           f"mismatches={len(mismatches)}")
 
@@ -240,9 +247,16 @@ PY
 ```
 
 Only direct numeric expressions are tested. Source expressions left unresolved
-by the parser are deliberately skipped rather than guessed. Review any mismatch
-before deciding whether the source annotation, offset mapping, or expression
-encoding is wrong.
+by the parser are deliberately skipped rather than guessed. Per-asset status
+means:
+- `PASS`: every entry had a directly numeric value and all compared bytes match.
+- `PASS (partial)`: every compared byte matches, but at least one entry was skipped.
+- `SKIP`: the asset had no directly numeric entries, so no bytes were compared.
+- `FAIL`: at least one compared value mismatched or did not fit its declared width.
+
+A total of zero mismatches does not mean that skipped entries were verified.
+Review any mismatch before deciding whether the source annotation, offset
+mapping, or expression encoding is wrong.
 
 ## 6. Run the ROM-independent regression suite
 
@@ -256,7 +270,41 @@ These cover existing parsers, source exports, project store/migration,
 inspection, diff, and CLI behavior. They are not substitutes for testing
 YAZE/z3ed on your ROM.
 
-## 7. Inspect external-tool capabilities before invoking them
+## 7. Install and inspect external-tool capabilities
+
+These tools are not needed for steps 1–6, but they are needed to attempt the
+remaining Phase 0 integration gates.
+
+- **YAZE / `z3ed`:** `z3ed` is YAZE's ROM inspection/editing CLI. The official
+  [YAZE releases](https://github.com/scawful/yaze/releases/latest) include it
+  with the editor and runtime assets. As of 2026-10-28, the latest tagged
+  release is v0.7.2, with Linux `.deb` and `.tar.gz` assets. On Debian or
+  Ubuntu, download the `yaze-0.7.2-Linux.deb` asset from that release page,
+  install it with `sudo apt install ./yaze-0.7.2-Linux.deb`, then check
+  `command -v z3ed`. Other Linux distributions should use the release archive
+  or the official [installation guide](https://yaze.halext.org/docs/de/dd4/md_docs_2public_2build_2install-options.html).
+  No ROM is bundled.
+- **`z3cli`:** This is a separate, experimental agent harness, not part of
+  YAZE or this Python package. Its [source repository](https://github.com/scawful/z3cli)
+  documents a source install rather than a tagged release. Keep it in its own
+  checkout and virtual environment, not in this project's `.venv`:
+
+  ```bash
+  mkdir -p "$HOME/src/tools"
+  git clone https://github.com/scawful/z3cli.git "$HOME/src/tools/z3cli"
+  cd "$HOME/src/tools/z3cli"
+  python3 -m venv .venv
+  . .venv/bin/activate
+  python -m pip install -e .
+  ```
+
+  Installation alone does not configure a model endpoint or prove that its MCP
+  tools work with this project. Keep that integration gate open until a real,
+  reviewed tool call succeeds.
+
+After installing whichever tool you are testing, inspect its capabilities
+before invoking it. Do not run write, patch, rebuild, or save commands as part
+of this diagnostic pass.
 
 ```bash
 for tool in z3ed z3cli; do
@@ -272,8 +320,7 @@ done
 Save the version/help output. The current doctor only checks PATH visibility,
 and the repository does not yet define a tested, version-independent command
 for a real YAZE/z3ed read. Confirm the installed tool's supported read-only
-arguments before attempting an actual read. Do not try write, patch, rebuild,
-or save commands as part of this diagnostic pass.
+arguments before attempting an actual read.
 
 ## What is and is not implemented
 

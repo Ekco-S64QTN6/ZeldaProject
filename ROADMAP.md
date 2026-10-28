@@ -40,6 +40,16 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     evidence for those bytes only, not a trusted ROM-provenance check or CI
     fixture. The repeatable procedure is documented in
     [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
+  - A broader user-run scalar-table cross-check on 2026-10-28 compared 428
+    directly numeric entry literals against the same local ROM at the exported
+    file offsets and widths: zero mismatches. Another 175 records were skipped
+    because their parser literal values were unresolved/non-numeric. In
+    particular, `text-dictionary-pointers` (98 entries) and
+    `item-receipt-y-offsets` (76 entries) had no directly numeric values, so
+    this pass compared no bytes for those assets. This is evidence only for
+    the compared values in that local file; skipped records and canonical ROM
+    provenance remain unverified. Step 5 in the runbook now distinguishes
+    fully compared, partially compared, and entirely skipped assets.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.
@@ -121,10 +131,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Complete ROM provenance validation and external-tool smoke tests. A user-run
-   local check has already matched the five falling-prize arrays; record that
-   result without treating it as canonical-ROM proof. Continue with the staged
-   tests in [`docs/real-rom-verification.md`](./docs/real-rom-verification.md);
+1. Complete ROM provenance validation and external-tool smoke tests. User-run
+   local checks on 2026-10-28 matched the five falling-prize arrays and compared
+   428 direct numeric scalar-table literals with zero mismatches; 175
+   unresolved/non-numeric records were skipped, including two assets with no
+   numeric values to compare. These checks do not prove canonical ROM identity.
+   Continue with [`docs/real-rom-verification.md`](./docs/real-rom-verification.md);
    keep provenance and YAZE/z3ed/z3cli gates open until independently resolved.
 2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
 3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.

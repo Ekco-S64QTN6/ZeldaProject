@@ -12,8 +12,8 @@ does not imply that any release has been published.
 - Optional `zelda-suite inspect-data-table --entry-count N` and parser-level
   expected-count validation so known table sizes can be asserted explicitly.
 - A staged, read-only local-ROM verification runbook covering file inspection,
-  self-diff smoke testing, selected source-table byte comparisons, and
-  external-tool capability checks.
+  self-diff smoke testing, scalar-table byte comparisons, clear reporting for
+  skipped/unresolved entries, and external-tool installation/capability checks.
 - Source-derived, manifest-registered metadata inventories for the currently
   covered falling-prize, text, sprite dispatch, music, overworld, receive-item,
   and dungeon room-pointer/payload declarations. Source annotations and
@@ -39,10 +39,11 @@ does not imply that any release has been published.
 
 - Reconciled `ROADMAP.md`, `README.md`, `CLAUDE.md`, and subsystem
   documentation with the implemented parser, registry, project-store, and
-  source-inventory capabilities. Local-ROM checks now include a user-run
-  byte comparison that matched all five falling-prize arrays at source-
-  annotated offsets; canonical ROM provenance and external-tool verification
-  remain open.
+  source-inventory capabilities. Local-ROM checks include a focused byte
+  comparison that matched all five falling-prize arrays and a broader
+  comparison of 428 direct numeric scalar-table literals with zero mismatches;
+  175 unresolved/non-numeric records were skipped. Canonical ROM provenance
+  and external-tool verification remain open.
 - Clarified that the documented US ROM path is only a local setup convention,
   not proof that a dump exists or is valid; made the agent instructions and
   human-facing quickstart consistent with the still-open ROM/tool verification
@@ -68,6 +69,8 @@ does not imply that any release has been published.
   in `src` and `tests`, strict MyPy types for `src`, and the full pytest suite.
 - Linux and Windows CI smoke tests execute the POSIX and PowerShell setup
   scripts respectively, create and validate SQLite/JSON project files in
-  temporary workspaces, and do not require a ROM.
+  temporary workspaces, and do not require a ROM. The Python-fallback setup
+  regression test isolates its PATH so a globally installed `uv` cannot
+  accidentally select the wrong setup path.
 - CI builds the Python wheel, installs it into a clean virtual environment, and
   smoke-tests the installed CLI by initializing and validating a project.
