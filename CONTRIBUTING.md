@@ -1,0 +1,105 @@
+# Contributing to ZeldaProject
+
+This repository is in Phase 1: structured source extraction. Contributions
+should make source-derived metadata auditable and reproducible without claiming
+that source comments, source symbols, or computed offsets have been verified
+against a ROM unless that verification was actually performed.
+
+## Development setup and checks
+
+Use Python 3.12 and install the project's development dependencies:
+
+```bash
+uv sync
+uv run zelda-suite --help
+python -m compileall -q src tests
+python -m pytest -q
+```
+
+CI runs syntax checking, Ruff on the configured Python components and tests,
+and the full pytest suite. If a change adds a Python source or test file, add
+the relevant test path to the Ruff command in
+[`.github/workflows/tests.yml`](./.github/workflows/tests.yml); otherwise CI
+may not lint the new test.
+
+Run targeted tests while iterating, then run the full suite before requesting
+review. The checked-in disassembly submodule is pinned; source-parity tests
+must use that revision rather than silently updating to a newer upstream tree.
+
+## Adding a source-derived inventory
+
+1. **Identify the exact source and revision.** Record the source filename,
+   source label or table boundary, and pinned disassembly revision. Keep ROM
+   file offsets, SPC RAM addresses, CPU addresses, and other address domains
+   as different fields.
+2. **Use bounded parsing.** Reuse an existing extractor where possible:
+   `inspect-pointer-table`, `inspect-data-table`, `inspect-incbin`,
+   `inspect-text-dictionary`, `inspect-text-messages`,
+   `inspect-sprite-dispatch`, or `inspect-music-track-index`. Do not add a
+   second parser for a format that the existing parser already represents.
+   If a new format is necessary, define a strict, versioned export contract.
+3. **Preserve source facts.** Keep raw expressions, labels, source lines,
+   source revision, explicit source annotations, and nullable/unknown values.
+   Never execute arbitrary assembler expressions or silently repair a source
+   comment. Keep calculated fields separate from fields explicitly stated in
+   source. A computed end offset is not evidence that the source range is
+   correct.
+4. **Add tests at two levels.** Add synthetic fixtures for parser edge cases
+   (missing boundaries, duplicate labels, malformed expressions, aliases or
+   null entries as appropriate), and parser-parity tests that compare the
+   committed export with the pinned source. When assets are related, add an
+   explicit cross-reference invariant and document any unmatched symbols.
+5. **Validate the export.** Generate to a temporary output path, run
+   `zelda-suite validate-source-export`, and compare it with the committed
+   version. CLI output paths intentionally refuse to overwrite existing files.
+6. **Register the asset.** Add a unique kebab-case entry and unique JSON file
+   in `data/extracted/manifest.json`, with the correct format, source revision,
+   record count, subsystem, and concise description. Extend the loader's
+   strict validator, supported-format list, count-field mapping, and exported
+   constants only when the format requires it. Update
+   `docs/schemas/asset-registry.schema.json` and add a versioned format schema
+   when introducing a new export format.
+7. **Document the result.** Update `docs/extracted-data.md`, the relevant
+   subsystem discovery page, and `ROADMAP.md` in the same change. Explain
+   regeneration commands, counts, known discrepancies, and what is not
+   verified. Update `README.md` or `CLAUDE.md` when user-facing workflows,
+   architecture, or agent instructions change.
+
+## ROM and binary-data guardrails
+
+- Never commit ROM images, partial ROM slices, extracted ROM bytes, or binary
+  `incbin` payloads. The repository commits source declarations and metadata
+  only; referenced binary payload files may not exist in the pinned submodule.
+- Use only a locally supplied clean US ROM for ROM-dependent verification.
+  Do not download, redistribute, or add a ROM to Git. Record the file's hash
+  and header assessment when an authorized local verification is performed.
+- Do not mark source-commented offsets as verified ROM locations unless the
+  corresponding bytes were independently checked against the local ROM.
+- Do not infer semantic item IDs, playable-room counts, map layers, pointer
+  targets, or audio payload availability solely from a source label or comment.
+- Do not implement ROM writes until there is verified address mapping,
+  deterministic dry-run/diff output, bounds and reference checks, and an
+  emulator or equivalent execution smoke test.
+- Project imports should use
+  `zelda-suite import-extracted-asset PROJECT.db asset-name` for committed
+  assets so registry format, revision, safe filename, and record count are
+  validated. Use `import-source-asset` only for an unregistered but validated
+  source export. Replacing an existing project key requires the explicit
+  `--replace` flag.
+
+## Pull request checklist
+
+Before requesting review, confirm that the change:
+
+- [ ] Has a clear Roadmap item or explains why it is necessary groundwork.
+- [ ] Preserves source expressions and annotates unknown/unverified values.
+- [ ] Includes synthetic tests and pinned-source parity tests where applicable.
+- [ ] Updates the manifest/schema/loader and Ruff test list when needed.
+- [ ] Updates relevant documentation and regeneration commands.
+- [ ] Adds no ROM or ROM-derived binary data.
+- [ ] Passes `python -m compileall -q src tests`, Ruff on the changed Python
+      components, and `python -m pytest -q`.
+
+A green CI run is required before merging. If a check cannot run because a local
+ROM or external tool is unavailable, leave the Roadmap gate open and say so
+explicitly rather than replacing it with a source-only approximation.
