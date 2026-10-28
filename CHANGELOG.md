@@ -9,6 +9,13 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add read-only `zelda-suite verify-text-message-bytes` and a version-1
+  report schema to compare literal encoded bytes in the 397 indexed text messages
+  against a local ROM using sequential source-derived offsets. Synthetic and
+  pinned-source tests cover byte mismatch reporting and preserve the source
+  offset-comment and block-size warnings; the report does not decode text or
+  verify ROM provenance/source-offset trust.
+
 - Add read-only `zelda-suite verify-text-dictionary-pointers` and a strict
   version-1 report schema to compare the 98 dictionary pointer words with
   source-offset-derived LoROM candidates. Synthetic fixtures test matching and
