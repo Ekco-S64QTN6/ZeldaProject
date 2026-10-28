@@ -5,7 +5,7 @@ The pinned disassembly defines a compact, source-backed lookup for items
 spawned by the falling-prize routine. This is a useful first item-table fixture
 candidate because both the data labels and a consumer are visible in the source.
 
-## Verified table
+## Source-declared table (ROM verification pending)
 
 In the pinned
 [`Ancilla/ancilla_init.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Ancilla/ancilla_init.asm),
@@ -16,7 +16,7 @@ seven one-byte entries, matching the
 description of `$048B90–$048B96` as a seven-entry item-value table indexed
 from 0 through 6.
 
-| Index | File offset | Source label | Stored byte | Source meaning |
+| Index | Source-annotated offset | Source label | Raw byte | Source meaning |
 | ---: | --- | --- | ---: | --- |
 | 0 | `$048B90` | `.ether_medallion` | `$10` | Ether medallion |
 | 1 | `$048B91` | `.pendants[0]` | `$37` | Green pendant |
@@ -26,10 +26,11 @@ from 0 through 6.
 | 5 | `$048B95` | `.bombos_medallion` | `$0F` | Bombos medallion |
 | 6 | `$048B96` | `.crystal` | `$20` | Crystal |
 
-The offsets and byte values above follow the `db` declarations at those source
-labels. Names and values are recorded as the disassembly identifies them; this
-does not claim that every possible chest or dropped-item source uses this
-lookup.
+The offsets and values above follow the pinned source declarations and source
+annotations. They have **not** been independently checked against bytes from a
+locally supplied ROM. Names and values are recorded as the disassembly
+identifies them; this does not claim that every chest or dropped-item source
+uses this lookup.
 
 ## Consumer evidence
 
@@ -42,17 +43,35 @@ for fall height, X/Y offsets, and delay timers. The source separately defines
 treat this seven-entry lookup as a global item catalog. See the pinned
 [`Ancilla/ancilla_init.asm`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Ancilla/ancilla_init.asm).
 
-The surrounding `Pool_AddPendantOrCrystal` region also documents these
-associated per-index arrays:
+The surrounding `Pool_AddPendantOrCrystal` region defines four more
+parallel arrays. These values are retained as source-declared data, not as
+ROM-verified facts:
 
-- `.fall_height` begins at `$048B97` and contains seven bytes.
-- `.y_offsets` begins at `$048B9E`.
-- `.x_offsets` begins at `$048BAC`.
-- `.delay_timers` follows later within the same declared region.
+| Array | Source-annotated range | Directive / count | Raw source values |
+| --- | --- | --- | --- |
+| `.fall_height` | `$048B97–$048B9D` | `db`, 7 bytes | `$60, $80, $80, $80, $80, $80, $80` |
+| `.y_offsets` | `$048B9E–$048BAB` | `dw`, 7 words | `$0048, $0078, $0078, $0078, $0078, $0068, $0078` |
+| `.x_offsets` | `$048BAC–$048BB9` | `dw`, 7 words | `$0078, $0078, $0078, $0078, $0078, $0080, $0078` |
+| `.delay_timers` | `$048BBA–$048BC0` | `db`, 7 bytes | `$40, $00, $00, $00, $00, $FF, $00` |
 
-These arrays share the index domain, but each has its own element type and
-meaning. Do not collapse them into the item value byte or infer the full array
-lengths from the labels alone.
+The `AddPendantOrCrystal` consumer uses the same selector index to read the
+item-value, fall-height, Y-offset, X-offset, and delay-timer arrays. The
+combined source view is therefore:
+
+| Index | Item label | Item value | Fall height | Y offset (raw word) | X offset (raw word) | Delay timer |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| 0 | `.ether_medallion` | `$10` | `$60` | `$0048` | `$0078` | `$40` |
+| 1 | `.pendants[0]` | `$37` | `$80` | `$0078` | `$0078` | `$00` |
+| 2 | `.pendants[1]` | `$39` | `$80` | `$0078` | `$0078` | `$00` |
+| 3 | `.pendants[2]` | `$38` | `$80` | `$0078` | `$0078` | `$00` |
+| 4 | `.heart_container` | `$26` | `$80` | `$0078` | `$0078` | `$00` |
+| 5 | `.bombos_medallion` | `$0F` | `$80` | `$0068` | `$0080` | `$FF` |
+| 6 | `.crystal` | `$20` | `$80` | `$0078` | `$0078` | `$00` |
+
+This joined view makes index alignment explicit without assigning units to the
+raw offset words or normalizing `$FF` into a semantic timer value. Each array
+retains its own element width and meaning; source offsets and values still
+require local-ROM verification before being treated as confirmed ROM facts.
 
 ## Suggested extraction record
 
@@ -61,7 +80,7 @@ For an initial read-only extraction, retain the source trace on every row:
 | Field | Meaning |
 | --- | --- |
 | `item_index` | Integer index in the seven-entry table, `0–6` |
-| `file_offset` | Verified source offset, `0x048B90 + item_index` |
+| `file_offset` | Source-annotated offset, `0x048B90 + item_index`; not independently ROM-verified |
 | `source_label` | Exact label associated with this entry |
 | `item_value_byte` | Raw stored byte, preserved as an integer `0–255` |
 | `source_description` | Human-readable source comment, when present |
@@ -79,8 +98,10 @@ mapped independently.
 2. Exercise every index through the source consumer in a controlled local
    fixture or test setup; preserve raw values even if an index is not currently
    used by normal gameplay.
-3. Trace adjacent per-index arrays separately and establish their lengths from
-   source and consumer bounds before exposing them in a schema.
+3. The pinned-source tests already check the five arrays' seven-entry counts,
+   offsets, widths, shared index range, and source parser parity. Compare their
+   corresponding bytes against a trusted local US ROM before claiming
+   ROM-verified extraction or exposing a writable schema.
 4. Keep any ROM and ROM-derived binary fixtures local and out of Git.
 
 This is documentation only; it reads no ROM bytes and changes none.
