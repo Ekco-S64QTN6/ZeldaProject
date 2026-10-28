@@ -13,7 +13,8 @@ metadata agree.
 
 This feature stores source-derived JSON metadata only. It does not ingest ROM
 images or `incbin` binary payloads, infer semantic item IDs, or enable edits to
-game-system records.
+game-system records. The automated suite round-trips every current registry
+asset through the project database and canonical JSON sidecar.
 
 ## Commands
 
