@@ -149,9 +149,19 @@ fi
     )
     fake_python.chmod(0o755)
 
+    # Isolate PATH so an ambient system-wide uv cannot divert this test
+    # away from the Python fallback branch. Keep only the commands the fake
+    # setup environment needs, plus the fake Python executable above.
+    fallback_tools = tmp_path / "fallback-tools"
+    fallback_tools.mkdir()
+    for tool in ("bash", "cat", "chmod", "dirname", "env", "mkdir"):
+        executable = shutil.which(tool)
+        assert executable is not None, f"test prerequisite not found: {tool}"
+        (fallback_tools / tool).symlink_to(executable)
+
     workspace = tmp_path / "workspace"
     env = os.environ.copy()
-    env["PATH"] = f"{fake_bin}{os.pathsep}/usr/bin:/bin"
+    env["PATH"] = os.pathsep.join((str(fake_bin), str(fallback_tools)))
     env["SETUP_TEST_LOG"] = str(log_path)
 
     result = subprocess.run(
