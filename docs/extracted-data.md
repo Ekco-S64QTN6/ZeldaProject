@@ -678,6 +678,42 @@ The joined view is registered as a 76-record asset. It is a convenience layout,
 not a canonical item catalog or a ROM-derived payload.
 
 
+## Standard shopkeeper purchase handlers
+
+The registered [`shop-item-handlers`](../data/extracted/shop-item-handlers.json)
+export preserves the seven purchase handlers selected by variant IDs 7–13 in
+`Sprite_ShopKeeper` from pinned `Sprites/sprite_shopkeeper.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The containing routine range is
+annotated as `$0F6EEF-$0F6F11 JUMP LOCATION`, but the source does not establish
+an exact byte offset for the inline dispatch table. It remains null in the
+export. Source handler addresses and their routine-range comments are retained
+as annotations, not verified ROM pointers.
+
+Each purchase handler has an `LDA.b #$low`, `LDY.b #$high` pair passed to
+`ShopKeeper_TryToGetPaid`; the exporter records the two literal byte
+expressions and their combined 16-bit value. It also captures the Y selector
+passed to `ShopItem_HandleReceipt`. The audit joins those seven selector
+values to the same-numbered indexes in the existing 76-slot
+`item-receipt-layout` export, preserving raw receipt-field expressions and
+offsets. These are positional indexes, not canonical semantic item IDs.
+
+Inspect and cross-reference:
+
+```bash
+uv run zelda-suite inspect-shop-item-handlers reference/AsarUSALTTPDisassembly/Sprites/sprite_shopkeeper.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --entry-count 7 --output /tmp/shop-item-handlers.json
+uv run zelda-suite validate-source-export /tmp/shop-item-handlers.json
+diff -u data/extracted/shop-item-handlers.json /tmp/shop-item-handlers.json
+uv run zelda-suite audit-shop-item-handlers
+```
+
+The source-derived price values are 150, 50, 500, 10, 30, 50, and 10; the
+receipt selector indexes are 46, 4, 5, 66, 68, 49, and 14. This audit does not
+read ROM bytes, verify price behavior at runtime, resolve receipt slots to item
+names, or establish which handlers are stocked in particular rooms. See
+[`items.md`](./schemas/items.md), the
+[export schema](./schemas/shop-item-handlers-export.schema.json), and the
+[audit schema](./schemas/shop-item-handlers-audit.schema.json).
+
 ## Packed dungeon chest records
 
 The registered [`dungeon-chest-data`](../data/extracted/dungeon-chest-data.json)

@@ -19,6 +19,35 @@ the big-chest path. The inventory keeps raw values and original expressions; it
 does not map item bytes to names, infer shop inventory, or assert the commented
 range `$00E96E-$00EB65` as a verified ROM/file offset.
 
+## Standard shopkeeper purchase-handler catalog
+
+The registered [`shop-item-handlers`](../../data/extracted/shop-item-handlers.json)
+export preserves seven purchase handlers selected by IDs `$07–$0D` in
+`Sprite_ShopKeeper`. The source-coded price literals in A/Y combine to
+150, 50, 500, 10, 30, 50, and 10; the handlers pass receipt indexes 46, 4, 5,
+66, 68, 49, and 14 to `ShopItem_HandleReceipt`.
+
+The audit joins these indexes to the matching rows in `item-receipt-layout`
+by `table_index`. The resulting raw fields (including item value, target
+address, flags, properties and offsets) are preserved without converting the
+slot index to a canonical item ID. Comments describing handler addresses remain
+unverified, and the exact inline-dispatch table offset is not established from
+the containing routine range annotation.
+
+Run:
+
+```bash
+uv run zelda-suite audit-shop-item-handlers
+uv run zelda-suite audit-shop-item-handlers --output /tmp/shop-item-handlers-audit.json
+```
+
+This is a purchase-handler catalog, not a room-specific shop-stock table. It
+does not establish where each handler is used in the game, verify its price
+behavior against ROM execution, or resolve receipt slots to semantic item
+names. The strict schemas are
+[`shop-item-handlers-export.schema.json`](./shop-item-handlers-export.schema.json)
+and [`shop-item-handlers-audit.schema.json`](./shop-item-handlers-audit.schema.json).
+
 ## Source-only audit
 
 Run:
@@ -38,6 +67,6 @@ The versioned schemas are
 and [`dungeon-chest-data-audit.schema.json`](./dungeon-chest-data-audit.schema.json).
 
 Remaining work includes resolving raw item values to a semantic item catalog,
-connecting chest records to editable room/chest placements, validating source
-offsets against a trusted ROM, and reconciling the source format with a verified
-writer or YAZE/z3ed round-trip.
+connecting chest records and purchase handlers to editable room/chest/shop
+placements, validating source offsets against a trusted ROM, and reconciling the
+source formats with a verified writer or YAZE/z3ed round-trip.
