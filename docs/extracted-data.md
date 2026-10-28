@@ -266,3 +266,38 @@ To reproduce it, run the existing `inspect-incbin` command shown in
 [the audio discovery note](./schemas/audio.md), then validate and diff the JSON.
 The command never opens the `incbin` targets; the pinned submodule does not track
 the `bin/music/` payload files.
+
+
+## Overworld hidden-item pointer table
+
+`data/extracted/overworld-hidden-item-pointers.json` records all 128
+`dw` expressions under `OverworldData_HiddenItems` in pinned
+`Bank1B.asm` revision `347c23f9fc019c72d32da537c9cb235f468d021d`. Entries
+span source file offsets `$0DC2F9–$0DC3F8`, beginning at `$0DC2F9` and
+advancing by two bytes per pointer. The committed export preserves source
+expressions, line numbers, table indices, pointer-entry offsets, and source
+revision, and it is registered as `overworld-hidden-item-pointers`.
+
+This is strictly a pointer-table asset. It does not resolve targets to binary
+file offsets, decode any hidden-item list, infer a final record count, or
+interpret the one-byte value semantics. The documented records range
+`$0DC3F9–$0DC89B` is `0x4A3` bytes—two bytes beyond 395 three-byte records.
+That discrepancy remains open pending consumer/source analysis and comparison
+with a local clean US ROM.
+
+Regenerate the source metadata with:
+
+```bash
+uv run zelda-suite inspect-pointer-table \
+  reference/AsarUSALTTPDisassembly/Bank1B.asm \
+  OverworldData_HiddenItems \
+  --table-offset '$0DC2F9' \
+  --directive dw \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/overworld-hidden-item-pointers.json
+uv run zelda-suite validate-source-export /tmp/overworld-hidden-item-pointers.json
+diff -u data/extracted/overworld-hidden-item-pointers.json /tmp/overworld-hidden-item-pointers.json
+```
+
+The parser parity test ensures all 128 pointer records match the pinned source;
+it does not mark the hidden-item list data as fully extracted or editable.
