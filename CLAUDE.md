@@ -225,3 +225,5 @@ When changing the text dictionary exports, run `zelda-suite audit-text-dictionar
 When changing the registered text-message index, run `zelda-suite audit-text-message-index` and preserve the offset-comment and block-size warnings unless independently verified source/ROM evidence justifies changing source facts. The report is source-only; it is not a message decoder or ROM verification.
 
 When changing registered music data, run `zelda-suite audit-music-assets`. It joins only the symbolic pointer index and the source `incbin` inventory, preserving the unmatched `Song0B_FairyTheme` target and the three missing size annotations without claiming anything about ROM payload availability.
+
+The committed `sprite-active3-dispatch` export is checked independently of the disassembly submodule; preserve its 68-entry `$79–$BC` range, contiguous source offsets, and six explicit handler alias groups in tests. Do not promote source handler-address comments into verified ROM targets.
