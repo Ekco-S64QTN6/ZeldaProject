@@ -59,9 +59,13 @@ def test_hidden_item_source_range_accounts_for_sentinels() -> None:
     end = source.index("; $0DC89C-$0DC8A3 DATA", start)
     region_lines = source[start:end].splitlines()
 
-    record_re = re.compile(r"^\s*dw\s+\$[0-9A-Fa-f]{4}\s*:\s*db\s+\$[0-9A-Fa-f]{2}\b")
+    record_re = re.compile(
+        r"^\s*dw\s+\$[0-9A-Fa-f]{4}\s*:\s*db\s+\$[0-9A-Fa-f]{2}\b"
+    )
     sentinel_re = re.compile(r"^\s*dw\s+\$FFFF\b")
-    label_re = re.compile(r"^\s*OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}:\s*$")
+    label_re = re.compile(
+        r"^\s*OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}:\s*$"
+    )
     record_count = sum(1 for line in region_lines if record_re.match(line))
     sentinel_count = sum(1 for line in region_lines if sentinel_re.match(line))
     label_positions = [
@@ -71,7 +75,10 @@ def test_hidden_item_source_range_accounts_for_sentinels() -> None:
     assert len(label_positions) == 80
     assert record_count == 351
     assert sentinel_count == 67
-    assert record_count * 3 + sentinel_count * 2 == 0x0DC89B - 0x0DC3F9 + 1
+    assert (
+        record_count * 3 + sentinel_count * 2
+        == 0x0DC89B - 0x0DC3F9 + 1
+    )
 
     # A screen label is not necessarily followed by a local sentinel. The reader
     # scans the byte stream until $FFFF, so the next label does not stop it.
@@ -95,8 +102,8 @@ def test_hidden_item_source_range_accounts_for_sentinels() -> None:
 def test_overworld_reveal_secret_uses_sentinel_terminated_three_byte_entries() -> None:
     """Guard the source reader's stride, sentinel, and value-byte access."""
     source = SOURCE_PATH.read_text(encoding="utf-8")
-    start = source.index("Overworld_RevealSecret:\\n{")
-    end = source.index("\\n}\\n", start)
+    start = source.index("Overworld_RevealSecret:\n{")
+    end = source.index("\n}\n", start)
     reader = source[start:end]
 
     assert "ASL : TAX" in reader
