@@ -186,4 +186,4 @@ def test_parser_rejects_a_missing_or_shortened_source_region() -> None:
         ValueError,
         match="unsupported declaration|expected 67 two-byte sentinels",
     ):
-        parse_overworld_hidden_item_source(altered, source_revision=PINNED_REVISION)
+        parse_overworld_hidden_item_source(altered)
