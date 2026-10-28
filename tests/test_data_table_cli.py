@@ -4,9 +4,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from click.testing import CliRunner
+
+import pytest
 
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.asset_loader import AssetLoadError, validate_source_export
