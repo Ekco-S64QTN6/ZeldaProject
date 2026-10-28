@@ -28,7 +28,7 @@ base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 
 - This is the expected path for an authorized clean US dump used by future ROM-dependent tooling. The repository does not establish that the file is present, canonical, headerless, or otherwise valid.
 - Repository setup and CI do not fetch, include, open, or modify a ROM. A size check is diagnostic, not proof of dump provenance or correctness.
-- Before relying on a local ROM, run `just doctor` and `zelda-suite inspect-rom PATH`, then record what those checks do and do not establish. See [`docs/doctor.md`](./docs/doctor.md) and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
+- Before relying on a local ROM, run `just doctor` and `zelda-suite inspect-rom PATH`, then follow the staged read-only checks in [`docs/real-rom-verification.md`](./docs/real-rom-verification.md). Byte agreement validates only the checked offsets; it does not establish ROM provenance. See [`docs/doctor.md`](./docs/doctor.md) and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
 
 **Optional JP reference (local-only; not read by current tooling):**
 
@@ -160,6 +160,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 ## 8. Workflow Conventions
 
 - **One change = one commit.** The ROM diff goes in the commit body when the change affects ROM bytes.
+- **Short-lived branches only.** Start each focused change from current `main`. Inspect unique commits before reusing any old branch; ahead/behind counts alone do not make a branch safe to merge. Never merge an old, diverged feature branch wholesale just to recover one missing change. GitHub's delete-branch-on-merge setting is enabled, so branches for merged PRs should be removed automatically.
 - **Tests first for extraction logic.** Add a fixture before writing a parser.
 - **Phase discipline.** Use `ROADMAP.md` as the current status ledger. Do not claim a phase exit criterion is met until implementation and evidence exist; label local-ROM or external-tool checks unverified when they have not been run.
 - **Ask before adding dependencies.** Prefer stdlib and one well‑known library over a framework.
