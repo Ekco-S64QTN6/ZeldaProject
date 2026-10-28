@@ -17,7 +17,6 @@ from zelda_suite.extract import (
     MessageSourceBlock,
     OverworldHiddenItemVerificationError,
     OverworldPayloadPairError,
-    PINNED_SOURCE_REVISION,
     ROMImageInspectionError,
     ROMTableVerificationError,
     build_item_receipt_layout,
@@ -1053,20 +1052,6 @@ def verify_rom_tables_command(
     type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
 )
 @click.option(
-    "--source",
-    "source_path",
-    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
-    default="reference/AsarUSALTTPDisassembly/Bank1B.asm",
-    show_default=True,
-    help="Pinned Bank1B.asm source used to derive pointer targets and record offsets.",
-)
-@click.option(
-    "--source-revision",
-    default=PINNED_SOURCE_REVISION,
-    show_default=True,
-    help="Source revision to record in the report.",
-)
-@click.option(
     "--output",
     type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
     default=None,
@@ -1074,18 +1059,13 @@ def verify_rom_tables_command(
 )
 def verify_overworld_hidden_items_command(
     rom_path: Path,
-    source_path: Path,
-    source_revision: str,
     output: Path | None,
 ) -> None:
     """Verify source-derived overworld hidden-item pointers, records, sentinels and Map16 words."""
     try:
+        source_path = Path("reference/AsarUSALTTPDisassembly/Bank1B.asm")
         source = source_path.read_text(encoding="utf-8")
-        report = verify_overworld_hidden_items(
-            rom_path,
-            source,
-            source_revision=source_revision,
-        )
+        report = verify_overworld_hidden_items(rom_path, source)
     except (OSError, UnicodeError, OverworldHiddenItemVerificationError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
 
