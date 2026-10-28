@@ -553,3 +553,16 @@ directive. The audit does not edit that source annotation, resolve symbolic
 pointer values, inspect fragment payload bytes, or read a ROM. See
 [`docs/schemas/text.md`](./schemas/text.md) and the
 [text dictionary audit schema](./schemas/text-dictionary-audit.schema.json).
+
+
+## Audit source message-index diagnostics
+
+Use `uv run zelda-suite audit-text-message-index --output /tmp/message-index-audit.json`
+to enumerate known offset-annotation and declared block-size discrepancies in
+the registered 397-message index. The current source export records six
+annotation mismatches, including three malformed annotations, no per-message
+offset annotations for 38 messages in the extra block, and an extra block-size
+difference of one byte. This audit reads validated JSON metadata only; it does
+not read ROM bytes, decode encoded text, or verify that source offsets match a
+trusted ROM. See [the text schema notes](./schemas/text.md) and the
+[text-message index audit schema](./schemas/text-message-index-audit.schema.json).
