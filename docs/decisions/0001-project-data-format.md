@@ -1,6 +1,6 @@
 # ADR 0001 — Project data format
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** Day 0
 - **Deciders:** ekco
 
