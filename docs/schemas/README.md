@@ -12,6 +12,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 - [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables`.
+- [Joined receive-item layout](./item-receipt-layout.schema.json) — version 1 positional join of six raw receive-item tables, with the 14 dungeon masks retained separately and canonical item IDs explicitly unresolved.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
@@ -23,7 +24,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-five named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-six named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
@@ -50,6 +51,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [`data/extracted/item-receipt-x-offsets.json`](../../data/extracted/item-receipt-x-offsets.json) — 76 X offsets.
 - [`data/extracted/item-receipt-wide-flags.json`](../../data/extracted/item-receipt-wide-flags.json) — 76 raw wide-item flags.
 - [`data/extracted/item-receipt-properties.json`](../../data/extracted/item-receipt-properties.json) — 76 raw property bytes.
+- [`data/extracted/item-receipt-layout.json`](../../data/extracted/item-receipt-layout.json) — joined 76-position receive-item view with raw source traceability and a separate 14-mask table; it does not resolve canonical item IDs.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
