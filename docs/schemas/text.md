@@ -135,3 +135,22 @@ block has no per-message offset comments and its declared bytes are one byte
 short of its header range. These discrepancies are explicitly recorded. The
 index does not include encoded bytes or decoded text and does not validate the
 runtime message-pointer construction.
+
+
+## Cross-check the committed dictionary exports
+
+Run `uv run zelda-suite audit-text-dictionary` to join the registered
+`text-dictionary-pointers` and `text-dictionary-fragments` exports without
+requiring the disassembly submodule. The report checks that each pointer symbol
+maps to the corresponding local fragment label, that both exports agree on
+source revision, table offsets, expression and index, and that the final
+`endOfTable` sentinel agrees in both files.
+
+The current baseline has 98 pointer entries and 98 fragment records with no
+cross-reference errors. It retains one warning at pointer index 96
+(`DictionaryEntries_You`): the next source offset implies a 2-byte extent,
+while the source directive declaration describes 6 bytes. The audit preserves
+both annotations instead of selecting which one is correct. These checks join
+source metadata only; they do not resolve pointer words, read fragment bytes,
+decode text, or verify offsets against a ROM. See the
+[text dictionary audit schema](./text-dictionary-audit.schema.json).
