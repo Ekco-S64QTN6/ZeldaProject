@@ -12,8 +12,9 @@ does not imply that any release has been published.
 - Optional `zelda-suite inspect-data-table --entry-count N` and parser-level
   expected-count validation so known table sizes can be asserted explicitly.
 - Read-only `zelda-suite verify-rom-tables ROM` command and a versioned JSON
-  report for comparing registered scalar-table literals with a local ROM;
-  unresolved entries are reported as skipped rather than counted as verified.
+  report for comparing registered scalar-table literals with a local ROM.
+  Simple negative decimal expressions are compared as signed-width
+  two's-complement values; other unresolved expressions remain skipped.
 - A staged, read-only local-ROM verification runbook covering file inspection,
   self-diff smoke testing, scalar-table byte comparisons, clear reporting for
   skipped/unresolved entries, and external-tool installation/capability checks.
@@ -82,5 +83,5 @@ does not imply that any release has been published.
 - CI builds the Python wheel, installs it into a clean virtual environment, and
   smoke-tests the installed CLI by initializing and validating a project.
 - Synthetic tests exercise the scalar-table verifier's match/mismatch paths,
-  skipped symbolic entries, distinct directive byte width versus entry stride,
-  report serialization, and expected-size guard.
+  skipped symbolic entries, signed decimal byte encoding, distinct directive
+  byte width versus entry stride, report serialization, and expected-size guard.
