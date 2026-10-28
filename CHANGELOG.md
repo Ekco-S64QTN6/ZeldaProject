@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Register the 54-word `oam-buffer-position-table` and add `zelda-suite audit-oam-allocation`, a versioned structured report grouping six region limits with 48 fallback points. Tests pin A–F selector values, all eight slots per region, the source lookup arithmetic, and refusal to overwrite reports; this remains source metadata, not runtime or ROM verification.
+
 - Add the `landmine-oam-groups` mixed-width source export and reusable `inspect-mixed-data-table` parser for colon-separated `db`/`dw`/`dl` fields, with byte-accurate offsets and pinned-source tests. The two rows remain raw source metadata, not decoded OAM semantics or ROM-verified data.
 
 - Register the nine-word `crystal-maiden-message-ids` export from pinned `Sprites/sprite_crystal_maiden.asm` with source-parity coverage and a regression cross-reference to all distinct IDs in the registered text-message index. Preserve the source-commented range and the unresolved local `.message_ids` mapping; no ROM verification is claimed.
@@ -74,12 +76,13 @@ does not imply that any release has been published.
   `zelda-suite audit-text-dictionary` runs. The known `.You` source-extent
   mismatch remains a diagnostic warning; the checks do not verify ROM offsets.
 
-- Add an integration regression baseline for all 18 registered scalar-table
-  exports: 706 entries, 531 direct numeric literals, 77 negative decimal literals,
+- Add an integration regression baseline for all 19 registered scalar-table
+  exports: 760 entries, 585 direct numeric literals, 77 negative decimal literals,
   and 98 unresolved symbols. The Mad Batter, Crystal Switch, and Crystal Maiden
   palette tables plus the Crystal Maiden message-ID table contribute 27 direct
-  numeric literals total; the baseline remains source-only and does not claim
-  any skipped expression has been resolved or verified against ROM bytes.
+  numeric literals total; the OAM table contributes 54 more direct numeric
+  literals. The baseline remains source-only and does not claim any skipped
+  expression has been resolved or verified against ROM bytes.
 
 - Pin the current six-inventory `audit-incbin-inventory` summary in an integration test, so metadata gaps, range/size discrepancies, and candidate-overlap counts cannot drift silently. The baseline is source-only and does not verify ROM offsets.
 

@@ -1,0 +1,501 @@
+{
+  "directive": "dw",
+  "end_label": null,
+  "entries": [
+    {
+      "entry_file_offset": 440990,
+      "expression": "$0171",
+      "literal_value": 369,
+      "source_label": ".limits",
+      "source_line": 72,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 440992,
+      "expression": "$0201",
+      "literal_value": 513,
+      "source_label": ".limits",
+      "source_line": 73,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 440994,
+      "expression": "$0031",
+      "literal_value": 49,
+      "source_label": ".limits",
+      "source_line": 74,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 440996,
+      "expression": "$00C1",
+      "literal_value": 193,
+      "source_label": ".limits",
+      "source_line": 75,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 440998,
+      "expression": "$0141",
+      "literal_value": 321,
+      "source_label": ".limits",
+      "source_line": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 441000,
+      "expression": "$01D1",
+      "literal_value": 465,
+      "source_label": ".limits",
+      "source_line": 77,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 441002,
+      "expression": "$0030",
+      "literal_value": 48,
+      "source_label": ".fallback_points",
+      "source_line": 84,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 441004,
+      "expression": "$0050",
+      "literal_value": 80,
+      "source_label": ".fallback_points",
+      "source_line": 85,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7
+    },
+    {
+      "entry_file_offset": 441006,
+      "expression": "$0080",
+      "literal_value": 128,
+      "source_label": ".fallback_points",
+      "source_line": 86,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8
+    },
+    {
+      "entry_file_offset": 441008,
+      "expression": "$00B0",
+      "literal_value": 176,
+      "source_label": ".fallback_points",
+      "source_line": 87,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 9
+    },
+    {
+      "entry_file_offset": 441010,
+      "expression": "$00E0",
+      "literal_value": 224,
+      "source_label": ".fallback_points",
+      "source_line": 88,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 10
+    },
+    {
+      "entry_file_offset": 441012,
+      "expression": "$0110",
+      "literal_value": 272,
+      "source_label": ".fallback_points",
+      "source_line": 89,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 11
+    },
+    {
+      "entry_file_offset": 441014,
+      "expression": "$0140",
+      "literal_value": 320,
+      "source_label": ".fallback_points",
+      "source_line": 90,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 12
+    },
+    {
+      "entry_file_offset": 441016,
+      "expression": "$0170",
+      "literal_value": 368,
+      "source_label": ".fallback_points",
+      "source_line": 91,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 13
+    },
+    {
+      "entry_file_offset": 441018,
+      "expression": "$01D0",
+      "literal_value": 464,
+      "source_label": ".fallback_points",
+      "source_line": 93,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 14
+    },
+    {
+      "entry_file_offset": 441020,
+      "expression": "$01D4",
+      "literal_value": 468,
+      "source_label": ".fallback_points",
+      "source_line": 94,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 15
+    },
+    {
+      "entry_file_offset": 441022,
+      "expression": "$01DC",
+      "literal_value": 476,
+      "source_label": ".fallback_points",
+      "source_line": 95,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 16
+    },
+    {
+      "entry_file_offset": 441024,
+      "expression": "$01E0",
+      "literal_value": 480,
+      "source_label": ".fallback_points",
+      "source_line": 96,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 17
+    },
+    {
+      "entry_file_offset": 441026,
+      "expression": "$01E4",
+      "literal_value": 484,
+      "source_label": ".fallback_points",
+      "source_line": 97,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 18
+    },
+    {
+      "entry_file_offset": 441028,
+      "expression": "$01EC",
+      "literal_value": 492,
+      "source_label": ".fallback_points",
+      "source_line": 98,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 19
+    },
+    {
+      "entry_file_offset": 441030,
+      "expression": "$01F0",
+      "literal_value": 496,
+      "source_label": ".fallback_points",
+      "source_line": 99,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 20
+    },
+    {
+      "entry_file_offset": 441032,
+      "expression": "$01F8",
+      "literal_value": 504,
+      "source_label": ".fallback_points",
+      "source_line": 100,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 21
+    },
+    {
+      "entry_file_offset": 441034,
+      "expression": "$0000",
+      "literal_value": 0,
+      "source_label": ".fallback_points",
+      "source_line": 102,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 22
+    },
+    {
+      "entry_file_offset": 441036,
+      "expression": "$0004",
+      "literal_value": 4,
+      "source_label": ".fallback_points",
+      "source_line": 103,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 23
+    },
+    {
+      "entry_file_offset": 441038,
+      "expression": "$0008",
+      "literal_value": 8,
+      "source_label": ".fallback_points",
+      "source_line": 104,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 24
+    },
+    {
+      "entry_file_offset": 441040,
+      "expression": "$000C",
+      "literal_value": 12,
+      "source_label": ".fallback_points",
+      "source_line": 105,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 25
+    },
+    {
+      "entry_file_offset": 441042,
+      "expression": "$0010",
+      "literal_value": 16,
+      "source_label": ".fallback_points",
+      "source_line": 106,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 26
+    },
+    {
+      "entry_file_offset": 441044,
+      "expression": "$0014",
+      "literal_value": 20,
+      "source_label": ".fallback_points",
+      "source_line": 107,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 27
+    },
+    {
+      "entry_file_offset": 441046,
+      "expression": "$0018",
+      "literal_value": 24,
+      "source_label": ".fallback_points",
+      "source_line": 108,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 28
+    },
+    {
+      "entry_file_offset": 441048,
+      "expression": "$001C",
+      "literal_value": 28,
+      "source_label": ".fallback_points",
+      "source_line": 109,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 29
+    },
+    {
+      "entry_file_offset": 441050,
+      "expression": "$0030",
+      "literal_value": 48,
+      "source_label": ".fallback_points",
+      "source_line": 111,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 30
+    },
+    {
+      "entry_file_offset": 441052,
+      "expression": "$0038",
+      "literal_value": 56,
+      "source_label": ".fallback_points",
+      "source_line": 112,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 31
+    },
+    {
+      "entry_file_offset": 441054,
+      "expression": "$0050",
+      "literal_value": 80,
+      "source_label": ".fallback_points",
+      "source_line": 113,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 32
+    },
+    {
+      "entry_file_offset": 441056,
+      "expression": "$0068",
+      "literal_value": 104,
+      "source_label": ".fallback_points",
+      "source_line": 114,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 33
+    },
+    {
+      "entry_file_offset": 441058,
+      "expression": "$0080",
+      "literal_value": 128,
+      "source_label": ".fallback_points",
+      "source_line": 115,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 34
+    },
+    {
+      "entry_file_offset": 441060,
+      "expression": "$0098",
+      "literal_value": 152,
+      "source_label": ".fallback_points",
+      "source_line": 116,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 35
+    },
+    {
+      "entry_file_offset": 441062,
+      "expression": "$00B0",
+      "literal_value": 176,
+      "source_label": ".fallback_points",
+      "source_line": 117,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 36
+    },
+    {
+      "entry_file_offset": 441064,
+      "expression": "$00C8",
+      "literal_value": 200,
+      "source_label": ".fallback_points",
+      "source_line": 118,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 37
+    },
+    {
+      "entry_file_offset": 441066,
+      "expression": "$0120",
+      "literal_value": 288,
+      "source_label": ".fallback_points",
+      "source_line": 120,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 38
+    },
+    {
+      "entry_file_offset": 441068,
+      "expression": "$0124",
+      "literal_value": 292,
+      "source_label": ".fallback_points",
+      "source_line": 121,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 39
+    },
+    {
+      "entry_file_offset": 441070,
+      "expression": "$0128",
+      "literal_value": 296,
+      "source_label": ".fallback_points",
+      "source_line": 122,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 40
+    },
+    {
+      "entry_file_offset": 441072,
+      "expression": "$012C",
+      "literal_value": 300,
+      "source_label": ".fallback_points",
+      "source_line": 123,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 41
+    },
+    {
+      "entry_file_offset": 441074,
+      "expression": "$0130",
+      "literal_value": 304,
+      "source_label": ".fallback_points",
+      "source_line": 124,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 42
+    },
+    {
+      "entry_file_offset": 441076,
+      "expression": "$0134",
+      "literal_value": 308,
+      "source_label": ".fallback_points",
+      "source_line": 125,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 43
+    },
+    {
+      "entry_file_offset": 441078,
+      "expression": "$0138",
+      "literal_value": 312,
+      "source_label": ".fallback_points",
+      "source_line": 126,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 44
+    },
+    {
+      "entry_file_offset": 441080,
+      "expression": "$013C",
+      "literal_value": 316,
+      "source_label": ".fallback_points",
+      "source_line": 127,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 45
+    },
+    {
+      "entry_file_offset": 441082,
+      "expression": "$0140",
+      "literal_value": 320,
+      "source_label": ".fallback_points",
+      "source_line": 129,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 46
+    },
+    {
+      "entry_file_offset": 441084,
+      "expression": "$0150",
+      "literal_value": 336,
+      "source_label": ".fallback_points",
+      "source_line": 130,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 47
+    },
+    {
+      "entry_file_offset": 441086,
+      "expression": "$0160",
+      "literal_value": 352,
+      "source_label": ".fallback_points",
+      "source_line": 131,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 48
+    },
+    {
+      "entry_file_offset": 441088,
+      "expression": "$0170",
+      "literal_value": 368,
+      "source_label": ".fallback_points",
+      "source_line": 132,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 49
+    },
+    {
+      "entry_file_offset": 441090,
+      "expression": "$0180",
+      "literal_value": 384,
+      "source_label": ".fallback_points",
+      "source_line": 133,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 50
+    },
+    {
+      "entry_file_offset": 441092,
+      "expression": "$0190",
+      "literal_value": 400,
+      "source_label": ".fallback_points",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 51
+    },
+    {
+      "entry_file_offset": 441094,
+      "expression": "$01A0",
+      "literal_value": 416,
+      "source_label": ".fallback_points",
+      "source_line": 135,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 52
+    },
+    {
+      "entry_file_offset": 441096,
+      "expression": "$01B8",
+      "literal_value": 440,
+      "source_label": ".fallback_points",
+      "source_line": 136,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 53
+    }
+  ],
+  "entry_count": 54,
+  "entry_width": 2,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": null,
+  "source_file": "sprite_oam_allocation.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 440990,
+  "table_label": "Pool_OAM_GetBufferPosition"
+}

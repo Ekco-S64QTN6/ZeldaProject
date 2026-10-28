@@ -235,6 +235,15 @@
       "subsystem": "audio"
     },
     {
+      "description": "Six raw upper-limit words plus 48 OAM overflow fallback words from Pool_OAM_GetBufferPosition; allocator structure is source-derived and source-commented ROM offsets and buffer positions remain unverified.",
+      "file": "oam-buffer-position-table.json",
+      "format": "zelda-suite-data-table",
+      "name": "oam-buffer-position-table",
+      "record_count": 54,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
       "description": "One hundred twenty-eight symbolic pointers for overworld hidden-item lists; record boundaries remain unresolved.",
       "file": "overworld-hidden-item-pointers.json",
       "format": "zelda-suite-pointer-table",

@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 33
+    assert len(assets) == 34
     assert names == {
         "crystal-maiden-message-ids",
         "crystal-maiden-palette-words",
@@ -334,6 +334,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "mad-batter-pseudo-attack-palettes",
         "music-track-index",
         "music-payload-inventory",
+        "oam-buffer-position-table",
         "overworld-hidden-item-pointers",
         "dungeon-room-door-pointers",
         "dungeon-room-object-pointers",
@@ -368,6 +369,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["landmine-oam-groups"]["record_count"] == 2
     assert loaded["mad-batter-pseudo-attack-palettes"]["entry_count"] == 8
     assert loaded["music-track-index"]["entry_count"] == 35
+    assert loaded["oam-buffer-position-table"]["entry_count"] == 54
     assert loaded["music-payload-inventory"]["declaration_count"] == 15
     assert loaded["overworld-hidden-item-pointers"]["entry_count"] == 128
     assert loaded["dungeon-room-door-pointers"]["entry_count"] == 320

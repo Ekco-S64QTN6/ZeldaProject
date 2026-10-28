@@ -20,6 +20,7 @@ from zelda_suite.extract import (
     IncbinInventoryAuditError,
     MessageSourceBlock,
     MusicAssetAuditError,
+    OAMAllocationAuditError,
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
@@ -31,6 +32,7 @@ from zelda_suite.extract import (
     audit_dungeon_room_assets,
     audit_incbin_inventories,
     audit_music_assets,
+    audit_oam_allocation,
     audit_text_dictionary_assets,
     audit_text_message_index,
     audit_unresolved_table_expressions,
@@ -1252,6 +1254,69 @@ def audit_unresolved_table_expressions_command(
 
     if fail_on_unresolved and report["summary"]["unresolved_expression_count"]:
         raise click.exceptions.Exit(1)
+
+
+
+@cli.command(name="audit-oam-allocation")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--table-asset",
+    default="oam-buffer-position-table",
+    show_default=True,
+    help="Registered OAM allocator table asset name.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+def audit_oam_allocation_command(
+    registry_path: Path | None,
+    table_asset: str,
+    output: Path | None,
+) -> None:
+    """Structure the six OAM region limits and 48 overflow fallback words."""
+    try:
+        report = audit_oam_allocation(
+            registry_path or "data/extracted/manifest.json",
+            table_asset_name=table_asset,
+        )
+    except (OAMAllocationAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote OAM allocation audit to {output}; "
+            f"regions={summary['region_count']}, "
+            f"limits={summary['limit_entry_count']}, "
+            f"fallback_points={summary['fallback_point_count']}"
+        )
 
 
 @cli.command(name="audit-incbin-inventory")
