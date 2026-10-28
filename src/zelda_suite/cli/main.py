@@ -385,7 +385,6 @@ def inspect_data_table(
     )
 
 
-
 @cli.command(name="audit-music-assets")
 @click.option(
     "--registry",
