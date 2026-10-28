@@ -1052,6 +1052,19 @@ def verify_rom_tables_command(
     type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
 )
 @click.option(
+    "--source",
+    "source_path",
+    type=click.Path(
+        path_type=Path,
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+    ),
+    default="reference/AsarUSALTTPDisassembly/Bank1B.asm",
+    show_default=True,
+    help="Pinned Bank1B.asm source used to derive pointer targets and record offsets.",
+)
+@click.option(
     "--output",
     type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
     default=None,
@@ -1059,10 +1072,10 @@ def verify_rom_tables_command(
 )
 def verify_overworld_hidden_items_command(
     rom_path: Path,
+    source_path: Path,
     output: Path | None,
 ) -> None:
     """Verify source-derived overworld hidden-item pointers, records, sentinels and Map16 words."""
-    source_path = Path("reference/AsarUSALTTPDisassembly/Bank1B.asm")
     try:
         source = source_path.read_text(encoding="utf-8")
         report = verify_overworld_hidden_items(
