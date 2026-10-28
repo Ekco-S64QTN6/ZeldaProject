@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 17
+    assert len(assets) == 21
     assert names == {
         "falling-prize-item-values",
         "falling-prize-fall-heights",
@@ -335,6 +335,10 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "item-receipt-target-addresses",
         "item-receipt-values",
         "item-receipt-dungeon-masks",
+        "item-receipt-y-offsets",
+        "item-receipt-x-offsets",
+        "item-receipt-wide-flags",
+        "item-receipt-properties",
     }
 
     loaded = {
@@ -354,6 +358,10 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["item-receipt-target-addresses"]["entry_count"] == 76
     assert loaded["item-receipt-values"]["entry_count"] == 76
     assert loaded["item-receipt-dungeon-masks"]["entry_count"] == 14
+    assert loaded["item-receipt-y-offsets"]["entry_count"] == 76
+    assert loaded["item-receipt-x-offsets"]["entry_count"] == 76
+    assert loaded["item-receipt-wide-flags"]["entry_count"] == 76
+    assert loaded["item-receipt-properties"]["entry_count"] == 76
 
 
 def test_named_asset_loader_validates_registry_provenance_and_name(
