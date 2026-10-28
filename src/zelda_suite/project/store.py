@@ -11,7 +11,7 @@ import os
 import re
 import sqlite3
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -62,7 +62,7 @@ CREATE TABLE schema_version (
 
 def _utc_timestamp() -> str:
     """Return a sortable UTC timestamp with an explicit Z suffix."""
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
+    return datetime.now(UTC).isoformat(timespec="seconds").replace(
         "+00:00", "Z"
     )
 
