@@ -4,7 +4,7 @@ The project database uses schema v2 for project metadata and validated source-ex
 
 ## Source export contracts
 
-The supported version-1 source exports can be loaded and validated with the [asset loader](../asset-loader.md).
+The versioned source exports can be loaded and validated with the [asset loader](../asset-loader.md); data-table exports support versions 1 and 2.
 
 - [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
