@@ -127,6 +127,33 @@
       "record_count": 84,
       "subsystem": "overworld",
       "description": "Bank0C high/low overworld payload declarations with source-range and size diagnostics."
+    },
+    {
+      "name": "item-receipt-target-addresses",
+      "file": "item-receipt-target-addresses.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 76,
+      "subsystem": "items",
+      "description": "Raw two-byte WRAM target addresses indexed by the receive-item routine."
+    },
+    {
+      "name": "item-receipt-values",
+      "file": "item-receipt-values.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 76,
+      "subsystem": "items",
+      "description": "Raw byte values written by the receive-item routine; negative/sentinel byte patterns are preserved."
+    },
+    {
+      "name": "item-receipt-dungeon-masks",
+      "file": "item-receipt-dungeon-masks.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 14,
+      "subsystem": "items",
+      "description": "Fourteen raw two-byte masks used by receive-item dungeon-item handling."
     }
   ]
 }
