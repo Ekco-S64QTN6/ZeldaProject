@@ -5,10 +5,10 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 from zelda_suite.extract.data_table import (
-    DATA_DIRECTIVE_WIDTHS,
-    DataTableParseError,
     _DATA_DIRECTIVE_RE,
     _SOURCE_LABEL_RE,
+    DATA_DIRECTIVE_WIDTHS,
+    DataTableParseError,
     _code,
     _label_hits,
     _literal_value,

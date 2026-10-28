@@ -5,7 +5,6 @@ import pytest
 
 from zelda_suite.extract import MixedDataTableParseError, parse_mixed_data_table
 
-
 SAMPLE_SOURCE = """ExampleOAM:
 {
     dw 0, 4 : db $70, $00, $00, $00
