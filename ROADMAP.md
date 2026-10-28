@@ -2,7 +2,7 @@
 
 **Goal:** Build a scriptable, agent-native authoring suite for *The Legend of Zelda: A Link to the Past* (SNES). The long-term target is a structured project model with semantic editing APIs, deterministic ROM builds/diffs, verification, and eventually maker-style authoring.
 
-**Current state (2026-10-27): Phase 1 — Structured Extraction is in progress.** Phase 0 has useful scaffolding but still has environment-dependent verification gates. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project initialization/validation plus schema-v2 storage for validated source-export snapshots, read-only ROM inspection, and file-to-file ROM diff utilities. It does **not** yet provide semantic overworld/dungeon editors or a ROM writer/rebuilder.
+**Current state (2026-10-28): Phase 1 — Structured Extraction is in progress.** Phase 0 has useful scaffolding but still has environment-dependent verification gates. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project initialization/validation plus schema-v2 storage for validated source-export snapshots, read-only ROM inspection, and file-to-file ROM diff utilities. It does **not** yet provide semantic overworld/dungeon editors or a ROM writer/rebuilder.
 
 Status legend: **[x] verified in repository/automated tests** · **[~] partial; limitations remain** · **[ ] not implemented or not verified in the available environment**.
 
@@ -106,11 +106,11 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - Never commit ROM images or extracted ROM payload bytes. The source export inventories record declarations and metadata only.
 - Treat the pinned disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` as provenance for the current source exports; do not silently reinterpret or “repair” source comments.
 - Before any ROM write is supported, require a verified source/offset mapping, deterministic diff, explicit dry run, and an emulator or equivalent execution check.
-- Keep local-ROM checks explicitly marked as unverified until performed against a trusted local file.
+- A documented local ROM path is a setup convention, not evidence that a file exists or is a clean/canonical dump. Keep local-ROM checks explicitly marked as unverified until performed against a trusted local file.
 - Update this roadmap and the relevant subsystem docs in the same change that alters implementation or changes the verified status of a task.
 
 ## Immediate next work
 
-1. Use a locally supplied clean US ROM and source consumers to resolve the known source annotation issues without changing the source export facts.
+1. Obtain access to a locally supplied, authorized clean US ROM and complete the Phase 0 provenance/header/tool checks. The documented path is not evidence of file presence or validity; keep these gates open until the checks are actually run.
 2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
 3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
