@@ -38,7 +38,8 @@ A current project has three tables:
 - `schema_version`: schema version history. A fresh v2 project records the
   baseline v1 and current v2 versions.
 - `source_asset`: named source-export snapshots with format/version,
-  source filename/revision, import timestamp, canonical JSON, and SHA-256.
+  source filename(s)/revision, import timestamp, canonical JSON, and SHA-256.
+  Multi-source exports use a sorted, semicolon-delimited source-file value.
 
 The `source_asset` table stores only validated source-derived JSON metadata
 exports, such as pointer or scalar-data table descriptions. It does not store
