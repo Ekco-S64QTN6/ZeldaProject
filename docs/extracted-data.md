@@ -714,6 +714,33 @@ names, or establish which handlers are stocked in particular rooms. See
 [export schema](./schemas/shop-item-handlers-export.schema.json), and the
 [audit schema](./schemas/shop-item-handlers-audit.schema.json).
 
+## Potion-shop transactions
+
+The registered [`potion-shop-transactions`](../data/extracted/potion-shop-transactions.json)
+export contains the green, blue, and red potion handlers from pinned
+`Sprites/sprite_potion_shop.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. Their source rupee-balance
+comparison and deduction literals are `$003C` (60), `$00A0` (160), and
+`$0078` (120). All three blocks call `Sprite_GetEmptyBottleIndex` and pass
+receipt selectors `$2F`, `$30`, and `$2E` to `Link_ReceiveItem`.
+
+Inspect and audit these source transactions:
+
+```bash
+uv run zelda-suite inspect-potion-shop-transactions reference/AsarUSALTTPDisassembly/Sprites/sprite_potion_shop.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --entry-count 3 --output /tmp/potion-shop-transactions.json
+uv run zelda-suite validate-source-export /tmp/potion-shop-transactions.json
+diff -u data/extracted/potion-shop-transactions.json /tmp/potion-shop-transactions.json
+uv run zelda-suite audit-potion-shop-transactions
+```
+
+The audit joins each selector to its raw receive-item slot and the graphics-index
+comment at that dense table position. This preserves the source labels
+`POTION REFILL (GREEN)`, `POTION REFILL (BLUE)`, and `POTION REFILL (RED)`
+as annotations only. It does not establish canonical semantic item IDs, verify
+price behavior at runtime, verify source range annotations against a ROM, or
+describe room-specific potion stock. See the [item/chest guide](./schemas/items.md)
+and the [transaction audit schema](./schemas/potion-shop-transactions-audit.schema.json).
+
 ## Receive-item graphics comment annotations
 
 The source-only `audit-item-receipt-annotations` report compares the dense

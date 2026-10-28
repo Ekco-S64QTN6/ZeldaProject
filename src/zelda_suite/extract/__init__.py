@@ -6,6 +6,7 @@ from zelda_suite.extract.asset_loader import (
     ITEM_RECEIPT_LAYOUT_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     MUSIC_TRACK_INDEX_FORMAT,
+    POTION_SHOP_TRANSACTIONS_FORMAT,
     SHOP_ITEM_HANDLERS_FORMAT,
     SPRITE_DISPATCH_FORMAT,
     SPRITE_PREP_DISPATCH_FORMAT,
@@ -107,6 +108,17 @@ from zelda_suite.extract.overworld_payload_pairs import (
     OverworldPayloadPairError,
     validate_overworld_payload_pairs,
 )
+from zelda_suite.extract.potion_shop_transactions import (
+    PotionShopTransactionEntry,
+    PotionShopTransactionsParseError,
+    PotionShopTransactionsTable,
+    parse_potion_shop_transactions,
+)
+from zelda_suite.extract.potion_shop_transactions_audit import (
+    POTION_SHOP_TRANSACTIONS_AUDIT_FORMAT,
+    PotionShopTransactionsAuditError,
+    audit_potion_shop_transactions,
+)
 from zelda_suite.extract.rom_image import (
     ROMImageInspection,
     ROMImageInspectionError,
@@ -202,6 +214,8 @@ __all__ = [
     "PINNED_SOURCE_REVISION",
     "PINNED_TEXT_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
+    "POTION_SHOP_TRANSACTIONS_AUDIT_FORMAT",
+    "POTION_SHOP_TRANSACTIONS_FORMAT",
     "ROM_TABLE_VERIFICATION_FORMAT",
     "SHOP_ITEM_HANDLERS_AUDIT_FORMAT",
     "SHOP_ITEM_HANDLERS_FORMAT",
@@ -244,6 +258,10 @@ __all__ = [
     "OverworldHiddenItemVerificationError",
     "OverworldPayloadPairError",
     "PointerTableEntry",
+    "PotionShopTransactionEntry",
+    "PotionShopTransactionsAuditError",
+    "PotionShopTransactionsParseError",
+    "PotionShopTransactionsTable",
     "ROMImageInspection",
     "ROMImageInspectionError",
     "ROMTableVerificationError",
@@ -273,6 +291,7 @@ __all__ = [
     "audit_item_receipt_annotations",
     "audit_music_assets",
     "audit_oam_allocation",
+    "audit_potion_shop_transactions",
     "audit_shop_item_handlers",
     "audit_sprite_prep_dispatch",
     "audit_text_dictionary_assets",
@@ -295,6 +314,7 @@ __all__ = [
     "parse_mixed_data_table",
     "parse_music_track_index",
     "parse_overworld_hidden_item_source",
+    "parse_potion_shop_transactions",
     "parse_shop_item_handlers",
     "parse_source_pointer_table",
     "parse_sprite_dispatch_table",

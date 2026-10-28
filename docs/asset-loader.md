@@ -47,7 +47,7 @@ entry provides a stable name, relative JSON filename, supported export format,
 pinned source revision, record count, subsystem, and short description. The
 JSON shape is defined in
 [asset-registry.schema.json](./schemas/asset-registry.schema.json). The current
-registry has 37 named exports across item lookup/receive tables, text, sprite
+registry has 38 named exports across item lookup/receive tables, text, sprite
 dispatch, OAM allocator inventories, music, overworld, and dungeon source inventories.
 The 243-entry SpritePrep table uses a strict source-export validator; its inline
 table offset remains unset because the source only annotates the containing routine range. The
@@ -71,8 +71,8 @@ working with a temporary export that is not registered. It validates pointer
 tables, incbin inventories, scalar data tables, joined receive-item layouts,
 dictionary fragment inventories, text message indexes, sprite dispatch tables,
 music-track indexes, packed dungeon chest data, item-receipt annotation audits,
-shop-item handler catalogs, and mixed-width source tables before returning the
-parsed payload.
+shop-item handler catalogs, potion-shop transaction catalogs, and mixed-width
+source tables before returning the parsed payload.
 
 ```python
 from zelda_suite.extract import load_source_export

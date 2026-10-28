@@ -14,6 +14,7 @@ POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
 SHOP_ITEM_HANDLERS_FORMAT = "zelda-suite-shop-item-handlers"
+POTION_SHOP_TRANSACTIONS_FORMAT = "zelda-suite-potion-shop-transactions"
 DUNGEON_CHEST_DATA_FORMAT = "zelda-suite-dungeon-chest-data"
 MIXED_DATA_TABLE_FORMAT = "zelda-suite-mixed-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
@@ -186,6 +187,52 @@ _SHOP_ITEM_DISPATCH_COMMENT_RE = re.compile(
     r"0x(?P<selector>[0-9A-Fa-f]{2})\s*-\s*"
     r"(?P<address>\$[0-9A-Fa-f]{4})(?:\s+(?P<description>.*))?\Z"
 )
+
+
+_POTION_SHOP_TRANSACTIONS_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "entry_count",
+    "entries",
+    "evidence",
+}
+_POTION_SHOP_TRANSACTION_ENTRY_KEYS = {
+    "table_index",
+    "handler_label",
+    "source_handler_range_annotation",
+    "source_handler_label_line",
+    "rupee_balance_address_expression",
+    "price_compare_expression",
+    "price_compare_source_line",
+    "price_deduction_expression",
+    "price_deduction_source_line",
+    "price_value",
+    "receipt_index_expression",
+    "receipt_item_index",
+    "receipt_selector_source_line",
+    "receipt_call_source_line",
+    "empty_bottle_check_source_line",
+    "source_revision",
+}
+_POTION_SHOP_TRANSACTIONS_EVIDENCE_KEYS = {
+    "source_only",
+    "rom_bytes_read",
+    "price_behavior_runtime_verified",
+    "source_range_annotations_verified",
+    "receipt_item_names_resolved",
+    "room_specific_shop_stock_resolved",
+    "canonical_item_ids_resolved",
+}
+_POTION_SHOP_RANGE_RE = re.compile(
+    r"\$(?P<start>[0-9A-Fa-f]+)-\$(?P<end>[0-9A-Fa-f]+)"
+    r"(?:\s+LOCAL)?\s+JUMP LOCATION\Z",
+    re.IGNORECASE,
+)
+_POTION_SHOP_WORD_RE = re.compile(r"\$[0-9A-Fa-f]{4}\Z")
+_POTION_SHOP_BYTE_RE = re.compile(r"\$[0-9A-Fa-f]{2}\Z")
+_POTION_SHOP_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
 
 
 _MIXED_DATA_TABLE_TOP_KEYS = {
@@ -803,6 +850,149 @@ def _validate_shop_item_handlers_export(payload: dict[str, Any]) -> None:
         "price_behavior_runtime_verified",
         "receipt_item_names_resolved",
         "room_specific_shop_stock_resolved",
+    ):
+        if _boolean(evidence[field], f"evidence.{field}") is not False:
+            raise AssetLoadError(f"evidence.{field} must be false")
+
+
+
+def _validate_potion_shop_transactions_export(payload: dict[str, Any]) -> None:
+    _exact_keys(
+        payload,
+        _POTION_SHOP_TRANSACTIONS_TOP_KEYS,
+        "potion-shop transactions export",
+    )
+    if payload["format"] != POTION_SHOP_TRANSACTIONS_FORMAT:
+        raise AssetLoadError("potion-shop transactions has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported potion-shop transactions format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    if _string(payload["source_file"], "source_file") != "sprite_potion_shop.asm":
+        raise AssetLoadError(
+            "potion-shop transactions source_file must be 'sprite_potion_shop.asm'"
+        )
+    revision = _string(payload["source_revision"], "source_revision")
+    count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    if count != 3:
+        raise AssetLoadError("potion-shop transactions entry_count must be 3")
+    entries = payload["entries"]
+    if not isinstance(entries, list) or len(entries) != count:
+        raise AssetLoadError("entry_count does not match potion-shop transactions entries")
+
+    expected_handlers = (
+        "Sprite_GreenPotionItem",
+        "Sprite_BluePotionItem",
+        "Sprite_RedPotionItem",
+    )
+    expected_receipt_indexes = (0x2F, 0x30, 0x2E)
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _POTION_SHOP_TRANSACTION_ENTRY_KEYS, context)
+        index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
+        if index != expected_index:
+            raise AssetLoadError(f"{context}.table_index must be {expected_index}")
+        handler = _identifier(entry["handler_label"], f"{context}.handler_label")
+        if handler != expected_handlers[expected_index]:
+            raise AssetLoadError(
+                f"{context}.handler_label must be {expected_handlers[expected_index]!r}"
+            )
+
+        range_annotation = _string(
+            entry["source_handler_range_annotation"],
+            f"{context}.source_handler_range_annotation",
+        )
+        if _POTION_SHOP_RANGE_RE.fullmatch(range_annotation) is None:
+            raise AssetLoadError(
+                f"{context}.source_handler_range_annotation is malformed"
+            )
+        for field in (
+            "source_handler_label_line",
+            "price_compare_source_line",
+            "price_deduction_source_line",
+            "receipt_selector_source_line",
+            "receipt_call_source_line",
+            "empty_bottle_check_source_line",
+        ):
+            _integer(entry[field], f"{context}.{field}", minimum=1)
+
+        balance_address = _string(
+            entry["rupee_balance_address_expression"],
+            f"{context}.rupee_balance_address_expression",
+        )
+        if _POTION_SHOP_ADDRESS_RE.fullmatch(balance_address) is None:
+            raise AssetLoadError(
+                f"{context}.rupee_balance_address_expression must be a six-digit address"
+            )
+        if balance_address.upper() != "$7EF360":
+            raise AssetLoadError(
+                f"{context}.rupee_balance_address_expression must preserve $7EF360"
+            )
+
+        compare_expression = _string(
+            entry["price_compare_expression"], f"{context}.price_compare_expression"
+        )
+        deduction_expression = _string(
+            entry["price_deduction_expression"], f"{context}.price_deduction_expression"
+        )
+        if (
+            _POTION_SHOP_WORD_RE.fullmatch(compare_expression) is None
+            or _POTION_SHOP_WORD_RE.fullmatch(deduction_expression) is None
+        ):
+            raise AssetLoadError(
+                f"{context} price compare/deduction expressions must be four-digit hex words"
+            )
+        if compare_expression.upper() != deduction_expression.upper():
+            raise AssetLoadError(
+                f"{context} price compare literal does not match deduction literal"
+            )
+        price = _integer(entry["price_value"], f"{context}.price_value", minimum=1)
+        if price != int(compare_expression[1:], 16):
+            raise AssetLoadError(f"{context}.price_value does not match price expression")
+        if price > 0xFFFF:
+            raise AssetLoadError(f"{context}.price_value must fit in 16 bits")
+
+        receipt_expression = _string(
+            entry["receipt_index_expression"], f"{context}.receipt_index_expression"
+        )
+        if _POTION_SHOP_BYTE_RE.fullmatch(receipt_expression) is None:
+            raise AssetLoadError(
+                f"{context}.receipt_index_expression must be a two-digit hex byte"
+            )
+        receipt_index = _integer(
+            entry["receipt_item_index"], f"{context}.receipt_item_index", minimum=0
+        )
+        if receipt_index != int(receipt_expression[1:], 16):
+            raise AssetLoadError(
+                f"{context}.receipt_item_index does not match receipt_index_expression"
+            )
+        if receipt_index != expected_receipt_indexes[expected_index]:
+            raise AssetLoadError(
+                f"{context}.receipt_item_index must be {expected_receipt_indexes[expected_index]:#04x}"
+            )
+        if _string(entry["source_revision"], f"{context}.source_revision") != revision:
+            raise AssetLoadError(
+                f"{context}.source_revision does not match top-level source_revision"
+            )
+
+    evidence = _object(payload["evidence"], "evidence")
+    _exact_keys(
+        evidence,
+        _POTION_SHOP_TRANSACTIONS_EVIDENCE_KEYS,
+        "potion-shop transactions evidence",
+    )
+    if _boolean(evidence["source_only"], "evidence.source_only") is not True:
+        raise AssetLoadError("evidence.source_only must be true")
+    for field in (
+        "rom_bytes_read",
+        "price_behavior_runtime_verified",
+        "source_range_annotations_verified",
+        "receipt_item_names_resolved",
+        "room_specific_shop_stock_resolved",
+        "canonical_item_ids_resolved",
     ):
         if _boolean(evidence[field], f"evidence.{field}") is not False:
             raise AssetLoadError(f"evidence.{field} must be false")
@@ -1959,6 +2149,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_dungeon_chest_data_export(export)
     elif format_name == SHOP_ITEM_HANDLERS_FORMAT:
         _validate_shop_item_handlers_export(export)
+    elif format_name == POTION_SHOP_TRANSACTIONS_FORMAT:
+        _validate_potion_shop_transactions_export(export)
     elif format_name == MIXED_DATA_TABLE_FORMAT:
         _validate_mixed_data_table_export(export)
     elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
@@ -1998,6 +2190,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     DATA_TABLE_FORMAT,
     DUNGEON_CHEST_DATA_FORMAT,
     SHOP_ITEM_HANDLERS_FORMAT,
+    POTION_SHOP_TRANSACTIONS_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
@@ -2127,6 +2320,7 @@ def load_extracted_asset(
         DATA_TABLE_FORMAT: "entry_count",
         DUNGEON_CHEST_DATA_FORMAT: "entry_count",
         SHOP_ITEM_HANDLERS_FORMAT: "entry_count",
+        POTION_SHOP_TRANSACTIONS_FORMAT: "entry_count",
         MIXED_DATA_TABLE_FORMAT: "record_count",
         ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",
