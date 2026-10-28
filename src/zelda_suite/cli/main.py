@@ -1149,14 +1149,14 @@ def inspect_overworld_hidden_items_command(output: Path | None) -> None:
         indent=2,
         sort_keys=True,
         allow_nan=False,
-    ) + "\\n"
+    ) + "\n"
 
     if output is None:
         click.echo(rendered, nl=False)
         return
 
     try:
-        with output.open("x", encoding="utf-8", newline="\\n") as output_file:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
             output_file.write(rendered)
     except FileExistsError as exc:
         raise click.ClickException(
