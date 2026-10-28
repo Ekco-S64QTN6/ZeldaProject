@@ -205,6 +205,6 @@ __all__ = [
     "validate_source_export",
     "verify_dungeon_room_pointers",
     "verify_overworld_hidden_items",
-    "verify_text_dictionary_pointers",
     "verify_registered_scalar_tables",
+    "verify_text_dictionary_pointers",
 ]
