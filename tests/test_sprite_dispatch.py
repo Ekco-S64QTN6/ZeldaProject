@@ -142,6 +142,47 @@ def test_cli_emits_valid_sprite_dispatch_json(tmp_path: Path) -> None:
     assert registered["entry_count"] == 68
 
 
+def test_committed_dispatch_export_has_pinned_source_metadata_baseline() -> None:
+    """Check the checked-in dispatch export even when the source submodule is absent."""
+    payload = load_source_export(EXPORT_PATH)
+    entries = payload["entries"]
+
+    assert payload["source_file"] == "Bank1E.asm"
+    assert payload["source_revision"] == PINNED_REVISION
+    assert payload["table_label"] == "SpriteActive3_Table"
+    assert payload["table_file_offset"] == 0x0F0B33
+    assert payload["table_end_offset"] == 0x0F0BBA
+    assert payload["table_size_bytes"] == 0x88
+    assert payload["entry_width_bytes"] == 2
+    assert payload["entry_count"] == 68
+    assert payload["sprite_type_id_start"] == 0x79
+    assert payload["sprite_type_id_end"] == 0xBC
+    assert [entry["table_index"] for entry in entries] == list(range(68))
+    assert [entry["sprite_type_id"] for entry in entries] == list(range(0x79, 0xBD))
+    assert [
+        entry["pointer_entry_file_offset"] for entry in entries
+    ] == [0x0F0B33 + index * 2 for index in range(68)]
+    assert all(
+        entry["source_comment_sprite_type_id"] == entry["sprite_type_id"]
+        for entry in entries
+    )
+    assert all(entry["source_revision"] == PINNED_REVISION for entry in entries)
+
+    handlers: dict[str, list[int]] = {}
+    for entry in entries:
+        handlers.setdefault(entry["handler_label"], []).append(entry["sprite_type_id"])
+    aliases = {label: ids for label, ids in handlers.items() if len(ids) > 1}
+    assert aliases == {
+        "Sprite_GuruguruBar": [0x7E, 0x7F],
+        "Sprite_Eyegore": [0x83, 0x84],
+        "Sprite_LaserEye": [0x95, 0x96, 0x97, 0x98],
+        "Sprite_Zazak": [0xA5, 0xA6],
+        "Sprite_Bomber": [0xA8, 0xA9],
+        "Sprite_Pipe": [0xAE, 0xAF, 0xB0, 0xB1],
+    }
+    assert len(handlers) == 58
+
+
 @pytest.mark.skipif(
     not SOURCE_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",

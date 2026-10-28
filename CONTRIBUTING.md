@@ -140,3 +140,6 @@ For text-message index changes, also run `uv run zelda-suite audit-text-message-
 
 
 For music source-index or payload-inventory changes, also run `uv run zelda-suite audit-music-assets`. Review unmatched target labels, unreferenced declarations, and missing size annotations; do not infer payload availability or semantic audio meaning from source labels alone.
+
+
+The committed sprite dispatch export has a source-independent baseline test. If its IDs, offsets, or handler alias groups change, review the raw export diff and update the baseline with the same source revision; handler addresses in comments are not ROM-verified pointers.
