@@ -56,6 +56,7 @@ jobs:
           tests/test_music_track_index.py
           tests/test_music_payload_inventory.py
           tests/test_extracted_dungeon_room_pointers.py
+          tests/test_extracted_dungeon_room_payloads.py
           tests/test_extracted_overworld_hidden_items.py
           tests/test_overworld_payload_inventories.py
           tests/test_overworld_payload_pairs.py

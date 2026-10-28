@@ -98,3 +98,20 @@ uv run zelda-suite inspect-pointer-table \
 See [disassembly source-table inspection](../disassembly-parser.md) for the
 output contract and parser limitations. The resulting table should be reviewed
 against a local ROM before any source record is treated as a resolved pointer.
+
+
+## Bank0A room payload declarations
+
+In addition to the pointer table, the committed
+[`dungeon-room-payload-inventory`](../../data/extracted/dungeon-room-payload-inventory.json)
+records 75 source-labelled `incbin` declarations from `Bank0A.asm`. This covers
+one room-data source region, and retains `RoomDataTiles_*` labels, include
+paths, source lines, size comments, and source-commented start offsets.
+
+The source file does not annotate inclusive end offsets for these declarations.
+The inventory keeps `source_file_offset_end=null` and
+`source_range_size_matches=null`; `computed_file_offset_end` is explicitly
+derived from the start offset and size comment. Those computed ends are not
+verified ROM locations. The source tree does not include `bin/rooms/*.bin`,
+and the 75 declarations must not be interpreted as the complete room set or
+as proof that all 320 table entries have distinct payload files.

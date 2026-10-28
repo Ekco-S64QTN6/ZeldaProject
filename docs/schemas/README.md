@@ -19,7 +19,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-two named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-three named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
@@ -34,6 +34,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/music-payload-inventory.json`](../../data/extracted/music-payload-inventory.json) — 15 song payload `incbin` declarations with source ranges and size diagnostics.
 - [`data/extracted/overworld-hidden-item-pointers.json`](../../data/extracted/overworld-hidden-item-pointers.json) — 128 area-to-hidden-item-list pointers; record boundaries remain unresolved.
 - [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) — 320 source-indexed 24-bit dungeon room object pointer expressions; target addresses remain unresolved.
+- [`data/extracted/dungeon-room-payload-inventory.json`](../../data/extracted/dungeon-room-payload-inventory.json) — 75 Bank0A room `incbin` declarations with start-offset and size annotations.
 - [`data/extracted/overworld-payloads-bank0b.json`](../../data/extracted/overworld-payloads-bank0b.json) — 164 Bank0B high/low `incbin` declarations with offset/size diagnostics.
 - [`data/extracted/overworld-payloads-bank0c.json`](../../data/extracted/overworld-payloads-bank0c.json) — 84 Bank0C high/low `incbin` declarations with offset/size diagnostics.
 - [`data/extracted/item-receipt-target-addresses.json`](../../data/extracted/item-receipt-target-addresses.json) — 76 raw two-byte WRAM target addresses.
