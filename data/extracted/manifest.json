@@ -172,6 +172,15 @@
       "subsystem": "items"
     },
     {
+      "description": "Eight raw palette-selector bytes used by the Mad Batter pseudo-attack routine; selector metadata only, not decoded color palette data or ROM-verified bytes.",
+      "file": "mad-batter-pseudo-attack-palettes.json",
+      "format": "zelda-suite-data-table",
+      "name": "mad-batter-pseudo-attack-palettes",
+      "record_count": 8,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
       "description": "Fifteen source-labeled music incbin declarations with annotated file ranges and size diagnostics.",
       "file": "music-payload-inventory.json",
       "format": "zelda-suite-incbin-inventory",

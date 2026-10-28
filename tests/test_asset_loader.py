@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 28
+    assert len(assets) == 29
     assert names == {
         "falling-prize-item-values",
         "falling-prize-fall-heights",
@@ -327,6 +327,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "text-dictionary-fragments",
         "text-message-index",
         "sprite-active3-dispatch",
+        "mad-batter-pseudo-attack-palettes",
         "music-track-index",
         "music-payload-inventory",
         "overworld-hidden-item-pointers",
@@ -357,6 +358,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["text-dictionary-fragments"]["fragment_count"] == 98
     assert loaded["text-message-index"]["message_count"] == 397
     assert loaded["sprite-active3-dispatch"]["entry_count"] == 68
+    assert loaded["mad-batter-pseudo-attack-palettes"]["entry_count"] == 8
     assert loaded["music-track-index"]["entry_count"] == 35
     assert loaded["music-payload-inventory"]["declaration_count"] == 15
     assert loaded["overworld-hidden-item-pointers"]["entry_count"] == 128

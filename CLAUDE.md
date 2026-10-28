@@ -226,7 +226,7 @@ When changing the registered text-message index, run `zelda-suite audit-text-mes
 
 When changing registered music data, run `zelda-suite audit-music-assets`. It joins only the symbolic pointer index and the source `incbin` inventory, preserving the unmatched `Song0B_FairyTheme` target and the three missing size annotations without claiming anything about ROM payload availability.
 
-The committed `sprite-active3-dispatch` export is checked independently of the disassembly submodule; preserve its 68-entry `$79–$BC` range, contiguous source offsets, and six explicit handler alias groups in tests. Do not promote source handler-address comments into verified ROM targets.
+The committed `sprite-active3-dispatch` export is checked independently of the disassembly submodule; preserve its 68-entry `$79–$BC` range, contiguous source offsets, and six explicit handler alias groups in tests. Do not promote source handler-address comments into verified ROM targets. The separate `mad-batter-pseudo-attack-palettes` export preserves eight selector bytes from `Sprites/sprite_mad_batter.asm` at source-commented `$02FB86–$02FB8D`; run `tests/test_extracted_mad_batter_palette_table.py` for pinned-source parity. It is not a decoded color-palette asset or ROM verification.
 
 For `overworld-hidden-item-pointers`, preserve the full source-label set and repeated-target distribution pinned by `tests/test_overworld_hidden_item_pointer_baseline.py`. That test covers committed JSON independently of the disassembly submodule and must not be described as ROM target verification.
 

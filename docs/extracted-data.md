@@ -207,6 +207,39 @@ invalid source export payloads. See the
 [named asset loader guide](./asset-loader.md) and
 [registry schema](./schemas/asset-registry.schema.json).
 
+## Mad Batter pseudo-attack palette selector
+
+`data/extracted/mad-batter-pseudo-attack-palettes.json` preserves the eight
+`db` bytes under `MadBatter_PseudoAttackPlayer_palettes` in the pinned
+`Sprites/sprite_mad_batter.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The source comment marks the
+range `$02FB86–$02FB8D`.
+
+The `MadBatter_PseudoAttackPlayer` routine forms a three-bit table index
+(`LSR`, then `AND #$07`) and combines the selected byte with the sprite
+properties at `$0F50,X`. This export records those selector bytes only; it
+does **not** contain decoded RGB/color-palette entries. The source-annotated
+offset has not been independently verified against a local ROM.
+
+Regenerate the source table with the pinned revision:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_mad_batter.asm \
+  MadBatter_PseudoAttackPlayer_palettes \
+  --table-offset '$02FB86' \
+  --directive db \
+  --entry-count 8 \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/mad-batter-pseudo-attack-palettes.json
+uv run zelda-suite validate-source-export /tmp/mad-batter-pseudo-attack-palettes.json
+diff -u data/extracted/mad-batter-pseudo-attack-palettes.json /tmp/mad-batter-pseudo-attack-palettes.json
+```
+
+CI compares the committed records against the pinned source parser and checks
+the eight literal values and sequential offsets. This is source-parity evidence,
+not a local-ROM check or a complete sprite/color-palette extraction.
+
 ## SpriteActive3 handler dispatch
 
 `data/extracted/sprite-active3-dispatch.json` indexes the 68 `dw` entries in

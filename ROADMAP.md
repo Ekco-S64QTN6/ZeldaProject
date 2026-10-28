@@ -25,16 +25,17 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers. CI also pins the committed 68-entry `SpriteActive3_Table` export when the disassembly submodule is absent, including contiguous `$79–$BC` slots and its six handler alias groups; handler address comments remain source annotations.
 - [x] Fail closed when a requested pointer-table label appears more than once in the source; the parser reports every matching source line rather than silently selecting the first matching block.
+- [x] Export the eight-entry `MadBatter_PseudoAttackPlayer_palettes` selector table from pinned `Sprites/sprite_mad_batter.asm`; its source-parity test preserves literal selector bytes and the source-commented `$02FB86–$02FB8D` range without claiming color-palette decoding or ROM verification.
 - [x] Preserve source inline comments through opt-in `inspect-data-table --include-comments` format v2; the default version-1 export remains backward-compatible and comments are validated as inert strings only.
 - [x] Cross-reference the 35-slot music pointer index against the 15 declared payload labels: all 15 payload labels appear in the pointer target set, plus the distinct `Song0B_FairyTheme` target, which has no matching entry in the current `incbin` inventory. The `zelda-suite audit-music-assets` API/CLI now reports that unmatched label and the three auxiliary declarations without size annotations; these remain source metadata findings, not ROM-level payload absence or pointer resolution.
-- [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count. A registry-wide regression test also requires all 28 committed exports to use canonical sorted JSON, unchanged array ordering, strict JSON values, and a final newline.
+- [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count. A registry-wide regression test also requires all 29 committed exports to use canonical sorted JSON, unchanged array ordering, strict JSON values, and a final newline.
 - [x] Commit the source-only 320-entry dungeon room pointer table with pinned-source parser-parity coverage; do not treat its count as the number of playable rooms or as resolved ROM targets.
 - [x] Commit the companion 320-entry `RoomData_DoorDataPointers` export at source-commented offset `$0F83C0`; preserve its numeric addends and pin all target labels against the matching `RoomData_ObjectDataPointers` slots. Addend meaning and local-ROM verification remain open.
 - [x] Cross-reference the 320 dungeon pointer slots with all three payload inventories and pinned Bank03/Bank0A/Bank1F source labels: the inventories cover all 266 definitions, all 263 distinct pointer target labels are included, and exactly three definitions are not referenced by the table. This remains source-symbol verification, not ROM pointer resolution. Add the source-only `zelda-suite audit-dungeon-room-assets` command and CI baseline so the committed JSON relationships are checked without the disassembly submodule.
 - [x] Commit source-only room payload `incbin` inventories across Bank03 (34 declarations), Bank0A (75), and Bank1F (157), with pinned-source parser-parity tests for all 266 labelled declarations. The source files provide start-offset and size annotations but no explicit end offsets; computed ends remain unverified.
 - [x] Import source exports into project SQLite databases by explicit file path or validated registry name; manifest imports recheck registered format, source revision, and record count before storage. Integration tests round-trip every registered asset through SQLite and the canonical project JSON export.
 - [x] Persist validated source-export snapshots in project SQLite databases with explicit v1-to-v2 migration, duplicate-key protection, source provenance, canonical JSON, and SHA-256 integrity checks. This is source metadata persistence, not a semantic game-data schema.
-- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 28 assets covering:
+- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 29 assets covering:
   - Five seven-entry falling-prize parallel arrays. Pinned-source tests verify
     their shared indexes, and `AddPendantOrCrystal` reads the same selector
     index from each. A local check run reported on 2026-10-28 matched all five
@@ -57,6 +58,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.
+  - Eight `MadBatter_PseudoAttackPlayer_palettes` selector bytes at `$02FB86–$02FB8D`; these are source-derived selector values used by a three-bit lookup index, not decoded color-palette values.
   - 35 music-track pointer expressions and 15 music payload declarations.
   - 128 overworld hidden-item pointer expressions. The pinned source parser
     accounts for 351 three-byte entries plus 67 two-byte sentinels and derives
