@@ -20,7 +20,7 @@ from zelda_suite.extract.rom_image import (
 
 ROM_TABLE_VERIFICATION_FORMAT = "zelda-suite-rom-table-verification"
 DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
-_SIGNED_DECIMAL_RE = re.compile(r"-[0-9]+\\Z")
+_SIGNED_DECIMAL_RE = re.compile(r"-[0-9]+\Z")
 
 
 class ROMTableVerificationError(ValueError):
