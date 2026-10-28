@@ -1,0 +1,1292 @@
+{
+  "entries": [
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901881,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_00",
+      "source_line": 1870,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_00"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901883,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_00",
+      "source_line": 1871,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_00"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901885,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_02",
+      "source_line": 1872,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_02"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901887,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_03",
+      "source_line": 1873,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_03"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901889,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_03",
+      "source_line": 1874,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_03"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901891,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_05",
+      "source_line": 1875,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_05"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901893,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_05",
+      "source_line": 1876,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_05"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901895,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_07",
+      "source_line": 1877,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_07"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901897,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_00",
+      "source_line": 1878,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_00"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901899,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_00",
+      "source_line": 1879,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 9,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_00"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901901,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_0A",
+      "source_line": 1880,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 10,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_0A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901903,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_03",
+      "source_line": 1881,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 11,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_03"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901905,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_03",
+      "source_line": 1882,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 12,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_03"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901907,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_05",
+      "source_line": 1883,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 13,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_05"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901909,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_05",
+      "source_line": 1884,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 14,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_05"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901911,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_0F",
+      "source_line": 1885,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 15,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_0F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901913,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_10",
+      "source_line": 1886,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 16,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_10"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901915,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_11",
+      "source_line": 1887,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 17,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_11"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901917,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_12",
+      "source_line": 1888,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 18,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_12"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901919,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_13",
+      "source_line": 1889,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 19,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_13"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901921,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_14",
+      "source_line": 1890,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 20,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_14"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901923,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_15",
+      "source_line": 1891,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 21,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_15"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901925,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_16",
+      "source_line": 1892,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 22,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_16"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901927,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_17",
+      "source_line": 1893,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 23,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_17"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901929,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_18",
+      "source_line": 1894,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 24,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_18"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901931,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_18",
+      "source_line": 1895,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 25,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_18"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901933,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1A",
+      "source_line": 1896,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 26,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901935,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1B",
+      "source_line": 1897,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 27,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901937,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1B",
+      "source_line": 1898,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 28,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901939,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1D",
+      "source_line": 1899,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 29,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901941,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1E",
+      "source_line": 1900,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 30,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901943,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1E",
+      "source_line": 1901,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 31,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901945,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_18",
+      "source_line": 1902,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 32,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_18"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901947,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_18",
+      "source_line": 1903,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 33,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_18"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901949,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_22",
+      "source_line": 1904,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 34,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_22"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901951,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1B",
+      "source_line": 1905,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 35,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901953,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1B",
+      "source_line": 1906,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 36,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901955,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_25",
+      "source_line": 1907,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 37,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_25"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901957,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1E",
+      "source_line": 1908,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 38,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901959,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_1E",
+      "source_line": 1909,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 39,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_1E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901961,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_28",
+      "source_line": 1910,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 40,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_28"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901963,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_29",
+      "source_line": 1911,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 41,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_29"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901965,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_2A",
+      "source_line": 1912,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 42,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_2A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901967,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_2B",
+      "source_line": 1913,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 43,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_2B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901969,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_2C",
+      "source_line": 1914,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 44,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_2C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901971,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_2D",
+      "source_line": 1915,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 45,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_2D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901973,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_2E",
+      "source_line": 1916,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 46,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_2E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901975,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_2F",
+      "source_line": 1917,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 47,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_2F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901977,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_30",
+      "source_line": 1918,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 48,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_30"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901979,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_30",
+      "source_line": 1919,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 49,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_30"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901981,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_32",
+      "source_line": 1920,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 50,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_32"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901983,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_33",
+      "source_line": 1921,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 51,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_33"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901985,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_34",
+      "source_line": 1922,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 52,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_34"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901987,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_35",
+      "source_line": 1923,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 53,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_35"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901989,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_35",
+      "source_line": 1924,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 54,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_35"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901991,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_37",
+      "source_line": 1925,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 55,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_37"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901993,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_30",
+      "source_line": 1926,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 56,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_30"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901995,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_30",
+      "source_line": 1927,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 57,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_30"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901997,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_3A",
+      "source_line": 1928,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 58,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_3A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 901999,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_3B",
+      "source_line": 1929,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 59,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_3B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902001,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_3C",
+      "source_line": 1930,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 60,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_3C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902003,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_35",
+      "source_line": 1931,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 61,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_35"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902005,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_35",
+      "source_line": 1932,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 62,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_35"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902007,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_3F",
+      "source_line": 1933,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 63,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_3F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902009,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_40",
+      "source_line": 1935,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 64,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_40"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902011,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_40",
+      "source_line": 1936,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 65,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_40"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902013,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_42",
+      "source_line": 1937,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 66,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_42"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902015,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_43",
+      "source_line": 1938,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 67,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_43"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902017,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_43",
+      "source_line": 1939,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 68,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_43"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902019,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_45",
+      "source_line": 1940,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 69,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_45"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902021,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_45",
+      "source_line": 1941,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 70,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_45"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902023,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_47",
+      "source_line": 1942,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 71,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_47"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902025,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_40",
+      "source_line": 1943,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 72,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_40"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902027,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_40",
+      "source_line": 1944,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 73,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_40"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902029,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_4A",
+      "source_line": 1945,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 74,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_4A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902031,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_43",
+      "source_line": 1946,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 75,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_43"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902033,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_43",
+      "source_line": 1947,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 76,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_43"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902035,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_45",
+      "source_line": 1948,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 77,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_45"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902037,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_45",
+      "source_line": 1949,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 78,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_45"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902039,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_4F",
+      "source_line": 1950,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 79,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_4F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902041,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_50",
+      "source_line": 1951,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 80,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_50"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902043,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_51",
+      "source_line": 1952,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 81,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_51"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902045,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_52",
+      "source_line": 1953,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 82,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_52"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902047,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_53",
+      "source_line": 1954,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 83,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_53"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902049,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_54",
+      "source_line": 1955,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 84,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_54"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902051,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_55",
+      "source_line": 1956,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 85,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_55"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902053,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_56",
+      "source_line": 1957,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 86,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_56"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902055,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_57",
+      "source_line": 1958,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 87,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_57"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902057,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_58",
+      "source_line": 1959,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 88,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_58"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902059,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_58",
+      "source_line": 1960,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 89,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_58"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902061,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5A",
+      "source_line": 1961,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 90,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902063,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5B",
+      "source_line": 1962,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 91,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902065,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5B",
+      "source_line": 1963,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 92,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902067,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5D",
+      "source_line": 1964,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 93,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902069,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5E",
+      "source_line": 1965,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 94,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902071,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5E",
+      "source_line": 1966,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 95,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902073,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_58",
+      "source_line": 1967,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 96,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_58"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902075,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_58",
+      "source_line": 1968,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 97,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_58"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902077,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_62",
+      "source_line": 1969,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 98,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_62"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902079,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5B",
+      "source_line": 1970,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 99,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902081,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5B",
+      "source_line": 1971,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 100,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902083,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_65",
+      "source_line": 1972,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 101,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_65"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902085,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5E",
+      "source_line": 1973,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 102,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902087,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_5E",
+      "source_line": 1974,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 103,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_5E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902089,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_68",
+      "source_line": 1975,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 104,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_68"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902091,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_69",
+      "source_line": 1976,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 105,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_69"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902093,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_6A",
+      "source_line": 1977,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 106,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_6A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902095,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_6B",
+      "source_line": 1978,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 107,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_6B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902097,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_6C",
+      "source_line": 1979,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 108,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_6C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902099,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_6D",
+      "source_line": 1980,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 109,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_6D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902101,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_6E",
+      "source_line": 1981,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 110,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_6E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902103,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_6F",
+      "source_line": 1982,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 111,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_6F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902105,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_70",
+      "source_line": 1983,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 112,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_70"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902107,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_70",
+      "source_line": 1984,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 113,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_70"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902109,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_72",
+      "source_line": 1985,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 114,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_72"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902111,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_73",
+      "source_line": 1986,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 115,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_73"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902113,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_74",
+      "source_line": 1987,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 116,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_74"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902115,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_75",
+      "source_line": 1988,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 117,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_75"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902117,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_75",
+      "source_line": 1989,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 118,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_75"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902119,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_77",
+      "source_line": 1990,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 119,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_77"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902121,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_70",
+      "source_line": 1991,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 120,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_70"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902123,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_70",
+      "source_line": 1992,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 121,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_70"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902125,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_7A",
+      "source_line": 1993,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 122,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_7A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902127,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_7B",
+      "source_line": 1994,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 123,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_7B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902129,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_7C",
+      "source_line": 1995,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 124,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_7C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902131,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_75",
+      "source_line": 1996,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 125,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_75"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902133,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_75",
+      "source_line": 1997,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 126,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_75"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 902135,
+      "pointer_expression": "OverworldData_HiddenItems_Screen_7F",
+      "source_line": 1998,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 127,
+      "target_addend": null,
+      "target_label": "OverworldData_HiddenItems_Screen_7F"
+    }
+  ],
+  "entry_count": 128,
+  "entry_width": 2,
+  "format": "zelda-suite-pointer-table",
+  "format_version": 1,
+  "source_file": "Bank1B.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 901881,
+  "table_label": "OverworldData_HiddenItems"
+}

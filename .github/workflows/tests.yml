@@ -52,5 +52,6 @@ jobs:
           tests/test_sprite_dispatch.py
           tests/test_music_track_index.py
           tests/test_music_payload_inventory.py
+          tests/test_extracted_overworld_hidden_items.py
       - name: Run tests
         run: python -m pytest -q

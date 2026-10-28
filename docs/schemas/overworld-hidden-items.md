@@ -105,3 +105,19 @@ uv run zelda-suite validate-source-export /tmp/hidden-item-pointers.json
 The parser's two-byte stride is checked against the pinned source table in CI.
 The output validates the source expressions and entry locations only; the
 pointed-to lists still require local-ROM verification before record extraction.
+
+
+## Committed source pointer inventory
+
+The version-1 metadata export at
+`data/extracted/overworld-hidden-item-pointers.json` records the 128
+`dw` expressions in this table at source offsets `$0DC2F9–$0DC3F8`. It is
+registered under the name `overworld-hidden-item-pointers` and can be loaded
+with `load_extracted_asset("overworld-hidden-item-pointers")`.
+
+CI compares the committed records with `parse_dw_pointer_table()` output from
+the pinned submodule. This validates table count, source expressions, source
+line numbers, and the two-byte source entry stride. It does not resolve target
+labels into file offsets or verify any of the pointed-to data against a local
+ROM. The two-byte unexplained tail in the documented hidden-item record range
+is still unresolved.
