@@ -121,12 +121,13 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 ├── src/zelda_suite/
 │   ├── cli/main.py
 │   ├── extract/                    ← read-only source/ROM inspection and export validation
-│   ├── project/store.py            ← SQLite project metadata + JSON export
+│   ├── project/store.py            ← SQLite project metadata + source-export snapshots
 │   └── diff/rom_diff.py            ← file-backed ROM byte diff
 ├── tests/                          ← parser, export, CLI, project, and diff regression tests
 └── docs/
     ├── api.md
     ├── project-format.md
+    ├── project-assets.md
     ├── extracted-data.md
     ├── asset-loader.md
     ├── incbin-inventory.md
@@ -184,7 +185,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 ## 10. Open Decisions and Local Verification Gates
 
-- [x] Project data format → **SQLite canonical + JSON export** (ADR 0001); the current SQLite schema still stores project metadata only.
+- [x] Project data format → **SQLite canonical + JSON export** (ADR 0001); schema v2 persists validated source-export snapshots with provenance and SHA-256. Editable game-system tables remain future work.
 - [x] Disassembly submodule configured and source exports use revision `347c23f9fc019c72d32da537c9cb235f468d021d`; source-only inventories have parser-parity tests.
 - [ ] Verify a trusted clean US ROM locally, including its header status and SHA-256. The ROM is user-supplied and intentionally absent from Git/CI.
 - [ ] Smoke-test YAZE/`z3ed` against that local ROM and record exactly which read operations succeed.
@@ -205,6 +206,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`docs/schemas/overworld.md`** — overworld source discovery and High/Low pair validator.
 - **`docs/extracted-data.md`** — committed source inventory catalog and reproduction commands.
 - **`docs/asset-loader.md`** and **`docs/incbin-inventory.md`** — source-export loader and inventory contracts.
+- **`docs/project-assets.md`** — importing, querying, and validating source-export snapshots in SQLite projects.
 - **`README.md`** — human-facing quickstart and capability summary.
 
 ---

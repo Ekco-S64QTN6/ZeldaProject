@@ -31,7 +31,14 @@ from zelda_suite.extract import (
     validate_overworld_payload_pairs,
     validate_source_export,
 )
-from zelda_suite.project import initialize_project, validate_project
+from zelda_suite.project import (
+    get_source_asset,
+    import_source_asset,
+    initialize_project,
+    list_source_assets,
+    migrate_project,
+    validate_project,
+)
 from zelda_suite.project.store import BASE_ROM_FILENAME
 
 US_ROM_FILENAME = BASE_ROM_FILENAME
@@ -997,6 +1004,94 @@ def validate_overworld_payload_pairs_command(inventories: tuple[Path, ...]) -> N
     )
 
 
+@cli.command(name="migrate-project")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--json",
+    "json_path",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="JSON export path (defaults to the database path with a .json suffix).",
+)
+def migrate_project_command(database: Path, json_path: Path | None) -> None:
+    """Migrate a project database to the current schema and refresh its JSON export."""
+    try:
+        migrated = migrate_project(database, json_path)
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    if migrated:
+        click.echo(f"Migrated project to schema v{2}: {database}")
+    else:
+        click.echo(f"Project already uses the current schema; refreshed export: {database}")
+
+
+@cli.command(name="import-source-asset")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("asset_key")
+@click.argument(
+    "source_export",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--replace",
+    "replace_existing",
+    is_flag=True,
+    help="Replace an existing asset with this key instead of refusing the duplicate.",
+)
+def import_source_asset_command(
+    database: Path,
+    asset_key: str,
+    source_export: Path,
+    replace_existing: bool,
+) -> None:
+    """Import a validated source-export JSON file into the SQLite project."""
+    try:
+        record = import_source_asset(
+            database, asset_key, source_export, replace_existing=replace_existing
+        )
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    summary = {key: value for key, value in record.items() if key != "payload"}
+    click.echo(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="list-source-assets")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+def list_source_assets_command(database: Path) -> None:
+    """List imported source asset metadata in a project database."""
+    try:
+        assets = list_source_assets(database)
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(assets, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="get-source-asset")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("asset_key")
+def get_source_asset_command(database: Path, asset_key: str) -> None:
+    """Print one imported, validated source asset and its provenance."""
+    try:
+        record = get_source_asset(database, asset_key)
+    except (KeyError, ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
+
+
 @cli.command(name="init")
 @click.argument("name")
 @click.option(
@@ -1015,7 +1110,10 @@ def init_project(name: str, workspace: Path) -> None:
 
     click.echo(f"Created SQLite project: {database_path}")
     click.echo(f"Created JSON export:    {json_path}")
-    click.echo("No ROM was read or copied. Game-system schemas will be added in Phase 1.")
+    click.echo(
+        "No ROM was read or copied. Validated source exports can be imported; "
+        "semantic game-system schemas and ROM writing remain future work."
+    )
 
 
 @cli.command(name="validate")
