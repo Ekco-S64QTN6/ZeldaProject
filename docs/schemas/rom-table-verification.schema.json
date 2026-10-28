@@ -69,6 +69,7 @@
         "failed_asset_count",
         "checked_entries",
         "skipped_entries",
+        "resolved_signed_decimal_entries",
         "mismatches"
       ],
       "properties": {
@@ -100,6 +101,10 @@
           "type": "integer",
           "minimum": 0
         },
+        "resolved_signed_decimal_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
         "mismatches": {
           "type": "integer",
           "minimum": 0
@@ -123,6 +128,7 @@
         "entry_count",
         "checked_entries",
         "skipped_entries",
+        "resolved_signed_decimal_entries",
         "mismatch_count",
         "status",
         "mismatches"
@@ -165,6 +171,10 @@
           "minimum": 0
         },
         "skipped_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resolved_signed_decimal_entries": {
           "type": "integer",
           "minimum": 0
         },
