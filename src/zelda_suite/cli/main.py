@@ -15,7 +15,6 @@ from zelda_suite.extract import (
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     MessageSourceBlock,
-    OverworldHiddenItemVerificationError,
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
