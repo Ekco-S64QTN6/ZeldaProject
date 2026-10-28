@@ -344,3 +344,34 @@ Both inventories are registered by name as `overworld-payloads-bank0b` and
 `overworld-payloads-bank0c`. CI compares the files to parsed pinned-source
 metadata and loads them through the named-asset registry. No editable tile or
 layer representation is claimed yet.
+
+## Receive-item source tables
+
+Three raw tables from `Pool_AddReceiveItem` in pinned
+`Ancilla/ancilla_init.asm` are now committed and registered:
+
+- `item-receipt-target-addresses.json`: 76 two-byte target addresses from
+  `$0484E8–$04857F`.
+- `item-receipt-values.json`: 76 one-byte values from `$048580–$0485CB`.
+- `item-receipt-dungeon-masks.json`: 14 two-byte masks from `$0485CC–$0485E7`.
+
+Each export is a version-1 `zelda-suite-data-table` containing table index,
+calculated file offset, source line, exact source expression, literal value
+when directly expressible, and pinned revision. These exports remain raw:
+the target-address table names WRAM destinations and is not a ROM pointer
+table, and values such as `$FF`, `$FB`, and `$EC` are preserved as byte
+patterns rather than converted to semantic item meanings.
+
+The wider receive-item data block also has X/Y offsets, graphics indices,
+wide-item flags, and properties. Those arrays remain documented discovery
+notes, not part of this PR. In particular, `.item_graphics_indices` comments
+skip source index `$40` while the data occupies 76 dense bytes. The new files
+do not claim to resolve that comment-index discrepancy or define a canonical
+item-ID schema.
+
+Regenerate the three tables using `zelda-suite inspect-data-table` with
+`Pool_AddReceiveItem` as the parent label and the corresponding label, offset,
+directive, and exclusive next label documented in
+[the receive-item discovery note](./schemas/item-receipt-metadata.md). The
+tables are then validated and compared with the committed JSON. No ROM bytes
+or binary slices are committed.

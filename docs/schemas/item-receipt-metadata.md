@@ -103,3 +103,26 @@ explained and tests pin the interpretation.
 
 This is a source-backed discovery note only. It does not read or modify ROM
 bytes and does not claim the item tables are editable yet.
+
+
+## Committed raw table assets
+
+The following three source-derived files are registered in
+`data/extracted/manifest.json` and can be loaded by name with the shared asset
+loader:
+
+- `item-receipt-target-addresses` — 76 two-byte values beginning at `$0484E8`.
+- `item-receipt-values` — 76 one-byte values beginning at `$048580`.
+- `item-receipt-dungeon-masks` — 14 two-byte masks beginning at `$0485CC`.
+
+They preserve the exact expressions and source positions from the pinned
+`Ancilla/ancilla_init.asm` and are checked against `parse_data_table()` output
+in CI. The first table records WRAM target addresses; they are not resolved ROM
+pointers. The second table retains raw byte patterns including `$FF`, `$FB`,
+and `$EC`; runtime handling such as skipping negative signed values is not
+normalized into editorial item meanings. The third table stores the raw mask
+words without inferring a full authoring API.
+
+The `.item_graphics_indices` table and its missing comment index `$40` are
+still an independent unresolved discovery issue; these three exports do not
+claim to settle that discrepancy or provide a complete item schema.
