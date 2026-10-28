@@ -27,10 +27,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
 - [x] Commit the source-only 320-entry dungeon room pointer table with pinned-source parser-parity coverage; do not treat its count as the number of playable rooms or as resolved ROM targets.
 - [x] Cross-reference the 320 dungeon pointer slots against all `RoomDataTiles_*` labels in pinned Bank03/Bank0A/Bank1F source: all 263 distinct pointer target labels are defined; three defined labels are not referenced by the table; every Bank0A payload label is referenced. This remains source-symbol verification, not ROM pointer resolution.
-- [x] Commit the source-only 75-entry Bank0A room payload `incbin` inventory with pinned-source parser-parity coverage; the source has only start-offset and size annotations, so end ranges remain unverified.
+- [x] Commit source-only room payload `incbin` inventories across Bank03 (34 declarations), Bank0A (75), and Bank1F (157), with pinned-source parser-parity tests for all 266 labelled declarations. The source files provide start-offset and size annotations but no explicit end offsets; computed ends remain unverified.
 - [x] Import source exports into project SQLite databases by explicit file path or validated registry name; manifest imports recheck registered format, source revision, and record count before storage. Integration tests round-trip every registered asset through SQLite and the canonical project JSON export.
 - [x] Persist validated source-export snapshots in project SQLite databases with explicit v1-to-v2 migration, duplicate-key protection, source provenance, canonical JSON, and SHA-256 integrity checks. This is source metadata persistence, not a semantic game-data schema.
-- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 23 assets covering:
+- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 25 assets covering:
   - Five seven-entry falling-prize parallel arrays.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
@@ -38,7 +38,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 35 music-track pointer expressions and 15 music payload declarations.
   - 128 overworld hidden-item pointer expressions.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`; usable-room count and target resolution remain unverified.
-  - 75 labelled `Bank0A.asm` room payload `incbin` declarations with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
+  - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
   - Seven raw `Pool_AddReceiveItem` arrays: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
