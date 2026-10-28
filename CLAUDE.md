@@ -204,6 +204,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`docs/decisions/`** — Architecture Decision Records. Read `0001` before touching the data model.
 - **`docs/glossary.md`** — terminology (IPS, ASM, MSU‑1, rooms vs. maps, etc.).
 - **`docs/schemas/overworld.md`** — overworld source discovery and High/Low pair validator.
+- **`docs/schemas/dungeons.md`** — source-only 320-entry room pointer inventory and 75-entry Bank0A payload inventory; neither resolves target offsets or confirms playable-room count.
 - **`docs/extracted-data.md`** — committed source inventory catalog and reproduction commands.
 - **`docs/asset-loader.md`** and **`docs/incbin-inventory.md`** — source-export loader and inventory contracts.
 - **`docs/project-assets.md`** — importing, querying, and validating source-export snapshots in SQLite projects. Use `import-extracted-asset` for committed registry assets so manifest provenance checks run before storage.
