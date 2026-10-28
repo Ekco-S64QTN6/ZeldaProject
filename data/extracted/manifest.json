@@ -91,6 +91,15 @@
       "subsystem": "items"
     },
     {
+      "description": "Seventy-six dense graphics-index bytes with inline comments preserved in export v2; the source comments omit index 0x40, so comment IDs are not canonical table indices.",
+      "file": "item-receipt-graphics-indices.json",
+      "format": "zelda-suite-data-table",
+      "name": "item-receipt-graphics-indices",
+      "record_count": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
       "description": "Joined positional view of six raw receive-item arrays, retaining raw expressions and a separate 14-word dungeon-mask table; canonical semantic item IDs remain unresolved.",
       "file": "item-receipt-layout.json",
       "format": "zelda-suite-item-receipt-layout",

@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 26
+    assert len(assets) == 27
     assert names == {
         "falling-prize-item-values",
         "falling-prize-fall-heights",
@@ -344,6 +344,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "item-receipt-wide-flags",
         "item-receipt-properties",
         "item-receipt-layout",
+        "item-receipt-graphics-indices",
     }
 
     loaded = {
@@ -369,6 +370,8 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["item-receipt-layout"]["entry_count"] == 76
     assert loaded["item-receipt-layout"]["dungeon_mask_count"] == 14
     assert loaded["item-receipt-layout"]["semantic_item_ids_resolved"] is False
+    assert loaded["item-receipt-graphics-indices"]["entry_count"] == 76
+    assert loaded["item-receipt-graphics-indices"]["format_version"] == 2
     assert loaded["item-receipt-dungeon-masks"]["entry_count"] == 14
     assert loaded["item-receipt-y-offsets"]["entry_count"] == 76
     assert loaded["item-receipt-x-offsets"]["entry_count"] == 76
