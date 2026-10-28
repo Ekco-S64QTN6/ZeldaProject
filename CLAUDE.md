@@ -219,3 +219,5 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 *Update these instructions when architecture, constraints, or workflow conventions change. Track task completion in `ROADMAP.md`; do not substitute assumptions for verification.*
 ```
+
+When changing the text dictionary exports, run `zelda-suite audit-text-dictionary`; its committed-data cross-check is source-only and must preserve the `.You` extent discrepancy until the source and local-ROM evidence establish which annotation is correct.
