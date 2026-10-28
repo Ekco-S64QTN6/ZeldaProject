@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
@@ -141,9 +142,5 @@ def test_verifier_rejects_wrong_rom_size(tmp_path: Path) -> None:
     rom_path = tmp_path / "too-short.smc"
     rom_path.write_bytes(bytes(1024))
 
-    try:
+    with pytest.raises(ValueError, match="expected headerless 1 MiB image"):
         verify_text_dictionary_pointers(rom_path, REGISTRY_PATH)
-    except ValueError as exc:
-        assert "expected headerless 1 MiB image" in str(exc)
-    else:
-        raise AssertionError("verifier accepted a short ROM image")
