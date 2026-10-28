@@ -47,6 +47,13 @@ not been semantically decoded or verified against a local ROM. Do not treat
 them as confirmed door-data offsets or use either table to infer a playable-room
 count.
 
+A source-only bounds regression joins each target label to the three registered
+payload inventories and checks that every numeric addend is within that label's
+source-annotated declared size (320/320 entries in the current pinned exports).
+This is only arithmetic consistency against source comments: it does not read
+payload bytes, establish that the size annotations are correct, decode door
+semantics, or verify target offsets against a ROM.
+
 ## Count discrepancy to resolve
 
 The roadmap currently refers to 296 dungeon rooms, while this disassembly table
