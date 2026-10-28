@@ -32,7 +32,7 @@ def _source_text() -> str:
 
 def _write_rom_from_source(tmp_path: Path) -> tuple[Path, dict]:
     source = _source_text()
-    layout = parse_overworld_hidden_item_source(source, source_revision=PINNED_REVISION)
+    layout = parse_overworld_hidden_item_source(source)
     rom = bytearray(EXPECTED_US_ROM_SIZE)
 
     for pointer in layout["pointer_entries"]:
@@ -67,7 +67,6 @@ def _write_rom_from_source(tmp_path: Path) -> tuple[Path, dict]:
 def test_source_layout_parses_expected_mixed_width_region_and_pointer_targets() -> None:
     layout = parse_overworld_hidden_item_source(
         _source_text(),
-        source_revision=PINNED_REVISION,
     )
 
     assert len(layout["pointer_entries"]) == 128
@@ -99,7 +98,6 @@ def test_verifier_matches_synthetic_rom_encoded_from_pinned_source_and_is_read_o
     report = verify_overworld_hidden_items(
         rom_path,
         _source_text(),
-        source_revision=PINNED_REVISION,
     )
 
     assert report["format"] == "zelda-suite-overworld-hidden-item-verification"
@@ -144,7 +142,6 @@ def test_verifier_reports_pointer_record_sentinel_and_replacement_mismatches(
     report = verify_overworld_hidden_items(
         rom_path,
         _source_text(),
-        source_revision=PINNED_REVISION,
     )
 
     assert report["mismatch_count"] == 4
@@ -161,14 +158,7 @@ def test_verifier_reports_pointer_record_sentinel_and_replacement_mismatches(
 def test_hidden_item_cli_emits_report_and_refuses_overwrite(tmp_path: Path) -> None:
     rom_path, _layout = _write_rom_from_source(tmp_path)
     output = tmp_path / "hidden-items.json"
-    arguments = [
-        "verify-overworld-hidden-items",
-        str(rom_path),
-        "--source",
-        str(SOURCE_PATH),
-        "--source-revision",
-        PINNED_REVISION,
-    ]
+    arguments = ["verify-overworld-hidden-items", str(rom_path)]
     runner = CliRunner()
 
     result = runner.invoke(cli, arguments)
