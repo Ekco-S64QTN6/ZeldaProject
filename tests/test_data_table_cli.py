@@ -169,6 +169,7 @@ def test_cli_opt_in_comment_export_uses_v2_schema_and_validates(
     with pytest.raises(AssetLoadError, match="inline_comment must be a string or null"):
         validate_source_export(malformed)
 
+
 def test_cli_rejects_unexpected_data_table_entry_count(tmp_path: Path) -> None:
     source = tmp_path / "example.asm"
     source.write_text(SAMPLE_SOURCE, encoding="utf-8")
