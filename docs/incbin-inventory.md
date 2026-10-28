@@ -88,3 +88,20 @@ regeneration commands.
 Run `uv run zelda-suite audit-incbin-inventory` to summarize all registered `zelda-suite-incbin-inventory` assets. The version-1 JSON report lists missing source starts/sizes, explicit range-versus-size discrepancies, calculated candidate spans, and overlaps between those candidate spans. Use `--output PATH` to save a new report and `--fail-on-findings` for automation that should return status 1 when any diagnostic finding exists. See the [audit report schema](./schemas/incbin-inventory-audit.schema.json).
 
 A candidate span is calculated as `source_file_offset_start` through `source_file_offset_start + declared_size_bytes - 1`. Overlaps and range mismatches identify annotations worth reviewing; they do not establish ROM offsets, payload contents, or which source annotation is correct. The audit reads committed metadata only, never opens `incbin` payloads, and never reads a ROM.
+
+
+## Current registered audit baseline
+
+The integration test for `zelda-suite audit-incbin-inventory` pins the current
+manifest snapshot at the six inventories above and the pinned source revision.
+The baseline contains 529 declarations: 525 have both a source start and size,
+four have a metadata gap, and three declare a source-range/size discrepancy.
+The calculated candidate spans produce ten overlap pairs, for 17 findings total
+(counting each metadata gap, range mismatch, and pairwise candidate overlap).
+
+This is a reproducibility baseline, not a claim that ten regions overlap in the
+actual ROM. Candidate spans derive from source annotations; until they are
+compared with a trusted local ROM and reconciled with the included data and
+consumer code, findings must remain diagnostic. When source inventories
+intentionally change, review the report and update the integration assertions
+and this baseline in the same PR.
