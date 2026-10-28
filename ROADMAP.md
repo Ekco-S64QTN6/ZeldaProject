@@ -66,7 +66,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
   - Seven raw `Pool_AddReceiveItem` arrays: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
-- [x] Provide `zelda-suite verify-rom-tables ROM` to compare numeric literals in registered scalar data-table exports to a headerless 1 MiB local ROM. Reports distinguish pass/partial/skip/fail, use the data directive's byte width separately from the file-offset stride, record a local SHA-256, and never write ROM bytes. Synthetic tests cover matching/mismatching bytes, unresolved expressions, strided word tables, report output, and ROM-size rejection. The user's reported real-ROM result (428 compared, 175 skipped, zero mismatches) was from the runbook's Python check; rerun the new CLI against the local ROM to verify parity.
+- [x] Provide `zelda-suite verify-rom-tables ROM` to compare numeric literals in registered scalar data-table exports to a headerless 1 MiB local ROM. Reports distinguish pass/partial/skip/fail, use the data directive's byte width separately from the file-offset stride, record a local SHA-256, and never write ROM bytes. Synthetic tests cover matching/mismatching bytes, unresolved expressions, signed decimal literals, strided word tables, report output, and ROM-size rejection. The user's reported real-ROM result (428 compared, 175 skipped, zero mismatches) was from the earlier runbook snippet. The updated verifier additionally checks simple negative decimal literals as bounded two's-complement values, including the 76 receive-item Y-offset expressions; rerun it locally to verify those additional bytes.
 - [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
 - [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
@@ -137,9 +137,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 1. Complete ROM provenance validation and external-tool smoke tests. User-run
    local checks on 2026-10-28 matched the five falling-prize arrays and compared
    428 direct numeric scalar-table literals with zero mismatches; 175
-   unresolved/non-numeric records were skipped. These checks do not prove
-   canonical ROM identity. Rerun the new `zelda-suite verify-rom-tables`
-   command locally and continue with [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
+   records were skipped by the original snippet, including the 76 signed
+   decimal receive-item Y offsets. These checks do not prove canonical ROM
+   identity. Rerun the updated `zelda-suite verify-rom-tables` command locally
+   and continue with [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
    On Arch Linux, use the verified generic YAZE release archive, inspect
    `z3ed --help`, then perform only a confirmed read-only ROM operation.
    Keep ROM provenance and the z3cli/model-endpoint gates open until independently
