@@ -5,6 +5,7 @@ will be added alongside the Phase 1 extractors that define their semantics.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -14,11 +15,33 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from zelda_suite.extract.asset_loader import (
+    AssetLoadError,
+    load_source_export,
+    validate_source_export,
+)
+
 PROJECT_FORMAT = "zelda-suite-project"
-PROJECT_FORMAT_VERSION = 1
-CURRENT_SCHEMA_VERSION = 1
+PROJECT_FORMAT_VERSION = 2
+CURRENT_SCHEMA_VERSION = 2
 BASE_ROM_FILENAME = "Legend of Zelda, The - A Link to the Past (U) [!].smc"
 _PROJECT_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
+_ASSET_KEY_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}")
+
+_SOURCE_ASSET_TABLE_SQL = """
+CREATE TABLE source_asset (
+    asset_key TEXT PRIMARY KEY CHECK (length(asset_key) BETWEEN 1 AND 96),
+    asset_format TEXT NOT NULL CHECK (length(asset_format) > 0),
+    asset_format_version INTEGER NOT NULL CHECK (asset_format_version > 0),
+    source_file TEXT NOT NULL CHECK (length(source_file) > 0),
+    source_revision TEXT NOT NULL CHECK (length(source_revision) > 0),
+    payload_sha256 TEXT NOT NULL CHECK (
+        length(payload_sha256) = 64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    imported_at TEXT NOT NULL CHECK (length(imported_at) > 0),
+    payload_json TEXT NOT NULL
+);
+"""
 
 _SCHEMA_SQL = """
 CREATE TABLE project (
@@ -34,7 +57,7 @@ CREATE TABLE schema_version (
     version INTEGER PRIMARY KEY CHECK (version > 0),
     applied_at TEXT NOT NULL
 );
-"""
+""" + _SOURCE_ASSET_TABLE_SQL
 
 
 def _utc_timestamp() -> str:
@@ -52,7 +75,102 @@ def _validate_project_name(name: str) -> None:
         )
 
 
+def _validate_asset_key(asset_key: str) -> None:
+    if not isinstance(asset_key, str) or not _ASSET_KEY_PATTERN.fullmatch(asset_key):
+        raise ValueError(
+            "asset key must be 1-96 characters, start with a letter or digit, "
+            "and contain only letters, digits, dots, hyphens, or underscores"
+        )
+
+
+def _reject_nonstandard_constant(value: str) -> None:
+    raise ValueError(f"non-standard JSON numeric constant: {value}")
+
+
+def _read_source_asset_row(row: sqlite3.Row) -> dict[str, Any]:
+    """Decode and verify a persisted source-asset record."""
+    asset_key = str(row["asset_key"])
+    _validate_asset_key(asset_key)
+    try:
+        payload = json.loads(
+            str(row["payload_json"]),
+            parse_constant=_reject_nonstandard_constant,
+        )
+        payload = validate_source_export(payload)
+    except (json.JSONDecodeError, AssetLoadError, TypeError, ValueError) as exc:
+        raise ValueError(
+            f"stored source asset {asset_key!r} has invalid payload: {exc}"
+        ) from exc
+
+    canonical = json.dumps(
+        payload, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False
+    ) + "\\n"
+    if str(row["payload_json"]) != canonical:
+        raise ValueError(f"stored source asset {asset_key!r} is not canonical JSON")
+    expected_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    stored_hash = str(row["payload_sha256"])
+    if stored_hash != expected_hash:
+        raise ValueError(f"stored source asset {asset_key!r} has a SHA-256 mismatch")
+
+    metadata_checks = (
+        ("asset_format", payload.get("format")),
+        ("asset_format_version", payload.get("format_version")),
+        ("source_file", payload.get("source_file")),
+        ("source_revision", payload.get("source_revision")),
+    )
+    for column, value in metadata_checks:
+        if row[column] != value:
+            raise ValueError(
+                f"stored source asset {asset_key!r} has inconsistent {column}"
+            )
+    return {
+        "key": asset_key,
+        "format": str(row["asset_format"]),
+        "format_version": int(row["asset_format_version"]),
+        "source_file": str(row["source_file"]),
+        "source_revision": str(row["source_revision"]),
+        "sha256": stored_hash,
+        "imported_at": str(row["imported_at"]),
+        "payload": payload,
+    }
+
+
+def _select_source_asset(
+    connection: sqlite3.Connection, asset_key: str
+) -> dict[str, Any]:
+    row = connection.execute(
+        """SELECT asset_key, asset_format, asset_format_version, source_file,
+                  source_revision, payload_sha256, imported_at, payload_json
+           FROM source_asset WHERE asset_key = ?""",
+        (asset_key,),
+    ).fetchone()
+    if row is None:
+        raise KeyError(f"source asset not found: {asset_key}")
+    return _read_source_asset_row(row)
+
+
+def _require_current_schema(connection: sqlite3.Connection) -> None:
+    tables = {
+        str(row[0])
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        ).fetchall()
+    }
+    if "schema_version" not in tables or "source_asset" not in tables:
+        raise ValueError(
+            "project schema v2 is required; run 'zelda-suite migrate-project' first"
+        )
+    current_row = connection.execute("SELECT MAX(version) FROM schema_version").fetchone()
+    current = None if current_row is None else current_row[0]
+    if current != CURRENT_SCHEMA_VERSION:
+        raise ValueError(
+            f"project schema version is {current}; expected {CURRENT_SCHEMA_VERSION}. "
+            "Run 'zelda-suite migrate-project' first."
+        )
+
+
 def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
+    connection.row_factory = sqlite3.Row
     project_row = connection.execute(
         """SELECT name, format_version, created_at,
                   expected_base_rom_filename, base_rom_sha256
@@ -67,18 +185,51 @@ def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
     if version_row is None or version_row[0] is None:
         raise ValueError("database does not contain a schema version")
 
+    tables = {
+        str(row[0])
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        ).fetchall()
+    }
+    if "source_asset" not in tables:
+        raise ValueError(
+            "project schema v2 is required; run 'zelda-suite migrate-project' first"
+        )
+    assets = [
+        _read_source_asset_row(row)
+        for row in connection.execute(
+            """SELECT asset_key, asset_format, asset_format_version, source_file,
+                      source_revision, payload_sha256, imported_at, payload_json
+               FROM source_asset ORDER BY asset_key"""
+        ).fetchall()
+    ]
+
+    format_version = int(project_row["format_version"])
+    schema_version = int(version_row[0])
+    if format_version != PROJECT_FORMAT_VERSION:
+        raise ValueError(
+            f"unsupported project format version {format_version}; "
+            f"this tool supports {PROJECT_FORMAT_VERSION}"
+        )
+    if schema_version != CURRENT_SCHEMA_VERSION:
+        raise ValueError(
+            f"unsupported database schema version {schema_version}; "
+            f"this tool supports {CURRENT_SCHEMA_VERSION}"
+        )
+
     return {
         "format": PROJECT_FORMAT,
-        "format_version": int(project_row[1]),
+        "format_version": format_version,
         "project": {
-            "name": str(project_row[0]),
-            "created_at": str(project_row[2]),
+            "name": str(project_row["name"]),
+            "created_at": str(project_row["created_at"]),
             "base_rom": {
-                "expected_filename": str(project_row[3]),
-                "sha256": project_row[4],
+                "expected_filename": str(project_row["expected_base_rom_filename"]),
+                "sha256": project_row["base_rom_sha256"],
             },
         },
-        "schema_version": int(version_row[0]),
+        "schema_version": schema_version,
+        "source_assets": assets,
     }
 
 
@@ -190,9 +341,9 @@ def initialize_project(
                         BASE_ROM_FILENAME,
                     ),
                 )
-                connection.execute(
+                connection.executemany(
                     "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
-                    (CURRENT_SCHEMA_VERSION, created_at),
+                    [(1, created_at), (CURRENT_SCHEMA_VERSION, created_at)],
                 )
         finally:
             connection.close()
@@ -205,6 +356,206 @@ def initialize_project(
 
     return database_path, json_path
 
+
+
+def migrate_project(
+    database_path: str | Path, json_path: str | Path | None = None
+) -> bool:
+    """Migrate a schema-v1 project to v2 and refresh its JSON export.
+
+    Returns True when migration was applied, or False when already current.
+    Validation and import never trigger an automatic migration.
+    """
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+
+    connection = sqlite3.connect(db_path)
+    migrated = False
+    try:
+        connection.execute("PRAGMA foreign_keys = ON")
+        tables = {
+            str(row[0])
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        if not {"project", "schema_version"}.issubset(tables):
+            raise ValueError("not a recognized ZeldaProject SQLite database")
+
+        version_row = connection.execute(
+            "SELECT MAX(version) FROM schema_version"
+        ).fetchone()
+        current = None if version_row is None else version_row[0]
+        if current is None:
+            raise ValueError("project database has no schema version")
+        if current > CURRENT_SCHEMA_VERSION:
+            raise ValueError(
+                f"project schema version {current} is newer than supported version "
+                f"{CURRENT_SCHEMA_VERSION}"
+            )
+        if current < 1:
+            raise ValueError(f"unsupported project schema version: {current}")
+
+        if current == 1:
+            project_row = connection.execute(
+                "SELECT format_version FROM project WHERE singleton = 1"
+            ).fetchone()
+            if project_row is None or project_row[0] != 1:
+                raise ValueError("schema-v1 project metadata is inconsistent")
+            if "source_asset" in tables:
+                raise ValueError(
+                    "schema-v1 project unexpectedly contains source_asset; "
+                    "refusing an ambiguous partial migration"
+                )
+            with connection:
+                connection.execute(_SOURCE_ASSET_TABLE_SQL)
+                connection.execute(
+                    "UPDATE project SET format_version = ? WHERE singleton = 1",
+                    (PROJECT_FORMAT_VERSION,),
+                )
+                connection.execute(
+                    "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
+                    (CURRENT_SCHEMA_VERSION, _utc_timestamp()),
+                )
+            migrated = True
+        elif current == CURRENT_SCHEMA_VERSION:
+            if "source_asset" not in tables:
+                raise ValueError("schema-v2 project is missing the source_asset table")
+            project_row = connection.execute(
+                "SELECT format_version FROM project WHERE singleton = 1"
+            ).fetchone()
+            if project_row is None or project_row[0] != PROJECT_FORMAT_VERSION:
+                raise ValueError("schema-v2 project metadata is inconsistent")
+
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not migrate project database: {exc}") from exc
+    finally:
+        connection.close()
+
+    # Refreshing the JSON sidecar is explicit, even when the database is current.
+    export_project(db_path, json_path)
+    return migrated
+
+
+def import_source_asset(
+    database_path: str | Path,
+    asset_key: str,
+    source_export_path: str | Path,
+    *,
+    replace_existing: bool = False,
+) -> dict[str, Any]:
+    """Import a validated source-export JSON snapshot into a project database."""
+    _validate_asset_key(asset_key)
+    try:
+        payload = load_source_export(source_export_path)
+    except (OSError, AssetLoadError, json.JSONDecodeError) as exc:
+        raise ValueError(f"could not load source export: {exc}") from exc
+
+    canonical = json.dumps(
+        payload, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False
+    ) + "\\n"
+    payload_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    imported_at = _utc_timestamp()
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+
+    connection = sqlite3.connect(db_path)
+    connection.row_factory = sqlite3.Row
+    try:
+        _require_current_schema(connection)
+        existing = connection.execute(
+            "SELECT 1 FROM source_asset WHERE asset_key = ?", (asset_key,)
+        ).fetchone()
+        if existing is not None and not replace_existing:
+            raise ValueError(
+                f"source asset key already exists: {asset_key}; use replace_existing=True "
+                "or the CLI --replace option to replace it"
+            )
+
+        with connection:
+            if existing is None:
+                connection.execute(
+                    """INSERT INTO source_asset (
+                           asset_key, asset_format, asset_format_version, source_file,
+                           source_revision, payload_sha256, imported_at, payload_json
+                       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        asset_key,
+                        payload["format"],
+                        payload["format_version"],
+                        payload["source_file"],
+                        payload["source_revision"],
+                        payload_hash,
+                        imported_at,
+                        canonical,
+                    ),
+                )
+            else:
+                connection.execute(
+                    """UPDATE source_asset SET
+                           asset_format = ?, asset_format_version = ?, source_file = ?,
+                           source_revision = ?, payload_sha256 = ?, imported_at = ?,
+                           payload_json = ?
+                       WHERE asset_key = ?""",
+                    (
+                        payload["format"],
+                        payload["format_version"],
+                        payload["source_file"],
+                        payload["source_revision"],
+                        payload_hash,
+                        imported_at,
+                        canonical,
+                        asset_key,
+                    ),
+                )
+        export_project(db_path)
+        return _select_source_asset(connection, asset_key)
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not store source asset {asset_key!r}: {exc}") from exc
+    finally:
+        connection.close()
+
+
+def list_source_assets(database_path: str | Path) -> list[dict[str, Any]]:
+    """List validated source-asset metadata stored in a schema-v2 project."""
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = sqlite3.connect(read_only_uri, uri=True)
+    connection.row_factory = sqlite3.Row
+    try:
+        _require_current_schema(connection)
+        rows = connection.execute(
+            """SELECT asset_key, asset_format, asset_format_version, source_file,
+                      source_revision, payload_sha256, imported_at, payload_json
+               FROM source_asset ORDER BY asset_key"""
+        ).fetchall()
+        assets = []
+        for row in rows:
+            record = _read_source_asset_row(row)
+            assets.append({key: value for key, value in record.items() if key != "payload"})
+        return assets
+    finally:
+        connection.close()
+
+
+def get_source_asset(database_path: str | Path, asset_key: str) -> dict[str, Any]:
+    """Load one stored source asset, verifying its format and SHA-256 digest."""
+    _validate_asset_key(asset_key)
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = sqlite3.connect(read_only_uri, uri=True)
+    connection.row_factory = sqlite3.Row
+    try:
+        _require_current_schema(connection)
+        return _select_source_asset(connection, asset_key)
+    finally:
+        connection.close()
 
 
 def validate_project(
@@ -243,7 +594,7 @@ def validate_project(
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             ).fetchall()
         }
-        required_tables = {"project", "schema_version"}
+        required_tables = {"project", "schema_version", "source_asset"}
         missing_tables = sorted(required_tables - tables)
         if missing_tables:
             problems.append(
