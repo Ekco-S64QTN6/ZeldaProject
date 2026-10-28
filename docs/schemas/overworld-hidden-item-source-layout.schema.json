@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite overworld hidden-item source-layout report",
+  "description": "Source-derived layout report for the pinned overworld hidden-item declarations. It does not read or verify ROM bytes and does not decode semantic item values.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "pointer_table_offset",
+    "pointer_count",
+    "pointer_entries",
+    "data_start_offset",
+    "data_end_exclusive",
+    "data_region_size_bytes",
+    "distinct_target_label_count",
+    "label_offsets",
+    "record_count",
+    "records",
+    "sentinel_count",
+    "sentinels",
+    "area_count",
+    "area_lists",
+    "replacement_word_count",
+    "replacement_words",
+    "rom_verified",
+    "semantic_values_decoded"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-overworld-hidden-item-source-layout"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "const": "reference/AsarUSALTTPDisassembly/Bank1B.asm"
+    },
+    "source_revision": {
+      "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    "pointer_table_offset": {
+      "const": 901881
+    },
+    "pointer_count": {
+      "const": 128
+    },
+    "pointer_entries": {
+      "type": "array",
+      "minItems": 128,
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/pointerEntry"
+      }
+    },
+    "data_start_offset": {
+      "const": 902137
+    },
+    "data_end_exclusive": {
+      "const": 903324
+    },
+    "data_region_size_bytes": {
+      "const": 1187
+    },
+    "distinct_target_label_count": {
+      "const": 80
+    },
+    "label_offsets": {
+      "type": "object",
+      "minProperties": 80,
+      "maxProperties": 80,
+      "propertyNames": {
+        "pattern": "^OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}$"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 902137,
+        "maximum": 903323
+      }
+    },
+    "record_count": {
+      "const": 351
+    },
+    "records": {
+      "type": "array",
+      "minItems": 351,
+      "maxItems": 351,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "sentinel_count": {
+      "const": 67
+    },
+    "sentinels": {
+      "type": "array",
+      "minItems": 67,
+      "maxItems": 67,
+      "items": {
+        "$ref": "#/$defs/sentinel"
+      }
+    },
+    "area_count": {
+      "const": 128
+    },
+    "area_lists": {
+      "type": "array",
+      "minItems": 128,
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/areaList"
+      }
+    },
+    "replacement_word_count": {
+      "const": 4
+    },
+    "replacement_words": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/replacementWord"
+      }
+    },
+    "rom_verified": {
+      "const": false
+    },
+    "semantic_values_decoded": {
+      "const": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "pointerEntry": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "pointer_entry_file_offset",
+        "source_line",
+        "pointer_expression",
+        "target_label",
+        "target_addend",
+        "is_empty_target",
+        "source_revision"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 127
+        },
+        "pointer_entry_file_offset": {
+          "type": "integer",
+          "minimum": 901881,
+          "maximum": 902135
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pointer_expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_label": {
+          "type": "string",
+          "pattern": "^OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}$"
+        },
+        "target_addend": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "is_empty_target": {
+          "const": false
+        },
+        "source_revision": {
+          "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "record_index",
+        "source_label",
+        "source_line",
+        "file_offset",
+        "coordinate_word",
+        "value_byte",
+        "expression"
+      ],
+      "properties": {
+        "record_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 350
+        },
+        "source_label": {
+          "type": "string",
+          "pattern": "^OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}$"
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file_offset": {
+          "type": "integer",
+          "minimum": 902137,
+          "maximum": 903321
+        },
+        "coordinate_word": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65534
+        },
+        "value_byte": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "expression": {
+          "type": "string",
+          "pattern": "^dw \\$[0-9A-Fa-f]{4} : db \\$[0-9A-Fa-f]{2}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sentinel": {
+      "type": "object",
+      "required": [
+        "sentinel_index",
+        "source_label",
+        "source_line",
+        "file_offset",
+        "expression"
+      ],
+      "properties": {
+        "sentinel_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 66
+        },
+        "source_label": {
+          "type": "string",
+          "pattern": "^OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}$"
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file_offset": {
+          "type": "integer",
+          "minimum": 902137,
+          "maximum": 903322
+        },
+        "expression": {
+          "const": "dw $FFFF"
+        }
+      },
+      "additionalProperties": false
+    },
+    "areaList": {
+      "type": "object",
+      "required": [
+        "area_index",
+        "pointer_entry_file_offset",
+        "target_label",
+        "target_file_offset",
+        "record_indices",
+        "record_count",
+        "sentinel_file_offset"
+      ],
+      "properties": {
+        "area_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 127
+        },
+        "pointer_entry_file_offset": {
+          "type": "integer",
+          "minimum": 901881,
+          "maximum": 902135
+        },
+        "target_label": {
+          "type": "string",
+          "pattern": "^OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}$"
+        },
+        "target_file_offset": {
+          "type": "integer",
+          "minimum": 902137,
+          "maximum": 903323
+        },
+        "record_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 350
+          },
+          "uniqueItems": true
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 351
+        },
+        "sentinel_file_offset": {
+          "type": "integer",
+          "minimum": 902137,
+          "maximum": 903322
+        }
+      },
+      "additionalProperties": false
+    },
+    "replacementWord": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "source_line",
+        "file_offset",
+        "value",
+        "expression"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file_offset": {
+          "type": "integer",
+          "minimum": 903324,
+          "maximum": 903330
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "expression": {
+          "type": "string",
+          "pattern": "^dw \\$[0-9A-Fa-f]{4}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
