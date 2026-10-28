@@ -86,6 +86,7 @@ _DATA_TABLE_ENTRY_KEYS = {
     "literal_value",
     "source_revision",
 }
+_DATA_TABLE_ENTRY_V2_KEYS = _DATA_TABLE_ENTRY_KEYS | {"inline_comment"}
 
 
 class AssetLoadError(ValueError):
@@ -323,10 +324,10 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
     if payload["format"] != DATA_TABLE_FORMAT:
         raise AssetLoadError("data-table export has an invalid format identifier")
     version = _integer(payload["format_version"], "format_version", minimum=1)
-    if version != SOURCE_EXPORT_FORMAT_VERSION:
+    if version not in (1, 2):
         raise AssetLoadError(
             f"unsupported data-table format version {version}; "
-            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+            "this loader supports versions 1 and 2"
         )
 
     _string(payload["source_file"], "source_file")
@@ -356,7 +357,17 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
     for expected_index, raw_entry in enumerate(entries):
         context = f"entries[{expected_index}]"
         entry = _object(raw_entry, context)
-        _exact_keys(entry, _DATA_TABLE_ENTRY_KEYS, context)
+        expected_entry_keys = (
+            _DATA_TABLE_ENTRY_V2_KEYS if version == 2 else _DATA_TABLE_ENTRY_KEYS
+        )
+        _exact_keys(entry, expected_entry_keys, context)
+
+        if version == 2:
+            inline_comment = entry["inline_comment"]
+            if inline_comment is not None and not isinstance(inline_comment, str):
+                raise AssetLoadError(
+                    f"{context}.inline_comment must be a string or null"
+                )
 
         table_index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
         if table_index != expected_index:
