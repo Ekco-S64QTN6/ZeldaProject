@@ -14,7 +14,6 @@ from zelda_suite.extract.asset_loader import (
     ASSET_REGISTRY_FORMAT,
     DATA_TABLE_FORMAT,
     INCBIN_INVENTORY_FORMAT,
-    MUSIC_TRACK_INDEX_FORMAT,
     POINTER_TABLE_FORMAT,
     AssetLoadError,
     list_extracted_assets,
