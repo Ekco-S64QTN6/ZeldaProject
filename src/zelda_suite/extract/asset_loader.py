@@ -535,7 +535,10 @@ def _validate_item_receipt_layout_export(payload: dict[str, Any]) -> None:
                 f"{context}.source_label must be {_ITEM_RECEIPT_LAYOUT_MASK_LABEL!r}"
             )
         offset = _integer(mask["entry_file_offset"], f"{context}.entry_file_offset", minimum=0)
-        expected_offset = _ITEM_RECEIPT_LAYOUT_MASK_OFFSET + expected_index * _ITEM_RECEIPT_LAYOUT_MASK_WIDTH
+        expected_offset = (
+            _ITEM_RECEIPT_LAYOUT_MASK_OFFSET
+            + expected_index * _ITEM_RECEIPT_LAYOUT_MASK_WIDTH
+        )
         if offset != expected_offset:
             raise AssetLoadError(
                 f"{context}.entry_file_offset must be {expected_offset}, got {offset}"
