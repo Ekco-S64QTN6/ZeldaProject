@@ -68,6 +68,7 @@ The same parser powers three registered metadata inventories:
 - `music-payload-inventory`: 15 music `incbin` declarations from `Bank1B.asm`.
 - `overworld-payloads-bank0b`: 164 overworld High/Low declarations from `Bank0B.asm`.
 - `overworld-payloads-bank0c`: 84 overworld High/Low declarations from `Bank0C.asm`.
+- `dungeon-room-payload-inventory`: 75 labelled room payload declarations from `Bank0A.asm`, with source-commented start offsets and `Size:` annotations.
 
 Each is source metadata only. The parser does not open the include targets, and the
 pinned disassembly does not track the referenced payload binaries. The overworld
@@ -76,3 +77,11 @@ in Bank0B, and one size/range mismatch in Bank0C rather than correcting them. Se
 [the extracted-data catalog](./extracted-data.md) for per-asset details and
 regeneration commands.
 
+
+
+For `dungeon-room-payload-inventory`, every declaration has a start offset and
+size comment but no explicit end-offset comment. The parser stores the computed
+end separately and leaves `source_range_size_matches` null because the source
+does not provide a range end to compare. This is arithmetic from source
+annotations, not a ROM verification. See the
+[dungeon schema discovery note](./schemas/dungeons.md).
