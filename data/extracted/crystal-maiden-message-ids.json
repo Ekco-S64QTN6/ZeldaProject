@@ -1,0 +1,96 @@
+{
+  "directive": "dw",
+  "end_label": null,
+  "entries": [
+    {
+      "entry_file_offset": 1003196,
+      "expression": "$0133",
+      "literal_value": 307,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 1003198,
+      "expression": "$0132",
+      "literal_value": 306,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 1003200,
+      "expression": "$0137",
+      "literal_value": 311,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 1003202,
+      "expression": "$0134",
+      "literal_value": 308,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 1003204,
+      "expression": "$0136",
+      "literal_value": 310,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 1003206,
+      "expression": "$0132",
+      "literal_value": 306,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 1003208,
+      "expression": "$0135",
+      "literal_value": 309,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 1003210,
+      "expression": "$0138",
+      "literal_value": 312,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7
+    },
+    {
+      "entry_file_offset": 1003212,
+      "expression": "$013c",
+      "literal_value": 316,
+      "source_label": "CrystalMaiden_ShowMessage_message_ids",
+      "source_line": 311,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8
+    }
+  ],
+  "entry_count": 9,
+  "entry_width": 2,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": null,
+  "source_file": "sprite_crystal_maiden.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 1003196,
+  "table_label": "CrystalMaiden_ShowMessage_message_ids"
+}

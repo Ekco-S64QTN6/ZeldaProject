@@ -147,6 +147,7 @@ def test_audit_pins_current_registered_scalar_table_baseline() -> None:
     report = audit_unresolved_table_expressions(REGISTERED_MANIFEST)
 
     assert [asset["asset_name"] for asset in report["assets"]] == [
+        "crystal-maiden-message-ids",
         "crystal-maiden-palette-words",
         "crystal-switch-palette-selectors",
         "falling-prize-delay-timers",
@@ -167,9 +168,9 @@ def test_audit_pins_current_registered_scalar_table_baseline() -> None:
     ]
     assert all(asset["source_revision"] == PINNED_SOURCE_REVISION for asset in report["assets"])
     assert report["summary"] == {
-        "table_asset_count": 17,
-        "entry_count": 697,
-        "direct_numeric_entry_count": 522,
+        "table_asset_count": 18,
+        "entry_count": 706,
+        "direct_numeric_entry_count": 531,
         "signed_decimal_entry_count": 77,
         "unresolved_expression_count": 98,
         "classification_counts": {
