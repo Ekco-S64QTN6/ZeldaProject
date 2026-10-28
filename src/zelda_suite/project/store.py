@@ -17,6 +17,7 @@ from typing import Any
 
 from zelda_suite.extract.asset_loader import (
     AssetLoadError,
+    load_extracted_asset,
     load_source_export,
     validate_source_export,
 )
@@ -433,19 +434,19 @@ def migrate_project(
     return migrated
 
 
-def import_source_asset(
+def _persist_source_asset_payload(
     database_path: str | Path,
     asset_key: str,
-    source_export_path: str | Path,
+    payload: dict[str, Any],
     *,
     replace_existing: bool = False,
 ) -> dict[str, Any]:
-    """Import a validated source-export JSON snapshot into a project database."""
+    """Validate and persist a loaded source-export payload."""
     _validate_asset_key(asset_key)
     try:
-        payload = load_source_export(source_export_path)
-    except (OSError, AssetLoadError, json.JSONDecodeError) as exc:
-        raise ValueError(f"could not load source export: {exc}") from exc
+        payload = validate_source_export(payload)
+    except AssetLoadError as exc:
+        raise ValueError(f"source export is invalid: {exc}") from exc
 
     canonical = _render_json(payload)
     payload_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -510,6 +511,50 @@ def import_source_asset(
     finally:
         connection.close()
 
+
+def import_source_asset(
+    database_path: str | Path,
+    asset_key: str,
+    source_export_path: str | Path,
+    *,
+    replace_existing: bool = False,
+) -> dict[str, Any]:
+    """Import a validated source-export JSON file into a project database."""
+    try:
+        payload = load_source_export(source_export_path)
+    except AssetLoadError as exc:
+        raise ValueError(f"could not load source export: {exc}") from exc
+    return _persist_source_asset_payload(
+        database_path,
+        asset_key,
+        payload,
+        replace_existing=replace_existing,
+    )
+
+
+def import_extracted_asset(
+    database_path: str | Path,
+    asset_name: str,
+    registry_path: str | Path = "data/extracted/manifest.json",
+    *,
+    asset_key: str | None = None,
+    replace_existing: bool = False,
+) -> dict[str, Any]:
+    """Import a committed manifest asset after registry/provenance checks.
+
+    By default, the project's asset key matches the registry name. A separate
+    asset_key may be supplied when multiple project-local snapshots are needed.
+    """
+    try:
+        payload = load_extracted_asset(asset_name, registry_path)
+    except AssetLoadError as exc:
+        raise ValueError(f"could not load registered asset: {exc}") from exc
+    return _persist_source_asset_payload(
+        database_path,
+        asset_name if asset_key is None else asset_key,
+        payload,
+        replace_existing=replace_existing,
+    )
 
 def list_source_assets(database_path: str | Path) -> list[dict[str, Any]]:
     """List validated source-asset metadata stored in a schema-v2 project."""
