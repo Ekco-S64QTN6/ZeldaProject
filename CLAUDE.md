@@ -20,22 +20,23 @@ This is **not** a wrapper around Hyrule Magic and **not** a ROM patcher. It is a
 
 ## 2. Canonical Assets
 
-**Base ROM (US, the only one the build reads):**
+**Intended US base ROM location (local-only; not yet verified):**
 
 ```
 base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 ```
 
-- USA release, verified good dump, headerless.
-- This is the single source of truth for the build. Do not substitute another ROM.
+- This is the expected path for an authorized clean US dump used by future ROM-dependent tooling. The repository does not establish that the file is present, canonical, headerless, or otherwise valid.
+- Repository setup and CI do not fetch, include, open, or modify a ROM. A size check is diagnostic, not proof of dump provenance or correctness.
+- Before relying on a local ROM, run `just doctor` and `zelda-suite inspect-rom PATH`, then record what those checks do and do not establish. See [`docs/doctor.md`](./docs/doctor.md) and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
 
-**Optional JP reference (not read by the build):**
+**Optional JP reference (local-only; not read by current tooling):**
 
 ```
 base_game_roms/Zelda no Densetsu - Kamigami no Triforce (J) (V1.0).smc
 ```
 
-- Present for diffing JP vs. US data later. Never read by the pipeline.
+- This path is reserved for an authorized local reference dump if needed for later comparison. The file may be absent; no current build or CI workflow requires it.
 
 **Design lineage reference (read‑only, not read by the build):**
 
@@ -60,8 +61,8 @@ Rules:
 
 | Tool | Role | Notes |
 |---|---|---|
-| **YAZE / `z3ed`** | Low‑level ROM interface (CLI + GUI) | Reference implementation for overworld/dungeon/graphics/palette/message access. Wrap behind an adapter; do not couple our code to its internals. |
-| **`z3cli`** | Agent harness (MCP, session management, model routing) | Use as the backend for Phase 3 agent workflows. Verify Anthropic endpoint compatibility before relying on it. |
+| **YAZE / `z3ed`** | Candidate low‑level ROM interface (CLI + GUI) | Intended for overworld/dungeon/graphics/palette/message access. Its behavior has not yet been smoke-tested against a locally verified ROM; wrap future integration behind an adapter. |
+| **`z3cli`** | Candidate agent harness (MCP, session management, model routing) | Proposed for Phase 3 workflows. Endpoint compatibility and a real tool call remain unverified. |
 | **Asar** | 65816 assembler | For any ASM patches we insert. |
 | **zcompress** | Graphics decompression/recompression | Reference for graphics round‑tripping. |
 | **SpriteSomething** | Sprite import/export (ZSPR, PNG) | Wrap its CLI for the sprite authoring API. |
@@ -146,12 +147,12 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 ## 7. Non‑Negotiable Rules
 
-1. **Never write to the ROM without a validated diff.** Every write goes through `src/zelda_suite/write/`, which must produce a deterministic byte diff and pass an emulator smoke test (YAZE headless or equivalent).
+1. **No ROM writer exists yet.** Before adding ROM writes, implement an isolated `src/zelda_suite/write/` layer with bounds/reference checks, deterministic dry-run and byte-diff output, and a passing emulator smoke test (YAZE headless or equivalent). Never write a ROM until all gates pass.
 2. **Cite your source.** Any proposed change must reference (a) the project data file/row and (b) the disassembly label / byte range in `AsarUSALTTPDisassembly`.
 3. **Dry‑run first.** The authoring API must support a `dry_run=True` mode that reports intended changes without applying them. Default to dry‑run.
 4. **Referential integrity.** A chest cannot point to a nonexistent item. An entrance cannot point to a nonexistent room. Enforce at the SQLite schema and the API layer, not the byte layer.
-5. **Adapters, not dependencies.** YAZE, SpriteSomething, zcompress are wrapped behind `src/zelda_suite/adapters/`. If their APIs change, only the adapter changes.
-6. **The data model is the source of truth.** The ROM is a build artifact. Never read raw ROM bytes outside `src/zelda_suite/extract/` and `src/zelda_suite/write/`.
+5. **Adapters, not dependencies.** Future YAZE, SpriteSomething, and zcompress integrations should be wrapped behind `src/zelda_suite/adapters/`. This adapter layer is a design rule, not a claim that those integrations already exist.
+6. **The data model is the source of truth.** The ROM is a future build artifact. Current raw ROM reads belong in `src/zelda_suite/extract/`; do not introduce raw reads elsewhere. A future writer must be isolated under `src/zelda_suite/write/`.
 7. **No legacy GUI tool assumptions.** Do not assume Hyrule Magic quirks are correct behavior. Trust the disassembly.
 
 ---
@@ -163,13 +164,13 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **Phase discipline.** Use `ROADMAP.md` as the current status ledger. Do not claim a phase exit criterion is met until implementation and evidence exist; label local-ROM or external-tool checks unverified when they have not been run.
 - **Ask before adding dependencies.** Prefer stdlib and one well‑known library over a framework.
 - **Log everything in `docs/`.** New schemas, new API functions, new ROM caveats.
-- **Task runner:** `justfile` at repo root. Run `just` to list commands. `just doctor` is the canary; keep it green.
+- **Task runner:** `justfile` at repo root. Run `just` to list commands. `just doctor` is a local environment diagnostic, not a ROM-independent CI check: it exits nonzero when the expected US ROM is missing or incorrectly sized. It only checks tool executables on `PATH`; it does not prove the tools can read the ROM.
 
 ---
 
 ## 9. What NOT To Do
 
-- ❌ **Do not add ROMs to `base_game_roms/` beyond the two already listed.** No translations, hacks, or bad dumps.
+- ❌ **Do not commit ROM files.** The US base path and optional JP reference path above are local-only candidates; the JP file may be absent. Do not add translations, hacks, bad dumps, or other regional variants, and do not bypass the Git ignore rules.
 - ❌ **Do not put reference hacks in `base_game_roms/`.** They go in `reference/`.
 - ❌ **Do not commit ROM files.** `.gitignore` blocks `*.smc`/`*.sfc`; do not bypass it.
 - ❌ **Do not run `rm` on the ROM or project files** without explicit user confirmation.
