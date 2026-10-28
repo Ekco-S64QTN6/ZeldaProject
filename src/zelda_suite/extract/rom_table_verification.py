@@ -7,7 +7,6 @@ from typing import Any
 
 from zelda_suite.extract.asset_loader import (
     DATA_TABLE_FORMAT,
-    AssetLoadError,
     list_extracted_assets,
     load_extracted_asset,
 )
@@ -53,10 +52,7 @@ def verify_registered_scalar_tables(
             "Use inspect-rom to diagnose the file; do not adjust it automatically."
         )
 
-    try:
-        registered_assets = list_extracted_assets(registry_path)
-    except AssetLoadError:
-        raise
+    registered_assets = list_extracted_assets(registry_path)
 
     table_assets = [
         record for record in registered_assets if record["format"] == DATA_TABLE_FORMAT
