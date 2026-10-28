@@ -73,7 +73,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [ ] Establish complete editable schemas for items/chests/shops, doors/entrances, sprites/placements, message encoding, and audio payloads; distinguish raw metadata from verified semantic meaning.
 - [~] Continue documenting source-derived exports, schemas, provenance, regeneration commands, parser limits, and unresolved discrepancies as each asset lands.
 
-**Exit criteria:** Not met. The existing exports are targeted source inventories, not a complete data model for every major game system. Several include targets are absent from the pinned disassembly; no binary payloads are committed, and most source-commented offsets remain unverified against a trusted local ROM. The numeric scalar-table verifier covers only registered direct literals; unresolved expressions and semantic datasets still require separate checks.
+**Exit criteria:** Not met. The existing exports are targeted source inventories, not a complete data model for every major game system. Several include targets are absent from the pinned disassembly; no binary payloads are committed, and most source-commented offsets remain unverified against a trusted local ROM. The scalar-table verifier covers registered direct literals and simple in-range negative decimal expressions; symbolic expressions and semantic datasets still require separate checks.
 
 ## Phase 2 — Editor Core and Authoring API
 
