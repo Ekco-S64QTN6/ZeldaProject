@@ -133,7 +133,88 @@ verify other source annotations. A mismatch must be investigated; do not
 auto-correct source comments or shift offsets speculatively. Record the size,
 SHA-256, table name, and mismatch offsets in the local test notes.
 
-## 5. Run the ROM-independent regression suite
+## 5. Cross-check directly numeric values in registered scalar-table exports
+
+After the focused falling-prize check, this script checks every direct numeric
+`literal_value` in registered `zelda-suite-data-table` exports against the
+local ROM using each record's calculated file offset and declared entry width.
+It skips null/unresolved expressions (including signed decimal expressions
+that the parser intentionally does not normalize). A mismatch can reveal an
+offset annotation issue or an unmodeled assembler expression; do not auto-fix
+either. This is a byte comparison, not a semantic decoder.
+
+```bash
+python - "$ROM" <<'PY'
+import json
+from pathlib import Path
+import sys
+
+rom_path = Path(sys.argv[1])
+rom = rom_path.read_bytes()
+root = Path.cwd()
+manifest = json.loads(
+    (root / "data/extracted/manifest.json").read_text(encoding="utf-8")
+)
+
+checked_total = 0
+skipped_total = 0
+mismatch_total = 0
+for asset in manifest["assets"]:
+    if asset.get("format") != "zelda-suite-data-table":
+        continue
+
+    path = root / "data/extracted" / asset["file"]
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    width = payload["entry_width"]
+    checked = 0
+    skipped = 0
+    mismatches = []
+
+    for entry in payload["entries"]:
+        value = entry["literal_value"]
+        if value is None:
+            skipped += 1
+            continue
+        if value < 0 or value >= (1 << (8 * width)):
+            mismatches.append(
+                (entry["entry_file_offset"], None, None,
+                 "literal does not fit declared entry width")
+            )
+            continue
+
+        offset = entry["entry_file_offset"]
+        expected = value.to_bytes(width, "little")
+        actual = rom[offset:offset + width]
+        checked += 1
+        if actual != expected:
+            mismatches.append((offset, expected, actual, entry["expression"]))
+
+    checked_total += checked
+    skipped_total += skipped
+    mismatch_total += len(mismatches)
+    status = "PASS" if not mismatches else "FAIL"
+    print(f"{status} {asset['name']}: checked={checked}, skipped={skipped}, "
+          f"mismatches={len(mismatches)}")
+
+    for offset, expected, actual, expression in mismatches[:8]:
+        print(f"  offset 0x{offset:06X}: expression={expression!r}, "
+              f"expected={expected.hex(' ').upper() if expected is not None else 'n/a'}, "
+              f"actual={actual.hex(' ').upper() if actual is not None else 'out of range'}")
+    if len(mismatches) > 8:
+        print(f"  ... {len(mismatches) - 8} additional mismatch(es)")
+
+print(f"\nSummary: checked={checked_total}, skipped={skipped_total}, "
+      f"mismatches={mismatch_total}")
+raise SystemExit(1 if mismatch_total else 0)
+PY
+```
+
+Only direct numeric expressions are tested. Source expressions left unresolved
+by the parser are deliberately skipped rather than guessed. Review any mismatch
+before deciding whether the source annotation, offset mapping, or expression
+encoding is wrong.
+
+## 6. Run the ROM-independent regression suite
 
 ```bash
 uv run pytest -q
@@ -145,7 +226,7 @@ These cover existing parsers, source exports, project store/migration,
 inspection, diff, and CLI behavior. They are not substitutes for testing
 YAZE/z3ed on your ROM.
 
-## 6. Inspect external-tool capabilities before invoking them
+## 7. Inspect external-tool capabilities before invoking them
 
 ```bash
 for tool in z3ed z3cli; do
