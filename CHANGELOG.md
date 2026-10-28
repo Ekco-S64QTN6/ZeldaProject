@@ -15,6 +15,10 @@ does not imply that any release has been published.
   report for comparing registered scalar-table literals with a local ROM.
   Simple negative decimal expressions are compared as signed-width
   two's-complement values; other unresolved expressions remain skipped.
+- Read-only `zelda-suite verify-overworld-hidden-items ROM` report for
+  comparing 128 source-derived pointer words, mixed-width record/sentinel
+  bytes, and four replacement Map16 words, with per-area list grouping based
+  on the consumer's sentinel scan.
 - Registered `item-receipt-layout` joined view plus a strict versioned schema
   and `zelda-suite join-item-receipt-tables` command for aligning six raw
   76-entry receive-item arrays while preserving the separate 14-word dungeon
@@ -92,3 +96,6 @@ does not imply that any release has been published.
 - Tests cover the joined receive-item export against its six registered raw
   arrays, separate dungeon masks, reproducible CLI output, and failure on
   misaligned entry offsets or false semantic-ID claims.
+- Synthetic hidden-item ROM fixtures exercise all 550 comparison spans, area
+  grouping, per-kind mismatch reporting, CLI JSON output, no-overwrite
+  behavior, and fail-closed parsing of changed sentinel declarations.

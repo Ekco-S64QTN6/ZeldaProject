@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite overworld hidden-item ROM verification",
+  "description": "Read-only byte comparison of source-derived hidden-item pointers, variable-width records, sentinel words, and replacement Map16 words.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "rom",
+    "source_revision",
+    "source_layout",
+    "area_lists",
+    "checked_comparisons",
+    "mismatch_count",
+    "mismatches",
+    "semantic_values_decoded",
+    "rom_modified"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-overworld-hidden-item-verification"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "rom": {
+      "type": "object",
+      "required": [
+        "filename",
+        "size_bytes",
+        "sha256",
+        "header_assessment",
+        "provenance_verified"
+      ],
+      "properties": {
+        "filename": {"type": "string", "minLength": 1},
+        "size_bytes": {"const": 1048576},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "header_assessment": {"const": "headerless-by-expected-size"},
+        "provenance_verified": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_layout": {
+      "type": "object",
+      "required": [
+        "pointer_count",
+        "distinct_target_label_count",
+        "three_byte_record_count",
+        "two_byte_sentinel_count",
+        "replacement_word_count",
+        "data_start_offset",
+        "data_end_exclusive",
+        "data_region_size_bytes"
+      ],
+      "properties": {
+        "pointer_count": {"const": 128},
+        "distinct_target_label_count": {"const": 80},
+        "three_byte_record_count": {"const": 351},
+        "two_byte_sentinel_count": {"const": 67},
+        "replacement_word_count": {"const": 4},
+        "data_start_offset": {"const": 902137},
+        "data_end_exclusive": {"const": 903324},
+        "data_region_size_bytes": {"const": 1187}
+      },
+      "additionalProperties": false
+    },
+    "area_lists": {
+      "type": "array",
+      "minItems": 128,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": [
+          "area_index",
+          "pointer_entry_file_offset",
+          "target_label",
+          "target_file_offset",
+          "record_indices",
+          "record_count",
+          "sentinel_file_offset"
+        ],
+        "properties": {
+          "area_index": {"type": "integer", "minimum": 0, "maximum": 127},
+          "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+          "target_label": {"type": "string", "pattern": "^OverworldData_HiddenItems_Screen_[0-9A-Fa-f]{2}$"},
+          "target_file_offset": {"type": "integer", "minimum": 0},
+          "record_indices": {
+            "type": "array",
+            "items": {"type": "integer", "minimum": 0, "maximum": 350}
+          },
+          "record_count": {"type": "integer", "minimum": 0, "maximum": 351},
+          "sentinel_file_offset": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "checked_comparisons": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mismatch_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mismatches": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/mismatch"}
+    },
+    "semantic_values_decoded": {
+      "const": false
+    },
+    "rom_modified": {
+      "const": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "mismatch": {
+      "type": "object",
+      "required": [
+        "kind",
+        "index",
+        "label",
+        "expression",
+        "offset",
+        "reason",
+        "expected_hex",
+        "actual_hex"
+      ],
+      "properties": {
+        "kind": {"enum": ["pointer", "record", "sentinel", "replacement-map16"]},
+        "index": {"type": "integer", "minimum": 0},
+        "label": {"type": ["string", "null"]},
+        "expression": {"type": ["string", "null"]},
+        "offset": {"type": "integer", "minimum": 0},
+        "reason": {"type": "string", "minLength": 1},
+        "expected_hex": {"type": "string", "pattern": "^[0-9A-F]+$"},
+        "actual_hex": {"type": ["string", "null"], "pattern": "^[0-9A-F]*$"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

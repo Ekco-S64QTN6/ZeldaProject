@@ -32,6 +32,7 @@ from zelda_suite.extract import (
     sha256_rom_bytes,
     validate_overworld_payload_pairs,
     validate_source_export,
+    verify_overworld_hidden_items,
     verify_registered_scalar_tables,
 )
 from zelda_suite.project import (
@@ -1041,6 +1042,75 @@ def verify_rom_tables_command(
         )
 
     if report["summary"]["mismatches"]:
+        raise click.exceptions.Exit(1)
+
+
+@cli.command(name="verify-overworld-hidden-items")
+@click.argument(
+    "rom_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source",
+    "source_path",
+    type=click.Path(
+        path_type=Path,
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+    ),
+    default="reference/AsarUSALTTPDisassembly/Bank1B.asm",
+    show_default=True,
+    help="Pinned Bank1B.asm source used to derive pointer targets and record offsets.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON report to a new file instead of stdout.",
+)
+def verify_overworld_hidden_items_command(
+    rom_path: Path,
+    source_path: Path,
+    output: Path | None,
+) -> None:
+    """Verify source-derived overworld hidden-item pointers, records, sentinels and Map16 words."""
+    try:
+        source = source_path.read_text(encoding="utf-8")
+        report = verify_overworld_hidden_items(
+            rom_path,
+            source,
+        )
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        click.echo(
+            f"Wrote hidden-item verification report to {output}; "
+            f"checked={report['checked_comparisons']}, "
+            f"mismatches={report['mismatch_count']}"
+        )
+
+    if report["mismatch_count"]:
         raise click.exceptions.Exit(1)
 
 
