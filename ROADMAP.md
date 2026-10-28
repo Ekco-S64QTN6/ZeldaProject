@@ -33,7 +33,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [x] Import source exports into project SQLite databases by explicit file path or validated registry name; manifest imports recheck registered format, source revision, and record count before storage. Integration tests round-trip every registered asset through SQLite and the canonical project JSON export.
 - [x] Persist validated source-export snapshots in project SQLite databases with explicit v1-to-v2 migration, duplicate-key protection, source provenance, canonical JSON, and SHA-256 integrity checks. This is source metadata persistence, not a semantic game-data schema.
 - [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 25 assets covering:
-  - Five seven-entry falling-prize parallel arrays.
+  - Five seven-entry falling-prize parallel arrays. Pinned-source tests verify
+    their shared indexes, and `AddPendantOrCrystal` reads the same selector
+    index from each; the joined view remains source-only until offsets and
+    values are compared with a trusted local US ROM.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.

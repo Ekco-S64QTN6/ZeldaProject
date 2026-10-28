@@ -1,10 +1,11 @@
 # Test fixtures
 
-Two kinds of fixtures:
+The current automated tests use synthetic data, source-derived JSON exports,
+or temporary files created under pytest's per-test temporary directories.
+There are no committed clean-ROM hashes, ROM slices, or golden ROM images in
+this directory.
 
-- **Committed:** golden hashes (`*.sha256`), expected JSON exports, sample
-  project files. These must be reproducible from a clean base ROM.
-- **Local, untracked:** extracted ROM slices, generated reference output.
-  Stored under `tests/fixtures/local/` and gitignored.
-
-Never commit an actual ROM file, even a partial one.
+The `tests/fixtures/local/` directory is reserved for local, untracked
+diagnostic material when needed. Keep ROMs, partial ROMs, extracted ROM bytes,
+and generated outputs out of Git. Do not make a ROM a prerequisite for
+ROM-independent unit tests or CI.

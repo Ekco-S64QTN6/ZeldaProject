@@ -41,6 +41,12 @@ does not imply that any release has been published.
   not proof that a dump exists or is valid; made the agent instructions and
   human-facing quickstart consistent with the still-open ROM/tool verification
   gates.
+- Documented the seven-entry falling-prize lookup as a joined source-only view
+  over its five parallel arrays, while preserving the open local-ROM byte
+  verification gate.
+- Corrected the fixture-directory guide to match the actual tracked files and
+  clarify that ROM images, ROM slices, and golden ROM artifacts are not
+  committed or required by ROM-independent tests.
 
 ### Verification
 
