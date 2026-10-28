@@ -48,8 +48,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     `item-receipt-y-offsets` (76 entries) had no directly numeric values, so
     this pass compared no bytes for those assets. This is evidence only for
     the compared values in that local file; skipped records and canonical ROM
-    provenance remain unverified. Step 5 in the runbook now distinguishes
-    fully compared, partially compared, and entirely skipped assets.
+    provenance remain unverified. The new `zelda-suite verify-rom-tables`
+    command makes this check repeatable and distinguishes full, partial,
+    skipped, and failing assets; it has synthetic regression coverage but has
+    not yet been re-run by the user against the ROM.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.
@@ -64,13 +66,14 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
   - Seven raw `Pool_AddReceiveItem` arrays: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
+- [x] Provide `zelda-suite verify-rom-tables ROM` to compare numeric literals in registered scalar data-table exports to a headerless 1 MiB local ROM. Reports distinguish pass/partial/skip/fail, use the data directive's byte width separately from the file-offset stride, record a local SHA-256, and never write ROM bytes. Synthetic tests cover matching/mismatching bytes, unresolved expressions, strided word tables, report output, and ROM-size rejection. The user's reported real-ROM result (428 compared, 175 skipped, zero mismatches) was from the runbook's Python check; rerun the new CLI against the local ROM to verify parity.
 - [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
 - [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
 - [ ] Establish complete editable schemas for items/chests/shops, doors/entrances, sprites/placements, message encoding, and audio payloads; distinguish raw metadata from verified semantic meaning.
 - [~] Continue documenting source-derived exports, schemas, provenance, regeneration commands, parser limits, and unresolved discrepancies as each asset lands.
 
-**Exit criteria:** Not met. The existing exports are targeted source inventories, not a complete data model for every major game system. Several include targets are absent from the pinned disassembly; no binary payloads are committed, and source-commented offsets are not independently verified against a local ROM.
+**Exit criteria:** Not met. The existing exports are targeted source inventories, not a complete data model for every major game system. Several include targets are absent from the pinned disassembly; no binary payloads are committed, and most source-commented offsets remain unverified against a trusted local ROM. The numeric scalar-table verifier covers only registered direct literals; unresolved expressions and semantic datasets still require separate checks.
 
 ## Phase 2 — Editor Core and Authoring API
 
@@ -134,9 +137,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 1. Complete ROM provenance validation and external-tool smoke tests. User-run
    local checks on 2026-10-28 matched the five falling-prize arrays and compared
    428 direct numeric scalar-table literals with zero mismatches; 175
-   unresolved/non-numeric records were skipped, including two assets with no
-   numeric values to compare. These checks do not prove canonical ROM identity.
-   Continue with [`docs/real-rom-verification.md`](./docs/real-rom-verification.md);
-   keep provenance and YAZE/z3ed/z3cli gates open until independently resolved.
+   unresolved/non-numeric records were skipped. These checks do not prove
+   canonical ROM identity. Rerun the new `zelda-suite verify-rom-tables`
+   command locally and continue with [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
+   On Arch Linux, use the verified generic YAZE release archive, inspect
+   `z3ed --help`, then perform only a confirmed read-only ROM operation.
+   Keep ROM provenance and the z3cli/model-endpoint gates open until independently
+   resolved.
 2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
 3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
