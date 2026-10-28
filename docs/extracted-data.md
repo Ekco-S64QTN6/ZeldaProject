@@ -554,10 +554,13 @@ Use `uv run zelda-suite audit-text-dictionary --output /tmp/text-dictionary-audi
 to cross-check the 98 registered symbolic dictionary pointer entries against
 the 98 pointer-to-fragment metadata records. The command validates source
 revision and table metadata, pointer/fragment label pairs, entry offsets and
-indexes, and the terminal sentinel. It reports the existing `.You` extent
+indexes, adjacent fragment start/next-offset relationships, fragment extent
+arithmetic, and the terminal sentinel. It reports the existing `.You` extent
 discrepancy as a warning: source extent 2 bytes versus 6 bytes from its
-directive. The audit does not edit that source annotation, resolve symbolic
-pointer values, inspect fragment payload bytes, or read a ROM. See
+directive. The loader's range checks validate consistency within the metadata;
+they do not verify source offsets against ROM bytes. The audit does not edit
+that source annotation, resolve symbolic pointer values, inspect fragment
+payload bytes, or read a ROM. See
 [`docs/schemas/text.md`](./schemas/text.md) and the
 [text dictionary audit schema](./schemas/text-dictionary-audit.schema.json).
 
