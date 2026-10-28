@@ -50,6 +50,32 @@ The JSON contract is [data-table-export.schema.json](./schemas/data-table-export
 The asset loader validates the format version, record count, source revision,
 entry offsets, and literal-width invariants.
 
+By default, `inspect-data-table` emits format version 1 and omits inline comments.
+Use `--include-comments` to opt into version 2:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Ancilla/ancilla_init.asm \
+  .item_values \
+  --table-offset '$048B90' \
+  --directive db \
+  --parent-label Pool_AddPendantOrCrystal \
+  --end-label .fall_height \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --include-comments \
+  --output /tmp/falling-prize-item-values-v2.json
+uv run zelda-suite validate-source-export /tmp/falling-prize-item-values-v2.json
+```
+
+Version 2 adds `inline_comment` to each entry. The value is the text after
+the source line's semicolon with surrounding whitespace stripped; it is
+`null` when the line has no semicolon. When a line supplies multiple `db`,
+`dw`, or `dl` values, each emitted entry carries the same line comment.
+Comments remain annotations only: neither the parser nor the validator treats
+them as executable expressions or verified semantic definitions. The schema is
+[here](./schemas/data-table-export-v2.schema.json). Existing version-1 exports
+and committed assets remain unchanged.
+
 ## Safety and limitations
 
 This command parses assembly text only. It does not read ROM bytes, open
