@@ -127,6 +127,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 └── docs/
     ├── api.md
     ├── project-format.md
+    ├── project-assets.md
     ├── extracted-data.md
     ├── asset-loader.md
     ├── incbin-inventory.md
