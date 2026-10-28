@@ -21,7 +21,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twelve named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the fourteen named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
@@ -35,6 +35,8 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/music-track-index.json`](../../data/extracted/music-track-index.json) — 35 source-indexed music pointer expressions, with empty entries and aliases.
 - [`data/extracted/music-payload-inventory.json`](../../data/extracted/music-payload-inventory.json) — 15 song payload `incbin` declarations with source ranges and size diagnostics.
 - [`data/extracted/overworld-hidden-item-pointers.json`](../../data/extracted/overworld-hidden-item-pointers.json) — 128 area-to-hidden-item-list pointers; record boundaries remain unresolved.
+- [`data/extracted/overworld-payloads-bank0b.json`](../../data/extracted/overworld-payloads-bank0b.json) — 164 Bank0B high/low `incbin` declarations with offset/size diagnostics.
+- [`data/extracted/overworld-payloads-bank0c.json`](../../data/extracted/overworld-payloads-bank0c.json) — 84 Bank0C high/low `incbin` declarations with offset/size diagnostics.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
