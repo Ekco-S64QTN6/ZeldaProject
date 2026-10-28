@@ -17,6 +17,7 @@ DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
 TEXT_MESSAGE_INDEX_FORMAT = "zelda-suite-text-message-index"
 SPRITE_DISPATCH_FORMAT = "zelda-suite-sprite-dispatch"
 MUSIC_TRACK_INDEX_FORMAT = "zelda-suite-music-track-index"
+ITEM_RECEIPT_LAYOUT_FORMAT = "zelda-suite-item-receipt-layout"
 _DATA_DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 SOURCE_EXPORT_FORMAT_VERSION = 1
 
@@ -87,6 +88,51 @@ _DATA_TABLE_ENTRY_KEYS = {
     "source_revision",
 }
 _DATA_TABLE_ENTRY_V2_KEYS = _DATA_TABLE_ENTRY_KEYS | {"inline_comment"}
+
+_ITEM_RECEIPT_LAYOUT_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "parent_label",
+    "entry_count",
+    "entries",
+    "dungeon_mask_count",
+    "dungeon_masks",
+    "semantic_item_ids_resolved",
+}
+_ITEM_RECEIPT_LAYOUT_ROW_KEYS = {
+    "table_index",
+    "y_offset",
+    "x_offset",
+    "wide_item_flag",
+    "properties",
+    "target_address",
+    "item_value",
+}
+_ITEM_RECEIPT_LAYOUT_CELL_KEYS = {
+    "source_label",
+    "entry_file_offset",
+    "expression",
+    "literal_value",
+}
+_ITEM_RECEIPT_LAYOUT_MASK_KEYS = {
+    "table_index",
+    *_ITEM_RECEIPT_LAYOUT_CELL_KEYS,
+}
+_ITEM_RECEIPT_LAYOUT_ARRAYS = {
+    "y_offset": (".y_offsets", 0x04836C, 1),
+    "x_offset": (".x_offsets", 0x0483B8, 1),
+    "wide_item_flag": (".wide_item_flag", 0x048450, 1),
+    "properties": (".properties", 0x04849C, 1),
+    "target_address": (".item_target_addr", 0x0484E8, 2),
+    "item_value": (".item_values", 0x048580, 1),
+}
+_ITEM_RECEIPT_LAYOUT_ENTRY_COUNT = 76
+_ITEM_RECEIPT_LAYOUT_MASK_LABEL = ".item_masks"
+_ITEM_RECEIPT_LAYOUT_MASK_OFFSET = 0x0485CC
+_ITEM_RECEIPT_LAYOUT_MASK_WIDTH = 2
+_ITEM_RECEIPT_LAYOUT_MASK_COUNT = 14
 
 
 class AssetLoadError(ValueError):
@@ -399,6 +445,114 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
             raise AssetLoadError(
                 f"{context}.source_revision does not match top-level source_revision"
             )
+
+
+def _validate_item_receipt_layout_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _ITEM_RECEIPT_LAYOUT_TOP_KEYS, "item-receipt layout")
+    if payload["format"] != ITEM_RECEIPT_LAYOUT_FORMAT:
+        raise AssetLoadError("item-receipt layout has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != 1:
+        raise AssetLoadError(
+            f"unsupported item-receipt layout version {version}; this loader supports 1"
+        )
+    if _string(payload["source_file"], "source_file") != "ancilla_init.asm":
+        raise AssetLoadError("item-receipt layout source_file must be 'ancilla_init.asm'")
+    _string(payload["source_revision"], "source_revision")
+    if _string(payload["parent_label"], "parent_label") != "Pool_AddReceiveItem":
+        raise AssetLoadError("item-receipt layout parent_label must be 'Pool_AddReceiveItem'")
+
+    entry_count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    entries = payload["entries"]
+    if not isinstance(entries, list) or entry_count != len(entries):
+        raise AssetLoadError("item-receipt layout entry_count does not match entries")
+    if entry_count != _ITEM_RECEIPT_LAYOUT_ENTRY_COUNT:
+        raise AssetLoadError(
+            f"item-receipt layout must contain {_ITEM_RECEIPT_LAYOUT_ENTRY_COUNT} entries"
+        )
+
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _ITEM_RECEIPT_LAYOUT_ROW_KEYS, context)
+        table_index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
+        if table_index != expected_index:
+            raise AssetLoadError(
+                f"{context}.table_index must be {expected_index}, got {table_index}"
+            )
+
+        for field, (expected_label, start_offset, width) in _ITEM_RECEIPT_LAYOUT_ARRAYS.items():
+            cell_context = f"{context}.{field}"
+            cell = _object(entry[field], cell_context)
+            _exact_keys(cell, _ITEM_RECEIPT_LAYOUT_CELL_KEYS, cell_context)
+            source_label = _source_label(cell["source_label"], f"{cell_context}.source_label")
+            if source_label != expected_label:
+                raise AssetLoadError(
+                    f"{cell_context}.source_label must be {expected_label!r}"
+                )
+            offset = _integer(
+                cell["entry_file_offset"],
+                f"{cell_context}.entry_file_offset",
+                minimum=0,
+            )
+            expected_offset = start_offset + expected_index * width
+            if offset != expected_offset:
+                raise AssetLoadError(
+                    f"{cell_context}.entry_file_offset must be {expected_offset}, got {offset}"
+                )
+            _string(cell["expression"], f"{cell_context}.expression")
+            value = _nullable_integer(
+                cell["literal_value"], f"{cell_context}.literal_value", minimum=0
+            )
+            if value is not None and value >= 1 << (8 * width):
+                raise AssetLoadError(
+                    f"{cell_context}.literal_value does not fit its {width}-byte table"
+                )
+
+    mask_count = _integer(
+        payload["dungeon_mask_count"], "dungeon_mask_count", minimum=1
+    )
+    masks = payload["dungeon_masks"]
+    if not isinstance(masks, list) or mask_count != len(masks):
+        raise AssetLoadError("dungeon_mask_count does not match dungeon_masks")
+    if mask_count != _ITEM_RECEIPT_LAYOUT_MASK_COUNT:
+        raise AssetLoadError(
+            f"item-receipt layout must contain {_ITEM_RECEIPT_LAYOUT_MASK_COUNT} dungeon masks"
+        )
+    for expected_index, raw_mask in enumerate(masks):
+        context = f"dungeon_masks[{expected_index}]"
+        mask = _object(raw_mask, context)
+        _exact_keys(mask, _ITEM_RECEIPT_LAYOUT_MASK_KEYS, context)
+        table_index = _integer(mask["table_index"], f"{context}.table_index", minimum=0)
+        if table_index != expected_index:
+            raise AssetLoadError(
+                f"{context}.table_index must be {expected_index}, got {table_index}"
+            )
+        if _source_label(mask["source_label"], f"{context}.source_label") != (
+            _ITEM_RECEIPT_LAYOUT_MASK_LABEL
+        ):
+            raise AssetLoadError(
+                f"{context}.source_label must be {_ITEM_RECEIPT_LAYOUT_MASK_LABEL!r}"
+            )
+        offset = _integer(mask["entry_file_offset"], f"{context}.entry_file_offset", minimum=0)
+        expected_offset = _ITEM_RECEIPT_LAYOUT_MASK_OFFSET + expected_index * _ITEM_RECEIPT_LAYOUT_MASK_WIDTH
+        if offset != expected_offset:
+            raise AssetLoadError(
+                f"{context}.entry_file_offset must be {expected_offset}, got {offset}"
+            )
+        _string(mask["expression"], f"{context}.expression")
+        value = _nullable_integer(mask["literal_value"], f"{context}.literal_value", minimum=0)
+        if value is not None and value >= 1 << (8 * _ITEM_RECEIPT_LAYOUT_MASK_WIDTH):
+            raise AssetLoadError(f"{context}.literal_value does not fit a two-byte mask")
+
+    semantic_ids_resolved = _boolean(
+        payload["semantic_item_ids_resolved"], "semantic_item_ids_resolved"
+    )
+    if semantic_ids_resolved:
+        raise AssetLoadError(
+            "item-receipt layout must not claim canonical semantic item IDs are resolved"
+        )
+
 
 _DICTIONARY_TOP_KEYS = {
     "format",
@@ -1147,6 +1301,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_incbin_export(export)
     elif format_name == DATA_TABLE_FORMAT:
         _validate_data_table_export(export)
+    elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
+        _validate_item_receipt_layout_export(export)
     elif format_name == DICTIONARY_INVENTORY_FORMAT:
         _validate_dictionary_inventory_export(export)
     elif format_name == TEXT_MESSAGE_INDEX_FORMAT:
@@ -1178,6 +1334,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     POINTER_TABLE_FORMAT,
     INCBIN_INVENTORY_FORMAT,
     DATA_TABLE_FORMAT,
+    ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
     SPRITE_DISPATCH_FORMAT,
@@ -1302,6 +1459,7 @@ def load_extracted_asset(
         POINTER_TABLE_FORMAT: "entry_count",
         INCBIN_INVENTORY_FORMAT: "declaration_count",
         DATA_TABLE_FORMAT: "entry_count",
+        ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",
         TEXT_MESSAGE_INDEX_FORMAT: "message_count",
         SPRITE_DISPATCH_FORMAT: "entry_count",
