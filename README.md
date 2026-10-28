@@ -6,8 +6,7 @@ A Claude-driven, RPG Maker-style authoring suite for *The Legend of Zelda: A Lin
 - **Plan:** see [`ROADMAP.md`](./ROADMAP.md)
 - **Tool/project catalog:** see [`RESEARCH.md`](./RESEARCH.md)
 
-
-**Project status:** Early-stage foundation and source-metadata tooling. The repository has a SQLite project scaffold, source-only extractors, a validated named-asset registry, read-only ROM inspection, and file-based byte-diff utilities. Semantic game editing and ROM writing/rebuilding are **not implemented yet**. Source inventories preserve unknowns and mismatched source annotations rather than guessing at binary meanings. See the [current roadmap](./ROADMAP.md) and [extracted-data catalog](./docs/extracted-data.md).
+**Project status:** Early-stage foundation and source-metadata tooling. The repository has a SQLite project scaffold, source-only extractors, a validated named-asset registry, read-only ROM inspection, and file-based byte-diff utilities. Semantic game editing and ROM writing/rebuilding are **not implemented yet**. Source inventories preserve unknowns and mismatched source annotations rather than guessing at binary meanings. See the [current roadmap](./ROADMAP.md) and [extracted-data catalog](./docs/extracted-data.md). To check the committed overworld High/Low source inventories, run `uv run zelda-suite validate-overworld-payload-pairs data/extracted/overworld-payloads-bank0b.json data/extracted/overworld-payloads-bank0c.json`.
 
 ## Quickstart
 
