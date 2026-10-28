@@ -1,135 +1,107 @@
-Project: Claude‑Driven RPG Maker‑Style Suite for ALttP ROM Hacking
+# ZeldaProject Roadmap
 
-Base ROM: Legend of Zelda, The - A Link to the Past (U) [!].smc (clean US release, no header)
-Goal: Replace fragile, GUI‑bound legacy editors with a scriptable, AI‑native pipeline that lets Claude (or any agent) parse, edit, and rebuild a Zelda 3 ROM as structured project data.
-Phase 0 — Foundation (Current)
+**Goal:** Build a scriptable, agent-native authoring suite for *The Legend of Zelda: A Link to the Past* (SNES). The long-term target is a structured project model with semantic editing APIs, deterministic ROM builds/diffs, verification, and eventually maker-style authoring.
 
-Objective: Establish the canonical ROM, workspace layout, and low‑level access primitives.
+**Current state (2026-10-27): Phase 1 — Structured Extraction is in progress.** Phase 0 has useful scaffolding but still has environment-dependent verification gates. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project initialization/validation, read-only ROM inspection, and file-to-file ROM diff utilities. It does **not** yet provide semantic overworld/dungeon editors or a ROM writer/rebuilder.
 
-    □
+Status legend: **[x] verified in repository/automated tests** · **[~] partial; limitations remain** · **[ ] not implemented or not verified in the available environment**.
 
-    Confirm the clean US ROM is the only .smc in the workspace.
-    □
+## Phase 0 — Foundation
 
-    Verify ROM header state (512‑byte header vs. headerless). Document the exact offset map for early debugging.
-    □
+**Objective:** Establish the canonical ROM, workspace layout, project format, and low-level access primitives.
 
-    Install and smoke‑test YAZE / z3ed as the reference CLI for ROM operations. Confirm it can parse the US ROM and dump basic structures (overworld maps, dungeon rooms, message tables).
-    □
+- [ ] Verify that a clean US ROM is available locally and is the only base-game ROM used by the build. ROMs are intentionally untracked and are not included in CI.
+- [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
+- [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
+- [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
+- [x] Choose SQLite as the canonical project format with JSON export, recorded in [ADR 0001](./docs/decisions/0001-project-data-format.md).
+- [~] Provide `zelda-suite init` and `validate` for a versioned SQLite project plus canonical JSON metadata export. The current schema contains project metadata only; it is not yet the game-system data model.
 
-    Install z3cli in a separate Python environment. Validate that it can attach to the ROM and run a trivial tool call (e.g., list dungeon rooms or read a chest table).
-    □
+**Exit criteria:** Not met. Local ROM provenance and real YAZE/`z3ed` and agent-harness smoke tests remain outstanding.
 
-    Decide on a project‑file format (JSON / YAML / SQLite) to hold extracted, human‑readable game data between Claude sessions.
+## Phase 1 — Structured Extraction (current focus)
 
-Exit criteria: A single project/ directory containing the clean ROM, a .gitignored workspace for generated assets, and proof that both z3ed and z3cli can read the ROM without errors.
-Phase 1 — Structured Extraction
+**Objective:** Build a source-traceable, queryable metadata model without treating unverified source comments as confirmed ROM facts.
 
-Objective: Convert opaque ROM bytes into a complete, queryable data model that Claude can reason about.
+- [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
+- [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
+- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 14 assets covering:
+  - Five seven-entry falling-prize parallel arrays.
+  - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
+  - 397 source text-message labels with offset/length diagnostics.
+  - 68 `SpriteActive3_Table` handler entries.
+  - 35 music-track pointer expressions and 15 music payload declarations.
+  - 128 overworld hidden-item pointer expressions.
+  - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
+- [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
+- [~] Inventory the two overworld High/Low payload banks: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C) by their source labels. An automated pair-integrity check has not yet been added.
+- [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
+- [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
+- [ ] Establish complete editable schemas for items/chests/shops, doors/entrances, sprites/placements, message encoding, and audio payloads; distinguish raw metadata from verified semantic meaning.
+- [~] Continue documenting source-derived exports, schemas, provenance, regeneration commands, parser limits, and unresolved discrepancies as each asset lands.
 
-    □
+**Exit criteria:** Not met. The existing exports are targeted source inventories, not a complete data model for every major game system. Several include targets are absent from the pinned disassembly; no binary payloads are committed, and source-commented offsets are not independently verified against a local ROM.
 
-    Use YAZE’s CLI (z3ed) to dump the overworld map table (160 maps), dungeon room table (296 rooms), and core graphics/palette sheets.
-    □
+## Phase 2 — Editor Core and Authoring API
 
-    Cross‑reference the AsarUSALTTPDisassembly for exact labels, table addresses, and data‑structure definitions that the GUI tools abstract away.
-    □
+**Objective:** Add safe semantic edits to the structured project model.
 
-    Extract message/dialogue data, item tables, sprite definitions, and music track pointers into the project format.
-    □
+- [ ] Define CRUD APIs for rooms, chests/items, overworld map elements, entrances, text, and sprite placements.
+- [ ] Store game-system records in SQLite with schema migrations, field constraints, and referential integrity.
+- [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
+- [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
+- [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
+- [ ] Integrate SpriteSomething ZSPR support and zcompress only after asset round-trip tests exist.
 
-    Build a lightweight Python/Node “asset loader” library that Claude can call to read or validate any extracted table by name.
-    □
+**Exit criteria:** Not met. The current project store is metadata-only; no authoring CRUD API or ROM writer exists yet.
 
-    Write a ROM diff harness: given a modified project file, produce a deterministic byte‑level diff against the base ROM so every edit is auditable.
+## Phase 3 — Claude Integration and Agent Workflows
 
-Exit criteria: Every major game system (overworld, dungeons, text, items, sprites, audio) has a corresponding extracted data file and a loader function. No raw hex editing is required to inspect the game.
-Phase 2 — Editor Core & Authoring API
+**Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-Objective: Give Claude a stable, semantic API for making changes, and give the human a usable GUI shell.
+- [ ] Expose validated authoring API functions as MCP tools with strict input/output schemas.
+- [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
+- [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
+- [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
+- [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
 
-    □
+**Exit criteria:** Not met. The MCP authoring tools and edit-to-build verification loop are future work.
 
-    Expose a CRUD API over the project data model: createRoom, updateChestItem, setOverworldTile, moveEntrance, etc.
-    □
+## Phase 4 — Maker-Style Expansion
 
-    Map each API call to the correct ROM write via YAZE’s scripting layer or a direct binary writer validated against the disassembly.
-    □
+**Objective:** Enable broad structural changes and complete-game authoring beyond isolated edits.
 
-    Implement guardrails: bounds checks, referential integrity (e.g., a chest cannot point to a nonexistent item), and a dry‑run mode that reports what would change.
-    □
+- [ ] Study Zelda Reloaded Maker's project-file model and record transferable design decisions.
+- [ ] Add templates for supported project styles.
+- [ ] Add tested bulk operations for overworld generation and entrance/exit graph consistency.
+- [ ] Add patch export, reproducible release metadata, generated readmes, and versioned artifacts.
+- [ ] Evaluate Solarus or Z3R as optional export targets only after the core project model is stable.
 
-    Build a minimal web UI (or extend YAZE’s ImGui frontend) that calls the same API, so human edits and Claude edits go through identical paths.
-    □
+**Exit criteria:** Not met.
 
-    Integrate SpriteSomething’s ZSPR handling for sprite import/export and zcompress compatibility for graphics decompression/recompression.
+## Phase 5 — Hardening and Distribution
 
-Exit criteria: A user can open a project file in the UI, change a room or chest, save, and reproduce the same edit by asking Claude to call the equivalent API function.
-Phase 3 — Claude Integration & Agent Workflows
+**Objective:** Make the suite safe to use, testable, documented, and maintainable.
 
-Objective: Make Claude a first‑class collaborator, not a prompt‑and‑pray wrapper.
+- [~] Add automated regression tests for source parsers, asset validation, ROM inspection, and byte-diff utilities; golden-ROM round-trip tests are not possible until a verified writer/build path exists.
+- [~] Document current CLI operations, source export formats, and known disassembly/offset caveats; complete API and schema documentation as the subsystems are implemented.
+- [ ] Provide an installer that prepares dependencies and initializes the workspace without fetching or distributing copyrighted ROM files.
+- [ ] Establish a changelog and semantic versioning for both project and exported asset formats.
+- [ ] Add contributor guidance for new extractors, schemas, source fixtures, and verification evidence.
 
-    □
+**Exit criteria:** Not met.
 
-    Wrap the authoring API as MCP tools so Claude can call list_dungeon_rooms, inspect_room(0x42), place_enemy, etc., with structured responses.
-    □
+## Guardrails and evidence
 
-    Use z3cli as the agent harness for model routing, session persistence, and tool‑call review.
-    □
+- Never commit ROM images or extracted ROM payload bytes. The source export inventories record declarations and metadata only.
+- Treat the pinned disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` as provenance for the current source exports; do not silently reinterpret or “repair” source comments.
+- Before any ROM write is supported, require a verified source/offset mapping, deterministic diff, explicit dry run, and an emulator or equivalent execution check.
+- Keep local-ROM checks explicitly marked as unverified until performed against a trusted local file.
+- Update this roadmap and the relevant subsystem docs in the same change that alters implementation or changes the verified status of a task.
 
-    Define a project reference protocol: Claude must cite the extracted data file and byte range for every proposed change.
-    □
+## Immediate next work
 
-    Implement a verification loop: after Claude writes a change, automatically run the ROM diff harness and a lightweight emulator smoke test (YAZE’s built‑in emulator or a headless SNES core).
-    □
-
-    Build example agent tasks: “Create a three‑room dungeon with a key‑locked boss door,” “Rebalance all chest contents in dungeon 3,” “Translate all signs to a custom language.”
-
-Exit criteria: At least three nontrivial editing tasks can be completed by Claude from a natural‑language prompt, with each change traceable to a specific API call and ROM diff.
-Phase 4 — Maker‑Style Expansion
-
-Objective: Move beyond editing individual rooms toward assembling full games or large‑scale conversions.
-
-    □
-
-    Study Zelda Reloaded Maker’s project‑file paradigm (build from scratch, not patch‑on‑top) and decide which concepts transfer to ALttP.
-    □
-
-    Add project‑level templates: “vanilla‑like overworld,” “dungeon‑crawl,” “puzzle‑heavy,” etc., that pre‑populate the data model.
-    □
-
-    Implement bulk operations: regenerate all overworld maps from a higher‑level map description, auto‑place entrances/exits based on graph connectivity.
-    □
-
-    Add export/publish tooling: IPS patch generation (using Lunar IPS or a pure‑Python patcher), readme generation, and versioned release artifacts.
-    □
-
-    Evaluate Solarus or Z3R as optional export targets if the user wants a non‑SNES runtime.
-
-Exit criteria: A user can start from a template, make broad structural changes, and produce a distributable patch without manually editing individual bytes or rooms unless desired.
-Phase 5 — Hardening & Distribution
-
-Objective: Make the suite reliable enough for non‑expert users and maintainable long‑term.
-
-    □
-
-    Add automated regression tests: edit a fixture project, rebuild, and compare against a golden ROM hash.
-    □
-
-    Document every API function, every extracted data schema, and every known ROM caveat.
-    □
-
-    Provide a one‑command installer that pulls the base ROM, sets up YAZE/z3cli, and initializes a project.
-    □
-
-    Establish a changelog and semantic versioning for the project‑file format.
-    □
-
-    Write contributor guidelines for extending the API or adding new extraction modules.
-
-Risks & Mitigations
-Risk	Mitigation
-YAZE/z3cli are young projects; APIs may change	Pin versions, wrap external CLIs behind a thin adapter layer, keep extraction logic independent.
-ROM writes corrupt game data silently	Always validate against disassembly labels; require a diff + emulator smoke test before accepting a change.
-Claude hallucinates tool calls or data references	MCP tool schemas must reject malformed inputs; every change must cite the source data file and byte range.
-Over‑reliance on GUI editor quirks	Treat the disassembly and extracted data as ground truth; the GUI is a view, not the source of truth.
+1. Add an automated integrity check ensuring each source-labelled High/Low overworld screen pair has exactly one member of each kind.
+2. Use a locally supplied clean US ROM and source consumers to resolve the four source annotation issues without changing the source export facts.
+3. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
+4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.

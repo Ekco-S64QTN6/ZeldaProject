@@ -110,39 +110,32 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 ├── pyproject.toml
 ├── justfile
 ├── .gitignore
-├── base_game_roms/              ← ROMs (gitignored except README)
+├── .gitmodules
+├── base_game_roms/               ← locally supplied ROMs; ignored by Git
+├── data/extracted/                ← committed source-derived metadata JSON + manifest
+├── reference/
 │   ├── README.md
-│   ├── Legend of Zelda, The - A Link to the Past (U) [!].smc   (untracked)
-│   └── Zelda no Densetsu - Kamigami no Triforce (J) (V1.0).smc (untracked)
-├── reference/                   ← read-only reference material
-│   ├── README.md
-│   ├── AsarUSALTTPDisassembly/  ← git submodule
-│   └── parallel_worlds/
-│       ├── List of Updates for v1.23 (for romhackers only).txt
-│       ├── Parallel Worlds Team.md
-│       ├── Zelda3_Parallel_Worlds_v1-23.ips
-│       ├── Zelda3_Parallel_Worlds_v1-23.smc     (untracked)
-│       └── zpw-v1.23_ReadMe.txt
+│   ├── AsarUSALTTPDisassembly/   ← pinned git submodule; semantic source reference
+│   └── parallel_worlds/           ← read-only reference documents and patch
+├── project/                       ← local working projects; generated files ignored
 ├── src/zelda_suite/
-│   ├── extract/                 ← ROM → project data
-│   ├── author/                  ← CRUD API over project data
-│   ├── write/                   ← project data → ROM bytes
-│   ├── diff/                    ← ROM diff harness
-│   ├── adapters/                ← thin wrappers: yaze, sprite_something, zcompress
-│   └── cli/                     ← user-facing entry points
-├── project/                     ← working projects (gitignored)
-│   └── .gitkeep
-├── tests/
-│   └── fixtures/
-│       ├── README.md
-│       └── local/               ← untracked, gitignored
+│   ├── cli/main.py
+│   ├── extract/                    ← read-only source/ROM inspection and export validation
+│   ├── project/store.py            ← SQLite project metadata + JSON export
+│   └── diff/rom_diff.py            ← file-backed ROM byte diff
+├── tests/                          ← parser, export, CLI, project, and diff regression tests
 └── docs/
     ├── api.md
-    ├── glossary.md
-    ├── schemas/
-    └── decisions/
-        └── 0001-project-data-format.md
+    ├── project-format.md
+    ├── extracted-data.md
+    ├── asset-loader.md
+    ├── incbin-inventory.md
+    ├── rom-image-inspection.md
+    ├── rom-diff.md
+    ├── schemas/                    ← export contracts and discovery notes
+    └── decisions/                  ← architecture decision records
 ```
+
 
 **Project data format:** SQLite as canonical (`project/<name>.db`) with a JSON export on save for git diffing. See `docs/decisions/0001-project-data-format.md`. Do not change this without a new ADR.
 
@@ -164,7 +157,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 - **One change = one commit.** The ROM diff goes in the commit body when the change affects ROM bytes.
 - **Tests first for extraction logic.** Add a fixture before writing a parser.
-- **Phase discipline.** Do not skip ahead to Phase 3 (agent integration) before Phase 2 (authoring API) is solid. Each phase in `ROADMAP.md` has explicit exit criteria.
+- **Phase discipline.** Use `ROADMAP.md` as the current status ledger. Do not claim a phase exit criterion is met until implementation and evidence exist; label local-ROM or external-tool checks unverified when they have not been run.
 - **Ask before adding dependencies.** Prefer stdlib and one well‑known library over a framework.
 - **Log everything in `docs/`.** New schemas, new API functions, new ROM caveats.
 - **Task runner:** `justfile` at repo root. Run `just` to list commands. `just doctor` is the canary; keep it green.
@@ -185,17 +178,19 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
   
   Concretely: do not use their internal data formats as the project schema, do not shell out to them as a write backend, and do not treat their limits as ROM limits. Constraints come from the disassembly and hardware, not from legacy editor behavior.
 - ❌ **Do not assume YAZE's GUI save paths are correct** — they are still in flux as of v0.8.0. Verify against the disassembly.
-- ❌ **Do not propose changes to Claude's own context or the ROADMAP phases** without asking.
+- **Keep the roadmap honest.** Preserve phase ordering unless the user asks to change it, and update implementation status and affected docs whenever work lands.
 
 ---
 
-## 10. Open Decisions (Phase 0 Must Resolve)
+## 10. Open Decisions and Local Verification Gates
 
-- [x] Project data format → **SQLite canonical + JSON export** (ADR 0001, proposed).
-- [ ] Adapter strategy for YAZE: subprocess CLI vs FFI vs reimplementation. (Proposal: subprocess `z3ed` CLI, wrap in Python.)
-- [ ] Agent harness: `z3cli` vs custom MCP server. (Proposal: try `z3cli` first; fall back to a thin MCP wrapper if endpoint compatibility fails.)
-- [ ] Emulator smoke test: YAZE headless vs `bsnes`/`snes9x` CLI. (Proposal: YAZE headless if stable; otherwise snes9x with a scripted input sequence.)
-- [ ] `AsarUSALTTPDisassembly` integration: confirmed as git submodule at `reference/AsarUSALTTPDisassembly/`. Update `RESEARCH.md` when pinned.
+- [x] Project data format → **SQLite canonical + JSON export** (ADR 0001); the current SQLite schema still stores project metadata only.
+- [x] Disassembly submodule configured and source exports use revision `347c23f9fc019c72d32da537c9cb235f468d021d`; source-only inventories have parser-parity tests.
+- [ ] Verify a trusted clean US ROM locally, including its header status and SHA-256. The ROM is user-supplied and intentionally absent from Git/CI.
+- [ ] Smoke-test YAZE/`z3ed` against that local ROM and record exactly which read operations succeed.
+- [ ] Choose the YAZE adapter strategy after the CLI smoke test (proposal: subprocess adapter).
+- [ ] Test `z3cli` with the intended model endpoint or decide on a thin custom MCP server.
+- [ ] Select and verify a headless emulator smoke-test path before any ROM writer is introduced.
 
 ---
 
@@ -203,8 +198,8 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 - **`ROADMAP.md`** — the phased plan. Read this before proposing new work.
 - **`RESEARCH.md`** — the catalog of tools and projects referenced above, with more detail.
-- **`docs/api.md`** — the authoring API surface (to be written in Phase 2).
-- **`docs/schemas/`** — the project data schemas (to be written in Phase 1).
+- **`docs/api.md`** — current documented API surface; extend it as CLI and authoring functions change.
+- **`docs/schemas/`** — source-export contracts and discovery notes; full editable game-system schemas remain incomplete.
 - **`docs/decisions/`** — Architecture Decision Records. Read `0001` before touching the data model.
 - **`docs/glossary.md`** — terminology (IPS, ASM, MSU‑1, rooms vs. maps, etc.).
 - **`README.md`** — human‑facing quickstart.

@@ -60,3 +60,19 @@ files are created exclusively and existing files are never overwritten.
 The helper is exported from the extraction package alongside the
 source-pointer-table parser. Both Python and CLI interfaces parse assembly text
 only; neither resolves symbols or confirms the included payload bytes.
+
+## Committed source inventories
+
+The same parser powers three registered metadata inventories:
+
+- `music-payload-inventory`: 15 music `incbin` declarations from `Bank1B.asm`.
+- `overworld-payloads-bank0b`: 164 overworld High/Low declarations from `Bank0B.asm`.
+- `overworld-payloads-bank0c`: 84 overworld High/Low declarations from `Bank0C.asm`.
+
+Each is source metadata only. The parser does not open the include targets, and the
+pinned disassembly does not track the referenced payload binaries. The overworld
+exports preserve two size/range mismatches in Bank0B, one missing range annotation
+in Bank0B, and one size/range mismatch in Bank0C rather than correcting them. See
+[the extracted-data catalog](./extracted-data.md) for per-asset details and
+regeneration commands.
+
