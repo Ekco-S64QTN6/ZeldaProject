@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite joined receive-item source layout",
+  "description": "A positional join of six source-derived receive-item arrays. It preserves raw expressions and deliberately does not resolve canonical semantic item IDs.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "parent_label",
+    "entry_count",
+    "entries",
+    "dungeon_mask_count",
+    "dungeon_masks",
+    "semantic_item_ids_resolved"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-item-receipt-layout"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "const": "ancilla_init.asm"
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_label": {
+      "const": "Pool_AddReceiveItem"
+    },
+    "entry_count": {
+      "const": 76
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 76,
+      "maxItems": 76,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "dungeon_mask_count": {
+      "const": 14
+    },
+    "dungeon_masks": {
+      "type": "array",
+      "minItems": 14,
+      "maxItems": 14,
+      "items": {
+        "$ref": "#/$defs/mask"
+      }
+    },
+    "semantic_item_ids_resolved": {
+      "const": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "cell": {
+      "type": "object",
+      "required": [
+        "source_label",
+        "entry_file_offset",
+        "expression",
+        "literal_value"
+      ],
+      "properties": {
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "literal_value": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "y_offset",
+        "x_offset",
+        "wide_item_flag",
+        "properties",
+        "target_address",
+        "item_value"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 75
+        },
+        "y_offset": {
+          "allOf": [
+            {"$ref": "#/$defs/cell"},
+            {"properties": {"source_label": {"const": ".y_offsets"}}}
+          ]
+        },
+        "x_offset": {
+          "allOf": [
+            {"$ref": "#/$defs/cell"},
+            {"properties": {"source_label": {"const": ".x_offsets"}}}
+          ]
+        },
+        "wide_item_flag": {
+          "allOf": [
+            {"$ref": "#/$defs/cell"},
+            {"properties": {"source_label": {"const": ".wide_item_flag"}}}
+          ]
+        },
+        "properties": {
+          "allOf": [
+            {"$ref": "#/$defs/cell"},
+            {"properties": {"source_label": {"const": ".properties"}}}
+          ]
+        },
+        "target_address": {
+          "allOf": [
+            {"$ref": "#/$defs/cell"},
+            {"properties": {"source_label": {"const": ".item_target_addr"}}}
+          ]
+        },
+        "item_value": {
+          "allOf": [
+            {"$ref": "#/$defs/cell"},
+            {"properties": {"source_label": {"const": ".item_values"}}}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "mask": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "source_label",
+        "entry_file_offset",
+        "expression",
+        "literal_value"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 13
+        },
+        "source_label": {
+          "const": ".item_masks"
+        },
+        "entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "literal_value": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 65535
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,231 +1,240 @@
 {
-  "format": "zelda-suite-asset-registry",
-  "format_version": 1,
   "assets": [
     {
-      "name": "falling-prize-item-values",
-      "file": "falling-prize-item-values.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 7,
-      "subsystem": "items",
-      "description": "Seven item values used by the AddPendantOrCrystal falling-prize routine."
-    },
-    {
-      "name": "falling-prize-fall-heights",
-      "file": "falling-prize-fall-heights.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 7,
-      "subsystem": "items",
-      "description": "Seven indexed fall-height values for the AddPendantOrCrystal routine."
-    },
-    {
-      "name": "falling-prize-y-offsets",
-      "file": "falling-prize-y-offsets.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 7,
-      "subsystem": "items",
-      "description": "Seven indexed Y-offset values for the AddPendantOrCrystal routine."
-    },
-    {
-      "name": "falling-prize-x-offsets",
-      "file": "falling-prize-x-offsets.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 7,
-      "subsystem": "items",
-      "description": "Seven indexed X-offset values for the AddPendantOrCrystal routine."
-    },
-    {
-      "name": "falling-prize-delay-timers",
-      "file": "falling-prize-delay-timers.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 7,
-      "subsystem": "items",
-      "description": "Seven indexed delay-timer values for the AddPendantOrCrystal routine."
-    },
-    {
-      "name": "text-dictionary-pointers",
-      "file": "text-dictionary-pointers.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 98,
-      "subsystem": "text",
-      "description": "Ninety-eight symbolic pointers to text dictionary fragments."
-    },
-    {
-      "name": "text-dictionary-fragments",
-      "file": "text-dictionary-fragments.json",
-      "format": "zelda-suite-dictionary-inventory",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 98,
-      "subsystem": "text",
-      "description": "Pointer-to-fragment metadata and source-declared extent diagnostics."
-    },
-    {
-      "name": "text-message-index",
-      "file": "text-message-index.json",
-      "format": "zelda-suite-text-message-index",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 397,
-      "subsystem": "text",
-      "description": "Message IDs, source offsets, and declared lengths from the two pinned message blocks."
-    },
-    {
-      "name": "sprite-active3-dispatch",
-      "file": "sprite-active3-dispatch.json",
-      "format": "zelda-suite-sprite-dispatch",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 68,
-      "subsystem": "sprites",
-      "description": "Sixty-eight source-mapped handlers for sprite type IDs $79-$BC, preserving aliases."
-    },
-    {
-      "name": "music-track-index",
-      "file": "music-track-index.json",
-      "format": "zelda-suite-music-track-index",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 35,
-      "subsystem": "audio",
-      "description": "Thirty-five source-indexed music pointer expressions, including empty entries and aliases."
-    },
-    {
-      "name": "music-payload-inventory",
-      "file": "music-payload-inventory.json",
-      "format": "zelda-suite-incbin-inventory",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 15,
-      "subsystem": "audio",
-      "description": "Fifteen source-labeled music incbin declarations with annotated file ranges and size diagnostics."
-    },
-    {
-      "name": "overworld-hidden-item-pointers",
-      "file": "overworld-hidden-item-pointers.json",
-      "format": "zelda-suite-pointer-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 128,
-      "subsystem": "overworld",
-      "description": "One hundred twenty-eight symbolic pointers for overworld hidden-item lists; record boundaries remain unresolved."
-    },
-    {
-      "name": "dungeon-room-object-pointers",
+      "description": "320 source-indexed 24-bit RoomData_ObjectDataPointers expressions; target resolution and playable-room count remain unverified.",
       "file": "dungeon-room-object-pointers.json",
       "format": "zelda-suite-pointer-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "name": "dungeon-room-object-pointers",
       "record_count": 320,
-      "subsystem": "dungeons",
-      "description": "320 source-indexed 24-bit RoomData_ObjectDataPointers expressions; target resolution and playable-room count remain unverified."
-    },
-    {
-      "name": "dungeon-room-payloads-bank03",
-      "file": "dungeon-room-payloads-bank03.json",
-      "format": "zelda-suite-incbin-inventory",
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 34,
-      "subsystem": "dungeons",
-      "description": "34 labelled Bank03 room incbin declarations with source start offsets and size annotations; computed end offsets are not independently verified."
+      "subsystem": "dungeons"
     },
     {
-      "name": "dungeon-room-payload-inventory",
+      "description": "Seventy-five labelled Bank0A room incbin declarations with source start offsets and size annotations; end offsets are computed and not independently verified.",
       "file": "dungeon-room-payload-inventory.json",
       "format": "zelda-suite-incbin-inventory",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "name": "dungeon-room-payload-inventory",
       "record_count": 75,
-      "subsystem": "dungeons",
-      "description": "Seventy-five labelled Bank0A room incbin declarations with source start offsets and size annotations; end offsets are computed and not independently verified."
-    },
-    {
-      "name": "overworld-payloads-bank0b",
-      "file": "overworld-payloads-bank0b.json",
-      "format": "zelda-suite-incbin-inventory",
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 164,
-      "subsystem": "overworld",
-      "description": "Bank0B high/low overworld payload declarations with source-range and size diagnostics."
+      "subsystem": "dungeons"
     },
     {
-      "name": "dungeon-room-payloads-bank1f",
+      "description": "34 labelled Bank03 room incbin declarations with source start offsets and size annotations; computed end offsets are not independently verified.",
+      "file": "dungeon-room-payloads-bank03.json",
+      "format": "zelda-suite-incbin-inventory",
+      "name": "dungeon-room-payloads-bank03",
+      "record_count": 34,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "dungeons"
+    },
+    {
+      "description": "157 labelled Bank1F room incbin declarations with source start offsets and size annotations; computed end offsets are not independently verified.",
       "file": "dungeon-room-payloads-bank1f.json",
       "format": "zelda-suite-incbin-inventory",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "name": "dungeon-room-payloads-bank1f",
       "record_count": 157,
-      "subsystem": "dungeons",
-      "description": "157 labelled Bank1F room incbin declarations with source start offsets and size annotations; computed end offsets are not independently verified."
-    },
-    {
-      "name": "overworld-payloads-bank0c",
-      "file": "overworld-payloads-bank0c.json",
-      "format": "zelda-suite-incbin-inventory",
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 84,
-      "subsystem": "overworld",
-      "description": "Bank0C high/low overworld payload declarations with source-range and size diagnostics."
+      "subsystem": "dungeons"
     },
     {
-      "name": "item-receipt-target-addresses",
-      "file": "item-receipt-target-addresses.json",
+      "description": "Seven indexed delay-timer values for the AddPendantOrCrystal routine.",
+      "file": "falling-prize-delay-timers.json",
       "format": "zelda-suite-data-table",
+      "name": "falling-prize-delay-timers",
+      "record_count": 7,
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 76,
-      "subsystem": "items",
-      "description": "Raw two-byte WRAM target addresses indexed by the receive-item routine."
+      "subsystem": "items"
     },
     {
-      "name": "item-receipt-values",
-      "file": "item-receipt-values.json",
+      "description": "Seven indexed fall-height values for the AddPendantOrCrystal routine.",
+      "file": "falling-prize-fall-heights.json",
       "format": "zelda-suite-data-table",
+      "name": "falling-prize-fall-heights",
+      "record_count": 7,
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 76,
-      "subsystem": "items",
-      "description": "Raw byte values written by the receive-item routine; negative/sentinel byte patterns are preserved."
+      "subsystem": "items"
     },
     {
-      "name": "item-receipt-dungeon-masks",
+      "description": "Seven item values used by the AddPendantOrCrystal falling-prize routine.",
+      "file": "falling-prize-item-values.json",
+      "format": "zelda-suite-data-table",
+      "name": "falling-prize-item-values",
+      "record_count": 7,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Seven indexed X-offset values for the AddPendantOrCrystal routine.",
+      "file": "falling-prize-x-offsets.json",
+      "format": "zelda-suite-data-table",
+      "name": "falling-prize-x-offsets",
+      "record_count": 7,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Seven indexed Y-offset values for the AddPendantOrCrystal routine.",
+      "file": "falling-prize-y-offsets.json",
+      "format": "zelda-suite-data-table",
+      "name": "falling-prize-y-offsets",
+      "record_count": 7,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Fourteen raw two-byte masks used by receive-item dungeon-item handling.",
       "file": "item-receipt-dungeon-masks.json",
       "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "name": "item-receipt-dungeon-masks",
       "record_count": 14,
-      "subsystem": "items",
-      "description": "Fourteen raw two-byte masks used by receive-item dungeon-item handling."
-    },
-    {
-      "name": "item-receipt-y-offsets",
-      "file": "item-receipt-y-offsets.json",
-      "format": "zelda-suite-data-table",
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 76,
-      "subsystem": "items",
-      "description": "Raw signed-looking decimal Y-offset expressions from the receive-item routine; negative expressions are preserved verbatim."
+      "subsystem": "items"
     },
     {
-      "name": "item-receipt-x-offsets",
-      "file": "item-receipt-x-offsets.json",
-      "format": "zelda-suite-data-table",
+      "description": "Joined positional view of six raw receive-item arrays, retaining raw expressions and a separate 14-word dungeon-mask table; canonical semantic item IDs remain unresolved.",
+      "file": "item-receipt-layout.json",
+      "format": "zelda-suite-item-receipt-layout",
+      "name": "item-receipt-layout",
+      "record_count": 76,
       "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 76,
-      "subsystem": "items",
-      "description": "Raw per-entry X offsets used by the receive-item routine."
+      "subsystem": "items"
     },
     {
-      "name": "item-receipt-wide-flags",
-      "file": "item-receipt-wide-flags.json",
-      "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
-      "record_count": 76,
-      "subsystem": "items",
-      "description": "Raw wide-item flag bytes; bit semantics are not normalized."
-    },
-    {
-      "name": "item-receipt-properties",
+      "description": "Raw property bytes for each receive-item table position.",
       "file": "item-receipt-properties.json",
       "format": "zelda-suite-data-table",
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "name": "item-receipt-properties",
       "record_count": 76,
-      "subsystem": "items",
-      "description": "Raw property bytes for each receive-item table position."
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Raw two-byte WRAM target addresses indexed by the receive-item routine.",
+      "file": "item-receipt-target-addresses.json",
+      "format": "zelda-suite-data-table",
+      "name": "item-receipt-target-addresses",
+      "record_count": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Raw byte values written by the receive-item routine; negative/sentinel byte patterns are preserved.",
+      "file": "item-receipt-values.json",
+      "format": "zelda-suite-data-table",
+      "name": "item-receipt-values",
+      "record_count": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Raw wide-item flag bytes; bit semantics are not normalized.",
+      "file": "item-receipt-wide-flags.json",
+      "format": "zelda-suite-data-table",
+      "name": "item-receipt-wide-flags",
+      "record_count": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Raw per-entry X offsets used by the receive-item routine.",
+      "file": "item-receipt-x-offsets.json",
+      "format": "zelda-suite-data-table",
+      "name": "item-receipt-x-offsets",
+      "record_count": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Raw signed-looking decimal Y-offset expressions from the receive-item routine; negative expressions are preserved verbatim.",
+      "file": "item-receipt-y-offsets.json",
+      "format": "zelda-suite-data-table",
+      "name": "item-receipt-y-offsets",
+      "record_count": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "items"
+    },
+    {
+      "description": "Fifteen source-labeled music incbin declarations with annotated file ranges and size diagnostics.",
+      "file": "music-payload-inventory.json",
+      "format": "zelda-suite-incbin-inventory",
+      "name": "music-payload-inventory",
+      "record_count": 15,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "audio"
+    },
+    {
+      "description": "Thirty-five source-indexed music pointer expressions, including empty entries and aliases.",
+      "file": "music-track-index.json",
+      "format": "zelda-suite-music-track-index",
+      "name": "music-track-index",
+      "record_count": 35,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "audio"
+    },
+    {
+      "description": "One hundred twenty-eight symbolic pointers for overworld hidden-item lists; record boundaries remain unresolved.",
+      "file": "overworld-hidden-item-pointers.json",
+      "format": "zelda-suite-pointer-table",
+      "name": "overworld-hidden-item-pointers",
+      "record_count": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "overworld"
+    },
+    {
+      "description": "Bank0B high/low overworld payload declarations with source-range and size diagnostics.",
+      "file": "overworld-payloads-bank0b.json",
+      "format": "zelda-suite-incbin-inventory",
+      "name": "overworld-payloads-bank0b",
+      "record_count": 164,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "overworld"
+    },
+    {
+      "description": "Bank0C high/low overworld payload declarations with source-range and size diagnostics.",
+      "file": "overworld-payloads-bank0c.json",
+      "format": "zelda-suite-incbin-inventory",
+      "name": "overworld-payloads-bank0c",
+      "record_count": 84,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "overworld"
+    },
+    {
+      "description": "Sixty-eight source-mapped handlers for sprite type IDs $79-$BC, preserving aliases.",
+      "file": "sprite-active3-dispatch.json",
+      "format": "zelda-suite-sprite-dispatch",
+      "name": "sprite-active3-dispatch",
+      "record_count": 68,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
+      "description": "Pointer-to-fragment metadata and source-declared extent diagnostics.",
+      "file": "text-dictionary-fragments.json",
+      "format": "zelda-suite-dictionary-inventory",
+      "name": "text-dictionary-fragments",
+      "record_count": 98,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "text"
+    },
+    {
+      "description": "Ninety-eight symbolic pointers to text dictionary fragments.",
+      "file": "text-dictionary-pointers.json",
+      "format": "zelda-suite-data-table",
+      "name": "text-dictionary-pointers",
+      "record_count": 98,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "text"
+    },
+    {
+      "description": "Message IDs, source offsets, and declared lengths from the two pinned message blocks.",
+      "file": "text-message-index.json",
+      "format": "zelda-suite-text-message-index",
+      "name": "text-message-index",
+      "record_count": 397,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "text"
     }
-  ]
+  ],
+  "format": "zelda-suite-asset-registry",
+  "format_version": 1
 }

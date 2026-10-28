@@ -400,6 +400,22 @@ its exclusive next label from
 `--end-label` for `.item_masks`. Validate and diff the resulting JSON before
 reviewing a data update. No ROM bytes or binary slices are committed.
 
+The joined `item-receipt-layout` export aligns the six 76-entry arrays by
+`table_index` while retaining every field's source label, offset, raw
+expression, and numeric literal when parsed. It preserves the 14 dungeon masks
+separately and carries `semantic_item_ids_resolved: false`; the source-comment
+gap around index `$40` is still unresolved. Regenerate and compare it with:
+
+```bash
+uv run zelda-suite join-item-receipt-tables \
+  --output /tmp/item-receipt-layout.json
+uv run zelda-suite validate-source-export /tmp/item-receipt-layout.json
+diff -u data/extracted/item-receipt-layout.json /tmp/item-receipt-layout.json
+```
+
+The joined view is registered as a 76-record asset. It is a convenience layout,
+not a canonical item catalog or a ROM-derived payload.
+
 
 ## Dungeon room object-pointer table
 

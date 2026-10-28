@@ -18,6 +18,7 @@ from zelda_suite.extract import (
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
+    build_item_receipt_layout,
     inspect_rom_image,
     load_source_export,
     parse_data_table,
@@ -1041,6 +1042,60 @@ def verify_rom_tables_command(
 
     if report["summary"]["mismatches"]:
         raise click.exceptions.Exit(1)
+
+
+@cli.command(name="join-item-receipt-tables")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the joined JSON view to a new file instead of stdout.",
+)
+def join_item_receipt_tables_command(
+    registry_path: Path | None,
+    output: Path | None,
+) -> None:
+    """Join the receive-item source arrays by position without guessing item IDs."""
+    try:
+        report = build_item_receipt_layout(
+            registry_path or "data/extracted/manifest.json"
+        )
+    except (AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(
+        f"Wrote {report['entry_count']} joined receive-item records and "
+        f"{report['dungeon_mask_count']} separate dungeon masks to {output}"
+    )
 
 
 @cli.command(name="validate-source-export")
