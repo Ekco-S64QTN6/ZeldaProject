@@ -11,7 +11,10 @@ import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
-from zelda_suite.extract.asset_loader import load_extracted_asset
+from zelda_suite.extract.asset_loader import (
+    list_extracted_assets,
+    load_extracted_asset,
+)
 from zelda_suite.project.store import (
     CURRENT_SCHEMA_VERSION,
     PROJECT_FORMAT,
@@ -170,6 +173,42 @@ def test_import_extracted_asset_rejects_unregistered_names(tmp_path: Path) -> No
     database, _ = initialize_project("unknown_registry", tmp_path)
     with pytest.raises(ValueError, match="unknown extracted asset"):
         import_extracted_asset(database, "not-in-registry", REGISTRY_PATH)
+
+
+def test_every_registered_asset_round_trips_through_project_storage(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("all_registry_assets", tmp_path)
+    registry_assets = list_extracted_assets(REGISTRY_PATH)
+
+    assert registry_assets
+    for asset in registry_assets:
+        stored = import_extracted_asset(
+            database,
+            asset["name"],
+            REGISTRY_PATH,
+        )
+        assert stored["key"] == asset["name"]
+        assert stored["format"] == asset["format"]
+        assert stored["source_revision"] == asset["source_revision"]
+
+    expected_names = sorted(asset["name"] for asset in registry_assets)
+    listed = list_source_assets(database)
+    assert [asset["key"] for asset in listed] == expected_names
+
+    exported = json.loads(json_path.read_text(encoding="utf-8"))
+    exported_assets = exported["source_assets"]
+    assert [asset["key"] for asset in exported_assets] == expected_names
+    assert exported["schema_version"] == CURRENT_SCHEMA_VERSION
+
+    for metadata in listed:
+        stored = get_source_asset(database, metadata["key"])
+        committed = load_extracted_asset(metadata["key"], REGISTRY_PATH)
+        assert stored["payload"] == committed
+        assert stored["sha256"] == metadata["sha256"]
+        assert stored["source_revision"] == metadata["source_revision"]
+
+    assert validate_project(database) == []
 
 
 def test_duplicate_source_asset_requires_explicit_replacement(tmp_path: Path) -> None:
