@@ -9,6 +9,10 @@ from click.testing import CliRunner
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.source_expression_audit import audit_unresolved_table_expressions
 
+ROOT = Path(__file__).resolve().parents[1]
+REGISTERED_MANIFEST = ROOT / "data" / "extracted" / "manifest.json"
+PINNED_SOURCE_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
+
 
 def _write_registry(tmp_path: Path) -> Path:
     extracted = tmp_path / "extracted"
@@ -136,3 +140,58 @@ def test_audit_cli_refuses_to_overwrite_output(tmp_path: Path) -> None:
     assert result.exit_code != 0
     assert "refusing to overwrite existing output" in result.output
     assert output.read_text(encoding="utf-8") == "do not replace"
+
+
+def test_audit_pins_current_registered_scalar_table_baseline() -> None:
+    """Keep the committed table inventory and unresolved-expression coverage visible."""
+    report = audit_unresolved_table_expressions(REGISTERED_MANIFEST)
+
+    assert [asset["asset_name"] for asset in report["assets"]] == [
+        "falling-prize-delay-timers",
+        "falling-prize-fall-heights",
+        "falling-prize-item-values",
+        "falling-prize-x-offsets",
+        "falling-prize-y-offsets",
+        "item-receipt-dungeon-masks",
+        "item-receipt-graphics-indices",
+        "item-receipt-properties",
+        "item-receipt-target-addresses",
+        "item-receipt-values",
+        "item-receipt-wide-flags",
+        "item-receipt-x-offsets",
+        "item-receipt-y-offsets",
+        "text-dictionary-pointers",
+    ]
+    assert all(asset["source_revision"] == PINNED_SOURCE_REVISION for asset in report["assets"])
+    assert report["summary"] == {
+        "table_asset_count": 14,
+        "entry_count": 679,
+        "direct_numeric_entry_count": 504,
+        "signed_decimal_entry_count": 77,
+        "unresolved_expression_count": 98,
+        "classification_counts": {
+            "symbol": 98,
+            "symbol_with_numeric_addend": 0,
+            "compound_or_assembler_specific": 0,
+            "other": 0,
+        },
+    }
+    assert {
+        asset["asset_name"]: asset["unresolved_expression_count"]
+        for asset in report["assets"]
+        if asset["unresolved_expression_count"]
+    } == {"text-dictionary-pointers": 98}
+    assert {
+        asset["asset_name"]: asset["signed_decimal_entry_count"]
+        for asset in report["assets"]
+        if asset["signed_decimal_entry_count"]
+    } == {
+        "item-receipt-properties": 1,
+        "item-receipt-y-offsets": 76,
+    }
+    assert report["evidence"] == {
+        "source_only": True,
+        "rom_bytes_read": False,
+        "assembler_expressions_evaluated": False,
+    }
+    assert report == audit_unresolved_table_expressions(REGISTERED_MANIFEST)
