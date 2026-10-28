@@ -69,3 +69,23 @@ jobs:
           tests/test_setup_script.py
       - name: Run tests
         run: python -m pytest -q
+
+  setup-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run PowerShell workspace setup smoke test
+        shell: pwsh
+        run: |
+          $workspace = Join-Path $env:RUNNER_TEMP "zelda-setup-smoke"
+          .\scripts\setup.ps1 -Name "ci-smoke" -Workspace $workspace
+          $database = Join-Path $workspace "project/ci-smoke.db"
+          $jsonExport = Join-Path $workspace "project/ci-smoke.json"
+          if (-not (Test-Path $database)) { throw "Setup did not create the SQLite project." }
+          if (-not (Test-Path $jsonExport)) { throw "Setup did not create the JSON export." }
+          Write-Host "PowerShell setup created and validated project files without a ROM."
