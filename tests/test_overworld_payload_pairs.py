@@ -38,7 +38,7 @@ def test_committed_overworld_inventories_have_complete_source_local_pairs() -> N
     assert by_source["Bank0B.asm"]["screen_count"] == 82
     assert by_source["Bank0C.asm"]["screen_count"] == 42
     assert by_source["Bank0B.asm"]["screen_tokens"][0] == "00"
-    assert by_source["Bank0C.asm"]["screen_tokens"][-1] == "88"
+    assert by_source["Bank0C.asm"]["screen_tokens"][-1] == "9F"
 
 
 def test_validator_rejects_a_missing_low_declaration() -> None:
