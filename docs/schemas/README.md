@@ -27,6 +27,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Text dictionary pointer verification report](./text-dictionary-pointer-verification.schema.json) — version 1 read-only byte comparison against candidate 16-bit pointers derived from the registered fragment offsets; source offsets, ROM provenance, and the runtime symbol-name mapping remain unverified.
 - [Text message index](./text-message-index.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-messages`.
 - [Text-message index audit](./text-message-index-audit.schema.json) — version 1 source-only diagnostics emitted by `zelda-suite audit-text-message-index`.
+- [Text-message byte verification](./text-message-byte-verification.schema.json) — version 1 read-only comparison of source-literal message bytes against a local ROM; does not decode text or establish ROM provenance/source-offset trust.
 - [Named asset registry](./asset-registry.schema.json) — version 1 catalog schema for `data/extracted/manifest.json`.
 - [Sprite dispatch export](./sprite-dispatch-export.schema.json) — version 1 schema for `zelda-suite inspect-sprite-dispatch`.
 - [Music track index](./music-track-index.schema.json) — version 1 schema for `zelda-suite inspect-music-track-index`.
