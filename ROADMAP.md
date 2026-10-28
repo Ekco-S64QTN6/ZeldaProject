@@ -14,7 +14,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
 - [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
-- [x] Choose SQLite as the canonical project format with JSON export, recorded in [ADR 0001](./docs/decisions/0001-project-data-format.md).
+- [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
 - [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v2 `migrate-project` for a versioned SQLite project plus canonical JSON export. The project can store validated source-export snapshots, but it is not yet the editable game-system data model.
 
 **Exit criteria:** Not met. Local ROM provenance and real YAZE/`z3ed` and agent-harness smoke tests remain outstanding.
