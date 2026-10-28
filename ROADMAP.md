@@ -93,7 +93,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make the suite safe to use, testable, documented, and maintainable.
 
-- [~] Add automated regression tests for source parsers, asset validation, ROM inspection, and byte-diff utilities; golden-ROM round-trip tests are not possible until a verified writer/build path exists.
+- [~] Maintain automated regression coverage for source parsers, asset validation, ROM inspection, and byte-diff utilities. CI runs Python syntax checks, Ruff across all `src`/`tests`, strict MyPy on `src`, the full pytest suite, POSIX and Windows setup smoke tests, and a clean wheel build/install smoke test. ROM-dependent verification and golden-ROM round-trip tests remain open until a trusted local ROM and verified writer/build path are available.
 - [~] Document current CLI operations, source export formats, and known disassembly/offset caveats; complete API and schema documentation as the subsystems are implemented.
 - [x] Provide `scripts/setup.sh` and `scripts/setup.ps1` plus `docs/install.md`; prepare dependencies, initialize and validate a project, refuse to overwrite existing project files, and never fetch or modify a ROM.
 - [x] Establish `CHANGELOG.md` and a versioning policy for the package, project JSON format, SQLite schema, asset registry, and individual source-export formats. The release/tag workflow has not yet been exercised.
