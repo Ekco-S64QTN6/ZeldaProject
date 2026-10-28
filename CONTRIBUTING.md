@@ -93,6 +93,17 @@ Record each behavior or contract change under `[Unreleased]` in
 to distinguish package releases, project JSON, SQLite schema, registry, and
 source-export format versions; do not bump one merely because another changed.
 
+## Branch and pull-request lifecycle
+
+Start each focused change on one short-lived branch from the latest `main`.
+Before reusing an old branch, compare its unique commits with `main`; ahead
+counts do not mean those commits are missing functionality, and a heavily
+diverged branch should not be merged wholesale to recover one change. The repo
+has GitHub's `delete_branch_on_merge` setting enabled, so branches merged via
+PR should be removed automatically. If a branch remains afterward, treat it as
+an orphaned/stale branch and review it separately rather than continuing work
+on it.
+
 ## Pull request checklist
 
 Before requesting review, confirm that the change:
