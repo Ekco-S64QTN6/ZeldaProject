@@ -7,6 +7,10 @@ does not imply that any release has been published.
 
 ## [Unreleased]
 
+### Changed
+
+- Mark ADR 0001 as Accepted to match the adopted SQLite canonical project format with JSON export documented in the roadmap and project-format guide.
+
 ### Added
 
 - Add read-only `zelda-suite verify-text-message-bytes` and a version-1
