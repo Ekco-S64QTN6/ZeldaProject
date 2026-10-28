@@ -11,6 +11,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
+- [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables`.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.

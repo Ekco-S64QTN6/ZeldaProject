@@ -150,113 +150,50 @@ verify other source annotations. A mismatch must be investigated; do not
 auto-correct source comments or shift offsets speculatively. Record the size,
 SHA-256, table name, and mismatch offsets in the local test notes.
 
-## 5. Cross-check directly numeric values in registered scalar-table exports
+## 5. Cross-check registered scalar-table literals against the ROM
 
-After the focused falling-prize check, this script checks every direct numeric
-`literal_value` in registered `zelda-suite-data-table` exports against the
-local ROM using each record's calculated file offset and declared entry width.
-It skips null/unresolved expressions (including signed decimal expressions
-that the parser intentionally does not normalize). A mismatch can reveal an
-offset annotation issue or an unmodeled assembler expression; do not auto-fix
-either. This is a byte comparison, not a semantic decoder.
+The repeatable `verify-rom-tables` command compares direct numeric values in
+registered `zelda-suite-data-table` exports against the local ROM. It uses
+each entry's declared file offset, the `db`/`dw`/`dl` directive width for
+the literal bytes, and the export's entry stride for indexing. Simple negative
+decimal literals (such as `db -5`) are checked as two's-complement values
+within the signed range of that directive; symbolic or otherwise unresolved
+expressions are skipped rather than guessed. The source exports are not
+rewritten or normalized by this check.
+
+Run from the repository root:
 
 ```bash
-python - "$ROM" <<'PY'
-import json
-from pathlib import Path
-import sys
-
-if len(sys.argv) != 2:
-    print("STOP: pass the ROM path as the first argument.", file=sys.stderr)
-    raise SystemExit(2)
-
-rom_path = Path(sys.argv[1])
-if not rom_path.is_file():
-    print(f"STOP: ROM path is not a file: {rom_path}", file=sys.stderr)
-    print("Set ROM in this same shell and rerun the command.", file=sys.stderr)
-    raise SystemExit(2)
-
-try:
-    rom = rom_path.read_bytes()
-except OSError as exc:
-    print(f"STOP: could not read ROM path {rom_path}: {exc}", file=sys.stderr)
-    raise SystemExit(2)
-root = Path.cwd()
-manifest = json.loads(
-    (root / "data/extracted/manifest.json").read_text(encoding="utf-8")
-)
-
-checked_total = 0
-skipped_total = 0
-mismatch_total = 0
-for asset in manifest["assets"]:
-    if asset.get("format") != "zelda-suite-data-table":
-        continue
-
-    path = root / "data/extracted" / asset["file"]
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    width = payload["entry_width"]
-    checked = 0
-    skipped = 0
-    mismatches = []
-
-    for entry in payload["entries"]:
-        value = entry["literal_value"]
-        if value is None:
-            skipped += 1
-            continue
-        if value < 0 or value >= (1 << (8 * width)):
-            mismatches.append(
-                (entry["entry_file_offset"], None, None,
-                 "literal does not fit declared entry width")
-            )
-            continue
-
-        offset = entry["entry_file_offset"]
-        expected = value.to_bytes(width, "little")
-        actual = rom[offset:offset + width]
-        checked += 1
-        if actual != expected:
-            mismatches.append((offset, expected, actual, entry["expression"]))
-
-    checked_total += checked
-    skipped_total += skipped
-    mismatch_total += len(mismatches)
-    if mismatches:
-        status = "FAIL"
-    elif checked == 0:
-        status = "SKIP"
-    elif skipped:
-        status = "PASS (partial)"
-    else:
-        status = "PASS"
-    print(f"{status} {asset['name']}: checked={checked}, skipped={skipped}, "
-          f"mismatches={len(mismatches)}")
-
-    for offset, expected, actual, expression in mismatches[:8]:
-        print(f"  offset 0x{offset:06X}: expression={expression!r}, "
-              f"expected={expected.hex(' ').upper() if expected is not None else 'n/a'}, "
-              f"actual={actual.hex(' ').upper() if actual is not None else 'out of range'}")
-    if len(mismatches) > 8:
-        print(f"  ... {len(mismatches) - 8} additional mismatch(es)")
-
-print(f"\nSummary: checked={checked_total}, skipped={skipped_total}, "
-      f"mismatches={mismatch_total}")
-raise SystemExit(1 if mismatch_total else 0)
-PY
+uv run zelda-suite verify-rom-tables "$ROM"
 ```
 
-Only direct numeric expressions are tested. Source expressions left unresolved
-by the parser are deliberately skipped rather than guessed. Per-asset status
-means:
-- `PASS`: every entry had a directly numeric value and all compared bytes match.
-- `PASS (partial)`: every compared byte matches, but at least one entry was skipped.
-- `SKIP`: the asset had no directly numeric entries, so no bytes were compared.
-- `FAIL`: at least one compared value mismatched or did not fit its declared width.
+The command emits a JSON report with the ROM filename, size and SHA-256, a
+per-table status, entry counts, and any mismatch offsets. The SHA-256 is a local
+file fingerprint, not proof of provenance.
 
-A total of zero mismatches does not mean that skipped entries were verified.
-Review any mismatch before deciding whether the source annotation, offset
-mapping, or expression encoding is wrong.
+Status values mean:
+- `pass`: all entries were numeric and all compared bytes matched.
+- `partial`: all compared bytes matched, but one or more entries were skipped.
+- `skip`: no numeric entries were available for comparison.
+- `fail`: at least one compared value mismatched, exceeded its directive width,
+  or referred outside the image.
+
+A nonzero exit status means at least one mismatch was found. The report is
+still emitted, so it can be saved for investigation. To save it to a new file:
+
+```bash
+TEST_DIR="${TEST_DIR:-$(mktemp -d)}"
+uv run zelda-suite verify-rom-tables "$ROM" \
+  --output "$TEST_DIR/scalar-table-verification.json"
+printf 'Verification report: %s\n' "$TEST_DIR/scalar-table-verification.json"
+```
+
+The command is read-only and never writes ROM bytes. It verifies only direct
+numeric source-table literals plus simple negative decimal literals at their
+recorded offsets; it does not decode semantics, validate skipped expressions,
+or establish canonical ROM identity.
+Review mismatches instead of shifting offsets or normalizing expressions
+speculatively.
 
 ## 6. Run the ROM-independent regression suite
 
@@ -276,14 +213,31 @@ These tools are not needed for steps 1–6, but they are needed to attempt the
 remaining Phase 0 integration gates.
 
 - **YAZE / `z3ed`:** `z3ed` is YAZE's ROM inspection/editing CLI. The official
-  [YAZE releases](https://github.com/scawful/yaze/releases/latest) include it
-  with the editor and runtime assets. As of 2026-10-28, the latest tagged
-  release is v0.7.2, with Linux `.deb` and `.tar.gz` assets. On Debian or
-  Ubuntu, download the `yaze-0.7.2-Linux.deb` asset from that release page,
-  install it with `sudo apt install ./yaze-0.7.2-Linux.deb`, then check
-  `command -v z3ed`. Other Linux distributions should use the release archive
-  or the official [installation guide](https://yaze.halext.org/docs/de/dd4/md_docs_2public_2build_2install-options.html).
-  No ROM is bundled.
+  [YAZE v0.7.2 release](https://github.com/scawful/yaze/releases/tag/v0.7.2)
+  provides a generic Linux `.tar.gz` for distributions such as Arch Linux.
+  Download and verify the official archive first:
+
+  ```bash
+  cd /tmp
+  curl -fL -o yaze-0.7.2-Linux.tar.gz \
+    https://github.com/scawful/yaze/releases/download/v0.7.2/yaze-0.7.2-Linux.tar.gz
+  printf '%s  %s\n' \
+    'b7310862e4306830f5631e81a030df4ff976106d9001d9e21c314bb5ad3dc8db' \
+    'yaze-0.7.2-Linux.tar.gz' | sha256sum -c -
+
+  tar -tzf yaze-0.7.2-Linux.tar.gz | head -80
+  mkdir -p "$HOME/.local/opt/yaze-0.7.2"
+  tar -xzf yaze-0.7.2-Linux.tar.gz -C "$HOME/.local/opt/yaze-0.7.2"
+  find "$HOME/.local/opt/yaze-0.7.2" -type f \( -name z3ed -o -name yaze \) -print
+  ```
+
+  Inspect the archive listing and the paths printed by `find`; then invoke the
+  discovered `z3ed` executable or wrapper with `--help` before adding any
+  symlink to `~/.local/bin`. Do not use the Debian `.deb` package on Arch.
+  The release does not bundle a ROM. If the prebuilt archive cannot run on
+  your host, use YAZE's [official build guide](https://github.com/scawful/yaze/blob/master/docs/public/build/quick-reference.md)
+  and its Linux `lin-rel` preset; build only the `z3ed` target and its required
+  runtime assets rather than starting with the AI-enabled preset.
 - **`z3cli`:** This is a separate, experimental agent harness, not part of
   YAZE or this Python package. Its [source repository](https://github.com/scawful/z3cli)
   documents a source install rather than a tagged release. Keep it in its own
@@ -325,7 +279,8 @@ arguments before attempting an actual read.
 ## What is and is not implemented
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,
-source-only table/pointer/inventory export, export validation, and ROM-free
+source-only table/pointer/inventory export, export validation, read-only
+verification of registered numeric scalar-table literals, and ROM-free
 project initialization/storage tests.
 
 Not yet implemented/verified: general semantic ROM extraction into editable

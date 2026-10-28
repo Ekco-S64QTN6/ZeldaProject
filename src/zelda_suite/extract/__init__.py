@@ -54,6 +54,11 @@ from zelda_suite.extract.rom_image import (
     read_rom_bytes,
     sha256_rom_bytes,
 )
+from zelda_suite.extract.rom_table_verification import (
+    ROM_TABLE_VERIFICATION_FORMAT,
+    ROMTableVerificationError,
+    verify_registered_scalar_tables,
+)
 from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchEntry,
     SpriteDispatchParseError,
@@ -75,6 +80,7 @@ __all__ = [
     "DICTIONARY_INVENTORY_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "POINTER_DIRECTIVE_WIDTHS",
+    "ROM_TABLE_VERIFICATION_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
@@ -93,6 +99,7 @@ __all__ = [
     "PointerTableEntry",
     "ROMImageInspection",
     "ROMImageInspectionError",
+    "ROMTableVerificationError",
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
@@ -119,4 +126,5 @@ __all__ = [
     "sha256_rom_bytes",
     "validate_overworld_payload_pairs",
     "validate_source_export",
+    "verify_registered_scalar_tables",
 ]

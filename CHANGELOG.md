@@ -11,6 +11,10 @@ does not imply that any release has been published.
 
 - Optional `zelda-suite inspect-data-table --entry-count N` and parser-level
   expected-count validation so known table sizes can be asserted explicitly.
+- Read-only `zelda-suite verify-rom-tables ROM` command and a versioned JSON
+  report for comparing registered scalar-table literals with a local ROM.
+  Simple negative decimal expressions are compared as signed-width
+  two's-complement values; other unresolved expressions remain skipped.
 - A staged, read-only local-ROM verification runbook covering file inspection,
   self-diff smoke testing, scalar-table byte comparisons, clear reporting for
   skipped/unresolved entries, and external-tool installation/capability checks.
@@ -44,6 +48,10 @@ does not imply that any release has been published.
   comparison of 428 direct numeric scalar-table literals with zero mismatches;
   175 unresolved/non-numeric records were skipped. Canonical ROM provenance
   and external-tool verification remain open.
+- Replaced the step-5 one-off scalar-table Python snippet with the tested
+  `verify-rom-tables` CLI in the local-ROM runbook and documented the generic
+  Linux YAZE archive/checksum route for Arch and other non-Debian systems.
+  Existing user-run ROM results remain evidence only for the compared bytes.
 - Clarified that the documented US ROM path is only a local setup convention,
   not proof that a dump exists or is valid; made the agent instructions and
   human-facing quickstart consistent with the still-open ROM/tool verification
@@ -74,3 +82,6 @@ does not imply that any release has been published.
   accidentally select the wrong setup path.
 - CI builds the Python wheel, installs it into a clean virtual environment, and
   smoke-tests the installed CLI by initializing and validating a project.
+- Synthetic tests exercise the scalar-table verifier's match/mismatch paths,
+  skipped symbolic entries, signed decimal byte encoding, distinct directive
+  byte width versus entry stride, report serialization, and expected-size guard.

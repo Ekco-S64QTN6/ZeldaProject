@@ -17,6 +17,7 @@ from zelda_suite.extract import (
     MessageSourceBlock,
     OverworldPayloadPairError,
     ROMImageInspectionError,
+    ROMTableVerificationError,
     inspect_rom_image,
     load_source_export,
     parse_data_table,
@@ -30,6 +31,7 @@ from zelda_suite.extract import (
     sha256_rom_bytes,
     validate_overworld_payload_pairs,
     validate_source_export,
+    verify_registered_scalar_tables,
 )
 from zelda_suite.project import (
     get_source_asset,
@@ -974,6 +976,71 @@ def inspect_rom(rom_path: Path, output: Path | None) -> None:
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote ROM inspection metadata to {output}")
+
+
+
+@cli.command(name="verify-rom-tables")
+@click.argument(
+    "rom_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON report to a new file instead of stdout.",
+)
+def verify_rom_tables_command(
+    rom_path: Path,
+    registry_path: Path | None,
+    output: Path | None,
+) -> None:
+    """Compare numeric registered source-table literals with local ROM bytes."""
+    try:
+        report = verify_registered_scalar_tables(
+            rom_path,
+            registry_path or "data/extracted/manifest.json",
+        )
+    except (AssetLoadError, ROMTableVerificationError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote ROM table verification report to {output}; "
+            f"checked={summary['checked_entries']}, "
+            f"skipped={summary['skipped_entries']}, "
+            f"mismatches={summary['mismatches']}"
+        )
+
+    if report["summary"]["mismatches"]:
+        raise click.exceptions.Exit(1)
 
 
 @cli.command(name="validate-source-export")
