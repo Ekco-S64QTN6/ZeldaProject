@@ -617,3 +617,17 @@ fragment payload bytes and text decoder are outside this check, and the
 remains unresolved. See
 [`docs/schemas/text.md`](./schemas/text.md) and the
 [text dictionary pointer verification schema](./schemas/text-dictionary-pointer-verification.schema.json).
+
+
+## Compare encoded text-message bytes against a local image
+
+`uv run zelda-suite verify-text-message-bytes PATH_TO_ROM` compares each
+literal `db $XX` message byte in source blocks supplied with `--block`
+options against the corresponding sequential file offset in a headerless 1 MiB
+image. The report includes 397 messages when run with both pinned
+`Message_Data` blocks, reports offset-comment and block-size warnings
+separately, and never decodes the byte stream into text or semantics. The
+parser rejects non-literal expressions and does not execute Asar expressions.
+Source offsets and ROM provenance remain unverified; the real-ROM run is a
+separate evidence gate. See [text schemas and verification](./schemas/text.md)
+and the [text-message byte report schema](./schemas/text-message-byte-verification.schema.json).
