@@ -310,8 +310,8 @@ arguments before attempting an actual read.
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,
 source-only table/pointer/inventory export, export validation, read-only
-verification of registered numeric scalar-table literals, and ROM-free
-project initialization/storage tests.
+verification of registered scalar-table literals and the overworld hidden-item
+pointer/record region, and ROM-free project initialization/storage tests.
 
 Not yet implemented/verified: general semantic ROM extraction into editable
 overworld/dungeon/item schemas; an edit-to-ROM build pipeline; ROM writer and
