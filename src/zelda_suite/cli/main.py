@@ -193,7 +193,7 @@ def inspect_pointer_table(
 
     payload = {
         "format": "zelda-suite-pointer-table",
-        "format_version": 2 if include_comments else 1,
+        "format_version": 1,
         "source_file": source.name,
         "source_revision": recorded_revision,
         "table_label": label,
@@ -204,9 +204,7 @@ def inspect_pointer_table(
             else POINTER_DIRECTIVE_WIDTHS[directive.lower()]
         ),
         "entry_count": len(entries),
-        "entries": [
-            entry.to_dict(include_inline_comment=include_comments) for entry in entries
-        ],
+        "entries": [entry.to_dict() for entry in entries],
     }
     try:
         validate_source_export(payload)
