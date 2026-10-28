@@ -96,7 +96,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Document current CLI operations, source export formats, and known disassembly/offset caveats; complete API and schema documentation as the subsystems are implemented.
 - [ ] Provide an installer that prepares dependencies and initializes the workspace without fetching or distributing copyrighted ROM files.
 - [ ] Establish a changelog and semantic versioning for both project and exported asset formats.
-- [ ] Add contributor guidance for new extractors, schemas, source fixtures, and verification evidence.
+- [x] Add `CONTRIBUTING.md` guidance for new extractors, schemas, source fixtures, registry/loader updates, and verification evidence.
 
 **Exit criteria:** Not met.
 
