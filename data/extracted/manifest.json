@@ -109,6 +109,24 @@
       "record_count": 128,
       "subsystem": "overworld",
       "description": "One hundred twenty-eight symbolic pointers for overworld hidden-item lists; record boundaries remain unresolved."
+    },
+    {
+      "name": "overworld-payloads-bank0b",
+      "file": "overworld-payloads-bank0b.json",
+      "format": "zelda-suite-incbin-inventory",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 164,
+      "subsystem": "overworld",
+      "description": "Bank0B high/low overworld payload declarations with source-range and size diagnostics."
+    },
+    {
+      "name": "overworld-payloads-bank0c",
+      "file": "overworld-payloads-bank0c.json",
+      "format": "zelda-suite-incbin-inventory",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 84,
+      "subsystem": "overworld",
+      "description": "Bank0C high/low overworld payload declarations with source-range and size diagnostics."
     }
   ]
 }
