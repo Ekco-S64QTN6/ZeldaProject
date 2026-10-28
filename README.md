@@ -12,21 +12,20 @@ A Claude-driven, RPG Maker-style authoring suite for *The Legend of Zelda: A Lin
 
 ## Quickstart
 
+Prepare dependencies and initialize a project without a game ROM:
+
 ```bash
-# 1. Drop a clean US ROM here:
-#    base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
-
-# 2. Set up the Python environment
-uv sync            # or: python -m venv .venv && .venv/bin/pip install -e ".[dev]"
-
-# 3. Initialize an editable project (no ROM read/write occurs)
-uv run zelda-suite init my-hack
-
-# 4. Verify the generated project files
-uv run zelda-suite validate project/my-hack.db
-
-# 5. Verify tooling and ROM presence
-just doctor        # or: .venv/bin/zelda-suite doctor
+bash scripts/setup.sh --name my-hack
+# Windows PowerShell: .\scripts\setup.ps1 -Name my-hack
 ```
 
-See [`docs/doctor.md`](./docs/doctor.md) for diagnostics, [`docs/project-format.md`](./docs/project-format.md) for the SQLite/JSON project format, [`docs/disassembly-parser.md`](./docs/disassembly-parser.md) for pointer-table inspection, [`docs/data-table-parser.md`](./docs/data-table-parser.md) for raw `db`/`dw`/`dl` tables, [`docs/asset-loader.md`](./docs/asset-loader.md) for validating source-export JSON, [`docs/project-assets.md`](./docs/project-assets.md) for importing validated source exports into a project, [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md) for local ROM metadata and LoROM offset mapping, [`docs/rom-diff.md`](./docs/rom-diff.md) for file-backed ROM diff usage, and [`docs/extracted-data.md`](./docs/extracted-data.md) for committed source-derived table exports.
+The setup script prefers `uv` and falls back to a Python 3.12+ virtual
+environment when needed. It refuses to overwrite an existing project, then
+validates the created SQLite database and JSON sidecar. It does not download,
+copy, open, or modify a ROM.
+
+For local ROM/tool diagnostics later, place an authorized clean US dump at
+`base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc` and run
+`just doctor`. That check is separate from project initialization.
+
+See [`docs/install.md`](./docs/install.md) for setup details, [`docs/doctor.md`](./docs/doctor.md) for diagnostics, [`docs/project-format.md`](./docs/project-format.md) for the SQLite/JSON project format, [`docs/disassembly-parser.md`](./docs/disassembly-parser.md) for pointer-table inspection, [`docs/data-table-parser.md`](./docs/data-table-parser.md) for raw `db`/`dw`/`dl` tables, [`docs/asset-loader.md`](./docs/asset-loader.md) for validating source-export JSON, [`docs/project-assets.md`](./docs/project-assets.md) for importing validated source exports into a project, [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md) for local ROM metadata and LoROM offset mapping, [`docs/rom-diff.md`](./docs/rom-diff.md) for file-backed ROM diff usage, and [`docs/extracted-data.md`](./docs/extracted-data.md) for committed source-derived table exports.

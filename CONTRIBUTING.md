@@ -105,6 +105,7 @@ Before requesting review, confirm that the change:
 - [ ] Updates relevant documentation and regeneration commands.
 - [ ] Updates `CHANGELOG.md` and any version/schema contract described by the change.
 - [ ] Adds no ROM or ROM-derived binary data.
+- [ ] Keeps setup automation ROM-independent and tests safe refusal to overwrite existing project files, where applicable.
 - [ ] Passes `python -m compileall -q src tests`, Ruff on the changed Python
       components, and `python -m pytest -q`.
 

@@ -26,6 +26,9 @@ does not imply that any release has been published.
   preserving per-line inline comments while keeping the default version-1
   output contract unchanged.
 - `CONTRIBUTING.md` plus this changelog and the versioning policy.
+- Cross-platform workspace setup scripts (`scripts/setup.sh` and
+  `scripts/setup.ps1`) that prepare dependencies, initialize and validate a
+  project, and never fetch or modify ROMs.
 
 ### Changed
 
