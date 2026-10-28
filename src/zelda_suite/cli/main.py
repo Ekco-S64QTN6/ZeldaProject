@@ -13,6 +13,7 @@ from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
+    PINNED_SOURCE_REVISION,
     AssetLoadError,
     MessageSourceBlock,
     OverworldPayloadPairError,
