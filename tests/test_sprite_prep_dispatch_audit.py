@@ -34,7 +34,7 @@ def test_registered_cross_reference_covers_all_active3_sprite_ids() -> None:
     }
     assert [row["sprite_type_id"] for row in report["rows"]] == list(range(0x79, 0xBD))
     assert report["prep_only_sprite_ids"] == [
-        *range(0x00, 0x79),
+        *range(0x79),
         *range(0xBD, 0xF3),
     ]
     assert report["active3_only_sprite_ids"] == []
