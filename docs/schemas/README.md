@@ -11,7 +11,8 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Pointer-table JSON export](./pointer-table-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-pointer-table`.
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
-- [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables`.
+- [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables` by default.
+- [ROM scalar-table verification report (v2)](./rom-table-verification-v2.schema.json) — opt-in report emitted by `zelda-suite verify-rom-tables --include-skipped-expressions`; includes non-evaluating syntax classifications for skipped expressions.
 - [Overworld hidden-item verification report](./overworld-hidden-item-verification.schema.json) — version 1 report emitted by `zelda-suite verify-overworld-hidden-items`; includes source-derived sentinel-delimited per-area lists.
 - [Overworld hidden-item source-layout report](./overworld-hidden-item-source-layout.schema.json) — version 1 source-only report emitted by `zelda-suite inspect-overworld-hidden-items`; it does not read a ROM or decode semantic values.
 - [Dungeon-room pointer verification report](./dungeon-room-pointer-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-dungeon-room-pointers`; checks long pointer bytes against source-commented candidate targets.

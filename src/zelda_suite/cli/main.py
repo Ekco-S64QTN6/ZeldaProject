@@ -1001,16 +1001,27 @@ def inspect_rom(rom_path: Path, output: Path | None) -> None:
     default=None,
     help="Write the JSON report to a new file instead of stdout.",
 )
+@click.option(
+    "--include-skipped-expressions",
+    is_flag=True,
+    default=False,
+    help=(
+        "Emit report format v2 with non-evaluating classifications for unresolved "
+        "expressions."
+    ),
+)
 def verify_rom_tables_command(
     rom_path: Path,
     registry_path: Path | None,
     output: Path | None,
+    include_skipped_expressions: bool,
 ) -> None:
     """Compare numeric registered source-table literals with local ROM bytes."""
     try:
         report = verify_registered_scalar_tables(
             rom_path,
             registry_path or "data/extracted/manifest.json",
+            include_skipped_expressions=include_skipped_expressions,
         )
     except (AssetLoadError, ROMTableVerificationError, OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
@@ -1036,12 +1047,15 @@ def verify_rom_tables_command(
         except OSError as exc:
             raise click.ClickException(f"could not write {output}: {exc}") from exc
         summary = report["summary"]
-        click.echo(
+        summary_text = (
             f"Wrote ROM table verification report to {output}; "
             f"checked={summary['checked_entries']}, "
             f"skipped={summary['skipped_entries']}, "
             f"mismatches={summary['mismatches']}"
         )
+        if include_skipped_expressions:
+            summary_text += f", unresolved={summary['unresolved_expression_count']}"
+        click.echo(summary_text)
 
     if report["summary"]["mismatches"]:
         raise click.exceptions.Exit(1)

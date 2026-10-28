@@ -21,6 +21,24 @@ from zelda_suite.extract.rom_image import (
 ROM_TABLE_VERIFICATION_FORMAT = "zelda-suite-rom-table-verification"
 DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
 _SIGNED_DECIMAL_RE = re.compile(r"-[0-9]+\Z")
+_SYMBOL_RE = re.compile(r"\.?[A-Za-z_][A-Za-z0-9_]*\Z")
+_SYMBOL_WITH_NUMERIC_ADDEND_RE = re.compile(
+    r"\.?[A-Za-z_][A-Za-z0-9_]*[+-](?:\$[0-9A-Fa-f]+|0[xX][0-9A-Fa-f]+|[0-9]+)\Z"
+)
+_UNRESOLVED_EXPRESSION_REASON = (
+    "Expression is not a supported numeric literal; it was not evaluated."
+)
+
+
+def _classify_unresolved_expression(expression: str) -> str:
+    """Classify simple expression shapes without evaluating assembler syntax."""
+    if _SYMBOL_RE.fullmatch(expression) is not None:
+        return "symbol"
+    if _SYMBOL_WITH_NUMERIC_ADDEND_RE.fullmatch(expression) is not None:
+        return "symbol_with_numeric_addend"
+    if any(character in expression for character in "()+-*/%&|^~<>"):
+        return "compound_or_assembler_specific"
+    return "other"
 
 
 class ROMTableVerificationError(ValueError):
@@ -30,6 +48,8 @@ class ROMTableVerificationError(ValueError):
 def verify_registered_scalar_tables(
     rom_path: str | Path,
     registry_path: str | Path = "data/extracted/manifest.json",
+    *,
+    include_skipped_expressions: bool = False,
 ) -> dict[str, Any]:
     """Compare registered numeric data-table literals to a local headerless US ROM.
 
@@ -69,6 +89,7 @@ def verify_registered_scalar_tables(
     skipped_total = 0
     mismatch_total = 0
     resolved_signed_decimal_total = 0
+    unresolved_expression_total = 0
 
     for asset in table_assets:
         payload = load_extracted_asset(asset["name"], registry_path)
@@ -78,6 +99,7 @@ def verify_registered_scalar_tables(
         checked = 0
         skipped = 0
         resolved_signed_decimal = 0
+        unresolved_expressions: list[dict[str, Any]] = []
         mismatches: list[dict[str, Any]] = []
 
         for entry in payload["entries"]:
@@ -86,6 +108,15 @@ def verify_registered_scalar_tables(
                 expression = entry["expression"]
                 if _SIGNED_DECIMAL_RE.fullmatch(expression) is None:
                     skipped += 1
+                    if include_skipped_expressions:
+                        unresolved_expressions.append({
+                            "table_index": entry["table_index"],
+                            "offset": entry["entry_file_offset"],
+                            "source_line": entry["source_line"],
+                            "expression": expression,
+                            "classification": _classify_unresolved_expression(expression),
+                            "reason": _UNRESOLVED_EXPRESSION_REASON,
+                        })
                     continue
 
                 signed_value = int(expression, 10)
@@ -148,7 +179,7 @@ def verify_registered_scalar_tables(
             else "partial" if skipped
             else "pass"
         )
-        asset_reports.append({
+        asset_report = {
             "name": asset["name"],
             "source_file": payload["source_file"],
             "source_revision": payload["source_revision"],
@@ -163,7 +194,11 @@ def verify_registered_scalar_tables(
             "mismatch_count": len(mismatches),
             "status": status,
             "mismatches": mismatches,
-        })
+        }
+        if include_skipped_expressions:
+            asset_report["unresolved_expressions"] = unresolved_expressions
+            unresolved_expression_total += len(unresolved_expressions)
+        asset_reports.append(asset_report)
         checked_total += checked
         skipped_total += skipped
         mismatch_total += len(mismatches)
@@ -173,9 +208,23 @@ def verify_registered_scalar_tables(
         status: sum(report["status"] == status for report in asset_reports)
         for status in ("pass", "partial", "skip", "fail")
     }
+    summary = {
+        "table_asset_count": len(asset_reports),
+        "pass_asset_count": status_counts["pass"],
+        "partial_asset_count": status_counts["partial"],
+        "skipped_asset_count": status_counts["skip"],
+        "failed_asset_count": status_counts["fail"],
+        "checked_entries": checked_total,
+        "skipped_entries": skipped_total,
+        "resolved_signed_decimal_entries": resolved_signed_decimal_total,
+        "mismatches": mismatch_total,
+    }
+    if include_skipped_expressions:
+        summary["unresolved_expression_count"] = unresolved_expression_total
+
     return {
         "format": ROM_TABLE_VERIFICATION_FORMAT,
-        "format_version": 1,
+        "format_version": 2 if include_skipped_expressions else 1,
         "rom": {
             "filename": image_path.name,
             "size_bytes": len(rom),
@@ -185,15 +234,5 @@ def verify_registered_scalar_tables(
         },
         "registry": str(registry_path),
         "assets": asset_reports,
-        "summary": {
-            "table_asset_count": len(asset_reports),
-            "pass_asset_count": status_counts["pass"],
-            "partial_asset_count": status_counts["partial"],
-            "skipped_asset_count": status_counts["skip"],
-            "failed_asset_count": status_counts["fail"],
-            "checked_entries": checked_total,
-            "skipped_entries": skipped_total,
-            "resolved_signed_decimal_entries": resolved_signed_decimal_total,
-            "mismatches": mismatch_total,
-        },
+        "summary": summary,
     }

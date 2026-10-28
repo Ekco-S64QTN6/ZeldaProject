@@ -169,7 +169,22 @@ uv run zelda-suite verify-rom-tables "$ROM"
 
 The command emits a JSON report with the ROM filename, size and SHA-256, a
 per-table status, entry counts, and any mismatch offsets. The SHA-256 is a local
-file fingerprint, not proof of provenance.
+file fingerprint, not proof of provenance. By default, the report remains format
+version 1 and unresolved expressions are counted as skipped.
+
+For a diagnostic inventory of every skipped expression, add
+`--include-skipped-expressions`:
+
+```bash
+uv run zelda-suite verify-rom-tables "$ROM" --include-skipped-expressions
+```
+
+This opt-in mode emits report format version 2. Each asset lists the original
+expression, table index, source line, file offset, and a conservative syntax
+classification (`symbol`, `symbol_with_numeric_addend`,
+`compound_or_assembler_specific`, or `other`). These labels describe only syntax
+shape; they do not resolve symbols, infer values, or execute assembler syntax.
+See [`schemas/rom-table-verification-v2.schema.json`](./schemas/rom-table-verification-v2.schema.json).
 
 Status values mean:
 - `pass`: all entries were numeric and all compared bytes matched.
