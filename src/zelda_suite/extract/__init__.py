@@ -105,6 +105,11 @@ from zelda_suite.extract.text_dictionary_audit import (
     TextDictionaryAuditError,
     audit_text_dictionary_assets,
 )
+from zelda_suite.extract.text_dictionary_pointer_verification import (
+    TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT,
+    TextDictionaryPointerVerificationError,
+    verify_text_dictionary_pointers,
+)
 from zelda_suite.extract.text_message_index import (
     MessageSourceBlock,
     TextMessageBlockRecord,
@@ -134,6 +139,7 @@ __all__ = [
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "TEXT_DICTIONARY_AUDIT_FORMAT",
+    "TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT",
     "TEXT_MESSAGE_INDEX_AUDIT_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
@@ -164,6 +170,7 @@ __all__ = [
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
     "TextDictionaryAuditError",
+    "TextDictionaryPointerVerificationError",
     "TextMessageBlockRecord",
     "TextMessageIndex",
     "TextMessageIndexAuditError",
@@ -199,4 +206,5 @@ __all__ = [
     "verify_dungeon_room_pointers",
     "verify_overworld_hidden_items",
     "verify_registered_scalar_tables",
+    "verify_text_dictionary_pointers",
 ]

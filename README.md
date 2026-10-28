@@ -53,3 +53,5 @@ The committed sprite dispatch export has a submodule-independent regression base
 The 128-entry overworld hidden-item pointer export also has a source-independent CI baseline for all target labels and pointer offsets; that baseline checks metadata consistency, not ROM bytes or resolved target offsets.
 
 For a source-only cross-check of the 320 dungeon room pointers against the three committed room-payload inventories, run `uv run zelda-suite audit-dungeon-room-assets`. It reports the three unreferenced payload labels without reading ROM bytes or resolving candidate offsets; see [`docs/schemas/dungeons.md`](./docs/schemas/dungeons.md).
+
+For a read-only check of the 98 text-dictionary pointer words against candidate values derived from the registered fragment offsets, run `uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM`. The command compares bytes only and does not verify ROM provenance, source-offset accuracy, fragment payload bytes, or the unresolved `Text_DictionaryPointers`/ `DictionaryPointers` symbol-name mapping; see [the text documentation](./docs/schemas/text.md).

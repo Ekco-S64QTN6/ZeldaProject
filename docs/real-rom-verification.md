@@ -358,6 +358,31 @@ and the repository does not yet define a tested, version-independent command
 for a real YAZE/z3ed read. Confirm the installed tool's supported read-only
 arguments before attempting an actual read.
 
+## Text dictionary pointer words
+
+After checking ROM size/provenance diagnostics, the read-only command below
+compares the 98 two-byte dictionary pointer words in a local image with
+candidate pointer words derived from the registered source-commented fragment
+offsets:
+
+```bash
+uv run zelda-suite verify-text-dictionary-pointers \
+  "base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc" \
+  --output /tmp/text-dictionary-pointer-verification.json
+```
+
+Review `pointer_table.mismatch_count`, every entry's expected/actual bytes,
+and `source_findings`. The current source metadata includes the `.You`
+extent discrepancy (2-byte source extent versus 6 declared payload bytes);
+that source warning is distinct from ROM pointer mismatches. A result with
+zero mismatches establishes byte agreement only for this supplied image and
+the source-offset candidates used by the tool. It does not establish ROM
+provenance, prove the candidate offsets are correct, read fragment payload
+bytes, decode text, or resolve the consumer's `Text_DictionaryPointers`
+versus the visible `DictionaryPointers` declaration name. Do not change source
+annotations or treat the report as a clean-ROM certification based only on a
+matching result.
+
 ## What is and is not implemented
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,

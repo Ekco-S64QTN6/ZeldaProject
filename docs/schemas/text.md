@@ -171,3 +171,24 @@ six offset annotations disagree with sequential offsets (three are malformed),
 extra block's declared message bytes total is one byte smaller than its header
 range. The audit preserves these discrepancies. See the
 [text-message index audit schema](./text-message-index-audit.schema.json).
+
+
+## Read-only dictionary pointer word verification
+
+With a local 1 MiB headerless ROM file available, run
+`uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM`. The
+verifier compares the 98 two-byte words at file offset `$074703` against
+16-bit LoROM pointer candidates calculated from the registered
+`text-dictionary-fragments` source offsets. It reports mismatched bytes and
+retains the existing `.You` 2-byte-versus-6-byte source-extent warning
+separately from pointer-byte results.
+
+This is not a claim that the source-commented offsets are canonical: ROM
+provenance and those candidate offsets remain unverified, fragment payload
+bytes are not read, and no message text is decoded. The source also uses
+`Text_DictionaryPointers` in the consumer while its visible declaration is
+`DictionaryPointers`; this symbol-name mapping is still unresolved. A clean
+comparison only shows that the bytes in the supplied file agree with the
+source-derived candidates. See the
+[text dictionary pointer verification schema](./text-dictionary-pointer-verification.schema.json)
+and [real-ROM runbook](../real-rom-verification.md).
