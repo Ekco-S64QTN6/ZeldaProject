@@ -105,6 +105,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 /
 ├── CLAUDE.md
 ├── CONTRIBUTING.md
+├── CHANGELOG.md
 ├── ROADMAP.md
 ├── RESEARCH.md
 ├── README.md
@@ -200,6 +201,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 - **`ROADMAP.md`** — the phased plan. Read this before proposing new work.
 - **`CONTRIBUTING.md`** — source inventory, test, registry, documentation, and ROM-verification workflow. Follow this when adding extractors or metadata assets.
+- **`CHANGELOG.md`** and **`docs/versioning.md`** — record unreleased changes and keep package, project JSON, SQLite schema, registry, and source-export versions distinct.
 - **`RESEARCH.md`** — the catalog of tools and projects referenced above, with more detail.
 - **`docs/api.md`** — current documented API surface; extend it as CLI and authoring functions change.
 - **`docs/schemas/`** — source-export contracts and discovery notes; full editable game-system schemas remain incomplete.
