@@ -21,7 +21,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the ten named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the eleven named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
@@ -33,6 +33,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/text-message-index.json`](../../data/extracted/text-message-index.json) — 397 message IDs with source-derived offsets and size diagnostics.
 - [`data/extracted/sprite-active3-dispatch.json`](../../data/extracted/sprite-active3-dispatch.json) — 68 source-mapped handler entries for sprite IDs `$79–$BC`.
 - [`data/extracted/music-track-index.json`](../../data/extracted/music-track-index.json) — 35 source-indexed music pointer expressions, with empty entries and aliases.
+- [`data/extracted/music-payload-inventory.json`](../../data/extracted/music-payload-inventory.json) — 15 song payload `incbin` declarations with source ranges and size diagnostics.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 

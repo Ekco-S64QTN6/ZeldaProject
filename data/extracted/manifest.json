@@ -91,6 +91,15 @@
       "record_count": 35,
       "subsystem": "audio",
       "description": "Thirty-five source-indexed music pointer expressions, including empty entries and aliases."
+    },
+    {
+      "name": "music-payload-inventory",
+      "file": "music-payload-inventory.json",
+      "format": "zelda-suite-incbin-inventory",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 15,
+      "subsystem": "audio",
+      "description": "Fifteen source-labeled music incbin declarations with annotated file ranges and size diagnostics."
     }
   ]
 }
