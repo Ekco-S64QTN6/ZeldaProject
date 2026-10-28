@@ -206,7 +206,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`docs/schemas/overworld.md`** — overworld source discovery and High/Low pair validator.
 - **`docs/extracted-data.md`** — committed source inventory catalog and reproduction commands.
 - **`docs/asset-loader.md`** and **`docs/incbin-inventory.md`** — source-export loader and inventory contracts.
-- **`docs/project-assets.md`** — importing, querying, and validating source-export snapshots in SQLite projects.
+- **`docs/project-assets.md`** — importing, querying, and validating source-export snapshots in SQLite projects. Use `import-extracted-asset` for committed registry assets so manifest provenance checks run before storage.
 - **`README.md`** — human-facing quickstart and capability summary.
 
 ---

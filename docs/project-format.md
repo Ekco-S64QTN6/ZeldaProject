@@ -64,6 +64,10 @@ the JSON sidecar from SQLite.
 ## Import and query source assets
 
 ```bash
+uv run zelda-suite import-extracted-asset \
+  project/my-hack.db falling-prize-item-values
+
+# Explicit-path import remains available for temporary validated exports:
 uv run zelda-suite import-source-asset \
   project/my-hack.db receive-item-values \
   data/extracted/item-receipt-values.json
@@ -76,6 +80,9 @@ uv run zelda-suite validate project/my-hack.db
 Asset keys must be 1–96 characters, begin with an ASCII letter or digit, and
 contain only letters, digits, dots, hyphens, or underscores. Each import passes
 through the same versioned source-export validator used by the extractor tools.
+For committed assets, `import-extracted-asset` additionally resolves the asset
+through the manifest and checks the registered format, revision, and record
+count before storing it.
 The normalized payload is stored with its SHA-256 digest and source provenance;
 the JSON sidecar is refreshed after the database write. Duplicate keys are
 refused unless `--replace` is supplied deliberately. Replacing a key updates

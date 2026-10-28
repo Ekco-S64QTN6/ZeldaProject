@@ -25,6 +25,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
+- [x] Import source exports into project SQLite databases by explicit file path or validated registry name; manifest imports recheck registered format, source revision, and record count before storage.
 - [x] Persist validated source-export snapshots in project SQLite databases with explicit v1-to-v2 migration, duplicate-key protection, source provenance, canonical JSON, and SHA-256 integrity checks. This is source metadata persistence, not a semantic game-data schema.
 - [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 21 assets covering:
   - Five seven-entry falling-prize parallel arrays.
