@@ -1,0 +1,87 @@
+{
+  "directive": "db",
+  "end_label": null,
+  "entries": [
+    {
+      "entry_file_offset": 195462,
+      "expression": "$0A",
+      "literal_value": 10,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 195463,
+      "expression": "$04",
+      "literal_value": 4,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 195464,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 195465,
+      "expression": "$04",
+      "literal_value": 4,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 195466,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 195467,
+      "expression": "$0A",
+      "literal_value": 10,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 195468,
+      "expression": "$04",
+      "literal_value": 4,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 195469,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": "MadBatter_PseudoAttackPlayer_palettes",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7
+    }
+  ],
+  "entry_count": 8,
+  "entry_width": 1,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": null,
+  "source_file": "sprite_mad_batter.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 195462,
+  "table_label": "MadBatter_PseudoAttackPlayer_palettes"
+}
