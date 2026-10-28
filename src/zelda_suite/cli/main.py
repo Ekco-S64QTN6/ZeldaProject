@@ -16,6 +16,7 @@ from zelda_suite.extract import (
     AssetLoadError,
     IncbinInventoryAuditError,
     MessageSourceBlock,
+    MusicAssetAuditError,
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
@@ -23,6 +24,7 @@ from zelda_suite.extract import (
     TextDictionaryAuditError,
     TextMessageIndexAuditError,
     audit_incbin_inventories,
+    audit_music_assets,
     audit_text_dictionary_assets,
     audit_text_message_index,
     audit_unresolved_table_expressions,
@@ -381,6 +383,87 @@ def inspect_data_table(
         f"Wrote {len(entries)} data-table entries to {output} "
         f"(format v{payload['format_version']})"
     )
+
+
+
+@cli.command(name="audit-music-assets")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--index-asset",
+    default="music-track-index",
+    show_default=True,
+    help="Registered music-track pointer index asset name.",
+)
+@click.option(
+    "--payload-asset",
+    default="music-payload-inventory",
+    show_default=True,
+    help="Registered music incbin inventory asset name.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+@click.option(
+    "--fail-on-findings",
+    is_flag=True,
+    help="Return exit status 1 when the report contains any error or warning.",
+)
+def audit_music_assets_command(
+    registry_path: Path | None,
+    index_asset: str,
+    payload_asset: str,
+    output: Path | None,
+    fail_on_findings: bool,
+) -> None:
+    """Cross-check registered music pointers and payload declarations without a ROM."""
+    try:
+        report = audit_music_assets(
+            registry_path or "data/extracted/manifest.json",
+            index_asset_name=index_asset,
+            payload_asset_name=payload_asset,
+        )
+    except (MusicAssetAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote music asset audit to {output}; "
+            f"tracks={summary['track_entry_count']}, "
+            f"missing_targets={summary['missing_payload_target_count']}, "
+            f"payloads_missing_size={summary['payload_without_size_count']}, "
+            f"errors={summary['error_count']}, warnings={summary['warning_count']}"
+        )
+
+    if fail_on_findings and report["summary"]["finding_count"]:
+        raise click.exceptions.Exit(1)
 
 
 @cli.command(name="inspect-music-track-index")
