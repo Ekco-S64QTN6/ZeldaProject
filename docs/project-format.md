@@ -5,6 +5,8 @@ This follows [ADR 0001](./decisions/0001-project-data-format.md). SQLite is
 authoritative; JSON is generated from it and must not become a competing source
 of truth.
 
+Project JSON format and SQLite schema versions are separate contracts; see the [versioning policy](./versioning.md).
+
 ## Create a project
 
 From the repository root, run:
