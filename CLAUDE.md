@@ -221,3 +221,5 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 ```
 
 When changing the text dictionary exports, run `zelda-suite audit-text-dictionary`; its committed-data cross-check is source-only and must preserve the `.You` extent discrepancy until the source and local-ROM evidence establish which annotation is correct.
+
+When changing the registered text-message index, run `zelda-suite audit-text-message-index` and preserve the offset-comment and block-size warnings unless independently verified source/ROM evidence justifies changing source facts. The report is source-only; it is not a message decoder or ROM verification.

@@ -154,3 +154,20 @@ both annotations instead of selecting which one is correct. These checks join
 source metadata only; they do not resolve pointer words, read fragment bytes,
 decode text, or verify offsets against a ROM. See the
 [text dictionary audit schema](./text-dictionary-audit.schema.json).
+
+
+## Audit known message-index discrepancies
+
+Run `uv run zelda-suite audit-text-message-index` to summarize the source
+offset and block-size diagnostics from the committed index without requiring
+the disassembly submodule. The report separates malformed source annotations
+from valid annotations that disagree with sequential offsets, counts messages
+with no annotation, and records block declared-size differences. All are
+warnings about source metadata, not verified ROM offsets or decoded text.
+
+The pinned baseline currently contains 397 messages across two source blocks:
+six offset annotations disagree with sequential offsets (three are malformed),
+38 messages in `Message_DataExtra` lack individual offset annotations, and the
+extra block's declared message bytes total is one byte smaller than its header
+range. The audit preserves these discrepancies. See the
+[text-message index audit schema](./text-message-index-audit.schema.json).

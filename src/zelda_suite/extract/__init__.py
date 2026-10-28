@@ -103,6 +103,11 @@ from zelda_suite.extract.text_message_index import (
     TextMessageRecord,
     parse_text_message_index,
 )
+from zelda_suite.extract.text_message_index_audit import (
+    TEXT_MESSAGE_INDEX_AUDIT_FORMAT,
+    TextMessageIndexAuditError,
+    audit_text_message_index,
+)
 
 __all__ = [
     "ASSET_REGISTRY_FORMAT",
@@ -117,6 +122,7 @@ __all__ = [
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "TEXT_DICTIONARY_AUDIT_FORMAT",
+    "TEXT_MESSAGE_INDEX_AUDIT_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
     "DataTableEntry",
@@ -146,10 +152,12 @@ __all__ = [
     "TextDictionaryAuditError",
     "TextMessageBlockRecord",
     "TextMessageIndex",
+    "TextMessageIndexAuditError",
     "TextMessageIndexError",
     "TextMessageRecord",
     "audit_incbin_inventories",
     "audit_text_dictionary_assets",
+    "audit_text_message_index",
     "audit_unresolved_table_expressions",
     "build_item_receipt_layout",
     "format_lorom_cpu_address",
