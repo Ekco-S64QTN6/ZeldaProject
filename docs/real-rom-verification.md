@@ -256,5 +256,5 @@ overworld/dungeon/item schemas; an edit-to-ROM build pipeline; ROM writer and
 patch generation; emulator boot/smoke tests; trusted US-ROM hash validation;
 and successful YAZE/z3ed or z3cli operations against the local image.
 
-Record the outputs from steps 1–4 and tool help from step 6 when reporting
+Record the outputs from steps 1–5 and tool help from step 7 when reporting
 results. Do not upload or commit the ROM, a ROM slice, or a raw binary dump.
