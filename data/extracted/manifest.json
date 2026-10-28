@@ -280,6 +280,15 @@
       "subsystem": "sprites"
     },
     {
+      "description": "243 source-commented sprite preparation dispatch entries from SpritePrep_Main (IDs 0x00–0xF2). The inline table start offset is not established; handler address comments remain unverified.",
+      "file": "sprite-prep-dispatch.json",
+      "format": "zelda-suite-sprite-prep-dispatch",
+      "name": "sprite-prep-dispatch",
+      "record_count": 243,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
       "description": "Pointer-to-fragment metadata and source-declared extent diagnostics.",
       "file": "text-dictionary-fragments.json",
       "format": "zelda-suite-dictionary-inventory",

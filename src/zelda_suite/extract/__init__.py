@@ -6,6 +6,7 @@ from zelda_suite.extract.asset_loader import (
     MIXED_DATA_TABLE_FORMAT,
     MUSIC_TRACK_INDEX_FORMAT,
     SPRITE_DISPATCH_FORMAT,
+    SPRITE_PREP_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
     AssetLoadError,
     list_extracted_assets,
@@ -113,6 +114,17 @@ from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchTable,
     parse_sprite_dispatch_table,
 )
+from zelda_suite.extract.sprite_prep_dispatch import (
+    SpritePrepDispatchEntry,
+    SpritePrepDispatchParseError,
+    SpritePrepDispatchTable,
+    parse_sprite_prep_dispatch_table,
+)
+from zelda_suite.extract.sprite_prep_dispatch_audit import (
+    SPRITE_PREP_DISPATCH_AUDIT_FORMAT,
+    SpritePrepDispatchAuditError,
+    audit_sprite_prep_dispatch,
+)
 from zelda_suite.extract.text_dictionary_audit import (
     TEXT_DICTIONARY_AUDIT_FORMAT,
     TextDictionaryAuditError,
@@ -161,6 +173,8 @@ __all__ = [
     "ROM_TABLE_VERIFICATION_FORMAT",
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
+    "SPRITE_PREP_DISPATCH_AUDIT_FORMAT",
+    "SPRITE_PREP_DISPATCH_FORMAT",
     "TEXT_DICTIONARY_AUDIT_FORMAT",
     "TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT",
     "TEXT_MESSAGE_BYTE_VERIFICATION_FORMAT",
@@ -198,6 +212,10 @@ __all__ = [
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
+    "SpritePrepDispatchAuditError",
+    "SpritePrepDispatchEntry",
+    "SpritePrepDispatchParseError",
+    "SpritePrepDispatchTable",
     "TextDictionaryAuditError",
     "TextDictionaryPointerVerificationError",
     "TextMessageBlockRecord",
@@ -210,6 +228,7 @@ __all__ = [
     "audit_incbin_inventories",
     "audit_music_assets",
     "audit_oam_allocation",
+    "audit_sprite_prep_dispatch",
     "audit_text_dictionary_assets",
     "audit_text_message_index",
     "audit_unresolved_table_expressions",
@@ -231,6 +250,7 @@ __all__ = [
     "parse_overworld_hidden_item_source",
     "parse_source_pointer_table",
     "parse_sprite_dispatch_table",
+    "parse_sprite_prep_dispatch_table",
     "parse_text_message_index",
     "read_rom_bytes",
     "sha256_rom_bytes",

@@ -35,3 +35,22 @@ sprite IDs, graphics banks, placements, and semantic game objects. Those remain
 open Phase 0/Phase 1 work.
 
 The report schema is [`oam-allocation-audit.schema.json`](./oam-allocation-audit.schema.json).
+
+
+## SpritePrep_Main dispatch inventory
+
+The registered [`sprite-prep-dispatch`](../../data/extracted/sprite-prep-dispatch.json)
+export preserves 243 inline `dw` entries in `SpritePrep_Main`, covering IDs
+`$00–$F2`. Each record retains the handler expression and source comment's
+address/description. A few comments wrap across continuation lines, which are
+preserved under their preceding record.
+
+The source only annotates the containing routine range
+`$03064D-$030840 JUMP LOCATION`; it does not explicitly annotate the exact
+inline-table start. The export intentionally leaves its table file offset null.
+
+Run `uv run zelda-suite audit-sprite-prep-dispatch` to cross-reference IDs
+against the 68-entry `SpriteActive3_Table` export. The 68 shared IDs establish
+overlap between the source index domains, not equivalence between preparation
+handlers and active-loop handlers. Address comments remain unverified, and no
+ROM bytes are read.
