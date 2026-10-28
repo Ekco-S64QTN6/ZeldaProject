@@ -68,3 +68,45 @@ def test_committed_door_pointer_inventory_aligns_with_object_pointer_slots() -> 
     assert all(entry["target_addend"] is not None for entry in door_entries)
     assert door_entries[0]["pointer_entry_file_offset"] == TABLE_FILE_OFFSET
     assert door_entries[-1]["pointer_entry_file_offset"] == 0x0F877D
+
+
+def test_door_pointer_addends_fit_source_annotated_payload_sizes() -> None:
+    door = load_extracted_asset("dungeon-room-door-pointers", REGISTRY_PATH)
+    asset_names = (
+        "dungeon-room-payloads-bank03",
+        "dungeon-room-payload-inventory",
+        "dungeon-room-payloads-bank1f",
+    )
+    declarations_by_label: dict[str, dict[str, object]] = {}
+
+    for asset_name in asset_names:
+        inventory = load_extracted_asset(asset_name, REGISTRY_PATH)
+        assert inventory["source_revision"] == door["source_revision"]
+        for declaration in inventory["declarations"]:
+            label = declaration["label"]
+            assert label not in declarations_by_label, (
+                f"duplicate room payload label: {label}"
+            )
+            declarations_by_label[label] = declaration
+
+    assert len(declarations_by_label) == 266
+    assert all(
+        declaration["declared_size_bytes"] is not None
+        for declaration in declarations_by_label.values()
+    )
+
+    for entry in door["entries"]:
+        label = entry["target_label"]
+        assert label in declarations_by_label, (
+            f"door-pointer target has no payload declaration: {label}"
+        )
+        declaration = declarations_by_label[label]
+        size = declaration["declared_size_bytes"]
+        addend = entry["target_addend"]
+        assert type(size) is int and size > 0
+        assert type(addend) is int
+        assert 0 <= addend < size, (
+            f"slot {entry['table_index']} expression "
+            f"{entry['pointer_expression']!r} has addend {addend}, "
+            f"outside source-annotated payload size {size}"
+        )

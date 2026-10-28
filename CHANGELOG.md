@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add a source-only bounds regression joining all 320 door-pointer addends to the registered room-payload `Size:` annotations. All current addends fit their candidate target declarations; the check validates metadata arithmetic only and does not verify payload bytes, ROM offsets, or door semantics.
+
 - Register the 320-entry source-only `dungeon-room-door-pointers` export from `RoomData_DoorDataPointers`. Pinned-source parity and submodule-independent slot-alignment tests preserve raw numeric addends without resolving their meaning or claiming local-ROM verification.
 
 - Add read-only `zelda-suite verify-text-message-bytes` and a version-1

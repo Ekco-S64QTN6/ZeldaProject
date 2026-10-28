@@ -508,7 +508,11 @@ diff -u data/extracted/dungeon-room-door-pointers.json /tmp/dungeon-room-door-po
 The parser-parity test checks the complete export against the pinned assembly
 source when the submodule is available. A separate regression checks slot-wise
 target-label alignment with the committed object-pointer table independently
-of the submodule.
+of the submodule. A separate source-only bounds regression confirms
+that each of the 320 addends is smaller than the target label's declared
+payload size in the current inventory. These sizes are source annotations, not
+verified payload lengths; this check does not establish ROM offsets or door
+semantics.
 
 ## Dungeon room payload declarations
 
