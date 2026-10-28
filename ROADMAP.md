@@ -25,7 +25,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
-- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 17 assets covering:
+- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 21 assets covering:
   - Five seven-entry falling-prize parallel arrays.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
@@ -33,7 +33,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 35 music-track pointer expressions and 15 music payload declarations.
   - 128 overworld hidden-item pointer expressions.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
-  - Three raw receive-item lookup tables: 76 WRAM target addresses, 76 byte values, and 14 dungeon masks.
+  - Seven raw `Pool_AddReceiveItem` arrays: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
 - [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
