@@ -152,11 +152,6 @@ def _parse_offset_text(value: str) -> int:
     help="Revision to record; omitted values are marked unspecified.",
 )
 @click.option(
-    "--include-comments",
-    is_flag=True,
-    help="Export source inline comments in version-2 JSON entries.",
-)
-@click.option(
     "--output",
     type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
     default=None,
@@ -206,11 +201,6 @@ def inspect_pointer_table(
         "entry_count": len(entries),
         "entries": [entry.to_dict() for entry in entries],
     }
-    try:
-        validate_source_export(payload)
-    except AssetLoadError as exc:
-        raise click.ClickException(str(exc)) from exc
-
     rendered = json.dumps(
         payload,
         ensure_ascii=False,
