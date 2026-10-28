@@ -44,6 +44,9 @@ does not imply that any release has been published.
 - Documented the seven-entry falling-prize lookup as a joined source-only view
   over its five parallel arrays, while preserving the open local-ROM byte
   verification gate.
+- Corrected the fixture-directory guide to match the actual tracked files and
+  clarify that ROM images, ROM slices, and golden ROM artifacts are not
+  committed or required by ROM-independent tests.
 
 ### Verification
 
