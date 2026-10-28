@@ -131,3 +131,30 @@ The `.item_graphics_indices` table is not exported in this batch because its
 source comments skip index `$40` although the table contains 76 dense bytes.
 That mismatch still needs to be resolved before exposing canonical semantic
 item IDs. These assets are not a complete editable item schema.
+
+## Joined positional view
+
+The registered `item-receipt-layout` export and
+`zelda-suite join-item-receipt-tables` command join six 76-entry arrays by
+their zero-based source table position. Each nested cell preserves its source
+label, annotated file offset, original expression, and parsed literal value;
+the separate 14-word `.item_masks` table remains a separate collection. The
+joined rows do not include canonical item names or use the disputed
+`.item_graphics_indices` comment sequence as IDs.
+
+Regenerate the joined view from the registered raw arrays:
+
+```bash
+uv run zelda-suite join-item-receipt-tables \
+  --output /tmp/item-receipt-layout.json
+uv run zelda-suite validate-source-export /tmp/item-receipt-layout.json
+diff -u data/extracted/item-receipt-layout.json /tmp/item-receipt-layout.json
+```
+
+The loader checks row alignment, each source label and entry offset, source
+table widths, the separate mask count, and the unresolved-ID marker. This
+improves queryability but remains raw source metadata rather than an editable
+item schema or a claim that every source offset matches a trusted ROM. The
+new `verify-rom-tables` command can check the direct numeric values and the
+bounded negative decimal offset expressions against a local image; the expanded
+check still needs to be run by the user to establish that additional evidence.
