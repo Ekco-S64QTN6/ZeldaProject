@@ -602,3 +602,18 @@ read ROM or payload bytes, turn source-commented starts into verified
 addresses, or determine the playable-room set. See
 [`docs/schemas/dungeons.md`](./schemas/dungeons.md) and the
 [dungeon-room asset audit schema](./schemas/dungeon-room-asset-audit.schema.json).
+
+
+## Verify text dictionary pointer words against a local image
+
+Run `uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM` to
+compare the 98 pointer words at file offset `$074703` against candidate
+16-bit values calculated from the registered fragment offsets. The tool
+requires an expected-size 1 MiB headerless image and never writes it. It
+reports the known `.You` source-extent discrepancy separately from pointer
+mismatches. Candidate offsets and ROM provenance remain unverified; the
+fragment payload bytes and text decoder are outside this check, and the
+`Text_DictionaryPointers`/ `DictionaryPointers` source symbol-name caveat
+remains unresolved. See
+[`docs/schemas/text.md`](./schemas/text.md) and the
+[text dictionary pointer verification schema](./schemas/text-dictionary-pointer-verification.schema.json).
