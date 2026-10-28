@@ -28,13 +28,19 @@ def _write_fixture_registry(
         offset = spec["offset"]
         values = spec["values"]
         entries = []
+        expressions = spec.get("expressions")
         for index, value in enumerate(values):
+            expression = (
+                expressions[index]
+                if expressions is not None
+                else f"${value:02X}" if value is not None else "UnresolvedExpression"
+            )
             entries.append({
                 "table_index": index,
                 "entry_file_offset": offset + index * width,
                 "source_line": index + 1,
                 "source_label": ".values",
-                "expression": f"${value:02X}" if value is not None else "UnresolvedExpression",
+                "expression": expression,
                 "literal_value": value,
                 "source_revision": "fixture-revision",
             })
@@ -83,6 +89,7 @@ def _write_fixture_rom(tmp_path: Path, *, wrong_size: bool = False) -> Path:
     rom = bytearray(size)
     if not wrong_size:
         rom[0x100] = 0x42
+        rom[0x104:0x107] = bytes([0xFB, 0xFC, 0xFE])
         rom[0x300:0x302] = bytes([0x34, 0x12])
         rom[0x304:0x306] = bytes([0x78, 0x56])
     path = tmp_path / "fixture.smc"
@@ -94,6 +101,13 @@ def _table_specs() -> list[dict[str, Any]]:
     return [
         {"name": "sample-values", "directive": "db", "offset": 0x100, "values": [0x42, None]},
         {"name": "all-symbolic", "directive": "db", "offset": 0x200, "values": [None, None]},
+        {
+            "name": "signed-decimals",
+            "directive": "db",
+            "offset": 0x104,
+            "values": [None, None, None],
+            "expressions": ["-5", "-4", "-2"],
+        },
         {
             "name": "strided-words",
             "directive": "dw",
@@ -118,13 +132,14 @@ def test_verifies_registered_tables_and_distinguishes_skips_from_passes(
     assert report["rom"]["provenance_verified"] is False
     assert report["rom"]["sha256"]
     assert report["summary"] == {
-        "table_asset_count": 4,
-        "pass_asset_count": 1,
+        "table_asset_count": 5,
+        "pass_asset_count": 2,
         "partial_asset_count": 1,
         "skipped_asset_count": 1,
         "failed_asset_count": 1,
-        "checked_entries": 4,
+        "checked_entries": 7,
         "skipped_entries": 3,
+        "resolved_signed_decimal_entries": 3,
         "mismatches": 1,
     }
     by_name = {asset["name"]: asset for asset in report["assets"]}
@@ -133,6 +148,9 @@ def test_verifies_registered_tables_and_distinguishes_skips_from_passes(
     assert by_name["sample-values"]["skipped_entries"] == 1
     assert by_name["all-symbolic"]["status"] == "skip"
     assert by_name["all-symbolic"]["checked_entries"] == 0
+    assert by_name["signed-decimals"]["status"] == "pass"
+    assert by_name["signed-decimals"]["checked_entries"] == 3
+    assert by_name["signed-decimals"]["resolved_signed_decimal_entries"] == 3
     assert by_name["strided-words"]["status"] == "pass"
     assert by_name["strided-words"]["literal_width_bytes"] == 2
     assert by_name["strided-words"]["entry_stride_bytes"] == 4
