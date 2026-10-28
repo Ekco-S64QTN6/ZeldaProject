@@ -151,7 +151,7 @@ def test_cli_writes_report_supports_fail_on_findings_and_refuses_overwrite(
 def test_audit_pins_committed_text_message_index_baseline() -> None:
     report = audit_text_message_index(REGISTERED_MANIFEST)
 
-    assert report["source_file"] == "Bank1C.asm"
+    assert report["source_files"] == ["Bank1C.asm", "Bank0E.asm"]
     assert report["source_revision"] == PINNED_SOURCE_REVISION
     assert report["summary"] == {
         "source_block_count": 2,
