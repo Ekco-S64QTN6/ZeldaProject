@@ -74,8 +74,12 @@ The CLI provides the same format checks:
 uv run zelda-suite validate-source-export /tmp/text-message-index.json
 ```
 
-This loader manages source-derived metadata, not editable game data. It does
-not read ROM bytes, resolve symbols from ROM memory, open incbin payload paths,
-decode dictionary/message streams, perform extraction, or permit edits. Future
-schemas should be added with explicit validators and fixture-backed tests
-rather than weakening current checks.
+The source-export loader is also the validation boundary used by
+[project source-asset persistence](./project-assets.md). The project store can
+snapshot a validated export into SQLite with provenance and a content digest,
+but this does not turn source metadata into editable game-system records.
+
+The loader and project asset store do not read ROM bytes, resolve symbols from
+ROM memory, open incbin payload paths, decode dictionary/message streams, or
+perform binary extraction. Future schemas should be added with explicit
+validators and fixture-backed tests rather than weakening current checks.
