@@ -65,6 +65,25 @@ def test_only_parses_the_requested_brace_delimited_table() -> None:
     assert entries[0].target_addend == 0x4D
 
 
+
+def test_rejects_duplicate_requested_table_labels() -> None:
+    source = """ExamplePointers:
+{
+    dl FirstTarget
+}
+ExamplePointers:
+{
+    dl SecondTarget
+}
+"""
+
+    with pytest.raises(
+        DisassemblyParseError,
+        match=r"occurs multiple times on lines 1, 5",
+    ):
+        parse_dl_pointer_table(source, "ExamplePointers", 0x100)
+
+
 def test_supports_decimal_addends_and_negative_offsets() -> None:
     source = """ExamplePointers:
 {
