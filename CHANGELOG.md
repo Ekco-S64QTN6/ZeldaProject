@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Opt-in `zelda-suite verify-rom-tables --include-skipped-expressions` report
+  format v2, which enumerates unresolved expressions with source table indices,
+  lines, offsets, and conservative syntax classifications without evaluating
+  assembler expressions. The default report format v1 remains unchanged.
+
 - Optional `zelda-suite inspect-data-table --entry-count N` and parser-level
   expected-count validation so known table sizes can be asserted explicitly.
 - Read-only `zelda-suite verify-rom-tables ROM` command and a versioned JSON

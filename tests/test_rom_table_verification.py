@@ -239,3 +239,68 @@ def test_verify_rom_tables_cli_writes_new_report_and_refuses_overwrite(
     )
     assert refused.exit_code != 0
     assert "refusing to overwrite existing output" in refused.output
+
+
+
+def test_unresolved_expression_classification_is_opt_in_and_non_evaluating(
+    tmp_path: Path,
+) -> None:
+    rom_path = _write_fixture_rom(tmp_path)
+    registry = _write_fixture_registry(
+        tmp_path,
+        [{
+            "name": "unresolved-expressions",
+            "directive": "db",
+            "offset": 0x150,
+            "values": [None, None, None, None],
+            "expressions": [
+                "SomeLabel",
+                "SomeLabel+$10",
+                "SomeMacro(SomeLabel)",
+                "!CUSTOM_VALUE",
+            ],
+        }],
+    )
+
+    legacy_report = verify_registered_scalar_tables(rom_path, registry)
+    assert legacy_report["format_version"] == 1
+    assert "unresolved_expressions" not in legacy_report["assets"][0]
+
+    report = verify_registered_scalar_tables(
+        rom_path,
+        registry,
+        include_skipped_expressions=True,
+    )
+    assert report["format_version"] == 2
+    assert report["summary"]["skipped_entries"] == 4
+    assert report["summary"]["unresolved_expression_count"] == 4
+    unresolved = report["assets"][0]["unresolved_expressions"]
+    assert [entry["classification"] for entry in unresolved] == [
+        "symbol",
+        "symbol_with_numeric_addend",
+        "compound_or_assembler_specific",
+        "other",
+    ]
+    assert [entry["expression"] for entry in unresolved] == [
+        "SomeLabel",
+        "SomeLabel+$10",
+        "SomeMacro(SomeLabel)",
+        "!CUSTOM_VALUE",
+    ]
+    assert all(entry["source_line"] >= 1 for entry in unresolved)
+    assert all("was not evaluated" in entry["reason"] for entry in unresolved)
+
+    cli_result = CliRunner().invoke(
+        cli,
+        [
+            "verify-rom-tables",
+            str(rom_path),
+            "--registry",
+            str(registry),
+            "--include-skipped-expressions",
+        ],
+    )
+    assert cli_result.exit_code == 0, cli_result.output
+    cli_report = json.loads(cli_result.output)
+    assert cli_report["format_version"] == 2
+    assert cli_report["summary"]["unresolved_expression_count"] == 4
