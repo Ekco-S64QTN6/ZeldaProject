@@ -172,7 +172,9 @@ def audit_text_message_index(
         "format_version": 1,
         "registry": str(registry_path),
         "asset_name": asset_name,
-        "source_file": payload["source_blocks"][0]["source_file"],
+        "source_files": list(dict.fromkeys(
+            block["source_file"] for block in payload["source_blocks"]
+        )),
         "source_revision": payload["source_revision"],
         "source_blocks": [
             {
