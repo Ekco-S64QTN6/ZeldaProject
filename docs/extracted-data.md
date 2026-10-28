@@ -347,31 +347,39 @@ layer representation is claimed yet.
 
 ## Receive-item source tables
 
-Three raw tables from `Pool_AddReceiveItem` in pinned
-`Ancilla/ancilla_init.asm` are now committed and registered:
+Seven raw tables from `Pool_AddReceiveItem` in pinned
+`Ancilla/ancilla_init.asm` are committed and registered:
 
-- `item-receipt-target-addresses.json`: 76 two-byte target addresses from
-  `$0484E8–$04857F`.
-- `item-receipt-values.json`: 76 one-byte values from `$048580–$0485CB`.
-- `item-receipt-dungeon-masks.json`: 14 two-byte masks from `$0485CC–$0485E7`.
+| Asset | Source label | Offset range | Width / count |
+| --- | --- | --- | --- |
+| `item-receipt-y-offsets` | `.y_offsets` | `$04836C–$0483B7` | 1 byte × 76 |
+| `item-receipt-x-offsets` | `.x_offsets` | `$0483B8–$048403` | 1 byte × 76 |
+| `item-receipt-wide-flags` | `.wide_item_flag` | `$048450–$04849B` | 1 byte × 76 |
+| `item-receipt-properties` | `.properties` | `$04849C–$0484E7` | 1 byte × 76 |
+| `item-receipt-target-addresses` | `.item_target_addr` | `$0484E8–$04857F` | 2 bytes × 76 |
+| `item-receipt-values` | `.item_values` | `$048580–$0485CB` | 1 byte × 76 |
+| `item-receipt-dungeon-masks` | `.item_masks` | `$0485CC–$0485E7` | 2 bytes × 14 |
 
-Each export is a version-1 `zelda-suite-data-table` containing table index,
-calculated file offset, source line, exact source expression, literal value
-when directly expressible, and pinned revision. These exports remain raw:
-the target-address table names WRAM destinations and is not a ROM pointer
-table, and values such as `$FF`, `$FB`, and `$EC` are preserved as byte
-patterns rather than converted to semantic item meanings.
+Each version-1 `zelda-suite-data-table` export records table index, calculated
+file offset, source line, exact expression, literal value when directly
+expressible, and pinned revision. These are raw positional arrays, not a
+complete semantic item catalog. The target-address table contains WRAM
+destinations, not ROM pointers. Byte patterns such as `$FF`, `$FB`, and
+`$EC` remain raw values; runtime signed-byte behavior has not been normalized
+into editorial item meanings. Signed decimal offset/property expressions such
+as `-5` or `-1` stay as expressions with a null literal value.
 
-The wider receive-item data block also has X/Y offsets, graphics indices,
-wide-item flags, and properties. Those arrays remain documented discovery
-notes, not part of this PR. In particular, `.item_graphics_indices` comments
-skip source index `$40` while the data occupies 76 dense bytes. The new files
-do not claim to resolve that comment-index discrepancy or define a canonical
-item-ID schema.
+The parallel arrays `.y_offsets`, `.x_offsets`, `.wide_item_flag`, and
+`.properties` share the same 76-position table index as the two 76-entry
+target/value arrays. The 14-word `.item_masks` array is separate. The
+`.item_graphics_indices` table is deliberately not included in this batch:
+its inline comments skip source index `$40` while the data occupies 76 dense
+bytes. The discrepancy remains documented and is not silently normalized into
+a canonical item-ID schema.
 
-Regenerate the three tables using `zelda-suite inspect-data-table` with
-`Pool_AddReceiveItem` as the parent label and the corresponding label, offset,
-directive, and exclusive next label documented in
-[the receive-item discovery note](./schemas/item-receipt-metadata.md). The
-tables are then validated and compared with the committed JSON. No ROM bytes
-or binary slices are committed.
+Regenerate each table using `zelda-suite inspect-data-table` with
+`Pool_AddReceiveItem` as the parent label, the table's offset/directive, and
+its exclusive next label from
+[the receive-item discovery note](./schemas/item-receipt-metadata.md). Omit
+`--end-label` for `.item_masks`. Validate and diff the resulting JSON before
+reviewing a data update. No ROM bytes or binary slices are committed.
