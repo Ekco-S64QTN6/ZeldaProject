@@ -1,0 +1,699 @@
+{
+  "directive": "db",
+  "end_label": ".item_masks",
+  "entries": [
+    {
+      "entry_file_offset": 296320,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 296321,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 296322,
+      "expression": "$03",
+      "literal_value": 3,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 296323,
+      "expression": "$04",
+      "literal_value": 4,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 296324,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 296325,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 296326,
+      "expression": "$03",
+      "literal_value": 3,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 296327,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 713,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7
+    },
+    {
+      "entry_file_offset": 296328,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8
+    },
+    {
+      "entry_file_offset": 296329,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 9
+    },
+    {
+      "entry_file_offset": 296330,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 10
+    },
+    {
+      "entry_file_offset": 296331,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 11
+    },
+    {
+      "entry_file_offset": 296332,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 12
+    },
+    {
+      "entry_file_offset": 296333,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 13
+    },
+    {
+      "entry_file_offset": 296334,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 14
+    },
+    {
+      "entry_file_offset": 296335,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 714,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 15
+    },
+    {
+      "entry_file_offset": 296336,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 16
+    },
+    {
+      "entry_file_offset": 296337,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 17
+    },
+    {
+      "entry_file_offset": 296338,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 18
+    },
+    {
+      "entry_file_offset": 296339,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 19
+    },
+    {
+      "entry_file_offset": 296340,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 20
+    },
+    {
+      "entry_file_offset": 296341,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 21
+    },
+    {
+      "entry_file_offset": 296342,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 22
+    },
+    {
+      "entry_file_offset": 296343,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 716,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 23
+    },
+    {
+      "entry_file_offset": 296344,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 24
+    },
+    {
+      "entry_file_offset": 296345,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 25
+    },
+    {
+      "entry_file_offset": 296346,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 26
+    },
+    {
+      "entry_file_offset": 296347,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 27
+    },
+    {
+      "entry_file_offset": 296348,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 28
+    },
+    {
+      "entry_file_offset": 296349,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 29
+    },
+    {
+      "entry_file_offset": 296350,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 30
+    },
+    {
+      "entry_file_offset": 296351,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 717,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 31
+    },
+    {
+      "entry_file_offset": 296352,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 32
+    },
+    {
+      "entry_file_offset": 296353,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 33
+    },
+    {
+      "entry_file_offset": 296354,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 34
+    },
+    {
+      "entry_file_offset": 296355,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 35
+    },
+    {
+      "entry_file_offset": 296356,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 36
+    },
+    {
+      "entry_file_offset": 296357,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 37
+    },
+    {
+      "entry_file_offset": 296358,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 38
+    },
+    {
+      "entry_file_offset": 296359,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 719,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 39
+    },
+    {
+      "entry_file_offset": 296360,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 40
+    },
+    {
+      "entry_file_offset": 296361,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 41
+    },
+    {
+      "entry_file_offset": 296362,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 42
+    },
+    {
+      "entry_file_offset": 296363,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 43
+    },
+    {
+      "entry_file_offset": 296364,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 44
+    },
+    {
+      "entry_file_offset": 296365,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 45
+    },
+    {
+      "entry_file_offset": 296366,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 46
+    },
+    {
+      "entry_file_offset": 296367,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 720,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 47
+    },
+    {
+      "entry_file_offset": 296368,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 48
+    },
+    {
+      "entry_file_offset": 296369,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 49
+    },
+    {
+      "entry_file_offset": 296370,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 50
+    },
+    {
+      "entry_file_offset": 296371,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 51
+    },
+    {
+      "entry_file_offset": 296372,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 52
+    },
+    {
+      "entry_file_offset": 296373,
+      "expression": "$FB",
+      "literal_value": 251,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 53
+    },
+    {
+      "entry_file_offset": 296374,
+      "expression": "$EC",
+      "literal_value": 236,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 54
+    },
+    {
+      "entry_file_offset": 296375,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 722,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 55
+    },
+    {
+      "entry_file_offset": 296376,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 56
+    },
+    {
+      "entry_file_offset": 296377,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 57
+    },
+    {
+      "entry_file_offset": 296378,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 58
+    },
+    {
+      "entry_file_offset": 296379,
+      "expression": "$03",
+      "literal_value": 3,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 59
+    },
+    {
+      "entry_file_offset": 296380,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 60
+    },
+    {
+      "entry_file_offset": 296381,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 61
+    },
+    {
+      "entry_file_offset": 296382,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 62
+    },
+    {
+      "entry_file_offset": 296383,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 723,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 63
+    },
+    {
+      "entry_file_offset": 296384,
+      "expression": "$9C",
+      "literal_value": 156,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 64
+    },
+    {
+      "entry_file_offset": 296385,
+      "expression": "$CE",
+      "literal_value": 206,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 65
+    },
+    {
+      "entry_file_offset": 296386,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 66
+    },
+    {
+      "entry_file_offset": 296387,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 67
+    },
+    {
+      "entry_file_offset": 296388,
+      "expression": "$0A",
+      "literal_value": 10,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 68
+    },
+    {
+      "entry_file_offset": 296389,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 69
+    },
+    {
+      "entry_file_offset": 296390,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 70
+    },
+    {
+      "entry_file_offset": 296391,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 725,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 71
+    },
+    {
+      "entry_file_offset": 296392,
+      "expression": "$FF",
+      "literal_value": 255,
+      "source_label": ".item_values",
+      "source_line": 726,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 72
+    },
+    {
+      "entry_file_offset": 296393,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 726,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 73
+    },
+    {
+      "entry_file_offset": 296394,
+      "expression": "$03",
+      "literal_value": 3,
+      "source_label": ".item_values",
+      "source_line": 726,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 74
+    },
+    {
+      "entry_file_offset": 296395,
+      "expression": "$01",
+      "literal_value": 1,
+      "source_label": ".item_values",
+      "source_line": 726,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 75
+    }
+  ],
+  "entry_count": 76,
+  "entry_width": 1,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": "Pool_AddReceiveItem",
+  "source_file": "ancilla_init.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 296320,
+  "table_label": ".item_values"
+}
