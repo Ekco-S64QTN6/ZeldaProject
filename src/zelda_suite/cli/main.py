@@ -1078,14 +1078,14 @@ def join_item_receipt_tables_command(
         indent=2,
         sort_keys=True,
         allow_nan=False,
-    ) + "\\n"
+    ) + "\n"
 
     if output is None:
         click.echo(rendered, nl=False)
         return
 
     try:
-        with output.open("x", encoding="utf-8", newline="\\n") as output_file:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
             output_file.write(rendered)
     except FileExistsError as exc:
         raise click.ClickException(
