@@ -213,7 +213,7 @@ def test_hidden_item_source_cli_emits_report_and_refuses_overwrite(tmp_path: Pat
     written = runner.invoke(cli, ["inspect-overworld-hidden-items", "--output", str(output)])
     assert written.exit_code == 0, written.output
     saved_text = output.read_text(encoding="utf-8")
-    assert saved_text.endswith("\\n")
+    assert saved_text.endswith("\n")
     assert json.loads(saved_text) == payload
 
     refused = runner.invoke(cli, ["inspect-overworld-hidden-items", "--output", str(output)])
