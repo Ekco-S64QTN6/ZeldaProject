@@ -2014,7 +2014,10 @@ def validate_source_export_command(source_export: Path) -> None:
     except AssetLoadError as exc:
         raise click.ClickException(str(exc)) from exc
 
-    if payload["format"] == "zelda-suite-pointer-table":
+    if payload["format"] == MIXED_DATA_TABLE_FORMAT:
+        record_count = payload["record_count"]
+        record_label = "records"
+    elif payload["format"] == "zelda-suite-pointer-table":
         record_count = payload["entry_count"]
         record_label = "entries"
     elif payload["format"] == "zelda-suite-incbin-inventory":
