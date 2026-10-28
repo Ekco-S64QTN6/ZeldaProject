@@ -90,6 +90,11 @@ from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchTable,
     parse_sprite_dispatch_table,
 )
+from zelda_suite.extract.text_dictionary_audit import (
+    TEXT_DICTIONARY_AUDIT_FORMAT,
+    TextDictionaryAuditError,
+    audit_text_dictionary_assets,
+)
 from zelda_suite.extract.text_message_index import (
     MessageSourceBlock,
     TextMessageBlockRecord,
@@ -111,6 +116,7 @@ __all__ = [
     "ROM_TABLE_VERIFICATION_FORMAT",
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
+    "TEXT_DICTIONARY_AUDIT_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
     "DataTableEntry",
@@ -137,11 +143,13 @@ __all__ = [
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
+    "TextDictionaryAuditError",
     "TextMessageBlockRecord",
     "TextMessageIndex",
     "TextMessageIndexError",
     "TextMessageRecord",
     "audit_incbin_inventories",
+    "audit_text_dictionary_assets",
     "audit_unresolved_table_expressions",
     "build_item_receipt_layout",
     "format_lorom_cpu_address",

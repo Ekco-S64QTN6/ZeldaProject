@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite text dictionary cross-reference audit",
+  "description": "Source-only join between the registered symbolic DictionaryPointers export and its fragment inventory. It preserves source extent discrepancies and does not resolve pointer values or verify offsets against ROM bytes.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "pointer_asset_name", "fragment_asset_name",
+    "source_file", "source_revision", "cross_references", "findings", "summary", "evidence"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-text-dictionary-audit"},
+    "format_version": {"const": 1},
+    "registry": {"type": "string", "minLength": 1},
+    "pointer_asset_name": {"type": "string", "minLength": 1},
+    "fragment_asset_name": {"type": "string", "minLength": 1},
+    "source_file": {"type": "string", "minLength": 1},
+    "source_revision": {"type": "string", "minLength": 1},
+    "cross_references": {"type": "array", "items": {"$ref": "#/$defs/cross_reference"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "fragment_bytes_read",
+        "pointer_values_resolved", "offsets_verified"
+      ],
+      "properties": {
+        "source_only": {"const": true},
+        "rom_bytes_read": {"const": false},
+        "fragment_bytes_read": {"const": false},
+        "pointer_values_resolved": {"const": false},
+        "offsets_verified": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "cross_reference": {
+      "type": "object",
+      "required": [
+        "pointer_index", "pointer_entry_file_offset", "pointer_expression", "fragment_index",
+        "fragment_pointer_expression", "expected_fragment_label", "fragment_label",
+        "fragment_file_offset", "next_fragment_file_offset", "source_extent_bytes",
+        "data_directive", "declared_payload_bytes", "source_extent_matches_directive",
+        "is_end_of_table", "cross_reference_matches"
+      ],
+      "properties": {
+        "pointer_index": {"type": "integer", "minimum": 0},
+        "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+        "pointer_expression": {"type": "string", "minLength": 1},
+        "fragment_index": {"type": "integer", "minimum": 0},
+        "fragment_pointer_expression": {"type": "string", "minLength": 1},
+        "expected_fragment_label": {"type": ["string", "null"]},
+        "fragment_label": {"type": "string", "minLength": 1},
+        "fragment_file_offset": {"type": "integer", "minimum": 0},
+        "next_fragment_file_offset": {"type": ["integer", "null"], "minimum": 0},
+        "source_extent_bytes": {"type": ["integer", "null"], "minimum": 0},
+        "data_directive": {"enum": ["db", "dw", "dl", null]},
+        "declared_payload_bytes": {"type": ["integer", "null"], "minimum": 0},
+        "source_extent_matches_directive": {"type": ["boolean", "null"]},
+        "is_end_of_table": {"type": "boolean"},
+        "cross_reference_matches": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": ["code", "severity", "message", "pointer_index", "pointer_expression", "fragment_label"],
+      "properties": {
+        "code": {
+          "enum": [
+            "source_provenance_mismatch", "pointer_table_metadata_mismatch",
+            "entry_count_mismatch", "data_start_offset_mismatch", "unsupported_pointer_expression",
+            "fragment_label_mismatch", "fragment_pointer_expression_mismatch",
+            "pointer_entry_offset_mismatch", "pointer_index_mismatch",
+            "source_extent_mismatch", "terminal_sentinel_mismatch", "unexpected_end_sentinel"
+          ]
+        },
+        "severity": {"enum": ["error", "warning"]},
+        "message": {"type": "string", "minLength": 1},
+        "pointer_index": {"type": ["integer", "null"], "minimum": 0},
+        "pointer_expression": {"type": ["string", "null"]},
+        "fragment_label": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "pointer_entry_count", "fragment_count", "cross_reference_count",
+        "cross_reference_mismatch_count", "source_extent_mismatch_count",
+        "terminal_sentinel_count", "error_count", "warning_count", "finding_count"
+      ],
+      "properties": {
+        "pointer_entry_count": {"type": "integer", "minimum": 0},
+        "fragment_count": {"type": "integer", "minimum": 0},
+        "cross_reference_count": {"type": "integer", "minimum": 0},
+        "cross_reference_mismatch_count": {"type": "integer", "minimum": 0},
+        "source_extent_mismatch_count": {"type": "integer", "minimum": 0},
+        "terminal_sentinel_count": {"type": "integer", "minimum": 0},
+        "error_count": {"type": "integer", "minimum": 0},
+        "warning_count": {"type": "integer", "minimum": 0},
+        "finding_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  }
+}

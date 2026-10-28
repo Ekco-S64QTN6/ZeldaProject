@@ -539,3 +539,17 @@ Run `uv run zelda-suite audit-incbin-inventory --output /tmp/incbin-audit.json` 
 ## Audit unresolved scalar-table expressions
 
 `uv run zelda-suite audit-unresolved-table-expressions --output /tmp/source-expression-audit.json` summarizes registered scalar-table entries whose values are not represented as numeric literals. It retains their raw expressions and source locations, and classifies syntax shapes without attempting symbol resolution or assembler evaluation. This is useful for tracking extraction coverage before local-ROM verification is available; it is not a ROM-byte verification result. See [the raw data-table parser guide](./data-table-parser.md) and [report schema](./schemas/source-expression-audit.schema.json).
+
+
+## Cross-check text dictionary exports
+
+Use `uv run zelda-suite audit-text-dictionary --output /tmp/text-dictionary-audit.json`
+to cross-check the 98 registered symbolic dictionary pointer entries against
+the 98 pointer-to-fragment metadata records. The command validates source
+revision and table metadata, pointer/fragment label pairs, entry offsets and
+indexes, and the terminal sentinel. It reports the existing `.You` extent
+discrepancy as a warning: source extent 2 bytes versus 6 bytes from its
+directive. The audit does not edit that source annotation, resolve symbolic
+pointer values, inspect fragment payload bytes, or read a ROM. See
+[`docs/schemas/text.md`](./schemas/text.md) and the
+[text dictionary audit schema](./schemas/text-dictionary-audit.schema.json).

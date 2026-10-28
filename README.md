@@ -41,3 +41,5 @@ For setup and diagnostics, see [`docs/install.md`](./docs/install.md) and [`docs
 For a source-only audit of registered `incbin` inventories—covering missing offset/size metadata, explicit range mismatches, and candidate overlaps—run `uv run zelda-suite audit-incbin-inventory`. Its findings do not establish ROM offsets or read payload/ROM bytes; see [`docs/incbin-inventory.md`](./docs/incbin-inventory.md).
 
 For a ROM-independent inventory of unresolved scalar-table expressions, run `uv run zelda-suite audit-unresolved-table-expressions`. It lists raw source expressions and conservative syntax-shape classifications without evaluating them; see [`docs/data-table-parser.md`](./docs/data-table-parser.md).
+
+For a source-only cross-check of the 98 symbolic text-dictionary pointers and fragment records, run `uv run zelda-suite audit-text-dictionary`. It preserves the known `.You` source-extent mismatch and does not read a ROM; see [`docs/schemas/text.md`](./docs/schemas/text.md).
