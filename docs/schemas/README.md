@@ -12,6 +12,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Incbin inventory JSON export](./incbin-inventory-export.schema.json) — version 1 schema for the JSON emitted by `zelda-suite inspect-incbin`.
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 - [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables`.
+- [Overworld hidden-item verification report](./overworld-hidden-item-verification.schema.json) — version 1 report emitted by `zelda-suite verify-overworld-hidden-items`; includes source-derived sentinel-delimited per-area lists.
 - [Joined receive-item layout](./item-receipt-layout.schema.json) — version 1 positional join of six raw receive-item tables, with the 14 dungeon masks retained separately and canonical item IDs explicitly unresolved.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
@@ -63,8 +64,9 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 - [Overworld payloads](./overworld.md) — high/low per-screen `incbin` layout,
   source-declared offsets/sizes, and limits of the current evidence.
 - [Overworld hidden items](./overworld-hidden-items.md) — 128-entry pointer
-  table, source-level three-byte reader/sentinel behavior, and declared-width
-  accounting; ROM pointer/data verification and per-area grouping remain open.
+  table, source-level three-byte reader/sentinel behavior, declared-width
+  accounting, and the new read-only ROM comparison tool. Running the tool
+  against a trusted local ROM and verifying value semantics remain open.
 - [Falling-prize item lookup](./falling-prize-items.md) — seven-entry
   `AddPendantOrCrystal` item-value table and the adjacent indexed arrays.
 - [Audio](./audio.md) — source music pointer index, payload declarations, and the unmatched `Song0B_FairyTheme` target; payload binaries are not tracked.
