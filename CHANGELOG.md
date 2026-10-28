@@ -37,6 +37,10 @@ does not imply that any release has been published.
   source-inventory capabilities. Local-ROM and external-tool verification gates
   remain open until they are actually run against a trusted, locally supplied
   ROM and installed tools.
+- Clarified that the documented US ROM path is only a local setup convention,
+  not proof that a dump exists or is valid; made the agent instructions and
+  human-facing quickstart consistent with the still-open ROM/tool verification
+  gates.
 
 ### Verification
 
