@@ -35,6 +35,7 @@ jobs:
           tests/test_asset_loader.py
           tests/test_project_store.py
           tests/test_project_assets.py
+          tests/test_project_validation.py
           tests/test_disassembly.py
           tests/test_incbin_inventory.py
           tests/test_incbin_cli.py
@@ -44,8 +45,10 @@ jobs:
           tests/test_source_export_integration.py
           tests/test_rom_image.py
           tests/test_rom_file_diff_cli.py
+          tests/test_rom_diff.py
           tests/test_data_table.py
           tests/test_data_table_cli.py
+          tests/test_doctor.py
           tests/test_pinned_data_table.py
           tests/test_extracted_table_assets.py
           tests/test_extracted_falling_prize_layout.py
