@@ -61,6 +61,7 @@ All exports retain pinned source provenance; see [reproduction instructions](../
   discrepancy that must be reconciled before parsing.
 - [Falling-prize item lookup](./falling-prize-items.md) — seven-entry
   `AddPendantOrCrystal` item-value table and the adjacent indexed arrays.
+- [Audio](./audio.md) — source music pointer index, payload declarations, and the unmatched `Song0B_FairyTheme` target; payload binaries are not tracked.
 
 ## Planned subsystem docs
 
@@ -69,7 +70,7 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 - `items.md` — item table, chest table, shop table.
 - `text.md` — message table, encoding, compression.
 - `sprites.md` — sprite types, placements, gfx banks.
-- `audio.md` — music track pointers, sample banks.
+- `audio.md` — source discovery for music pointer and payload inventories; semantic audio schema and payload decoding remain future work.
 
 Each schema doc must cite the corresponding label / address range in
 `AsarUSALTTPDisassembly` and must not claim extraction support until its loader
