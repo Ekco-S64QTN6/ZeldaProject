@@ -71,7 +71,7 @@ def test_all_dungeon_pointer_targets_have_pinned_source_definitions() -> None:
             for line in path.read_text(encoding="utf-8").splitlines()
             if (
                 match := re.fullmatch(
-                    r"\\s*(RoomDataTiles_[A-Za-z0-9_]+)\\s*:\\s*",
+                    r"\s*(RoomDataTiles_[A-Za-z0-9_]+)\s*:\s*",
                     line.split(";", 1)[0],
                 )
             )
