@@ -143,3 +143,6 @@ For music source-index or payload-inventory changes, also run `uv run zelda-suit
 
 
 The committed sprite dispatch export has a source-independent baseline test. If its IDs, offsets, or handler alias groups change, review the raw export diff and update the baseline with the same source revision; handler addresses in comments are not ROM-verified pointers.
+
+
+The committed `overworld-hidden-item-pointers` export has a submodule-independent baseline test. When updating it intentionally, review the complete 80-label target set, all 128 slot offsets, and the repeated-target distribution; the test does not verify pointer values against ROM bytes.
