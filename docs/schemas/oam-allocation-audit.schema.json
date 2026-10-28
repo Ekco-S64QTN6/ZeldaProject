@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite OAM allocation audit",
+  "description": "Source-only structured view of the OAM allocator's six upper limits and 48 overflow fallback words. Source-commented offsets and OAM buffer positions are not verified against a ROM.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "table_asset_name", "source_file",
+    "source_revision", "table_label", "table_file_offset", "regions", "summary", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-oam-allocation-audit" },
+    "format_version": { "const": 1 },
+    "registry": { "type": "string", "minLength": 1 },
+    "table_asset_name": { "type": "string", "minLength": 1 },
+    "source_file": { "const": "sprite_oam_allocation.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "table_label": { "const": "Pool_OAM_GetBufferPosition" },
+    "table_file_offset": { "type": "integer", "minimum": 0 },
+    "regions": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "items": { "$ref": "#/$defs/region" }
+    },
+    "summary": { "$ref": "#/$defs/summary" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": ["table_index", "entry_file_offset", "source_line", "source_label", "expression", "literal_value", "source_revision"],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "entry_file_offset": { "type": "integer", "minimum": 0 },
+        "source_line": { "type": "integer", "minimum": 1 },
+        "source_label": { "enum": [".limits", ".fallback_points"] },
+        "expression": { "type": "string", "minLength": 1 },
+        "literal_value": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "source_revision": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "fallback_point": {
+      "type": "object",
+      "required": ["overflow_counter_slot", "entry"],
+      "properties": {
+        "overflow_counter_slot": { "type": "integer", "minimum": 0, "maximum": 7 },
+        "entry": { "$ref": "#/$defs/entry" }
+      },
+      "additionalProperties": false
+    },
+    "region": {
+      "type": "object",
+      "required": ["region_name", "allocator_y", "limit_entry", "fallback_points"],
+      "properties": {
+        "region_name": { "enum": ["A", "B", "C", "D", "E", "F"] },
+        "allocator_y": { "enum": [0, 2, 4, 6, 8, 10] },
+        "limit_entry": { "$ref": "#/$defs/entry" },
+        "fallback_points": {
+          "type": "array", "minItems": 8, "maxItems": 8,
+          "items": { "$ref": "#/$defs/fallback_point" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["table_entry_count", "region_count", "limit_entry_count", "fallback_point_count", "fallback_points_per_region"],
+      "properties": {
+        "table_entry_count": { "const": 54 },
+        "region_count": { "const": 6 },
+        "limit_entry_count": { "const": 6 },
+        "fallback_point_count": { "const": 48 },
+        "fallback_points_per_region": { "const": 8 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["source_only", "rom_bytes_read", "oam_runtime_executed", "source_comment_offsets_verified", "oam_buffer_positions_verified"],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "oam_runtime_executed": { "const": false },
+        "source_comment_offsets_verified": { "const": false },
+        "oam_buffer_positions_verified": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -73,6 +73,11 @@ from zelda_suite.extract.music_track_index import (
     MusicTrackIndexError,
     parse_music_track_index,
 )
+from zelda_suite.extract.oam_allocation_audit import (
+    OAM_ALLOCATION_AUDIT_FORMAT,
+    OAMAllocationAuditError,
+    audit_oam_allocation,
+)
 from zelda_suite.extract.overworld_hidden_item_verification import (
     PINNED_SOURCE_REVISION,
     OverworldHiddenItemVerificationError,
@@ -149,6 +154,7 @@ __all__ = [
     "MIXED_DATA_TABLE_FORMAT",
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
+    "OAM_ALLOCATION_AUDIT_FORMAT",
     "PINNED_SOURCE_REVISION",
     "PINNED_TEXT_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
@@ -181,6 +187,7 @@ __all__ = [
     "MusicTrackEntry",
     "MusicTrackIndex",
     "MusicTrackIndexError",
+    "OAMAllocationAuditError",
     "OverworldHiddenItemVerificationError",
     "OverworldPayloadPairError",
     "PointerTableEntry",
@@ -202,6 +209,7 @@ __all__ = [
     "audit_dungeon_room_assets",
     "audit_incbin_inventories",
     "audit_music_assets",
+    "audit_oam_allocation",
     "audit_text_dictionary_assets",
     "audit_text_message_index",
     "audit_unresolved_table_expressions",

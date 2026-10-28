@@ -164,13 +164,14 @@ def test_audit_pins_current_registered_scalar_table_baseline() -> None:
         "item-receipt-x-offsets",
         "item-receipt-y-offsets",
         "mad-batter-pseudo-attack-palettes",
+        "oam-buffer-position-table",
         "text-dictionary-pointers",
     ]
     assert all(asset["source_revision"] == PINNED_SOURCE_REVISION for asset in report["assets"])
     assert report["summary"] == {
-        "table_asset_count": 18,
-        "entry_count": 706,
-        "direct_numeric_entry_count": 531,
+        "table_asset_count": 19,
+        "entry_count": 760,
+        "direct_numeric_entry_count": 585,
         "signed_decimal_entry_count": 77,
         "unresolved_expression_count": 98,
         "classification_counts": {

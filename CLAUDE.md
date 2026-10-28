@@ -230,6 +230,8 @@ The committed `sprite-active3-dispatch` export is checked independently of the d
 
 When changing `landmine-oam-groups`, run `tests/test_mixed_data_table.py`, `tests/test_mixed_data_table_cli.py`, and `tests/test_extracted_landmine_oam_groups.py`. The `inspect-mixed-data-table` parser preserves per-row `db`/`dw`/`dl` widths and offsets; do not turn its raw fields into decoded OAM semantics or verified ROM bytes.
 
+When changing `oam-buffer-position-table`, run `zelda-suite audit-oam-allocation` and `tests/test_extracted_oam_allocation_table.py`. Preserve six source-declared upper limits, eight fallback points per region A–F, and the Y/overflow-counter lookup arithmetic; these are source checks, not runtime or ROM verification.
+
 For `overworld-hidden-item-pointers`, preserve the full source-label set and repeated-target distribution pinned by `tests/test_overworld_hidden_item_pointer_baseline.py`. That test covers committed JSON independently of the disassembly submodule and must not be described as ROM target verification.
 
 When changing the dungeon room object-pointer or payload inventory exports, run `zelda-suite audit-dungeon-room-assets`. Preserve the three known unreferenced payload labels unless the registered source exports change with evidence; the audit uses source metadata and must not be described as ROM pointer verification. When changing `dungeon-room-door-pointers`, run `tests/test_extracted_dungeon_room_door_pointers.py`: it checks slot-by-slot target-label alignment and compares numeric addends with the target labels' source-annotated payload sizes. Those bounds are source-metadata arithmetic only, not verified ROM offsets or decoded door semantics.

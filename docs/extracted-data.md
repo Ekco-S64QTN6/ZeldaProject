@@ -243,6 +243,33 @@ CI checks source-parser parity and that all distinct IDs exist in the registered
 message index. It does not decode text or resolve the local `.message_ids`
 label to the global table label, and it does not read ROM bytes.
 
+## OAM allocator limits and fallback points
+
+`data/extracted/oam-buffer-position-table.json` preserves all 54 `dw` entries
+under `Pool_OAM_GetBufferPosition` from pinned
+`Sprites/sprite_oam_allocation.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The source comment marks
+`$06BA9E–$06BB09` (108 bytes). The first six words belong to `.limits`;
+the remaining 48 belong to `.fallback_points`.
+
+`OAM_AllocateFromRegionA` through `OAM_AllocateFromRegionF` select Y values
+`$00`, `$02`, `$04`, `$06`, `$08`, or `$0A`. `OAM_GetBufferPosition`
+uses the selected limit and, on overflow, indexes eight fallback words per
+region using the region selector and a counter slot masked to 0–7.
+`zelda-suite audit-oam-allocation` reports six A–F rows with a limit and eight
+fallback entries each.
+
+```bash
+uv run zelda-suite audit-oam-allocation
+uv run zelda-suite audit-oam-allocation --output /tmp/oam-allocation-audit.json
+```
+
+The report preserves source expressions and metadata; it does not execute sprite
+allocation or prove the source-commented offsets or OAM buffer positions against
+a local ROM. The complete editable sprite-placement schema remains future work.
+See [the sprites discovery guide](./schemas/sprites.md) and
+[audit report schema](./schemas/oam-allocation-audit.schema.json).
+
 ## Mixed-width Landmine OAM group rows
 
 `data/extracted/landmine-oam-groups.json` preserves both source rows under
