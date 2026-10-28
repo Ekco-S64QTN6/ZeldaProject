@@ -207,6 +207,41 @@ invalid source export payloads. See the
 [named asset loader guide](./asset-loader.md) and
 [registry schema](./schemas/asset-registry.schema.json).
 
+## Crystal Maiden palette words
+
+`data/extracted/crystal-maiden-palette-words.json` records the eight raw
+`dw` literals under `CrystalMaiden_Configure_palette` in pinned
+`Sprites/sprite_crystal_maiden.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The source comment marks the
+16-byte range `$0F4CD3–$0F4CE2`; the values are preserved as 16-bit words
+without converting them into rendered RGB colors.
+
+There is a source-symbol caveat: the nearby `CrystalMaiden_Configure` routine
+loads eight words from `.palette+$00` through `.palette+$0E` into
+`$7EC5E0–$7EC5EE`, but the standalone data label in the source is
+`CrystalMaiden_Configure_palette`. This export records the declared data and
+the adjacent code pattern without asserting that the two spellings resolve to
+the same symbol. That relationship and the source-commented file offset remain
+unverified against the assembler/build and a local ROM.
+
+Regenerate the source table with:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_crystal_maiden.asm \
+  CrystalMaiden_Configure_palette \
+  --table-offset '$0F4CD3' \
+  --directive dw \
+  --entry-count 8 \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/crystal-maiden-palette-words.json
+uv run zelda-suite validate-source-export /tmp/crystal-maiden-palette-words.json
+diff -u data/extracted/crystal-maiden-palette-words.json /tmp/crystal-maiden-palette-words.json
+```
+
+CI compares the committed words against the pinned source parser. It does not
+resolve the routine's `.palette` symbol, decode colors, or validate ROM bytes.
+
 ## Crystal Switch palette selector
 
 `data/extracted/crystal-switch-palette-selectors.json` preserves the two

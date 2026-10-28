@@ -1,6 +1,15 @@
 {
   "assets": [
     {
+      "description": "Eight raw 16-bit words in the source-commented Crystal Maiden palette data table; literal values only, with the source label relationship to the routine's .palette reference left unresolved and ROM offsets unverified.",
+      "file": "crystal-maiden-palette-words.json",
+      "format": "zelda-suite-data-table",
+      "name": "crystal-maiden-palette-words",
+      "record_count": 8,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "graphics"
+    },
+    {
       "description": "Two raw Sprite_CrystalSwitch_palettes selector bytes used by SpritePrep_CrystalSwitch; source metadata only, not decoded color palette values or ROM-verified bytes.",
       "file": "crystal-switch-palette-selectors.json",
       "format": "zelda-suite-data-table",
