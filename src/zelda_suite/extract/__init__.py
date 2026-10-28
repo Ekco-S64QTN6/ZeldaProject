@@ -54,6 +54,11 @@ from zelda_suite.extract.rom_image import (
     read_rom_bytes,
     sha256_rom_bytes,
 )
+from zelda_suite.extract.rom_table_verification import (
+    ROM_TABLE_VERIFICATION_FORMAT,
+    ROMTableVerificationError,
+    verify_registered_scalar_tables,
+)
 from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchEntry,
     SpriteDispatchParseError,
@@ -93,6 +98,8 @@ __all__ = [
     "PointerTableEntry",
     "ROMImageInspection",
     "ROMImageInspectionError",
+    "ROM_TABLE_VERIFICATION_FORMAT",
+    "ROMTableVerificationError",
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
@@ -119,4 +126,5 @@ __all__ = [
     "sha256_rom_bytes",
     "validate_overworld_payload_pairs",
     "validate_source_export",
+    "verify_registered_scalar_tables",
 ]
