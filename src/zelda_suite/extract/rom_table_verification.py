@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from typing import Any
 
 from zelda_suite.extract.asset_loader import (
@@ -19,6 +20,7 @@ from zelda_suite.extract.rom_image import (
 
 ROM_TABLE_VERIFICATION_FORMAT = "zelda-suite-rom-table-verification"
 DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
+_SIGNED_DECIMAL_RE = re.compile(r"-[0-9]+\\Z")
 
 
 class ROMTableVerificationError(ValueError):
@@ -66,6 +68,7 @@ def verify_registered_scalar_tables(
     checked_total = 0
     skipped_total = 0
     mismatch_total = 0
+    resolved_signed_decimal_total = 0
 
     for asset in table_assets:
         payload = load_extracted_asset(asset["name"], registry_path)
@@ -74,13 +77,34 @@ def verify_registered_scalar_tables(
         entry_stride = payload["entry_width"]
         checked = 0
         skipped = 0
+        resolved_signed_decimal = 0
         mismatches: list[dict[str, Any]] = []
 
         for entry in payload["entries"]:
             value = entry["literal_value"]
             if value is None:
-                skipped += 1
-                continue
+                expression = entry["expression"]
+                if _SIGNED_DECIMAL_RE.fullmatch(expression) is None:
+                    skipped += 1
+                    continue
+
+                signed_value = int(expression, 10)
+                signed_minimum = -(1 << (8 * literal_width - 1))
+                if signed_value < signed_minimum:
+                    mismatches.append({
+                        "table_index": entry["table_index"],
+                        "offset": entry["entry_file_offset"],
+                        "expression": expression,
+                        "reason": (
+                            "negative decimal literal is outside the signed range "
+                            "for the declared directive width"
+                        ),
+                        "expected_hex": None,
+                        "actual_hex": None,
+                    })
+                    continue
+                value = signed_value & ((1 << (8 * literal_width)) - 1)
+                resolved_signed_decimal += 1
 
             offset = entry["entry_file_offset"]
             context = {
@@ -135,6 +159,7 @@ def verify_registered_scalar_tables(
             "entry_count": payload["entry_count"],
             "checked_entries": checked,
             "skipped_entries": skipped,
+            "resolved_signed_decimal_entries": resolved_signed_decimal,
             "mismatch_count": len(mismatches),
             "status": status,
             "mismatches": mismatches,
@@ -142,6 +167,7 @@ def verify_registered_scalar_tables(
         checked_total += checked
         skipped_total += skipped
         mismatch_total += len(mismatches)
+        resolved_signed_decimal_total += resolved_signed_decimal
 
     status_counts = {
         status: sum(report["status"] == status for report in asset_reports)
@@ -167,6 +193,7 @@ def verify_registered_scalar_tables(
             "failed_asset_count": status_counts["fail"],
             "checked_entries": checked_total,
             "skipped_entries": skipped_total,
+            "resolved_signed_decimal_entries": resolved_signed_decimal_total,
             "mismatches": mismatch_total,
         },
     }
