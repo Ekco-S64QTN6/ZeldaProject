@@ -49,3 +49,5 @@ For a source-only summary of the 397-message index's known offset-annotation and
 For a source-only join of the 35-slot music pointer table and its 15 payload declarations, run `uv run zelda-suite audit-music-assets`. It reports the unmatched `Song0B_FairyTheme` target and three missing size annotations without reading audio bytes; see [`docs/schemas/audio.md`](./docs/schemas/audio.md).
 
 The committed sprite dispatch export has a submodule-independent regression baseline for its 68 IDs (`$79–$BC`), offsets, and six handler alias groups; source handler-address comments remain unverified annotations.
+
+The 128-entry overworld hidden-item pointer export also has a source-independent CI baseline for all target labels and pointer offsets; that baseline checks metadata consistency, not ROM bytes or resolved target offsets.
