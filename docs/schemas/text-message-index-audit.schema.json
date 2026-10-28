@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite text-message index audit",
+  "description": "Source-only diagnostics for source offset annotations and declared message-block sizes in a registered text-message index. It does not read ROM bytes or decode text.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "asset_name", "source_file",
+    "source_revision", "source_blocks", "findings", "summary", "evidence"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-text-message-index-audit"},
+    "format_version": {"const": 1},
+    "registry": {"type": "string", "minLength": 1},
+    "asset_name": {"type": "string", "minLength": 1},
+    "source_file": {"type": "string", "minLength": 1},
+    "source_revision": {"type": "string", "minLength": 1},
+    "source_blocks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source_block"}},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "encoded_message_bytes_read",
+        "decoded_text_produced", "offsets_verified"
+      ],
+      "properties": {
+        "source_only": {"const": true},
+        "rom_bytes_read": {"const": false},
+        "encoded_message_bytes_read": {"const": false},
+        "decoded_text_produced": {"const": false},
+        "offsets_verified": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "source_block": {
+      "type": "object",
+      "required": [
+        "source_file", "block_label", "block_start_offset", "block_end_offset",
+        "block_size_bytes", "message_count", "declared_byte_count_total",
+        "declared_bytes_match_block_size", "difference_bytes"
+      ],
+      "properties": {
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "block_start_offset": {"type": "integer", "minimum": 0},
+        "block_end_offset": {"type": "integer", "minimum": 0},
+        "block_size_bytes": {"type": "integer", "minimum": 1},
+        "message_count": {"type": "integer", "minimum": 1},
+        "declared_byte_count_total": {"type": "integer", "minimum": 1},
+        "declared_bytes_match_block_size": {"type": "boolean"},
+        "difference_bytes": {"type": "integer"}
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "code", "severity", "message", "source_file", "block_label",
+        "message_id", "message_label", "source_line", "source_offset_annotation",
+        "annotated_file_offset", "sequential_file_offset", "declared_byte_count",
+        "block_start_offset", "block_end_offset", "block_size_bytes",
+        "declared_byte_count_total", "difference_bytes"
+      ],
+      "properties": {
+        "code": {"enum": ["invalid_offset_annotation", "offset_annotation_mismatch", "block_size_mismatch"]},
+        "severity": {"const": "warning"},
+        "message": {"type": "string", "minLength": 1},
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "message_id": {"type": ["integer", "null"], "minimum": 0},
+        "message_label": {"type": ["string", "null"]},
+        "source_line": {"type": ["integer", "null"], "minimum": 1},
+        "source_offset_annotation": {"type": ["string", "null"]},
+        "annotated_file_offset": {"type": ["integer", "null"], "minimum": 0},
+        "sequential_file_offset": {"type": ["integer", "null"], "minimum": 0},
+        "declared_byte_count": {"type": ["integer", "null"], "minimum": 1},
+        "block_start_offset": {"type": ["integer", "null"], "minimum": 0},
+        "block_end_offset": {"type": ["integer", "null"], "minimum": 0},
+        "block_size_bytes": {"type": ["integer", "null"], "minimum": 1},
+        "declared_byte_count_total": {"type": ["integer", "null"], "minimum": 1},
+        "difference_bytes": {"type": ["integer", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "source_block_count", "message_count", "offset_annotation_count",
+        "missing_offset_annotation_count", "offset_mismatch_count",
+        "invalid_offset_annotation_count", "block_size_mismatch_count",
+        "warning_count", "finding_count"
+      ],
+      "properties": {
+        "source_block_count": {"type": "integer", "minimum": 1},
+        "message_count": {"type": "integer", "minimum": 1},
+        "offset_annotation_count": {"type": "integer", "minimum": 0},
+        "missing_offset_annotation_count": {"type": "integer", "minimum": 0},
+        "offset_mismatch_count": {"type": "integer", "minimum": 0},
+        "invalid_offset_annotation_count": {"type": "integer", "minimum": 0},
+        "block_size_mismatch_count": {"type": "integer", "minimum": 0},
+        "warning_count": {"type": "integer", "minimum": 0},
+        "finding_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  }
+}
