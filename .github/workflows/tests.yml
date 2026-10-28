@@ -102,7 +102,7 @@ jobs:
         shell: pwsh
         run: |
           $workspace = Join-Path $env:RUNNER_TEMP "zelda-setup-smoke"
-          .\\scripts\\setup.ps1 -Name "ci-smoke" -Workspace $workspace
+          .\scripts\setup.ps1 -Name "ci-smoke" -Workspace $workspace
           $database = Join-Path $workspace "project/ci-smoke.db"
           $jsonExport = Join-Path $workspace "project/ci-smoke.json"
           if (-not (Test-Path $database)) { throw "Setup did not create the SQLite project." }
