@@ -41,6 +41,10 @@ from zelda_suite.extract.music_track_index import (
     MusicTrackIndexError,
     parse_music_track_index,
 )
+from zelda_suite.extract.overworld_payload_pairs import (
+    OverworldPayloadPairError,
+    validate_overworld_payload_pairs,
+)
 from zelda_suite.extract.rom_image import (
     ROMImageInspection,
     ROMImageInspectionError,
@@ -85,6 +89,7 @@ __all__ = [
     "MusicTrackEntry",
     "MusicTrackIndex",
     "MusicTrackIndexError",
+    "OverworldPayloadPairError",
     "PointerTableEntry",
     "ROMImageInspection",
     "ROMImageInspectionError",
@@ -112,5 +117,6 @@ __all__ = [
     "parse_text_message_index",
     "read_rom_bytes",
     "sha256_rom_bytes",
+    "validate_overworld_payload_pairs",
     "validate_source_export",
 ]

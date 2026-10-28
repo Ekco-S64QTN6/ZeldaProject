@@ -65,10 +65,10 @@ verified fixture establish what the bytes mean.
 
 ## Validation gates
 
-1. Inventory all `OverworldMap32_ScreenXX_High/Low` declarations from the
+1. [x] Inventory all `OverworldMap32_ScreenXX_High/Low` declarations from the
    pinned source without assuming the source order is numeric.
-2. Check every pair has one high and one low declaration; report missing or
-   duplicate members instead of silently skipping them.
+2. [x] Validate that every source-local screen token has exactly one High and
+   one Low declaration; the CLI reports missing or duplicate members.
 3. Reconcile the source tokens with YAZE/z3ed's output and the roadmap's intended
    map count using a locally supplied clean US ROM.
 4. Validate every source-reported offset and size against a local ROM or
@@ -171,3 +171,15 @@ tree has no tracked `bin/ow/*.bin` payloads.
 
 See [the committed extracted-data guide](../extracted-data.md) for exact
 counts, anomalies, and commands to regenerate the two JSON inventories.
+
+Run the source-local pair-integrity check after regenerating either inventory:
+
+```bash
+uv run zelda-suite validate-overworld-payload-pairs \
+  data/extracted/overworld-payloads-bank0b.json \
+  data/extracted/overworld-payloads-bank0c.json
+```
+
+The report currently confirms 82 pairs in Bank0B and 42 in Bank0C (124 total).
+It validates labels and metadata shape only; it does not reconcile annotated
+offsets with a local ROM or decode the payload binaries.

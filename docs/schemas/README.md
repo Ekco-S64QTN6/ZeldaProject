@@ -18,6 +18,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [Named asset registry](./asset-registry.schema.json) — version 1 catalog schema for `data/extracted/manifest.json`.
 - [Sprite dispatch export](./sprite-dispatch-export.schema.json) — version 1 schema for `zelda-suite inspect-sprite-dispatch`.
 - [Music track index](./music-track-index.schema.json) — version 1 schema for `zelda-suite inspect-music-track-index`.
+- [Overworld High/Low pair check](./overworld.md) — validates that each source-local screen token has one High and one Low payload declaration.
 
 ## Committed source-derived data
 

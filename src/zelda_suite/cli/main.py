@@ -15,6 +15,7 @@ from zelda_suite.extract import (
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     MessageSourceBlock,
+    OverworldPayloadPairError,
     ROMImageInspectionError,
     inspect_rom_image,
     load_source_export,
@@ -27,6 +28,7 @@ from zelda_suite.extract import (
     parse_text_message_index,
     read_rom_bytes,
     sha256_rom_bytes,
+    validate_overworld_payload_pairs,
     validate_source_export,
 )
 from zelda_suite.project import initialize_project, validate_project
@@ -967,6 +969,31 @@ def validate_source_export_command(source_export: Path) -> None:
     click.echo(
         f"[OK] {payload['format']} v{payload['format_version']}: "
         f"{record_count} {record_label} ({source_export})"
+    )
+
+
+@cli.command(name="validate-overworld-payload-pairs")
+@click.argument(
+    "inventories",
+    nargs=-1,
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+def validate_overworld_payload_pairs_command(inventories: tuple[Path, ...]) -> None:
+    """Validate exactly one High and Low payload declaration per source screen."""
+    try:
+        payloads = [load_source_export(path) for path in inventories]
+        report = validate_overworld_payload_pairs(payloads)
+    except (AssetLoadError, OverworldPayloadPairError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    click.echo(
+        json.dumps(
+            report,
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
     )
 
 

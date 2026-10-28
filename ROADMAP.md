@@ -35,7 +35,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
   - Seven raw `Pool_AddReceiveItem` arrays: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
-- [~] Inventory the two overworld High/Low payload banks: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C) by their source labels. An automated pair-integrity check has not yet been added.
+- [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
 - [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
 - [ ] Establish complete editable schemas for items/chests/shops, doors/entrances, sprites/placements, message encoding, and audio payloads; distinguish raw metadata from verified semantic meaning.
@@ -102,7 +102,6 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Add an automated integrity check ensuring each source-labelled High/Low overworld screen pair has exactly one member of each kind.
-2. Use a locally supplied clean US ROM and source consumers to resolve the four source annotation issues without changing the source export facts.
-3. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
-4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
+1. Use a locally supplied clean US ROM and source consumers to resolve the four source annotation issues without changing the source export facts.
+2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
+3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.

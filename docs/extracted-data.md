@@ -345,6 +345,19 @@ Both inventories are registered by name as `overworld-payloads-bank0b` and
 metadata and loads them through the named-asset registry. No editable tile or
 layer representation is claimed yet.
 
+Validate the source-local High/Low pairing invariant with:
+
+```bash
+uv run zelda-suite validate-overworld-payload-pairs \
+  data/extracted/overworld-payloads-bank0b.json \
+  data/extracted/overworld-payloads-bank0c.json
+```
+
+The command confirms exactly one High and one Low declaration for each of the
+124 source-local screen tokens (82 from Bank0B, 42 from Bank0C). It remains a
+metadata check; it does not verify annotated offsets against the ROM or decode
+the payloads.
+
 ## Receive-item source tables
 
 Seven raw tables from `Pool_AddReceiveItem` in pinned

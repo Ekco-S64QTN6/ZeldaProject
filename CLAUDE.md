@@ -202,9 +202,12 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`docs/schemas/`** — source-export contracts and discovery notes; full editable game-system schemas remain incomplete.
 - **`docs/decisions/`** — Architecture Decision Records. Read `0001` before touching the data model.
 - **`docs/glossary.md`** — terminology (IPS, ASM, MSU‑1, rooms vs. maps, etc.).
-- **`README.md`** — human‑facing quickstart.
+- **`docs/schemas/overworld.md`** — overworld source discovery and High/Low pair validator.
+- **`docs/extracted-data.md`** — committed source inventory catalog and reproduction commands.
+- **`docs/asset-loader.md`** and **`docs/incbin-inventory.md`** — source-export loader and inventory contracts.
+- **`README.md`** — human-facing quickstart and capability summary.
 
 ---
 
-*Last updated: Day 0 of project. Update this file when conventions change, not when individual tasks complete.*
+*Update these instructions when architecture, constraints, or workflow conventions change. Track task completion in `ROADMAP.md`; do not substitute assumptions for verification.*
 ```
