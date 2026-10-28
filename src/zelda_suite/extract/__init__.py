@@ -6,6 +6,7 @@ from zelda_suite.extract.asset_loader import (
     ITEM_RECEIPT_LAYOUT_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     MUSIC_TRACK_INDEX_FORMAT,
+    SHOP_ITEM_HANDLERS_FORMAT,
     SPRITE_DISPATCH_FORMAT,
     SPRITE_PREP_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
@@ -115,6 +116,17 @@ from zelda_suite.extract.rom_table_verification import (
     ROMTableVerificationError,
     verify_registered_scalar_tables,
 )
+from zelda_suite.extract.shop_item_handlers import (
+    ShopItemHandlerEntry,
+    ShopItemHandlersParseError,
+    ShopItemHandlersTable,
+    parse_shop_item_handlers,
+)
+from zelda_suite.extract.shop_item_handlers_audit import (
+    SHOP_ITEM_HANDLERS_AUDIT_FORMAT,
+    ShopItemHandlersAuditError,
+    audit_shop_item_handlers,
+)
 from zelda_suite.extract.source_expression_audit import (
     SOURCE_EXPRESSION_AUDIT_FORMAT,
     SourceExpressionAuditError,
@@ -185,6 +197,8 @@ __all__ = [
     "PINNED_TEXT_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
     "ROM_TABLE_VERIFICATION_FORMAT",
+    "SHOP_ITEM_HANDLERS_AUDIT_FORMAT",
+    "SHOP_ITEM_HANDLERS_FORMAT",
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "SPRITE_PREP_DISPATCH_AUDIT_FORMAT",
@@ -226,6 +240,10 @@ __all__ = [
     "ROMImageInspection",
     "ROMImageInspectionError",
     "ROMTableVerificationError",
+    "ShopItemHandlerEntry",
+    "ShopItemHandlersAuditError",
+    "ShopItemHandlersParseError",
+    "ShopItemHandlersTable",
     "SourceExpressionAuditError",
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
@@ -247,6 +265,7 @@ __all__ = [
     "audit_incbin_inventories",
     "audit_music_assets",
     "audit_oam_allocation",
+    "audit_shop_item_handlers",
     "audit_sprite_prep_dispatch",
     "audit_text_dictionary_assets",
     "audit_text_message_index",
@@ -268,6 +287,7 @@ __all__ = [
     "parse_mixed_data_table",
     "parse_music_track_index",
     "parse_overworld_hidden_item_source",
+    "parse_shop_item_handlers",
     "parse_source_pointer_table",
     "parse_sprite_dispatch_table",
     "parse_sprite_prep_dispatch_table",

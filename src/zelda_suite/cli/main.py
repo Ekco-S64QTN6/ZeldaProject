@@ -25,6 +25,7 @@ from zelda_suite.extract import (
     OverworldPayloadPairError,
     ROMImageInspectionError,
     ROMTableVerificationError,
+    ShopItemHandlersAuditError,
     SourceExpressionAuditError,
     SpritePrepDispatchAuditError,
     TextDictionaryAuditError,
@@ -36,6 +37,7 @@ from zelda_suite.extract import (
     audit_incbin_inventories,
     audit_music_assets,
     audit_oam_allocation,
+    audit_shop_item_handlers,
     audit_sprite_prep_dispatch,
     audit_text_dictionary_assets,
     audit_text_message_index,
@@ -50,6 +52,7 @@ from zelda_suite.extract import (
     parse_mixed_data_table,
     parse_music_track_index,
     parse_overworld_hidden_item_source,
+    parse_shop_item_handlers,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
     parse_sprite_prep_dispatch_table,
@@ -1867,6 +1870,146 @@ def audit_dungeon_chest_data_command(
         f"unique_rooms={summary['unique_room_value_count']}, "
         f"repeated_rooms={summary['room_values_with_multiple_entries']}, "
         f"big_chests={summary['big_chest_count']}"
+    )
+
+
+
+@cli.command(name="inspect-shop-item-handlers")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    required=True,
+    help="Pinned disassembly revision to record in the export.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=7,
+    show_default=True,
+    help="Expected number of standard shopkeeper purchase handlers.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_shop_item_handlers(
+    source: Path,
+    source_revision: str,
+    entry_count: int,
+    output: Path | None,
+) -> None:
+    """Export source-coded prices and receipt selectors for standard shop handlers."""
+    try:
+        table = parse_shop_item_handlers(
+            source.read_text(encoding="utf-8"),
+            source_revision=source_revision,
+            source_file=source.name,
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    click.echo(
+        f"Wrote {len(table.entries)} shop purchase handlers to {output}; "
+        "room-specific shop stock and receipt item names remain unresolved"
+    )
+
+
+@cli.command(name="audit-shop-item-handlers")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--asset",
+    "asset_name",
+    default="shop-item-handlers",
+    show_default=True,
+    help="Registered standard shopkeeper purchase-handler asset.",
+)
+@click.option(
+    "--receipt-asset",
+    "receipt_asset_name",
+    default="item-receipt-layout",
+    show_default=True,
+    help="Registered positional receive-item layout used by receipt selectors.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+def audit_shop_item_handlers_command(
+    registry_path: Path | None,
+    asset_name: str,
+    receipt_asset_name: str,
+    output: Path | None,
+) -> None:
+    """Join standard shop purchase handlers to raw receive-item slots by index."""
+    try:
+        report = audit_shop_item_handlers(
+            registry_path or "data/extracted/manifest.json",
+            asset_name=asset_name,
+            receipt_asset_name=receipt_asset_name,
+        )
+    except (ShopItemHandlersAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote shop-item handler audit to {output}; "
+        f"handlers={summary['handler_count']}, "
+        f"receipt_slots={summary['distinct_receipt_item_index_count']}, "
+        f"price_range={summary['minimum_price_value']}-{summary['maximum_price_value']}"
     )
 
 

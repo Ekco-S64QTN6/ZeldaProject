@@ -13,6 +13,7 @@ from typing import Any
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
+SHOP_ITEM_HANDLERS_FORMAT = "zelda-suite-shop-item-handlers"
 DUNGEON_CHEST_DATA_FORMAT = "zelda-suite-dungeon-chest-data"
 MIXED_DATA_TABLE_FORMAT = "zelda-suite-mixed-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
@@ -129,6 +130,62 @@ _DUNGEON_CHEST_RANGE_RE = re.compile(
     r"\$(?P<start>[0-9A-Fa-f]+)-\$(?P<end>[0-9A-Fa-f]+)\Z"
 )
 _DUNGEON_CHEST_LITERAL_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
+
+
+_SHOP_ITEM_HANDLERS_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "dispatch_routine_label",
+    "dispatch_routine_source_range_annotation",
+    "dispatch_table_file_offset",
+    "dispatch_table_offset_established",
+    "dispatch_entry_count",
+    "entry_count",
+    "entries",
+    "evidence",
+}
+_SHOP_ITEM_HANDLERS_ENTRY_KEYS = {
+    "table_index",
+    "shopkeeper_variant_id",
+    "handler_label",
+    "source_handler_address_annotation",
+    "source_dispatch_comment",
+    "source_dispatch_line",
+    "source_handler_range_annotation",
+    "source_handler_label_line",
+    "price_low_expression",
+    "price_low_source_line",
+    "price_high_expression",
+    "price_high_source_line",
+    "price_value",
+    "payment_call_source_line",
+    "receipt_item_index",
+    "receipt_index_expression",
+    "receipt_selector_source_line",
+    "receipt_call_source_line",
+    "source_revision",
+}
+_SHOP_ITEM_HANDLERS_EVIDENCE_KEYS = {
+    "source_only",
+    "rom_bytes_read",
+    "dispatch_table_offset_established",
+    "handler_address_annotations_verified",
+    "price_behavior_runtime_verified",
+    "receipt_item_names_resolved",
+    "room_specific_shop_stock_resolved",
+}
+_SHOP_ITEM_RANGE_RE = re.compile(
+    r"\$(?P<start>[0-9A-Fa-f]+)-\$(?P<end>[0-9A-Fa-f]+) JUMP LOCATION\Z",
+    re.IGNORECASE,
+)
+_SHOP_ITEM_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{4}\Z")
+_SHOP_ITEM_BYTE_RE = re.compile(r"\$[0-9A-Fa-f]{2}\Z")
+_SHOP_ITEM_DISPATCH_COMMENT_RE = re.compile(
+    r"0x(?P<selector>[0-9A-Fa-f]{2})\s*-\s*"
+    r"(?P<address>\$[0-9A-Fa-f]{4})(?:\s+(?P<description>.*))?\Z"
+)
 
 
 _MIXED_DATA_TABLE_TOP_KEYS = {
@@ -629,6 +686,123 @@ def _validate_dungeon_chest_data_export(payload: dict[str, Any]) -> None:
         "source_range_offsets_verified",
         "item_value_names_resolved",
         "room_values_verified_against_rom",
+    ):
+        if _boolean(evidence[field], f"evidence.{field}") is not False:
+            raise AssetLoadError(f"evidence.{field} must be false")
+
+
+
+def _validate_shop_item_handlers_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _SHOP_ITEM_HANDLERS_TOP_KEYS, "shop item handlers export")
+    if payload["format"] != SHOP_ITEM_HANDLERS_FORMAT:
+        raise AssetLoadError("shop item handlers has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported shop item handlers format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    if _string(payload["source_file"], "source_file") != "sprite_shopkeeper.asm":
+        raise AssetLoadError("shop item handlers source_file must be 'sprite_shopkeeper.asm'")
+    revision = _string(payload["source_revision"], "source_revision")
+    if _string(payload["dispatch_routine_label"], "dispatch_routine_label") != "Sprite_ShopKeeper":
+        raise AssetLoadError("dispatch_routine_label must be 'Sprite_ShopKeeper'")
+    dispatch_range = _string(
+        payload["dispatch_routine_source_range_annotation"],
+        "dispatch_routine_source_range_annotation",
+    )
+    if _SHOP_ITEM_RANGE_RE.fullmatch(dispatch_range) is None:
+        raise AssetLoadError("dispatch routine range annotation is malformed")
+    if payload["dispatch_table_file_offset"] is not None:
+        raise AssetLoadError("dispatch_table_file_offset must be null because its exact offset is not established")
+    if _boolean(payload["dispatch_table_offset_established"], "dispatch_table_offset_established") is not False:
+        raise AssetLoadError("dispatch_table_offset_established must be false")
+    dispatch_count = _integer(payload["dispatch_entry_count"], "dispatch_entry_count", minimum=1)
+    if dispatch_count != 14:
+        raise AssetLoadError("dispatch_entry_count must be 14")
+    count = _integer(payload["entry_count"], "entry_count", minimum=1)
+    if count != 7:
+        raise AssetLoadError("entry_count must be 7 for the standard shopkeeper purchase handlers")
+    entries = payload["entries"]
+    if not isinstance(entries, list) or len(entries) != count:
+        raise AssetLoadError("entry_count does not match purchase handler entries")
+
+    expected_variant_ids = tuple(range(7, 14))
+    for expected_index, raw_entry in enumerate(entries):
+        context = f"entries[{expected_index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _SHOP_ITEM_HANDLERS_ENTRY_KEYS, context)
+        index = _integer(entry["table_index"], f"{context}.table_index", minimum=0)
+        if index != expected_index:
+            raise AssetLoadError(f"{context}.table_index must be {expected_index}")
+        variant_id = _integer(entry["shopkeeper_variant_id"], f"{context}.shopkeeper_variant_id", minimum=0)
+        if variant_id != expected_variant_ids[expected_index]:
+            raise AssetLoadError(
+                f"{context}.shopkeeper_variant_id must be {expected_variant_ids[expected_index]}"
+            )
+        _identifier(entry["handler_label"], f"{context}.handler_label")
+        address = _string(
+            entry["source_handler_address_annotation"],
+            f"{context}.source_handler_address_annotation",
+        )
+        if _SHOP_ITEM_ADDRESS_RE.fullmatch(address) is None:
+            raise AssetLoadError(f"{context}.source_handler_address_annotation must be a four-digit address comment")
+        dispatch_comment = _string(entry["source_dispatch_comment"], f"{context}.source_dispatch_comment")
+        comment_match = _SHOP_ITEM_DISPATCH_COMMENT_RE.fullmatch(dispatch_comment)
+        if comment_match is None:
+            raise AssetLoadError(f"{context}.source_dispatch_comment is malformed")
+        if int(comment_match.group("selector"), 16) != variant_id:
+            raise AssetLoadError(f"{context}.source_dispatch_comment selector does not match shopkeeper_variant_id")
+        if comment_match.group("address").upper() != address:
+            raise AssetLoadError(f"{context}.source_dispatch_comment address does not match annotation")
+        _string(entry["source_handler_range_annotation"], f"{context}.source_handler_range_annotation")
+        if _SHOP_ITEM_RANGE_RE.fullmatch(entry["source_handler_range_annotation"]) is None:
+            raise AssetLoadError(f"{context}.source_handler_range_annotation is malformed")
+        for field in (
+            "source_dispatch_line",
+            "source_handler_label_line",
+            "price_low_source_line",
+            "price_high_source_line",
+            "payment_call_source_line",
+            "receipt_selector_source_line",
+            "receipt_call_source_line",
+        ):
+            _integer(entry[field], f"{context}.{field}", minimum=1)
+
+        low_expr = _string(entry["price_low_expression"], f"{context}.price_low_expression")
+        high_expr = _string(entry["price_high_expression"], f"{context}.price_high_expression")
+        if _SHOP_ITEM_BYTE_RE.fullmatch(low_expr) is None or _SHOP_ITEM_BYTE_RE.fullmatch(high_expr) is None:
+            raise AssetLoadError(f"{context} price expressions must be two-digit hex bytes")
+        low = int(low_expr[1:], 16)
+        high = int(high_expr[1:], 16)
+        price = _integer(entry["price_value"], f"{context}.price_value", minimum=0)
+        if price != ((high << 8) | low):
+            raise AssetLoadError(f"{context}.price_value does not match A/Y byte expressions")
+        if not 1 <= price <= 0xFFFF:
+            raise AssetLoadError(f"{context}.price_value must fit in a nonzero 16-bit price")
+
+        receipt_expr = _string(entry["receipt_index_expression"], f"{context}.receipt_index_expression")
+        if _SHOP_ITEM_BYTE_RE.fullmatch(receipt_expr) is None:
+            raise AssetLoadError(f"{context}.receipt_index_expression must be a two-digit hex byte")
+        receipt_index = _integer(entry["receipt_item_index"], f"{context}.receipt_item_index", minimum=0)
+        if int(receipt_expr[1:], 16) != receipt_index:
+            raise AssetLoadError(f"{context}.receipt_item_index does not match receipt_index_expression")
+        if receipt_index > 0xFF:
+            raise AssetLoadError(f"{context}.receipt_item_index must fit in one byte")
+        if _string(entry["source_revision"], f"{context}.source_revision") != revision:
+            raise AssetLoadError(f"{context}.source_revision does not match top-level source_revision")
+
+    evidence = _object(payload["evidence"], "evidence")
+    _exact_keys(evidence, _SHOP_ITEM_HANDLERS_EVIDENCE_KEYS, "evidence")
+    if _boolean(evidence["source_only"], "evidence.source_only") is not True:
+        raise AssetLoadError("evidence.source_only must be true")
+    for field in (
+        "rom_bytes_read",
+        "dispatch_table_offset_established",
+        "handler_address_annotations_verified",
+        "price_behavior_runtime_verified",
+        "receipt_item_names_resolved",
+        "room_specific_shop_stock_resolved",
     ):
         if _boolean(evidence[field], f"evidence.{field}") is not False:
             raise AssetLoadError(f"evidence.{field} must be false")
@@ -1783,6 +1957,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_data_table_export(export)
     elif format_name == DUNGEON_CHEST_DATA_FORMAT:
         _validate_dungeon_chest_data_export(export)
+    elif format_name == SHOP_ITEM_HANDLERS_FORMAT:
+        _validate_shop_item_handlers_export(export)
     elif format_name == MIXED_DATA_TABLE_FORMAT:
         _validate_mixed_data_table_export(export)
     elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
@@ -1821,6 +1997,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     INCBIN_INVENTORY_FORMAT,
     DATA_TABLE_FORMAT,
     DUNGEON_CHEST_DATA_FORMAT,
+    SHOP_ITEM_HANDLERS_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
@@ -1949,6 +2126,7 @@ def load_extracted_asset(
         INCBIN_INVENTORY_FORMAT: "declaration_count",
         DATA_TABLE_FORMAT: "entry_count",
         DUNGEON_CHEST_DATA_FORMAT: "entry_count",
+        SHOP_ITEM_HANDLERS_FORMAT: "entry_count",
         MIXED_DATA_TABLE_FORMAT: "record_count",
         ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",

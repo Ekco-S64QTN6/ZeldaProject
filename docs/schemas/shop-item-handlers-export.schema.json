@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite shop-item handler source export",
+  "description": "Source-only catalog of the seven standard Sprite_ShopKeeper purchase handlers. Inline dispatch table offset, handler address annotations, runtime price behavior, receipt item names, and room-specific stock remain unverified.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "source_file", "source_revision",
+    "dispatch_routine_label", "dispatch_routine_source_range_annotation",
+    "dispatch_table_file_offset", "dispatch_table_offset_established",
+    "dispatch_entry_count", "entry_count", "entries", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-shop-item-handlers" },
+    "format_version": { "const": 1 },
+    "source_file": { "const": "sprite_shopkeeper.asm" },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "dispatch_routine_label": { "const": "Sprite_ShopKeeper" },
+    "dispatch_routine_source_range_annotation": {
+      "type": "string",
+      "pattern": "^\\$[0-9A-Fa-f]+-\\$[0-9A-Fa-f]+ JUMP LOCATION$"
+    },
+    "dispatch_table_file_offset": { "type": "null" },
+    "dispatch_table_offset_established": { "const": false },
+    "dispatch_entry_count": { "const": 14 },
+    "entry_count": { "const": 7 },
+    "entries": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index", "shopkeeper_variant_id", "handler_label",
+        "source_handler_address_annotation", "source_dispatch_comment",
+        "source_dispatch_line", "source_handler_range_annotation",
+        "source_handler_label_line", "price_low_expression",
+        "price_low_source_line", "price_high_expression", "price_high_source_line",
+        "price_value", "payment_call_source_line", "receipt_item_index",
+        "receipt_index_expression", "receipt_selector_source_line",
+        "receipt_call_source_line", "source_revision"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "shopkeeper_variant_id": { "type": "integer", "minimum": 7, "maximum": 13 },
+        "handler_label": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+        "source_handler_address_annotation": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{4}$" },
+        "source_dispatch_comment": { "type": "string", "minLength": 1 },
+        "source_dispatch_line": { "type": "integer", "minimum": 1 },
+        "source_handler_range_annotation": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-Fa-f]+-\\$[0-9A-Fa-f]+ JUMP LOCATION$"
+        },
+        "source_handler_label_line": { "type": "integer", "minimum": 1 },
+        "price_low_expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{2}$" },
+        "price_low_source_line": { "type": "integer", "minimum": 1 },
+        "price_high_expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{2}$" },
+        "price_high_source_line": { "type": "integer", "minimum": 1 },
+        "price_value": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "payment_call_source_line": { "type": "integer", "minimum": 1 },
+        "receipt_item_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "receipt_index_expression": { "type": "string", "pattern": "^\\$[0-9A-Fa-f]{2}$" },
+        "receipt_selector_source_line": { "type": "integer", "minimum": 1 },
+        "receipt_call_source_line": { "type": "integer", "minimum": 1 },
+        "source_revision": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "dispatch_table_offset_established",
+        "handler_address_annotations_verified", "price_behavior_runtime_verified",
+        "receipt_item_names_resolved", "room_specific_shop_stock_resolved"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "dispatch_table_offset_established": { "const": false },
+        "handler_address_annotations_verified": { "const": false },
+        "price_behavior_runtime_verified": { "const": false },
+        "receipt_item_names_resolved": { "const": false },
+        "room_specific_shop_stock_resolved": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

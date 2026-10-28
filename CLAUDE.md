@@ -230,6 +230,8 @@ The committed `sprite-active3-dispatch` export is checked independently of the d
 
 When changing `Dungeon_ChestData`, run `tests/test_dungeon_chest_data.py`, `tests/test_extracted_dungeon_chest_data.py`, and `tests/test_dungeon_chest_data_audit.py`; run `zelda-suite audit-dungeon-chest-data` to protect the 168 raw records, packed-field bit arithmetic, repeated-room distribution, and 11 source-flagged big-chest entries. Keep source-range offsets and item names unverified.
 
+When changing `sprite_shopkeeper.asm` purchase-handler data, run `tests/test_shop_item_handlers.py`, `tests/test_extracted_shop_item_handlers.py`, and `tests/test_shop_item_handlers_audit.py`; run `zelda-suite audit-shop-item-handlers` to preserve the seven source-coded prices, receipt selector slots, and raw item-receipt joins. Do not promote comments to verified addresses or receipt slot indexes to canonical item IDs, and do not infer room-specific shop stock.
+
 When changing `SpritePrep_Main` dispatch data, run `tests/test_sprite_prep_dispatch.py` and `tests/test_extracted_sprite_prep_dispatch.py`, then run `zelda-suite audit-sprite-prep-dispatch`. Preserve all 243 IDs and source comments, leave the inline-table offset unset unless independent evidence establishes it, and do not equate source address annotations with verified handler pointers or infer equivalence with SpriteActive3 runtime behavior.
 
 When changing `landmine-oam-groups`, run `tests/test_mixed_data_table.py`, `tests/test_mixed_data_table_cli.py`, and `tests/test_extracted_landmine_oam_groups.py`. The `inspect-mixed-data-table` parser preserves per-row `db`/`dw`/`dl` widths and offsets; do not turn its raw fields into decoded OAM semantics or verified ROM bytes.
