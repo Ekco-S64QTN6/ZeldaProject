@@ -12,10 +12,8 @@ from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
-    ITEM_RECEIPT_LAYOUT_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
-    ItemReceiptLayoutError,
     MessageSourceBlock,
     OverworldPayloadPairError,
     ROMImageInspectionError,
@@ -1069,7 +1067,7 @@ def join_item_receipt_tables_command(
         report = build_item_receipt_layout(
             registry_path or "data/extracted/manifest.json"
         )
-    except (AssetLoadError, ItemReceiptLayoutError, OSError, ValueError) as exc:
+    except (AssetLoadError, OSError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc
 
     rendered = json.dumps(
