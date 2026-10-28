@@ -50,6 +50,11 @@ from zelda_suite.extract.overworld_payload_pairs import (
     OverworldPayloadPairError,
     validate_overworld_payload_pairs,
 )
+from zelda_suite.extract.overworld_hidden_item_verification import (
+    OverworldHiddenItemVerificationError,
+    parse_overworld_hidden_item_source,
+    verify_overworld_hidden_items,
+)
 from zelda_suite.extract.rom_image import (
     ROMImageInspection,
     ROMImageInspectionError,
@@ -102,6 +107,7 @@ __all__ = [
     "MusicTrackEntry",
     "MusicTrackIndex",
     "MusicTrackIndexError",
+    "OverworldHiddenItemVerificationError",
     "OverworldPayloadPairError",
     "PointerTableEntry",
     "ROMImageInspection",
@@ -127,6 +133,7 @@ __all__ = [
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
     "parse_music_track_index",
+    "parse_overworld_hidden_item_source",
     "parse_source_pointer_table",
     "parse_sprite_dispatch_table",
     "parse_text_message_index",
@@ -134,5 +141,6 @@ __all__ = [
     "sha256_rom_bytes",
     "validate_overworld_payload_pairs",
     "validate_source_export",
+    "verify_overworld_hidden_items",
     "verify_registered_scalar_tables",
 ]
