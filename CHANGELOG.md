@@ -9,6 +9,10 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add a source-only `zelda-suite audit-text-dictionary` report and version-1
+  schema to cross-check registered pointer expressions and fragment records;
+  the known `.You` source-extent mismatch remains a diagnostic warning.
+
 - Add an integration regression baseline for all 14 registered scalar-table
   exports: 679 entries, 504 direct numeric literals, 77 negative decimal literals,
   and 98 unresolved symbols. The baseline is source-only and does not claim that
