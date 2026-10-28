@@ -95,7 +95,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [~] Add automated regression tests for source parsers, asset validation, ROM inspection, and byte-diff utilities; golden-ROM round-trip tests are not possible until a verified writer/build path exists.
 - [~] Document current CLI operations, source export formats, and known disassembly/offset caveats; complete API and schema documentation as the subsystems are implemented.
-- [ ] Provide an installer that prepares dependencies and initializes the workspace without fetching or distributing copyrighted ROM files.
+- [x] Provide `scripts/setup.sh` and `scripts/setup.ps1` plus `docs/install.md`; prepare dependencies, initialize and validate a project, refuse to overwrite existing project files, and never fetch or modify a ROM.
 - [x] Establish `CHANGELOG.md` and a versioning policy for the package, project JSON format, SQLite schema, asset registry, and individual source-export formats. The release/tag workflow has not yet been exercised.
 - [x] Add `CONTRIBUTING.md` guidance for new extractors, schemas, source fixtures, registry/loader updates, and verification evidence.
 
