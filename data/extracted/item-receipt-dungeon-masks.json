@@ -1,0 +1,141 @@
+{
+  "directive": "dw",
+  "end_label": null,
+  "entries": [
+    {
+      "entry_file_offset": 296396,
+      "expression": "$8000",
+      "literal_value": 32768,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 296398,
+      "expression": "$4000",
+      "literal_value": 16384,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 296400,
+      "expression": "$2000",
+      "literal_value": 8192,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 296402,
+      "expression": "$1000",
+      "literal_value": 4096,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 296404,
+      "expression": "$0800",
+      "literal_value": 2048,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 296406,
+      "expression": "$0400",
+      "literal_value": 1024,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 296408,
+      "expression": "$0200",
+      "literal_value": 512,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 296410,
+      "expression": "$0100",
+      "literal_value": 256,
+      "source_label": ".item_masks",
+      "source_line": 730,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7
+    },
+    {
+      "entry_file_offset": 296412,
+      "expression": "$0080",
+      "literal_value": 128,
+      "source_label": ".item_masks",
+      "source_line": 731,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8
+    },
+    {
+      "entry_file_offset": 296414,
+      "expression": "$0040",
+      "literal_value": 64,
+      "source_label": ".item_masks",
+      "source_line": 731,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 9
+    },
+    {
+      "entry_file_offset": 296416,
+      "expression": "$0020",
+      "literal_value": 32,
+      "source_label": ".item_masks",
+      "source_line": 731,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 10
+    },
+    {
+      "entry_file_offset": 296418,
+      "expression": "$0010",
+      "literal_value": 16,
+      "source_label": ".item_masks",
+      "source_line": 731,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 11
+    },
+    {
+      "entry_file_offset": 296420,
+      "expression": "$0008",
+      "literal_value": 8,
+      "source_label": ".item_masks",
+      "source_line": 731,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 12
+    },
+    {
+      "entry_file_offset": 296422,
+      "expression": "$0004",
+      "literal_value": 4,
+      "source_label": ".item_masks",
+      "source_line": 731,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 13
+    }
+  ],
+  "entry_count": 14,
+  "entry_width": 2,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": "Pool_AddReceiveItem",
+  "source_file": "ancilla_init.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 296396,
+  "table_label": ".item_masks"
+}
