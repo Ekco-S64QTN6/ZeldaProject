@@ -10,13 +10,13 @@ may access the configured Python package index.
 From a clone of ZeldaProject:
 
 ```bash
-./scripts/setup.sh --name my-hack
+bash scripts/setup.sh --name my-hack
 ```
 
 To place project files in another workspace directory:
 
 ```bash
-./scripts/setup.sh --name my-hack --workspace /path/to/workspace
+bash scripts/setup.sh --name my-hack --workspace /path/to/workspace
 ```
 
 The script prefers `uv` and runs `uv sync --extra dev`. If `uv` is not
