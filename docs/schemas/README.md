@@ -13,6 +13,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [ROM file-diff JSON export](./rom-file-diff-export.schema.json) — version 1 schema for the audit JSON emitted by `zelda-suite diff-rom`.
 - [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables`.
 - [Overworld hidden-item verification report](./overworld-hidden-item-verification.schema.json) — version 1 report emitted by `zelda-suite verify-overworld-hidden-items`; includes source-derived sentinel-delimited per-area lists.
+- [Overworld hidden-item source-layout report](./overworld-hidden-item-source-layout.schema.json) — version 1 source-only report emitted by `zelda-suite inspect-overworld-hidden-items`; it does not read a ROM or decode semantic values.
 - [Joined receive-item layout](./item-receipt-layout.schema.json) — version 1 positional join of six raw receive-item tables, with the 14 dungeon masks retained separately and canonical item IDs explicitly unresolved.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
