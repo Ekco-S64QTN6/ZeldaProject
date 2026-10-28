@@ -11,10 +11,12 @@ import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
+from zelda_suite.extract.asset_loader import load_extracted_asset
 from zelda_suite.project.store import (
     CURRENT_SCHEMA_VERSION,
     PROJECT_FORMAT,
     get_source_asset,
+    import_extracted_asset,
     import_source_asset,
     initialize_project,
     list_source_assets,
@@ -25,6 +27,7 @@ from zelda_suite.project.store import (
 ROOT = Path(__file__).resolve().parents[1]
 ITEM_VALUES_EXPORT = ROOT / "data" / "extracted" / "falling-prize-item-values.json"
 FALL_HEIGHTS_EXPORT = ROOT / "data" / "extracted" / "falling-prize-fall-heights.json"
+REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 
 
 def _create_schema_v1_project(directory: Path) -> tuple[Path, Path]:
@@ -123,6 +126,50 @@ def test_import_source_asset_round_trips_and_updates_canonical_export(
     assert project_export["schema_version"] == CURRENT_SCHEMA_VERSION
     assert project_export["source_assets"] == [imported]
     assert validate_project(database) == []
+
+
+def test_import_extracted_asset_uses_registered_provenance(tmp_path: Path) -> None:
+    database, _ = initialize_project("registry_import", tmp_path)
+    expected = load_extracted_asset("falling-prize-item-values", REGISTRY_PATH)
+
+    imported = import_extracted_asset(
+        database,
+        "falling-prize-item-values",
+        REGISTRY_PATH,
+    )
+
+    assert imported["key"] == "falling-prize-item-values"
+    assert imported["payload"] == expected
+    assert imported["source_revision"] == expected["source_revision"]
+    assert list_source_assets(database)[0]["key"] == "falling-prize-item-values"
+    assert validate_project(database) == []
+
+
+def test_cli_import_extracted_asset_by_name(tmp_path: Path) -> None:
+    database, _ = initialize_project("cli_registry", tmp_path)
+    result = CliRunner().invoke(
+        cli,
+        [
+            "import-extracted-asset",
+            str(database),
+            "falling-prize-item-values",
+            "--registry",
+            str(REGISTRY_PATH),
+            "--asset-key",
+            "prize-values",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["key"] == "prize-values"
+    imported = get_source_asset(database, "prize-values")
+    assert imported["payload"]["source_file"] == "ancilla_init.asm"
+
+
+def test_import_extracted_asset_rejects_unregistered_names(tmp_path: Path) -> None:
+    database, _ = initialize_project("unknown_registry", tmp_path)
+    with pytest.raises(ValueError, match="unknown extracted asset"):
+        import_extracted_asset(database, "not-in-registry", REGISTRY_PATH)
 
 
 def test_duplicate_source_asset_requires_explicit_replacement(tmp_path: Path) -> None:
