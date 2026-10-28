@@ -1,0 +1,33 @@
+{
+  "directive": "db",
+  "end_label": null,
+  "entries": [
+    {
+      "entry_file_offset": 211150,
+      "expression": "$02",
+      "literal_value": 2,
+      "source_label": "Sprite_CrystalSwitch_palettes",
+      "source_line": 6,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 211151,
+      "expression": "$04",
+      "literal_value": 4,
+      "source_label": "Sprite_CrystalSwitch_palettes",
+      "source_line": 6,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    }
+  ],
+  "entry_count": 2,
+  "entry_width": 1,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": null,
+  "source_file": "sprite_crystal_switch.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 211150,
+  "table_label": "Sprite_CrystalSwitch_palettes"
+}

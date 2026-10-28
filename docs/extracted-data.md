@@ -207,6 +207,40 @@ invalid source export payloads. See the
 [named asset loader guide](./asset-loader.md) and
 [registry schema](./schemas/asset-registry.schema.json).
 
+## Crystal Switch palette selector
+
+`data/extracted/crystal-switch-palette-selectors.json` preserves the two
+`db` values under `Sprite_CrystalSwitch_palettes` in the pinned
+`Sprites/sprite_crystal_switch.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The source comment marks the
+range `$0338CE–$0338CF`.
+
+The source consumer in `Sprites/sprite_prep.asm` reads bit zero of
+`$7EC172`, uses that bit as the two-entry table index, and ORs the selected
+byte into the sprite properties at `$0F50,X`. The values `$02` and `$04`
+are palette-field selector bits, not RGB colors or a decoded palette. The
+source-commented offsets have not been independently verified against a local
+ROM.
+
+Regenerate the export from the pinned source:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_crystal_switch.asm \
+  Sprite_CrystalSwitch_palettes \
+  --table-offset '$0338CE' \
+  --directive db \
+  --entry-count 2 \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/crystal-switch-palette-selectors.json
+uv run zelda-suite validate-source-export /tmp/crystal-switch-palette-selectors.json
+diff -u data/extracted/crystal-switch-palette-selectors.json /tmp/crystal-switch-palette-selectors.json
+```
+
+CI checks the exact table expressions and the source consumer. This is pinned
+source-parity evidence, not a local-ROM byte check or a complete sprite/color
+palette extraction.
+
 ## Mad Batter pseudo-attack palette selector
 
 `data/extracted/mad-batter-pseudo-attack-palettes.json` preserves the eight

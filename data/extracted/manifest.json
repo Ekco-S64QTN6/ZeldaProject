@@ -1,6 +1,15 @@
 {
   "assets": [
     {
+      "description": "Two raw Sprite_CrystalSwitch_palettes selector bytes used by SpritePrep_CrystalSwitch; source metadata only, not decoded color palette values or ROM-verified bytes.",
+      "file": "crystal-switch-palette-selectors.json",
+      "format": "zelda-suite-data-table",
+      "name": "crystal-switch-palette-selectors",
+      "record_count": 2,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
       "description": "320 source-indexed RoomData_DoorDataPointers long-pointer expressions; payload target labels match object-pointer slots, while addends and ROM offsets remain unverified source metadata.",
       "file": "dungeon-room-door-pointers.json",
       "format": "zelda-suite-pointer-table",

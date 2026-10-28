@@ -101,9 +101,9 @@ Use `--output PATH` to save a new JSON report, or `--fail-on-unresolved` for CI/
 
 ## Current registered expression-audit baseline
 
-The integration test pins the current 15 registered `zelda-suite-data-table`
-assets (687 entries, all from disassembly revision
-`347c23f9fc019c72d32da537c9cb235f468d021d`). The current metadata contains 512
+The integration test pins the current 16 registered `zelda-suite-data-table`
+assets (689 entries, all from disassembly revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`). The current metadata contains 514
 direct numeric literals, 77 bare negative decimal literals, and 98 unresolved
 expressions. Those 98 unresolved records are all classified as simple symbols
 and belong to `text-dictionary-pointers`; they remain raw symbols and were not
