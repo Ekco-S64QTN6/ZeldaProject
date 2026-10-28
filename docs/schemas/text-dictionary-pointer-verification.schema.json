@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite text dictionary pointer verification",
+  "description": "Read-only byte comparison of the 98 two-byte dictionary pointer words against low-bank LoROM pointer candidates derived from source-commented fragment file offsets. Pointer source offsets and ROM provenance remain unverified.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "rom", "source_revision", "pointer_table",
+    "entries", "mismatches", "source_findings", "source_symbol_name_mapping_verified",
+    "source_offsets_verified", "fragment_payload_bytes_verified", "semantic_text_decoded",
+    "rom_modified"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-text-dictionary-pointer-verification"},
+    "format_version": {"const": 1},
+    "rom": {
+      "type": "object",
+      "required": ["filename", "size_bytes", "sha256", "header_assessment", "provenance_verified"],
+      "properties": {
+        "filename": {"type": "string", "minLength": 1},
+        "size_bytes": {"const": 1048576},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "header_assessment": {"const": "headerless-by-expected-size"},
+        "provenance_verified": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "source_revision": {"const": "347c23f9fc019c72d32da537c9cb235f468d021d"},
+    "pointer_table": {
+      "type": "object",
+      "required": [
+        "label", "file_offset", "entry_width_bytes", "entry_count",
+        "unique_target_label_count", "checked_comparisons", "mismatch_count",
+        "source_extent_mismatch_count"
+      ],
+      "properties": {
+        "label": {"const": "DictionaryPointers"},
+        "file_offset": {"const": 476931},
+        "entry_width_bytes": {"const": 2},
+        "entry_count": {"const": 98},
+        "unique_target_label_count": {"type": "integer", "minimum": 1},
+        "checked_comparisons": {"type": "integer", "minimum": 0, "maximum": 98},
+        "mismatch_count": {"type": "integer", "minimum": 0, "maximum": 98},
+        "source_extent_mismatch_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 98,
+      "maxItems": 98,
+      "items": {"$ref": "#/$defs/entry"}
+    },
+    "mismatches": {"type": "array", "items": {"$ref": "#/$defs/mismatch"}},
+    "source_findings": {"type": "array", "items": {"$ref": "#/$defs/source_finding"}},
+    "source_symbol_name_mapping_verified": {"const": false},
+    "source_offsets_verified": {"const": false},
+    "fragment_payload_bytes_verified": {"const": false},
+    "semantic_text_decoded": {"const": false},
+    "rom_modified": {"const": false}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "table_index", "pointer_entry_file_offset", "pointer_expression",
+        "target_fragment_label", "target_fragment_file_offset", "candidate_pointer_word",
+        "expected_hex", "actual_hex", "status"
+      ],
+      "properties": {
+        "table_index": {"type": "integer", "minimum": 0, "maximum": 97},
+        "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+        "pointer_expression": {"type": "string", "minLength": 1},
+        "target_fragment_label": {"type": "string", "minLength": 1},
+        "target_fragment_file_offset": {"type": "integer", "minimum": 0},
+        "candidate_pointer_word": {"type": "string", "pattern": "^\\$[0-9A-F]{4}$"},
+        "expected_hex": {"type": "string", "pattern": "^[0-9A-F]{4}$"},
+        "actual_hex": {"type": "string", "pattern": "^[0-9A-F]{4}$"},
+        "status": {"enum": ["pass", "fail"]}
+      },
+      "additionalProperties": false
+    },
+    "mismatch": {
+      "type": "object",
+      "required": [
+        "table_index", "pointer_entry_file_offset", "pointer_expression",
+        "target_fragment_label", "target_fragment_file_offset", "candidate_pointer_word",
+        "expected_hex", "actual_hex", "reason"
+      ],
+      "properties": {
+        "table_index": {"type": "integer", "minimum": 0, "maximum": 97},
+        "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+        "pointer_expression": {"type": "string", "minLength": 1},
+        "target_fragment_label": {"type": "string", "minLength": 1},
+        "target_fragment_file_offset": {"type": "integer", "minimum": 0},
+        "candidate_pointer_word": {"type": "string", "pattern": "^\\$[0-9A-F]{4}$"},
+        "expected_hex": {"type": "string", "pattern": "^[0-9A-F]{4}$"},
+        "actual_hex": {"type": "string", "pattern": "^[0-9A-F]{4}$"},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "source_finding": {
+      "type": "object",
+      "required": [
+        "code", "severity", "pointer_index", "pointer_expression",
+        "fragment_label", "message"
+      ],
+      "properties": {
+        "code": {"const": "source_extent_mismatch"},
+        "severity": {"const": "warning"},
+        "pointer_index": {"type": "integer", "minimum": 0, "maximum": 97},
+        "pointer_expression": {"type": "string", "minLength": 1},
+        "fragment_label": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}
