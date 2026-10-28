@@ -31,6 +31,10 @@ from zelda_suite.extract.disassembly import (
     parse_dw_pointer_table,
     parse_source_pointer_table,
 )
+from zelda_suite.extract.dungeon_room_pointer_verification import (
+    DungeonRoomPointerVerificationError,
+    verify_dungeon_room_pointers,
+)
 from zelda_suite.extract.incbin_inventory import (
     IncbinDeclaration,
     IncbinInventoryError,
@@ -102,6 +106,7 @@ __all__ = [
     "DictionaryFragment",
     "DictionaryInventoryError",
     "DisassemblyParseError",
+    "DungeonRoomPointerVerificationError",
     "IncbinDeclaration",
     "IncbinInventoryError",
     "ItemReceiptLayoutError",
@@ -143,6 +148,7 @@ __all__ = [
     "sha256_rom_bytes",
     "validate_overworld_payload_pairs",
     "validate_source_export",
+    "verify_dungeon_room_pointers",
     "verify_overworld_hidden_items",
     "verify_registered_scalar_tables",
 ]

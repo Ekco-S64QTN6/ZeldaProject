@@ -234,7 +234,35 @@ or alter source declarations to silence a mismatch. The command never writes
 ROM bytes and does not decode the semantic meaning of item values or Map16
 coordinates.
 
-## 7. Run the ROM-independent regression suite
+## 7. Verify the dungeon-room long-pointer table
+
+The read-only `verify-dungeon-room-pointers` command compares the 320
+three-byte entries at source-commented file offset `$0F8000` with candidate
+target addresses derived from the three registered room-payload inventories.
+Each source-commented target offset is mapped to its canonical low-bank LoROM
+CPU address and encoded as a three-byte little-endian value for comparison.
+
+```bash
+TEST_DIR="${TEST_DIR:-$(mktemp -d)}"
+uv run zelda-suite verify-dungeon-room-pointers "$ROM" \
+  --output "$TEST_DIR/dungeon-room-pointer-verification.json"
+printf 'Dungeon-room pointer report: %s\n' "$TEST_DIR/dungeon-room-pointer-verification.json"
+```
+
+The report checks all 320 entries, identifies the 263 distinct target labels,
+keeps the 39 explicit `RoomDataTiles_Empty` entries visible, and lists the
+source-offset candidate and pointer indices for each of the 266 payload labels.
+The three labels not referenced by the pointer table are included with an empty
+index list.
+
+A nonzero exit status means pointer bytes mismatch the candidate address
+calculated from source-commented offsets; the JSON report is still written.
+This operation does not check any room payload bytes, prove the comments give
+canonical offsets, identify playable rooms, or resolve the 296-versus-320 room
+count discrepancy. Review mismatches rather than editing offsets to force a
+pass. The command never writes ROM bytes.
+
+## 8. Run the ROM-independent regression suite
 
 ```bash
 uv run pytest -q
@@ -246,7 +274,7 @@ These cover existing parsers, source exports, project store/migration,
 inspection, diff, and CLI behavior. They are not substitutes for testing
 YAZE/z3ed on your ROM.
 
-## 8. Install and inspect external-tool capabilities
+## 9. Install and inspect external-tool capabilities
 
 These tools are not needed for steps 1–6, but they are needed to attempt the
 remaining Phase 0 integration gates.
@@ -319,13 +347,14 @@ arguments before attempting an actual read.
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,
 source-only table/pointer/inventory export, export validation, read-only
-verification of registered scalar-table literals and the overworld hidden-item
-pointer/record region, and ROM-free project initialization/storage tests.
+verification of registered scalar-table literals, the overworld hidden-item
+pointer/record region, and the dungeon-room long-pointer table, plus ROM-free
+project initialization/storage tests.
 
 Not yet implemented/verified: general semantic ROM extraction into editable
 overworld/dungeon/item schemas; an edit-to-ROM build pipeline; ROM writer and
 patch generation; emulator boot/smoke tests; trusted US-ROM hash validation;
 and successful YAZE/z3ed or z3cli operations against the local image.
 
-Record the outputs from steps 1–6 and tool help from step 8 when reporting
+Record the outputs from steps 1–7 and tool help from step 9 when reporting
 results. Do not upload or commit the ROM, a ROM slice, or a raw binary dump.

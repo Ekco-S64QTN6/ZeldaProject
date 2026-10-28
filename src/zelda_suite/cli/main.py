@@ -33,6 +33,7 @@ from zelda_suite.extract import (
     sha256_rom_bytes,
     validate_overworld_payload_pairs,
     validate_source_export,
+    verify_dungeon_room_pointers,
     verify_overworld_hidden_items,
     verify_registered_scalar_tables,
 )
@@ -1043,6 +1044,68 @@ def verify_rom_tables_command(
         )
 
     if report["summary"]["mismatches"]:
+        raise click.exceptions.Exit(1)
+
+
+@cli.command(name="verify-dungeon-room-pointers")
+@click.argument(
+    "rom_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON report to a new file instead of stdout.",
+)
+def verify_dungeon_room_pointers_command(
+    rom_path: Path,
+    registry_path: Path | None,
+    output: Path | None,
+) -> None:
+    """Compare room-table long pointers with source-commented payload offsets."""
+    try:
+        report = verify_dungeon_room_pointers(
+            rom_path,
+            registry_path or "data/extracted/manifest.json",
+        )
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        click.echo(
+            f"Wrote dungeon-room pointer verification report to {output}; "
+            f"checked={report['pointer_table']['checked_comparisons']}, "
+            f"mismatches={report['pointer_table']['mismatch_count']}"
+        )
+
+    if report["pointer_table"]["mismatch_count"]:
         raise click.exceptions.Exit(1)
 
 

@@ -1,9 +1,6 @@
 # Dungeon-room data schema: discovery baseline
 
-Status: **Phase 1 research; not yet an extraction contract.** This note records
-what the pinned disassembly establishes without guessing the meaning of room
-object bytes. An extractor is not complete until pointer decoding is verified
-against a local, clean ROM and covered by fixtures.
+Status: **Phase 1 discovery; a read-only long-pointer verifier is implemented, but a local-ROM run remains outstanding.** This note records what the pinned disassembly establishes without guessing the meaning of room object bytes. No room payload bytes or playable-room schema are claimed.
 
 ## Authoritative pointer table
 
@@ -51,7 +48,7 @@ user-facing room set only after corroborating with runtime/tool behavior.
 
 ## Committed source-only pointer inventory
 
-The source declarations are now committed as [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) and registered under the name `dungeon-room-object-pointers`. This version-1 `zelda-suite-pointer-table` export contains 320 entries and retains the original index, source expression, parsed target label/addend, source line, and pinned revision. It is source metadata only: target expressions are not resolved into ROM offsets, and the asset does not decide which entries correspond to playable rooms.
+The source declarations are now committed as [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) and registered under the name `dungeon-room-object-pointers`. This version-1 `zelda-suite-pointer-table` export contains 320 entries and retains the original index, source expression, parsed target label/addend, source line, and pinned revision. The separate `verify-dungeon-room-pointers` command derives candidate file offsets from registered payload source comments and compares the corresponding three-byte pointer values with a local ROM. The comments remain candidates until the user runs that check on their local image; no playable-room set is inferred.
 
 The export preserves these audit fields:
 
@@ -84,22 +81,24 @@ The source-level regression test currently observes:
 - All 75 labels in the Bank0A payload inventory occur among the pointer
   table's target labels.
 
-This proves only that the symbolic labels exist in the pinned source. It does
-not resolve the `dl` values to ROM file offsets, verify the source-commented
-addresses against ROM bytes, or establish that every referenced label is a
-playable room. The word “empty” is retained as a source label/metadata flag;
-its runtime/payload semantics still need independent verification.
+This proves only that the symbolic labels exist in the pinned source. The new
+pointer verifier maps each candidate start offset to a LoROM CPU address and
+compares the corresponding `dl` bytes; until run against a local ROM, candidate
+target offsets remain unverified. The word “empty” is retained as a source
+label/metadata flag; its runtime/payload semantics still need independent
+verification.
 
 ## Validation gates before calling extraction complete
 
 1. Add fixtures from a locally supplied clean US ROM or approved local test
    setup. Never commit ROMs or partial ROM slices.
-2. Parse the disassembly expressions and independently decode the corresponding
-   three-byte pointer entries from the local ROM, comparing each result.
-3. Establish how banked/long pointers resolve to file offsets and how empty or
-   shared targets should be represented. Do not infer this from labels alone.
-4. Record every semantic field's source label / byte range and add deterministic
-   extraction tests before exposing rooms through the authoring API.
+2. Run `zelda-suite verify-dungeon-room-pointers "$ROM"` to compare all 320
+   three-byte pointer entries with the candidate CPU addresses computed from the
+   payload inventory's source-commented start offsets.
+3. Investigate any mismatches before changing annotations; this check does not
+   verify the payload contents or the correctness of the candidate offsets.
+4. Establish which indices are actually playable and how empty/shared targets
+   behave before exposing a room-editing API. Preserve source indices as-is.
 
 No ROM bytes are read or written by this documentation change.
 
@@ -146,3 +145,25 @@ three inventories and asserts exact equality with the source label set, and
 checks that all pointer targets are covered. This verifies symbolic coverage in
 the source only; it does not resolve `dl` values to ROM addresses, establish the
 user-facing playable room set, or close the 296/320 count issue.
+
+
+## Read-only pointer verification
+
+Run from the repository root after setting `ROM` per
+[`real-rom-verification.md`](../real-rom-verification.md):
+
+```bash
+uv run zelda-suite verify-dungeon-room-pointers "$ROM" \
+  --output /tmp/dungeon-room-pointer-verification.json
+```
+
+The command cross-references the 320 source pointer expressions with all three
+registered room-payload inventories. It encodes each source-commented start
+offset as a three-byte LoROM CPU address and compares those bytes at the
+pointer table's declared file offsets. Its report schema is
+[`dungeon-room-pointer-verification.schema.json`](./dungeon-room-pointer-verification.schema.json).
+It is strictly read-only and deliberately reports
+`provenance_verified: false`, `payload_bytes_verified: false`, and
+`playable_room_set_resolved: false`. Run it against a local image and review
+mismatches; a successful comparison does not independently prove that the
+source-commented target offsets are canonical.

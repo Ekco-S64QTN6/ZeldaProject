@@ -65,7 +65,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     550 byte spans; synthetic tests cover matches and mismatches. A user-run
     check against the local ROM is still needed, and value semantics remain
     unresolved. The source report does not establish ROM accuracy.
-  - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`; usable-room count and target resolution remain unverified.
+  - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`. The `verify-dungeon-room-pointers` command maps all 263 distinct target labels through the three registered source-offset inventories and compares all 320 long pointer values against a local ROM. Source-commented offsets are candidate inputs, not trusted ground truth; the local check, payload bytes, and playable-room count remain open.
   - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
   - Eight raw `Pool_AddReceiveItem` tables: four 76-entry X/Y/flag/property tables, 76 WRAM target addresses, 76 values, 76 graphics-index bytes, and 14 dungeon masks. The graphics-index table is exported as version 2 with inline comments preserved; its comments omit index `0x40`, so comment IDs are not treated as canonical semantic IDs.
@@ -84,6 +84,14 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   sentinel-delimited area groups. Tests use a synthetic ROM built from the
   pinned source; the actual user-supplied ROM comparison and canonical provenance
   checks remain open.
+- [x] Add `zelda-suite verify-dungeon-room-pointers ROM` for the 320-entry
+  room-object long-pointer table. It compares candidate CPU addresses calculated
+  from the three registered payload inventories with three-byte ROM entries,
+  includes all 266 payload labels (including three labels unused by the pointer
+  table), and preserves the 296/320 playable-room-count discrepancy. Synthetic
+  tests validate matching and mismatching pointer bytes; the user's local-ROM
+  run, source-offset trust, payload-byte verification, and playable-room set
+  remain open.
 - [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
 - [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
@@ -156,8 +164,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    428 direct numeric scalar-table literals with zero mismatches; 175
    records were skipped by the original snippet, including the 76 signed
    decimal receive-item Y offsets. These checks do not prove canonical ROM
-   identity. Rerun the updated `zelda-suite verify-rom-tables` command locally
-   and continue with [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
+   identity. Rerun `zelda-suite verify-rom-tables`,
+   `zelda-suite verify-overworld-hidden-items`, and
+   `zelda-suite verify-dungeon-room-pointers` using
+   [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
    On Arch Linux, use the verified generic YAZE release archive, inspect
    `z3ed --help`, then perform only a confirmed read-only ROM operation.
    Keep ROM provenance and the z3cli/model-endpoint gates open until independently

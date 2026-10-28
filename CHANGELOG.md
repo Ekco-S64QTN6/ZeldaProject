@@ -19,6 +19,10 @@ does not imply that any release has been published.
   comparing 128 source-derived pointer words, mixed-width record/sentinel
   bytes, and four replacement Map16 words, with per-area list grouping based
   on the consumer's sentinel scan.
+- Read-only `zelda-suite verify-dungeon-room-pointers ROM` report for comparing
+  320 three-byte room pointer values against candidate LoROM addresses derived
+  from the three registered payload inventories. The report does not claim
+  source-offset trust, payload byte verification, or playable-room resolution.
 - ROM-independent `zelda-suite inspect-overworld-hidden-items` JSON report for the pinned source layout, including pointer entries, labels, raw records, sentinels, and area groupings. It marks ROM verification and semantic decoding as false.
 - Registered `item-receipt-layout` joined view plus a strict versioned schema
   and `zelda-suite join-item-receipt-tables` command for aligning six raw
@@ -103,6 +107,9 @@ does not imply that any release has been published.
 - Source-parity and CLI reproduction tests cover the graphics-index v2 export
   and assert that the `0x40` source-comment gap is preserved without changing
   dense `table_index` values.
+- Synthetic dungeon pointer tests encode source-derived candidate target
+  addresses into temporary ROMs, cover all 320 pointer entries, verify mismatch
+  reporting, and test CLI JSON output and no-overwrite behavior.
 - Synthetic hidden-item ROM fixtures exercise all 550 comparison spans, area
   grouping, per-kind mismatch reporting, CLI JSON output, no-overwrite
   behavior, and fail-closed parsing of changed sentinel declarations.
