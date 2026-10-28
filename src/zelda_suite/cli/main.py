@@ -1958,6 +1958,7 @@ def inspect_shop_item_handlers(
 )
 @click.option(
     "--receipt-asset",
+    "receipt_asset_name",
     default="item-receipt-layout",
     show_default=True,
     help="Registered positional receive-item layout used by receipt selectors.",

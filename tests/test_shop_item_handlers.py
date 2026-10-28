@@ -49,7 +49,7 @@ def _synthetic_source() -> str:
         start = 0x1000 + 0x10 * table_index
         end = start + 0x0F
         dispatch.extend([
-            "; $" + f"{start:04X}-{end:04X} JUMP LOCATION",
+            "; $" + f"{start:04X}-$" + f"{end:04X} JUMP LOCATION",
             f"{handler}:",
             "{",
             f"    LDA.b #{low}",
