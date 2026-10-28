@@ -10,6 +10,10 @@ from click.testing import CliRunner
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.incbin_inventory_audit import audit_incbin_inventories
 
+ROOT = Path(__file__).resolve().parents[1]
+REGISTERED_MANIFEST = ROOT / "data" / "extracted" / "manifest.json"
+PINNED_SOURCE_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
+
 
 def _declaration(
     label: str,
@@ -175,3 +179,41 @@ def test_audit_cli_refuses_to_overwrite_output(tmp_path: Path) -> None:
     assert result.exit_code != 0
     assert "refusing to overwrite existing output" in result.output
     assert output.read_text(encoding="utf-8") == "keep me"
+
+
+
+def test_audit_pins_current_registered_inventory_baseline() -> None:
+    """Keep the checked-in inventory scope and findings visible in CI."""
+    report = audit_incbin_inventories(REGISTERED_MANIFEST)
+
+    assert [inventory["asset_name"] for inventory in report["inventories"]] == [
+        "dungeon-room-payload-inventory",
+        "dungeon-room-payloads-bank03",
+        "dungeon-room-payloads-bank1f",
+        "music-payload-inventory",
+        "overworld-payloads-bank0b",
+        "overworld-payloads-bank0c",
+    ]
+    assert all(
+        inventory["source_revision"] == PINNED_SOURCE_REVISION
+        for inventory in report["inventories"]
+    )
+    assert report["summary"] == {
+        "inventory_count": 6,
+        "declaration_count": 529,
+        "located_declaration_count": 525,
+        "missing_start_count": 1,
+        "missing_size_count": 3,
+        "metadata_gap_count": 4,
+        "range_mismatch_count": 3,
+        "candidate_span_count": 525,
+        "candidate_overlap_count": 10,
+        "finding_count": 17,
+    }
+    assert report["evidence"] == {
+        "source_only": True,
+        "rom_bytes_read": False,
+        "payload_bytes_read": False,
+        "offsets_verified": False,
+    }
+    assert report == audit_incbin_inventories(REGISTERED_MANIFEST)
