@@ -135,13 +135,16 @@ def parse_data_table(
     parent_label: str | None = None,
     end_label: str | None = None,
     source_revision: str | None = None,
+    expected_entry_count: int | None = None,
 ) -> list[DataTableEntry]:
     """Parse raw db/dw/dl expressions, preserving both literals and symbols.
 
     The optional parent label scopes local labels such as `.item_values` to a
     containing Asar block. An optional end label gives an explicit exclusive
-    table boundary when several arrays share one block. Expressions are never
-    evaluated; simple numeric literals are additionally exposed as integers.
+    table boundary when several arrays share one block. When supplied,
+    expected_entry_count makes an unexpected/truncated table fail closed.
+    Expressions are never evaluated; simple numeric literals are additionally
+    exposed as integers.
     """
     normalized_directive = directive.lower() if isinstance(directive, str) else ""
     if normalized_directive not in DATA_DIRECTIVE_WIDTHS:
@@ -157,6 +160,14 @@ def parse_data_table(
         raise TypeError("entry_width must be an integer")
     if actual_entry_width <= 0:
         raise ValueError("entry_width must be positive")
+
+    if expected_entry_count is not None:
+        if isinstance(expected_entry_count, bool) or not isinstance(
+            expected_entry_count, int
+        ):
+            raise TypeError("expected_entry_count must be an integer")
+        if expected_entry_count <= 0:
+            raise ValueError("expected_entry_count must be positive")
 
     if not isinstance(label, str) or not label:
         raise ValueError("label must be a non-empty source label")
@@ -291,4 +302,9 @@ def parse_data_table(
 
     if not entries:
         raise DataTableParseError(f"data table {label!r} is empty")
+    if expected_entry_count is not None and len(entries) != expected_entry_count:
+        raise DataTableParseError(
+            f"expected {expected_entry_count} entries in data table {label!r}, "
+            f"found {len(entries)}"
+        )
     return entries
