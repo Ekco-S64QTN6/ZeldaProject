@@ -139,3 +139,32 @@ def test_entry_width_override_does_not_widen_directive_literal_range() -> None:
             directive="db",
             entry_width=2,
         )
+
+def test_preserves_inline_comments_only_when_requested_in_json_records() -> None:
+    source = """ExampleValues:
+{
+    db $01, $02 ; first group
+    db SymbolicValue ; keep this note
+    db $03
+}
+"""
+    entries = parse_data_table(
+        source,
+        "ExampleValues",
+        0x0400,
+        directive="db",
+        source_revision="example-sha",
+    )
+
+    assert [entry.inline_comment for entry in entries] == [
+        "first group",
+        "first group",
+        "keep this note",
+        None,
+    ]
+    # The default record shape remains compatible with export format v1.
+    assert "inline_comment" not in entries[0].to_dict()
+    # Version-2 callers can explicitly include the optional source annotation.
+    assert entries[0].to_dict(include_inline_comment=True)["inline_comment"] == "first group"
+    assert entries[-1].to_dict(include_inline_comment=True)["inline_comment"] is None
+

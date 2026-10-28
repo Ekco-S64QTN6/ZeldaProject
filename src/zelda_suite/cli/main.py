@@ -267,6 +267,11 @@ def inspect_pointer_table(
     help="Revision to record; omitted values are marked unspecified.",
 )
 @click.option(
+    "--include-comments",
+    is_flag=True,
+    help="Export source inline comments in version-2 JSON entries.",
+)
+@click.option(
     "--output",
     type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
     default=None,
@@ -281,9 +286,10 @@ def inspect_data_table(
     parent_label: str | None,
     end_label: str | None,
     source_revision: str | None,
+    include_comments: bool,
     output: Path | None,
 ) -> None:
-    """Export raw Asar db/dw/dl values and expressions without evaluating them."""
+    """Export raw Asar db/dw/dl values, optionally retaining inline comments."""
     try:
         offset = _parse_offset_text(table_offset)
         source_text = source.read_text(encoding="utf-8")
@@ -304,7 +310,7 @@ def inspect_data_table(
 
     payload = {
         "format": "zelda-suite-data-table",
-        "format_version": 1,
+        "format_version": 2 if include_comments else 1,
         "source_file": source.name,
         "source_revision": recorded_revision,
         "parent_label": parent_label,
@@ -318,8 +324,15 @@ def inspect_data_table(
             else DATA_DIRECTIVE_WIDTHS[normalized_directive]
         ),
         "entry_count": len(entries),
-        "entries": [entry.to_dict() for entry in entries],
+        "entries": [
+            entry.to_dict(include_inline_comment=include_comments) for entry in entries
+        ],
     }
+    try:
+        validate_source_export(payload)
+    except AssetLoadError as exc:
+        raise click.ClickException(str(exc)) from exc
+
     rendered = json.dumps(
         payload,
         ensure_ascii=False,
@@ -342,7 +355,10 @@ def inspect_data_table(
     except OSError as exc:
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
-    click.echo(f"Wrote {len(entries)} data-table entries to {output}")
+    click.echo(
+        f"Wrote {len(entries)} data-table entries to {output} "
+        f"(format v{payload['format_version']})"
+    )
 
 
 @cli.command(name="inspect-music-track-index")
