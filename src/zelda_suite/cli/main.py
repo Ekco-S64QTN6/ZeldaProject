@@ -673,12 +673,6 @@ def inspect_music_track_index(
     help="Pinned disassembly revision to record in the export.",
 )
 @click.option(
-    "--routine-label",
-    default="SpritePrep_Main",
-    show_default=True,
-    help="Routine containing the inline prep dispatch table.",
-)
-@click.option(
     "--entry-count",
     type=click.IntRange(min=1),
     default=243,
@@ -694,7 +688,6 @@ def inspect_music_track_index(
 def inspect_sprite_prep_dispatch(
     source: Path,
     source_revision: str,
-    routine_label: str,
     entry_count: int,
     output: Path | None,
 ) -> None:
@@ -705,7 +698,6 @@ def inspect_sprite_prep_dispatch(
             source_text,
             source_revision=source_revision,
             source_file=source.name,
-            routine_label=routine_label,
             expected_entry_count=entry_count,
         )
         payload = table.to_dict()

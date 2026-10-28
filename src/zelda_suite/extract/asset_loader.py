@@ -1363,7 +1363,8 @@ def _validate_sprite_prep_dispatch_export(payload: dict[str, Any]) -> None:
         )
     _string(payload["source_file"], "source_file")
     revision = _string(payload["source_revision"], "source_revision")
-    routine_label = _identifier(payload["routine_label"], "routine_label")
+    if _identifier(payload["routine_label"], "routine_label") != "SpritePrep_Main":
+        raise AssetLoadError("routine_label must be SpritePrep_Main")
     range_annotation = _string(
         payload["routine_source_range_annotation"], "routine_source_range_annotation"
     )
