@@ -17,7 +17,9 @@ python -m pytest -q
 ```
 
 CI runs syntax checking, Ruff on the configured Python components and tests,
-and the full pytest suite. If a change adds a Python source or test file, add
+strict MyPy checking for `src`, and the full pytest suite. The wheel packaging
+and cross-platform setup smoke jobs also run in CI. If a change adds a Python
+source or test file, add
 the relevant test path to the Ruff command in
 [`.github/workflows/tests.yml`](./.github/workflows/tests.yml); otherwise CI
 may not lint the new test.
@@ -107,7 +109,7 @@ Before requesting review, confirm that the change:
 - [ ] Adds no ROM or ROM-derived binary data.
 - [ ] Keeps setup automation ROM-independent and tests safe refusal to overwrite existing project files, where applicable.
 - [ ] Passes `python -m compileall -q src tests`, Ruff on the changed Python
-      components, and `python -m pytest -q`.
+      components, `python -m mypy src`, and `python -m pytest -q`.
 
 A green CI run is required before merging. If a check cannot run because a local
 ROM or external tool is unavailable, leave the Roadmap gate open and say so

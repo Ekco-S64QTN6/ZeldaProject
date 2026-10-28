@@ -67,6 +67,8 @@ jobs:
           tests/test_overworld_payload_pairs.py
           tests/test_item_receipt_tables.py
           tests/test_setup_script.py
+      - name: Check types
+        run: python -m mypy src
       - name: Run tests
         run: python -m pytest -q
 

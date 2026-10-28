@@ -43,7 +43,8 @@ does not imply that any release has been published.
 - Added and expanded parser-parity, export-validation, project migration,
   registered-asset round-trip, dungeon-label cross-reference, music-label
   cross-reference, overworld pair-integrity, and source-comment tests.
-- The main-branch CI suite checks Python syntax, Ruff, and the full pytest suite.
+- The main-branch CI suite checks Python syntax, Ruff, strict MyPy types for
+  `src`, and the full pytest suite.
 - Linux and Windows CI smoke tests execute the POSIX and PowerShell setup
   scripts respectively, create and validate SQLite/JSON project files in
   temporary workspaces, and do not require a ROM.
