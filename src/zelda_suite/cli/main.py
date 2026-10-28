@@ -12,12 +12,12 @@ from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
+    PINNED_TEXT_SOURCE_REVISION,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
     DungeonRoomAssetAuditError,
     IncbinInventoryAuditError,
     MessageSourceBlock,
-    PINNED_TEXT_SOURCE_REVISION,
     MusicAssetAuditError,
     OverworldPayloadPairError,
     ROMImageInspectionError,
