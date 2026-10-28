@@ -9,6 +9,10 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add source-only `zelda-suite audit-text-message-index` diagnostics and a
+  version-1 schema for known source offset-comment and block-size discrepancies
+  across the committed 397-message index; no ROM bytes or decoded text are read.
+
 - Add a source-only `zelda-suite audit-text-dictionary` report and version-1
   schema to cross-check registered pointer expressions and fragment records;
   the known `.You` source-extent mismatch remains a diagnostic warning.
