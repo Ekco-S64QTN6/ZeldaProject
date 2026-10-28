@@ -59,10 +59,25 @@ def build_item_receipt_layout(
     tables: dict[str, dict[str, Any]] = {}
     revision: str | None = None
 
-    specs = ITEM_RECEIPT_ARRAYS + (
-        ("dungeon_masks", MASK_ARRAY[0], MASK_ARRAY[1], MASK_ARRAY[2], MASK_ARRAY[3], MASK_ARRAY[4]),
+    specs = (
+        *ITEM_RECEIPT_ARRAYS,
+        (
+            "dungeon_masks",
+            MASK_ARRAY[0],
+            MASK_ARRAY[1],
+            MASK_ARRAY[2],
+            MASK_ARRAY[3],
+            MASK_ARRAY[4],
+        ),
     )
-    for key, asset_name, expected_label, expected_offset, expected_directive, expected_width in specs:
+    for (
+        key,
+        asset_name,
+        expected_label,
+        expected_offset,
+        expected_directive,
+        expected_width,
+    ) in specs:
         try:
             payload = load_extracted_asset(asset_name, registry_path)
         except AssetLoadError as exc:
@@ -94,7 +109,11 @@ def build_item_receipt_layout(
                 f"{expected_width}-byte entries"
             )
 
-        expected_count = ITEM_RECEIPT_MASK_COUNT if key == "dungeon_masks" else ITEM_RECEIPT_TABLE_COUNT
+        expected_count = (
+            ITEM_RECEIPT_MASK_COUNT
+            if key == "dungeon_masks"
+            else ITEM_RECEIPT_TABLE_COUNT
+        )
         if payload["entry_count"] != expected_count:
             raise ItemReceiptLayoutError(
                 f"{asset_name!r} must contain {expected_count} entries"
