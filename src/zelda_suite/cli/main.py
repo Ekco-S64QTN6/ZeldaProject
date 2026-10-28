@@ -17,6 +17,7 @@ from zelda_suite.extract import (
     DungeonRoomAssetAuditError,
     IncbinInventoryAuditError,
     MessageSourceBlock,
+    PINNED_TEXT_SOURCE_REVISION,
     MusicAssetAuditError,
     OverworldPayloadPairError,
     ROMImageInspectionError,
@@ -24,6 +25,7 @@ from zelda_suite.extract import (
     SourceExpressionAuditError,
     TextDictionaryAuditError,
     TextDictionaryPointerVerificationError,
+    TextMessageByteVerificationError,
     TextMessageIndexAuditError,
     audit_dungeon_room_assets,
     audit_incbin_inventories,
@@ -50,6 +52,7 @@ from zelda_suite.extract import (
     verify_overworld_hidden_items,
     verify_registered_scalar_tables,
     verify_text_dictionary_pointers,
+    verify_text_message_bytes,
 )
 from zelda_suite.project import (
     get_source_asset,
@@ -1630,6 +1633,97 @@ def verify_text_dictionary_pointers_command(
         )
 
     if report["pointer_table"]["mismatch_count"]:
+        raise click.exceptions.Exit(1)
+
+
+@cli.command(name="verify-text-message-bytes")
+@click.argument(
+    "rom_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--block",
+    "blocks",
+    type=click.Tuple([
+        click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+        str,
+        str,
+        str,
+    ]),
+    multiple=True,
+    required=True,
+    help=(
+        "Repeat for each source block: --block SOURCE BLOCK_LABEL START_OFFSET END_OFFSET. "
+        "Offsets are inclusive source-declared file offsets."
+    ),
+)
+@click.option(
+    "--source-revision",
+    default=PINNED_TEXT_SOURCE_REVISION,
+    show_default=True,
+    help="Source revision to record in the report; use a distinct label for synthetic fixtures.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON report to a new file instead of stdout.",
+)
+def verify_text_message_bytes_command(
+    rom_path: Path,
+    blocks: tuple[tuple[Path, str, str, str], ...],
+    source_revision: str,
+    output: Path | None,
+) -> None:
+    """Compare literal encoded message bytes with source declarations without decoding text."""
+    try:
+        source_blocks = [
+            MessageSourceBlock(
+                source_file=source_path.name,
+                block_label=block_label,
+                block_start_offset=_parse_offset_text(start_text),
+                block_end_offset=_parse_offset_text(end_text),
+                source_text=source_path.read_text(encoding="utf-8"),
+            )
+            for source_path, block_label, start_text, end_text in blocks
+        ]
+        report = verify_text_message_bytes(
+            rom_path,
+            source_blocks,
+            source_revision=source_revision,
+        )
+    except (OSError, UnicodeError, TextMessageByteVerificationError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote text message byte verification report to {output}; "
+            f"messages={summary['message_count']}, "
+            f"checked={summary['checked_byte_count']}, "
+            f"mismatches={summary['mismatch_byte_count']}, "
+            f"source_warnings={summary['source_finding_count']}"
+        )
+
+    if report["summary"]["mismatch_byte_count"]:
         raise click.exceptions.Exit(1)
 
 
