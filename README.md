@@ -43,3 +43,5 @@ For a source-only audit of registered `incbin` inventories—covering missing of
 For a ROM-independent inventory of unresolved scalar-table expressions, run `uv run zelda-suite audit-unresolved-table-expressions`. It lists raw source expressions and conservative syntax-shape classifications without evaluating them; see [`docs/data-table-parser.md`](./docs/data-table-parser.md).
 
 For a source-only cross-check of the 98 symbolic text-dictionary pointers and fragment records, run `uv run zelda-suite audit-text-dictionary`. It preserves the known `.You` source-extent mismatch and does not read a ROM; see [`docs/schemas/text.md`](./docs/schemas/text.md).
+
+For a source-only summary of the 397-message index's known offset-annotation and block-size discrepancies, run `uv run zelda-suite audit-text-message-index`. It does not read a ROM or decode messages; see [`docs/schemas/text.md`](./docs/schemas/text.md).
