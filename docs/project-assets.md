@@ -5,11 +5,13 @@ inside SQLite. This provides a stable, queryable boundary between source
 inspection and later semantic game-data modeling.
 
 A stored source asset consists of a caller-supplied safe key, the export format
-and version, source filename and revision, import timestamp, canonical JSON
+and version, source filename(s) and revision, import timestamp, canonical JSON
 payload, and SHA-256 of that canonical UTF-8 payload. The loader validates the
-source-export schema before the database is changed. On read, the asset store
-revalidates the payload and verifies that the digest and stored provenance
-metadata agree.
+source-export schema before the database is changed. If an export contains
+multiple source blocks rather than one top-level filename, the stored
+`source_file` metadata is a deterministic semicolon-delimited list of the
+distinct source files. On read, the asset store revalidates the payload and
+verifies that the digest and stored provenance metadata agree.
 
 This feature stores source-derived JSON metadata only. It does not ingest ROM
 images or `incbin` binary payloads, infer semantic item IDs, or enable edits to
