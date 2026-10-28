@@ -146,3 +146,11 @@ The committed sprite dispatch export has a source-independent baseline test. If 
 
 
 The committed `overworld-hidden-item-pointers` export has a submodule-independent baseline test. When updating it intentionally, review the complete 80-label target set, all 128 slot offsets, and the repeated-target distribution; the test does not verify pointer values against ROM bytes.
+
+
+For any change to `data/extracted/*.json`, run the complete asset-loader tests.
+Every registered export must match the canonical UTF-8 JSON representation:
+two-space indentation, sorted object keys, array order preserved, no non-standard
+numbers, and a final newline. Prefer regenerating exports through their parser
+CLI; if normalizing an older export, review that the change is key order or
+formatting only and that no data values or arrays changed.

@@ -9,6 +9,10 @@ does not imply that any release has been published.
 
 ### Added
 
+- Normalize eight older registered JSON exports to canonical sorted-key JSON and
+  add a registry-wide regression test for byte-stable serialization across all
+  registered assets, preserving array order and source values.
+
 - Add a submodule-independent regression baseline for the committed 128-entry
   overworld hidden-item pointer table. It pins all 80 target labels, sequential
   two-byte offsets, and the 64-singleton/16-quadruple label distribution without

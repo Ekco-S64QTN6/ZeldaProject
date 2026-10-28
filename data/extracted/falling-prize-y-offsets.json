@@ -3,67 +3,67 @@
   "end_label": ".x_offsets",
   "entries": [
     {
-      "table_index": 0,
       "entry_file_offset": 297886,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0048",
       "literal_value": 72,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
     },
     {
-      "table_index": 1,
       "entry_file_offset": 297888,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0078",
       "literal_value": 120,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
     },
     {
-      "table_index": 2,
       "entry_file_offset": 297890,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0078",
       "literal_value": 120,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
     },
     {
-      "table_index": 3,
       "entry_file_offset": 297892,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0078",
       "literal_value": 120,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
     },
     {
-      "table_index": 4,
       "entry_file_offset": 297894,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0078",
       "literal_value": 120,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
     },
     {
-      "table_index": 5,
       "entry_file_offset": 297896,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0068",
       "literal_value": 104,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
     },
     {
-      "table_index": 6,
       "entry_file_offset": 297898,
-      "source_line": 1644,
-      "source_label": ".y_offsets",
       "expression": "$0078",
       "literal_value": 120,
-      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+      "source_label": ".y_offsets",
+      "source_line": 1644,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
     }
   ],
   "entry_count": 7,

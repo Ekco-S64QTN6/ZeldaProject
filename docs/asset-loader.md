@@ -95,3 +95,14 @@ The loader and project asset store do not read ROM bytes, resolve symbols from
 ROM memory, open incbin payload paths, decode dictionary/message streams, or
 perform binary extraction. Future schemas should be added with explicit
 validators and fixture-backed tests rather than weakening current checks.
+
+
+## Canonical committed exports
+
+Committed exports use UTF-8 JSON with two-space indentation, recursively sorted
+object keys, unchanged array order, and one final newline. The registry-level
+test loads every registered export and checks its on-disk representation against
+that canonical serializer. This catches accidental key-order or formatting drift
+without changing record order or interpreting source annotations. Regeneration
+should use the owning parser/CLI where possible; normalization is formatting-only
+and must not alter values, source text, or array order.
