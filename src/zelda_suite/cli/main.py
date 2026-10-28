@@ -25,6 +25,7 @@ from zelda_suite.extract import (
     parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
     parse_music_track_index,
+    parse_overworld_hidden_item_source,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
     parse_text_message_index,
@@ -1112,6 +1113,77 @@ def verify_overworld_hidden_items_command(
 
     if report["mismatch_count"]:
         raise click.exceptions.Exit(1)
+
+
+@cli.command(name="inspect-overworld-hidden-items")
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON report to a new file instead of stdout.",
+)
+def inspect_overworld_hidden_items_command(output: Path | None) -> None:
+    """Emit the pinned overworld hidden-item source layout without reading a ROM."""
+    source_path = Path("reference/AsarUSALTTPDisassembly/Bank1B.asm")
+    try:
+        source = source_path.read_text(encoding="utf-8")
+        layout = parse_overworld_hidden_item_source(source)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    payload = {
+        "format": "zelda-suite-overworld-hidden-item-source-layout",
+        "format_version": 1,
+        "source_file": source_path.as_posix(),
+        "source_revision": layout["source_revision"],
+        "pointer_table_offset": layout["pointer_table_offset"],
+        "pointer_count": len(layout["pointer_entries"]),
+        "pointer_entries": layout["pointer_entries"],
+        "data_start_offset": layout["data_start_offset"],
+        "data_end_exclusive": layout["data_end_exclusive"],
+        "data_region_size_bytes": (
+            layout["data_end_exclusive"] - layout["data_start_offset"]
+        ),
+        "distinct_target_label_count": len(layout["label_offsets"]),
+        "label_offsets": layout["label_offsets"],
+        "record_count": len(layout["records"]),
+        "records": layout["records"],
+        "sentinel_count": len(layout["sentinels"]),
+        "sentinels": layout["sentinels"],
+        "area_count": len(layout["area_lists"]),
+        "area_lists": layout["area_lists"],
+        "replacement_word_count": len(layout["replacement_words"]),
+        "replacement_words": layout["replacement_words"],
+        "rom_verified": False,
+        "semantic_values_decoded": False,
+    }
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(
+        f"Wrote hidden-item source-layout report to {output}; "
+        f"pointers={payload['pointer_count']}, records={payload['record_count']}, "
+        f"sentinels={payload['sentinel_count']}, areas={payload['area_count']}"
+    )
 
 
 @cli.command(name="join-item-receipt-tables")

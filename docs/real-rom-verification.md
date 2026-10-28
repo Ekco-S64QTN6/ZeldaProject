@@ -197,6 +197,15 @@ speculatively.
 
 ## 6. Verify overworld hidden-item pointers and sentinel-delimited lists
 
+Before reading any ROM, you can inspect the source-derived layout only:
+
+```bash
+uv run zelda-suite inspect-overworld-hidden-items \
+  --output /tmp/overworld-hidden-item-source-layout.json
+```
+
+This reports the declarations and computed offsets from the pinned disassembly; it is not a ROM check. The output schema is [`overworld-hidden-item-source-layout.schema.json`](./schemas/overworld-hidden-item-source-layout.schema.json). Continue with the byte-comparison command below only when an authorized local ROM is available.
+
 The read-only `verify-overworld-hidden-items` command parses the pinned
 `Bank1B.asm` declaration region and compares it with your local ROM. It
 calculates the screen-label file offsets from source declaration widths,

@@ -59,10 +59,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 128 overworld hidden-item pointer expressions. The pinned source parser
     accounts for 351 three-byte entries plus 67 two-byte sentinels and derives
     all 128 area lists using the runtime's leading-`$FFFF` termination rule.
-    The new read-only verifier compares the pointer words, record bytes,
-    sentinels, and four replacement Map16 words (550 byte spans); synthetic
-    regression tests cover matches and mismatches. A user-run check against the
-    local ROM is still needed, and value semantics remain unresolved.
+    The ROM-independent `zelda-suite inspect-overworld-hidden-items` command
+    now emits a versioned source-layout report with the raw records, offsets,
+    sentinels, area lists, and replacement words. The read-only verifier checks
+    550 byte spans; synthetic tests cover matches and mismatches. A user-run
+    check against the local ROM is still needed, and value semantics remain
+    unresolved. The source report does not establish ROM accuracy.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`; usable-room count and target resolution remain unverified.
   - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
@@ -160,5 +162,5 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    `z3ed --help`, then perform only a confirmed read-only ROM operation.
    Keep ROM provenance and the z3cli/model-endpoint gates open until independently
    resolved.
-2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
+2. Use the new source-only hidden-item layout report to select one small area, then compare its pointer, record bytes, and sentinel grouping against a trusted local ROM. Trace the value-byte consumer before promoting any fields into an editable schema; the source report alone is not ROM verification.
 3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.

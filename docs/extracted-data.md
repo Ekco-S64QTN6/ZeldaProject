@@ -305,6 +305,18 @@ diff -u data/extracted/overworld-hidden-item-pointers.json /tmp/overworld-hidden
 The parser parity test ensures all 128 pointer records match the pinned source;
 it does not mark the hidden-item list data as fully extracted or editable.
 
+For a source-only view of the full mixed-width declaration region, run:
+
+```bash
+uv run zelda-suite inspect-overworld-hidden-items \
+  --output /tmp/overworld-hidden-item-source-layout.json
+```
+
+This report adds computed label offsets, raw three-byte records, two-byte
+sentinels, source-derived area listings, and replacement words. It reads no ROM
+and is not a registered asset; `rom_verified` and `semantic_values_decoded` are
+explicitly false. See the [report schema](./schemas/overworld-hidden-item-source-layout.schema.json).
+
 ## Overworld high/low payload inventories
 
 The source-only inventory is split by source file into

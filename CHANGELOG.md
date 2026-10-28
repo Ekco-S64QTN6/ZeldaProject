@@ -19,6 +19,7 @@ does not imply that any release has been published.
   comparing 128 source-derived pointer words, mixed-width record/sentinel
   bytes, and four replacement Map16 words, with per-area list grouping based
   on the consumer's sentinel scan.
+- ROM-independent `zelda-suite inspect-overworld-hidden-items` JSON report for the pinned source layout, including pointer entries, labels, raw records, sentinels, and area groupings. It marks ROM verification and semantic decoding as false.
 - Registered `item-receipt-layout` joined view plus a strict versioned schema
   and `zelda-suite join-item-receipt-tables` command for aligning six raw
   76-entry receive-item arrays while preserving the separate 14-word dungeon
