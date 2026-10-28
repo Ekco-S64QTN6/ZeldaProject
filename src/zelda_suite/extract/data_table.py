@@ -35,15 +35,29 @@ class DataTableEntry:
     expression: str
     literal_value: int | None
     source_revision: str | None = None
+    inline_comment: str | None = None
 
-    def to_dict(self) -> dict[str, Any]:
-        """Return a JSON-serializable record."""
-        return asdict(self)
+    def to_dict(self, *, include_inline_comment: bool = False) -> dict[str, Any]:
+        """Return a JSON record, optionally including the source comment.
+
+        Omitting the comment keeps the existing version-1 export contract
+        unchanged. Version-2 callers opt in to the extra field explicitly.
+        """
+        record = asdict(self)
+        if not include_inline_comment:
+            record.pop("inline_comment")
+        return record
 
 
 def _code(line: str) -> str:
     """Strip a source comment from a line."""
     return line.split(";", 1)[0].strip()
+
+
+def _inline_comment(line: str) -> str | None:
+    """Return comment text after ';', without surrounding whitespace."""
+    _, separator, comment = line.partition(";")
+    return comment.strip() if separator else None
 
 
 def _find_parent_block(
@@ -232,6 +246,7 @@ def parse_data_table(
                 f"{code!r}"
             )
 
+        inline_comment = _inline_comment(lines[index])
         actual_directive = directive_match.group("directive").lower()
         if actual_directive != normalized_directive:
             raise DataTableParseError(
@@ -270,6 +285,7 @@ def parse_data_table(
                     expression=expression,
                     literal_value=value,
                     source_revision=source_revision,
+                    inline_comment=inline_comment,
                 )
             )
 
