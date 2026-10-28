@@ -1021,6 +1021,8 @@ def _validate_music_track_index_export(payload: dict[str, Any]) -> None:
         payload["track_index_start"], "track_index_start", minimum=0
     )
     end_index = _integer(payload["track_index_end"], "track_index_end", minimum=0)
+    if start_index > 0xFFFF or end_index > 0xFFFF:
+        raise AssetLoadError("track index range must fit in 16 bits")
     entry_count = _integer(payload["entry_count"], "entry_count", minimum=1)
     entries = payload["entries"]
     if not isinstance(entries, list) or not entries:
