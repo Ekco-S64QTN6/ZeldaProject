@@ -50,6 +50,9 @@ and the canonical offset map; the command does not infer it from comments.
   a ROM file offset.
 - Unsupported expression syntax fails loudly rather than silently dropping an
   entry.
+- The requested top-level table label must occur exactly once. Duplicate matches
+  fail with all matching source line numbers rather than silently choosing the
+  first table block.
 - `--output` creates a new file and refuses to overwrite an existing one.
 - Synthetic tests are independent of ROMs. Full extraction still requires a
   local clean US ROM and fixtures that verify parsed entries against its bytes.

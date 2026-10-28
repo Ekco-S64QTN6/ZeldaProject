@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Changed
 
+- Make pointer-table extraction reject duplicate requested labels with source line diagnostics instead of silently parsing the first matching table.
+
 - Mark ADR 0001 as Accepted to match the adopted SQLite canonical project format with JSON export documented in the roadmap and project-format guide.
 
 ### Added

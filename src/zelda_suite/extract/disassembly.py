@@ -96,15 +96,21 @@ def parse_source_pointer_table(
         raise ValueError("label must be a valid assembly identifier")
 
     lines = source.splitlines()
-    label_line: int | None = None
+    label_lines: list[int] = []
     for index, line in enumerate(lines):
         match = _LABEL_RE.fullmatch(line.split(";", 1)[0])
         if match and match.group("label") == label:
-            label_line = index
-            break
-    if label_line is None:
-        raise DisassemblyParseError(f"label not found: {label}")
+            label_lines.append(index)
 
+    if not label_lines:
+        raise DisassemblyParseError(f"label not found: {label}")
+    if len(label_lines) > 1:
+        source_lines = ", ".join(str(index + 1) for index in label_lines)
+        raise DisassemblyParseError(
+            f"label {label!r} occurs multiple times on lines {source_lines}"
+        )
+
+    label_line = label_lines[0]
     opening_line: int | None = None
     for index in range(label_line + 1, len(lines)):
         code = lines[index].split(";", 1)[0].strip()
