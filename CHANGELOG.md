@@ -66,10 +66,11 @@ does not imply that any release has been published.
   `zelda-suite audit-text-dictionary` runs. The known `.You` source-extent
   mismatch remains a diagnostic warning; the checks do not verify ROM offsets.
 
-- Add an integration regression baseline for all 14 registered scalar-table
-  exports: 679 entries, 504 direct numeric literals, 77 negative decimal literals,
-  and 98 unresolved symbols. The baseline is source-only and does not claim that
-  any skipped expression has been resolved or verified against ROM bytes.
+- Add an integration regression baseline for all 15 registered scalar-table
+  exports: 687 entries, 512 direct numeric literals, 77 negative decimal literals,
+  and 98 unresolved symbols. The Mad Batter selector table contributes eight
+  direct numeric literals; the baseline remains source-only and does not claim
+  that any skipped expression has been resolved or verified against ROM bytes.
 
 - Pin the current six-inventory `audit-incbin-inventory` summary in an integration test, so metadata gaps, range/size discrepancies, and candidate-overlap counts cannot drift silently. The baseline is source-only and does not verify ROM offsets.
 
