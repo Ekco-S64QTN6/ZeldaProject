@@ -42,8 +42,6 @@ class OverworldHiddenItemVerificationError(ValueError):
 
 def parse_overworld_hidden_item_source(
     source: str,
-    *,
-    source_revision: str = PINNED_SOURCE_REVISION,
 ) -> dict[str, Any]:
     """Parse the pointer table, mixed-width secret records, sentinels, and replacement words.
 
@@ -66,7 +64,7 @@ def parse_overworld_hidden_item_source(
         source,
         "OverworldData_HiddenItems",
         POINTER_TABLE_OFFSET,
-        source_revision=source_revision,
+        source_revision=PINNED_SOURCE_REVISION,
     )
     if len(pointer_entries) != POINTER_COUNT:
         raise OverworldHiddenItemVerificationError(
@@ -251,7 +249,7 @@ def parse_overworld_hidden_item_source(
         })
 
     return {
-        "source_revision": source_revision,
+        "source_revision": PINNED_SOURCE_REVISION,
         "pointer_table_offset": POINTER_TABLE_OFFSET,
         "pointer_entries": [entry.to_dict() for entry in pointer_entries],
         "data_start_offset": DATA_START_OFFSET,
@@ -267,8 +265,6 @@ def parse_overworld_hidden_item_source(
 def verify_overworld_hidden_items(
     rom_path: str | Path,
     source: str,
-    *,
-    source_revision: str = PINNED_SOURCE_REVISION,
 ) -> dict[str, Any]:
     """Compare source-computed hidden-item pointer and data bytes to a local ROM."""
     image_path = Path(rom_path)
@@ -289,7 +285,6 @@ def verify_overworld_hidden_items(
 
     layout = parse_overworld_hidden_item_source(
         source,
-        source_revision=source_revision,
     )
     mismatches: list[dict[str, Any]] = []
     checks = 0
