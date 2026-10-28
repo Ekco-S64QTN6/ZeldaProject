@@ -9,6 +9,10 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add a submodule-independent regression baseline for the committed 68-entry
+  sprite dispatch export, pinning the source ID/offset range and six handler
+  alias groups while preserving handler-address comments as unverified metadata.
+
 - Add source-only `zelda-suite audit-music-assets` report and schema to join
   registered music pointer expressions with payload declarations, surfacing the
   unmatched `Song0B_FairyTheme` target and three missing payload size annotations.
