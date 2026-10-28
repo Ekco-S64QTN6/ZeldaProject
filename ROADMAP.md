@@ -56,11 +56,13 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 397 source text-message labels with offset/length diagnostics.
   - 68 `SpriteActive3_Table` handler entries.
   - 35 music-track pointer expressions and 15 music payload declarations.
-  - 128 overworld hidden-item pointer expressions. Pinned-source inspection
-    identifies a reader that advances in three-byte strides and stops on a
-    leading `$FFFF` word; the declared region accounts for 351 three-byte
-    entries plus 67 two-byte sentinels. ROM pointer/data verification and
-    per-area grouping are still open.
+  - 128 overworld hidden-item pointer expressions. The pinned source parser
+    accounts for 351 three-byte entries plus 67 two-byte sentinels and derives
+    all 128 area lists using the runtime's leading-`$FFFF` termination rule.
+    The new read-only verifier compares the pointer words, record bytes,
+    sentinels, and four replacement Map16 words (550 byte spans); synthetic
+    regression tests cover matches and mismatches. A user-run check against the
+    local ROM is still needed, and value semantics remain unresolved.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`; usable-room count and target resolution remain unverified.
   - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
@@ -73,6 +75,13 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     resolution and the user's expanded ROM check remain open.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
 - [x] Provide `zelda-suite verify-rom-tables ROM` to compare numeric literals in registered scalar data-table exports to a headerless 1 MiB local ROM. Reports distinguish pass/partial/skip/fail, use the data directive's byte width separately from the file-offset stride, record a local SHA-256, and never write ROM bytes. Synthetic tests cover matching/mismatching bytes, unresolved expressions, signed decimal literals, strided word tables, report output, and ROM-size rejection. The user's reported real-ROM result (428 compared, 175 skipped, zero mismatches) was from the earlier runbook snippet. The updated verifier additionally checks simple negative decimal literals as bounded two's-complement values, including the 76 receive-item Y-offset expressions; rerun it locally to verify those additional bytes.
+- [x] Add `zelda-suite verify-overworld-hidden-items ROM` for source-derived
+  pointer, record, sentinel, and replacement-word checks. It recalculates
+  label offsets from 3-byte records/2-byte sentinels, compares all 128 pointer
+  words plus 351 records, 67 sentinels, and four replacement words, and reports
+  sentinel-delimited area groups. Tests use a synthetic ROM built from the
+  pinned source; the actual user-supplied ROM comparison and canonical provenance
+  checks remain open.
 - [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
 - [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
