@@ -165,6 +165,14 @@ def _require_current_schema(connection: sqlite3.Connection) -> None:
             f"project schema version is {current}; expected {CURRENT_SCHEMA_VERSION}. "
             "Run 'zelda-suite migrate-project' first."
         )
+    project_row = connection.execute(
+        "SELECT format_version FROM project WHERE singleton = 1"
+    ).fetchone()
+    if project_row is None or project_row[0] != PROJECT_FORMAT_VERSION:
+        raise ValueError(
+            f"project format version must be {PROJECT_FORMAT_VERSION}; "
+            "run 'zelda-suite migrate-project' first if this is an older project"
+        )
 
 
 def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
