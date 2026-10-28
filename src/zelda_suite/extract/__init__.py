@@ -51,6 +51,7 @@ from zelda_suite.extract.overworld_payload_pairs import (
     validate_overworld_payload_pairs,
 )
 from zelda_suite.extract.overworld_hidden_item_verification import (
+    PINNED_SOURCE_REVISION,
     OverworldHiddenItemVerificationError,
     parse_overworld_hidden_item_source,
     verify_overworld_hidden_items,
@@ -108,6 +109,7 @@ __all__ = [
     "MusicTrackIndex",
     "MusicTrackIndexError",
     "OverworldHiddenItemVerificationError",
+    "PINNED_SOURCE_REVISION",
     "OverworldPayloadPairError",
     "PointerTableEntry",
     "ROMImageInspection",
