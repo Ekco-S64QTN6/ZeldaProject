@@ -109,6 +109,10 @@ def parse_overworld_hidden_item_source(
                     f"record before a screen label on line {relative_line}"
                 )
             coordinate = int(record_match.group(1), 16)
+            if coordinate == 0xFFFF:
+                raise OverworldHiddenItemVerificationError(
+                    f"record uses the reader's sentinel coordinate on line {relative_line}"
+                )
             value = int(record_match.group(2), 16)
             records.append({
                 "record_index": len(records),
@@ -211,6 +215,42 @@ def parse_overworld_hidden_item_source(
             f"got {len(replacement_words)}"
         )
 
+    record_by_offset = {record["file_offset"]: record for record in records}
+    sentinel_by_offset = {item["file_offset"]: item for item in sentinels}
+    area_lists: list[dict[str, Any]] = []
+    for pointer in pointer_entries:
+        label = pointer.target_label
+        cursor = label_offsets[label]
+        if pointer.target_addend is not None:
+            cursor += pointer.target_addend
+        record_indices: list[int] = []
+        sentinel_offset: int | None = None
+        while cursor < DATA_END_EXCLUSIVE:
+            if cursor in sentinel_by_offset:
+                sentinel_offset = cursor
+                break
+            record = record_by_offset.get(cursor)
+            if record is None:
+                raise OverworldHiddenItemVerificationError(
+                    f"area index {pointer.table_index} reaches offset "
+                    f"0x{cursor:06X}, which is not a record or sentinel boundary"
+                )
+            record_indices.append(record["record_index"])
+            cursor += 3
+        if sentinel_offset is None:
+            raise OverworldHiddenItemVerificationError(
+                f"area index {pointer.table_index} has no reachable sentinel"
+            )
+        area_lists.append({
+            "area_index": pointer.table_index,
+            "pointer_entry_file_offset": pointer.pointer_entry_file_offset,
+            "target_label": label,
+            "target_file_offset": label_offsets[label],
+            "record_indices": record_indices,
+            "record_count": len(record_indices),
+            "sentinel_file_offset": sentinel_offset,
+        })
+
     return {
         "source_revision": source_revision,
         "pointer_table_offset": POINTER_TABLE_OFFSET,
@@ -220,6 +260,7 @@ def parse_overworld_hidden_item_source(
         "label_offsets": label_offsets,
         "records": records,
         "sentinels": sentinels,
+        "area_lists": area_lists,
         "replacement_words": replacement_words,
     }
 
@@ -367,6 +408,7 @@ def verify_overworld_hidden_items(
                 layout["data_end_exclusive"] - layout["data_start_offset"]
             ),
         },
+        "area_lists": layout["area_lists"],
         "checked_comparisons": checks,
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
