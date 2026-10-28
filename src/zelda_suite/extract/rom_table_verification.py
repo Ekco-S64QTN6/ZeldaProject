@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +9,11 @@ from zelda_suite.extract.asset_loader import (
     DATA_TABLE_FORMAT,
     list_extracted_assets,
     load_extracted_asset,
+)
+from zelda_suite.extract.expression_classification import (
+    UNRESOLVED_EXPRESSION_REASON,
+    classify_unresolved_expression,
+    is_signed_decimal_literal,
 )
 from zelda_suite.extract.rom_image import (
     EXPECTED_US_ROM_SIZE,
@@ -20,25 +24,6 @@ from zelda_suite.extract.rom_image import (
 
 ROM_TABLE_VERIFICATION_FORMAT = "zelda-suite-rom-table-verification"
 DIRECTIVE_WIDTHS = {"db": 1, "dw": 2, "dl": 3}
-_SIGNED_DECIMAL_RE = re.compile(r"-[0-9]+\Z")
-_SYMBOL_RE = re.compile(r"\.?[A-Za-z_][A-Za-z0-9_]*\Z")
-_SYMBOL_WITH_NUMERIC_ADDEND_RE = re.compile(
-    r"\.?[A-Za-z_][A-Za-z0-9_]*[+-](?:\$[0-9A-Fa-f]+|0[xX][0-9A-Fa-f]+|[0-9]+)\Z"
-)
-_UNRESOLVED_EXPRESSION_REASON = (
-    "Expression is not a supported numeric literal; it was not evaluated."
-)
-
-
-def _classify_unresolved_expression(expression: str) -> str:
-    """Classify simple expression shapes without evaluating assembler syntax."""
-    if _SYMBOL_RE.fullmatch(expression) is not None:
-        return "symbol"
-    if _SYMBOL_WITH_NUMERIC_ADDEND_RE.fullmatch(expression) is not None:
-        return "symbol_with_numeric_addend"
-    if any(character in expression for character in "()+-*/%&|^~<>"):
-        return "compound_or_assembler_specific"
-    return "other"
 
 
 class ROMTableVerificationError(ValueError):
@@ -106,7 +91,7 @@ def verify_registered_scalar_tables(
             value = entry["literal_value"]
             if value is None:
                 expression = entry["expression"]
-                if _SIGNED_DECIMAL_RE.fullmatch(expression) is None:
+                if not is_signed_decimal_literal(expression):
                     skipped += 1
                     if include_skipped_expressions:
                         unresolved_expressions.append({
@@ -114,8 +99,8 @@ def verify_registered_scalar_tables(
                             "offset": entry["entry_file_offset"],
                             "source_line": entry["source_line"],
                             "expression": expression,
-                            "classification": _classify_unresolved_expression(expression),
-                            "reason": _UNRESOLVED_EXPRESSION_REASON,
+                            "classification": classify_unresolved_expression(expression),
+                            "reason": UNRESOLVED_EXPRESSION_REASON,
                         })
                     continue
 

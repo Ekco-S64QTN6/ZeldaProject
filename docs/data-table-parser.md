@@ -90,3 +90,10 @@ This command parses assembly text only. It does not read ROM bytes, open
 The table file offset and the source revision are caller-supplied provenance
 and should be verified against the exact source revision and offset map. The
 parser is a raw-table foundation, not a semantic item catalog or an editor.
+
+
+## Audit unresolved expressions without a ROM
+
+Use `uv run zelda-suite audit-unresolved-table-expressions` to enumerate unresolved expressions across all registered scalar data-table exports. The report includes each raw expression, table index, source line, file offset, and a conservative syntax-shape classification. Bare negative decimal literals are counted separately because `verify-rom-tables` already handles their bounded two's-complement encoding; other unresolved expressions are never evaluated or guessed.
+
+Use `--output PATH` to save a new JSON report, or `--fail-on-unresolved` for CI/workflows that should return status 1 when any unresolved expressions remain. This command reads committed source metadata only; it does not need a ROM, execute Asar, or read payload bytes. The report contract is [source-expression-audit.schema.json](./schemas/source-expression-audit.schema.json).

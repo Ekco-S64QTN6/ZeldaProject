@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- ROM-independent `zelda-suite audit-unresolved-table-expressions` report
+  and strict version-1 schema for unresolved registered scalar-table expressions.
+  It preserves raw text and source locations and classifies syntax shape without
+  evaluating assembler expressions.
+
 - Source-only `zelda-suite audit-incbin-inventory` report and strict version-1
   schema for metadata gaps, source range/size mismatches, and candidate span
   overlaps across registered `incbin` inventories. Findings are diagnostic and
