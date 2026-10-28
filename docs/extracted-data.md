@@ -431,3 +431,40 @@ The parser-parity test verifies the export against the pinned assembly source.
 It does not resolve the three-byte target expressions against a local ROM or
 establish the playable-room set. The referenced `bin/rooms/*.bin` payloads
 are absent from the pinned submodule tree; no ROM bytes are committed.
+
+
+## Dungeon room payload declarations
+
+`data/extracted/dungeon-room-payload-inventory.json` records 75 labelled
+`incbin` declarations from pinned `Bank0A.asm` at revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The records link source labels
+such as `RoomDataTiles_0000` to their `bin/rooms/*.bin` include path and keep
+the source line, declared size, source-commented start offset, and a separate
+computed end offset.
+
+All 75 declarations in this file have a start-offset comment and a `Size:`
+annotation but no explicit source-commented end offset. Therefore
+`source_file_offset_end` and `source_range_size_matches` remain null, while
+`computed_file_offset_end` is only arithmetic from the annotated start plus
+the declared size. It must not be treated as independently verified against a
+ROM. The referenced room binaries are absent from the pinned submodule tree.
+
+This is the Bank0A subset of the room payload declarations, not a one-to-one
+listing of the 320 entries in `RoomData_ObjectDataPointers`; room payload
+labels also occur across the disassembly and pointer targets are not resolved
+by this export.
+
+Regenerate, validate, and diff the metadata with:
+
+```bash
+uv run zelda-suite inspect-incbin \
+  reference/AsarUSALTTPDisassembly/Bank0A.asm \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/dungeon-room-payload-inventory.json
+uv run zelda-suite validate-source-export /tmp/dungeon-room-payload-inventory.json
+diff -u data/extracted/dungeon-room-payload-inventory.json /tmp/dungeon-room-payload-inventory.json
+```
+
+CI compares the committed inventory with `parse_incbin_inventory()` over the
+pinned source and loads it through the named registry. It does not open the
+referenced binary payload files or verify offsets against a local ROM.
