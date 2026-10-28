@@ -68,6 +68,28 @@ The export preserves these audit fields:
 
 This is an audit-oriented discovery record, not a final editable SQLite schema. It keeps the original index and source expression intact even when multiple indices point to shared data. The source table has 320 entries, but the documented 296-room count has not been reconciled. No pointer target has been independently verified against a local ROM.
 
+## Source-label cross-reference
+
+The 320-entry pointer table's distinct target labels can be checked against the
+pinned source declarations in `Bank03.asm`, `Bank0A.asm`, and `Bank1F.asm`.
+The source-level regression test currently observes:
+
+- 266 unique `RoomDataTiles_*` labels across those three files: 34 in Bank03,
+  75 in Bank0A, and 157 in Bank1F.
+- 263 distinct target labels in the pointer table, including
+  `RoomDataTiles_Empty`; all 263 are defined in those source files.
+- Three source labels are defined but not referenced by this table:
+  `RoomDataTiles_Orphan`, `RoomDataTiles_Zarby89`, and
+  `RoomDataTiles_Zarby90`.
+- All 75 labels in the Bank0A payload inventory occur among the pointer
+  table's target labels.
+
+This proves only that the symbolic labels exist in the pinned source. It does
+not resolve the `dl` values to ROM file offsets, verify the source-commented
+addresses against ROM bytes, or establish that every referenced label is a
+playable room. The word “empty” is retained as a source label/metadata flag;
+its runtime/payload semantics still need independent verification.
+
 ## Validation gates before calling extraction complete
 
 1. Add fixtures from a locally supplied clean US ROM or approved local test
