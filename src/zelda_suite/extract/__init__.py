@@ -79,6 +79,11 @@ from zelda_suite.extract.rom_table_verification import (
     ROMTableVerificationError,
     verify_registered_scalar_tables,
 )
+from zelda_suite.extract.source_expression_audit import (
+    SOURCE_EXPRESSION_AUDIT_FORMAT,
+    SourceExpressionAuditError,
+    audit_unresolved_table_expressions,
+)
 from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchEntry,
     SpriteDispatchParseError,
@@ -104,6 +109,7 @@ __all__ = [
     "PINNED_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
     "ROM_TABLE_VERIFICATION_FORMAT",
+    "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
@@ -127,6 +133,7 @@ __all__ = [
     "ROMImageInspection",
     "ROMImageInspectionError",
     "ROMTableVerificationError",
+    "SourceExpressionAuditError",
     "SpriteDispatchEntry",
     "SpriteDispatchParseError",
     "SpriteDispatchTable",
@@ -135,6 +142,7 @@ __all__ = [
     "TextMessageIndexError",
     "TextMessageRecord",
     "audit_incbin_inventories",
+    "audit_unresolved_table_expressions",
     "build_item_receipt_layout",
     "format_lorom_cpu_address",
     "inspect_rom_image",
