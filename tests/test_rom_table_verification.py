@@ -171,6 +171,34 @@ def test_rejects_wrong_rom_size(tmp_path: Path) -> None:
         raise AssertionError("wrong-size ROM should be rejected")
 
 
+def test_signed_decimal_outside_signed_range_is_reported_not_encoded(
+    tmp_path: Path,
+) -> None:
+    rom_path = _write_fixture_rom(tmp_path)
+    registry = _write_fixture_registry(
+        tmp_path,
+        [{
+            "name": "out-of-range-negative",
+            "directive": "db",
+            "offset": 0x120,
+            "values": [None],
+            "expressions": ["-129"],
+        }],
+    )
+
+    report = verify_registered_scalar_tables(rom_path, registry)
+
+    asset = report["assets"][0]
+    assert asset["status"] == "fail"
+    assert asset["checked_entries"] == 0
+    assert asset["skipped_entries"] == 0
+    assert asset["resolved_signed_decimal_entries"] == 0
+    assert asset["mismatches"][0]["reason"] == (
+        "negative decimal literal is outside the signed range "
+        "for the declared directive width"
+    )
+
+
 def test_verify_rom_tables_cli_returns_nonzero_and_emits_report_on_mismatch(
     tmp_path: Path,
 ) -> None:
