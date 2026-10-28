@@ -189,6 +189,7 @@ def test_parser_rejects_a_missing_or_shortened_source_region() -> None:
     ):
         parse_overworld_hidden_item_source(altered)
 
+
 def test_hidden_item_source_cli_emits_report_and_refuses_overwrite(tmp_path: Path) -> None:
     runner = CliRunner()
 
