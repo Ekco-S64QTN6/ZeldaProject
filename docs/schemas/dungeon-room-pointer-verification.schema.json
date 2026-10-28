@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite dungeon-room pointer verification",
+  "description": "Read-only byte comparisons for the 320-entry long-pointer table using source-commented room payload offsets as candidate targets.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "rom",
+    "source_revision",
+    "pointer_table",
+    "entries",
+    "targets",
+    "mismatches",
+    "rom_modified",
+    "payload_bytes_verified",
+    "playable_room_set_resolved"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-dungeon-room-pointer-verification"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "rom": {
+      "type": "object",
+      "required": [
+        "filename",
+        "size_bytes",
+        "sha256",
+        "header_assessment",
+        "provenance_verified"
+      ],
+      "properties": {
+        "filename": {"type": "string", "minLength": 1},
+        "size_bytes": {"const": 1048576},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "header_assessment": {"const": "headerless-by-expected-size"},
+        "provenance_verified": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "source_revision": {
+      "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    "pointer_table": {
+      "type": "object",
+      "required": [
+        "label",
+        "file_offset",
+        "entry_width_bytes",
+        "entry_count",
+        "unique_target_label_count",
+        "empty_target_entry_count",
+        "source_payload_label_count",
+        "checked_comparisons",
+        "mismatch_count"
+      ],
+      "properties": {
+        "label": {"const": "RoomData_ObjectDataPointers"},
+        "file_offset": {"const": 1015808},
+        "entry_width_bytes": {"const": 3},
+        "entry_count": {"const": 320},
+        "unique_target_label_count": {"const": 263},
+        "empty_target_entry_count": {"const": 39},
+        "source_payload_label_count": {"const": 266},
+        "checked_comparisons": {"const": 320},
+        "mismatch_count": {"type": "integer", "minimum": 0, "maximum": 320}
+      },
+      "additionalProperties": false
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 320,
+      "maxItems": 320,
+      "items": {
+        "type": "object",
+        "required": [
+          "table_index",
+          "pointer_entry_file_offset",
+          "pointer_expression",
+          "target_label",
+          "is_empty_target",
+          "target_source_file",
+          "target_source_asset",
+          "target_source_file_offset",
+          "target_declared_size_bytes",
+          "expected_cpu_address",
+          "expected_hex",
+          "actual_hex",
+          "status"
+        ],
+        "properties": {
+          "table_index": {"type": "integer", "minimum": 0, "maximum": 319},
+          "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+          "pointer_expression": {"type": "string", "minLength": 1},
+          "target_label": {"type": "string", "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"},
+          "is_empty_target": {"type": "boolean"},
+          "target_source_file": {"enum": ["Bank03.asm", "Bank0A.asm", "Bank1F.asm"]},
+          "target_source_asset": {
+            "enum": [
+              "dungeon-room-payloads-bank03",
+              "dungeon-room-payload-inventory",
+              "dungeon-room-payloads-bank1f"
+            ]
+          },
+          "target_source_file_offset": {"type": "integer", "minimum": 0},
+          "target_declared_size_bytes": {"type": "integer", "minimum": 1},
+          "expected_cpu_address": {"type": "string", "pattern": "^\\$[0-9A-F]{6}$"},
+          "expected_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
+          "actual_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
+          "status": {"enum": ["pass", "fail"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 266,
+      "maxItems": 266,
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "source_file",
+          "source_asset",
+          "source_file_offset_start",
+          "declared_size_bytes",
+          "pointer_indices"
+        ],
+        "properties": {
+          "label": {"type": "string", "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"},
+          "source_file": {"enum": ["Bank03.asm", "Bank0A.asm", "Bank1F.asm"]},
+          "source_asset": {
+            "enum": [
+              "dungeon-room-payloads-bank03",
+              "dungeon-room-payload-inventory",
+              "dungeon-room-payloads-bank1f"
+            ]
+          },
+          "source_file_offset_start": {"type": "integer", "minimum": 0},
+          "declared_size_bytes": {"type": "integer", "minimum": 1},
+          "pointer_indices": {
+            "type": "array",
+            "items": {"type": "integer", "minimum": 0, "maximum": 319}
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "mismatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "table_index",
+          "pointer_entry_file_offset",
+          "pointer_expression",
+          "target_label",
+          "target_source_file_offset",
+          "expected_cpu_address",
+          "expected_hex",
+          "actual_hex",
+          "reason"
+        ],
+        "properties": {
+          "table_index": {"type": "integer", "minimum": 0, "maximum": 319},
+          "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
+          "pointer_expression": {"type": "string", "minLength": 1},
+          "target_label": {"type": "string", "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"},
+          "target_source_file_offset": {"type": "integer", "minimum": 0},
+          "expected_cpu_address": {"type": "string", "pattern": "^\\$[0-9A-F]{6}$"},
+          "expected_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
+          "actual_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
+          "reason": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "rom_modified": {"const": false},
+    "payload_bytes_verified": {"const": false},
+    "playable_room_set_resolved": {"const": false}
+  },
+  "additionalProperties": false
+}

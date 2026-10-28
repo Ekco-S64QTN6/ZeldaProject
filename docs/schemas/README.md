@@ -14,6 +14,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [ROM scalar-table verification report](./rom-table-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-rom-tables`.
 - [Overworld hidden-item verification report](./overworld-hidden-item-verification.schema.json) — version 1 report emitted by `zelda-suite verify-overworld-hidden-items`; includes source-derived sentinel-delimited per-area lists.
 - [Overworld hidden-item source-layout report](./overworld-hidden-item-source-layout.schema.json) — version 1 source-only report emitted by `zelda-suite inspect-overworld-hidden-items`; it does not read a ROM or decode semantic values.
+- [Dungeon-room pointer verification report](./dungeon-room-pointer-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-dungeon-room-pointers`; checks long pointer bytes against source-commented candidate targets.
 - [Joined receive-item layout](./item-receipt-layout.schema.json) — version 1 positional join of six raw receive-item tables, with the 14 dungeon masks retained separately and canonical item IDs explicitly unresolved.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
@@ -40,7 +41,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [`data/extracted/music-track-index.json`](../../data/extracted/music-track-index.json) — 35 source-indexed music pointer expressions, with empty entries and aliases.
 - [`data/extracted/music-payload-inventory.json`](../../data/extracted/music-payload-inventory.json) — 15 song payload `incbin` declarations with source ranges and size diagnostics.
 - [`data/extracted/overworld-hidden-item-pointers.json`](../../data/extracted/overworld-hidden-item-pointers.json) — 128 area-to-hidden-item-list pointers; record boundaries remain unresolved.
-- [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) — 320 source-indexed 24-bit dungeon room object pointer expressions; target addresses remain unresolved.
+- [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) — 320 source-indexed 24-bit dungeon room pointer expressions; a read-only verifier compares candidate addresses from the registered payload inventories, but local-ROM verification remains open.
 - [`data/extracted/dungeon-room-payloads-bank03.json`](../../data/extracted/dungeon-room-payloads-bank03.json) — 34 Bank03 room `incbin` declarations with source start offsets and size annotations.
 - [`data/extracted/dungeon-room-payload-inventory.json`](../../data/extracted/dungeon-room-payload-inventory.json) — 75 Bank0A room `incbin` declarations with start-offset and size annotations.
 - [`data/extracted/dungeon-room-payloads-bank1f.json`](../../data/extracted/dungeon-room-payloads-bank1f.json) — 157 Bank1F room `incbin` declarations with source start offsets and size annotations.

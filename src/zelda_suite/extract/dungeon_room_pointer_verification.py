@@ -1,0 +1,247 @@
+"""Read-only verification of dungeon-room long pointers against local ROM bytes."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+from zelda_suite.extract.asset_loader import (
+    AssetLoadError,
+    load_extracted_asset,
+)
+from zelda_suite.extract.rom_image import (
+    EXPECTED_US_ROM_SIZE,
+    ROMImageInspectionError,
+    lorom_cpu_address,
+    read_rom_bytes,
+    sha256_rom_bytes,
+)
+
+PINNED_SOURCE_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
+DUNGEON_POINTER_ASSET = "dungeon-room-object-pointers"
+DUNGEON_POINTER_TABLE_LABEL = "RoomData_ObjectDataPointers"
+DUNGEON_POINTER_TABLE_OFFSET = 0x0F8000
+DUNGEON_POINTER_ENTRY_WIDTH = 3
+DUNGEON_POINTER_ENTRY_COUNT = 320
+DUNGEON_ROOM_PAYLOAD_ASSETS = (
+    "dungeon-room-payloads-bank03",
+    "dungeon-room-payload-inventory",
+    "dungeon-room-payloads-bank1f",
+)
+DUNGEON_ROOM_PAYLOAD_FILES = {
+    "dungeon-room-payloads-bank03": "Bank03.asm",
+    "dungeon-room-payload-inventory": "Bank0A.asm",
+    "dungeon-room-payloads-bank1f": "Bank1F.asm",
+}
+
+
+class DungeonRoomPointerVerificationError(ValueError):
+    """Raised when registered dungeon source metadata cannot support a safe comparison."""
+
+
+def verify_dungeon_room_pointers(
+    rom_path: str | Path,
+    registry_path: str | Path = "data/extracted/manifest.json",
+) -> dict[str, Any]:
+    """Compare all 320 registered source pointer expressions to local ROM bytes.
+
+    Candidate targets are derived from the source-commented start offsets in the
+    three registered room-payload inventories. A successful check proves byte
+    agreement for this file only; the source-commented offsets and ROM identity
+    are not independently trusted by this operation.
+    """
+    image_path = Path(rom_path)
+    if not image_path.is_file():
+        raise DungeonRoomPointerVerificationError(
+            f"ROM path is not a file: {image_path}"
+        )
+    try:
+        rom = read_rom_bytes(image_path)
+    except ROMImageInspectionError as exc:
+        raise DungeonRoomPointerVerificationError(str(exc)) from exc
+    if len(rom) != EXPECTED_US_ROM_SIZE:
+        raise DungeonRoomPointerVerificationError(
+            "ROM must be the expected headerless 1 MiB image "
+            f"({EXPECTED_US_ROM_SIZE:,} bytes); got {len(rom):,}. "
+            "Use inspect-rom to diagnose the file; do not adjust it automatically."
+        )
+
+    try:
+        pointers = load_extracted_asset(DUNGEON_POINTER_ASSET, registry_path)
+        inventories = {
+            name: load_extracted_asset(name, registry_path)
+            for name in DUNGEON_ROOM_PAYLOAD_ASSETS
+        }
+    except AssetLoadError as exc:
+        raise DungeonRoomPointerVerificationError(str(exc)) from exc
+
+    if pointers["table_label"] != DUNGEON_POINTER_TABLE_LABEL:
+        raise DungeonRoomPointerVerificationError(
+            f"{DUNGEON_POINTER_ASSET!r} must contain "
+            f"{DUNGEON_POINTER_TABLE_LABEL!r}"
+        )
+    if pointers["table_file_offset"] != DUNGEON_POINTER_TABLE_OFFSET:
+        raise DungeonRoomPointerVerificationError(
+            f"room pointer-table offset must be 0x{DUNGEON_POINTER_TABLE_OFFSET:06X}"
+        )
+    if pointers["entry_width"] != DUNGEON_POINTER_ENTRY_WIDTH:
+        raise DungeonRoomPointerVerificationError(
+            f"room pointer-table entries must be {DUNGEON_POINTER_ENTRY_WIDTH} bytes"
+        )
+    if pointers["entry_count"] != DUNGEON_POINTER_ENTRY_COUNT:
+        raise DungeonRoomPointerVerificationError(
+            f"expected {DUNGEON_POINTER_ENTRY_COUNT} room pointer entries, "
+            f"got {pointers['entry_count']}"
+        )
+
+    source_revision = pointers["source_revision"]
+    if source_revision != PINNED_SOURCE_REVISION:
+        raise DungeonRoomPointerVerificationError(
+            f"room pointer asset source revision must be {PINNED_SOURCE_REVISION}"
+        )
+
+    targets: dict[str, dict[str, Any]] = {}
+    for asset_name, payload in inventories.items():
+        expected_source_file = DUNGEON_ROOM_PAYLOAD_FILES[asset_name]
+        if payload["source_file"] != expected_source_file:
+            raise DungeonRoomPointerVerificationError(
+                f"{asset_name!r} source_file must be {expected_source_file!r}"
+            )
+        if payload["source_revision"] != source_revision:
+            raise DungeonRoomPointerVerificationError(
+                f"{asset_name!r} source revision does not match the pointer table"
+            )
+        for declaration in payload["declarations"]:
+            label = declaration["label"]
+            if label in targets:
+                raise DungeonRoomPointerVerificationError(
+                    f"duplicate room target label in registered payloads: {label}"
+                )
+            offset = declaration["source_file_offset_start"]
+            if type(offset) is not int:
+                raise DungeonRoomPointerVerificationError(
+                    f"{label!r} has no numeric source-commented start offset"
+                )
+            size = declaration["declared_size_bytes"]
+            if type(size) is not int or size < 1:
+                raise DungeonRoomPointerVerificationError(
+                    f"{label!r} has no positive declared payload size"
+                )
+            targets[label] = {
+                "label": label,
+                "source_file": payload["source_file"],
+                "source_asset": asset_name,
+                "source_file_offset_start": offset,
+                "declared_size_bytes": size,
+            }
+
+    if len(targets) != 266:
+        raise DungeonRoomPointerVerificationError(
+            f"expected 266 distinct source room payload labels, got {len(targets)}"
+        )
+
+    target_labels = {entry["target_label"] for entry in pointers["entries"]}
+    missing_labels = sorted(target_labels - targets.keys())
+    if missing_labels:
+        raise DungeonRoomPointerVerificationError(
+            "room pointer targets lack registered payload metadata: "
+            + ", ".join(missing_labels)
+        )
+
+    for target in targets.values():
+        target["pointer_indices"] = []
+
+    entries_report: list[dict[str, Any]] = []
+    mismatches: list[dict[str, Any]] = []
+
+    for pointer in pointers["entries"]:
+        label = pointer["target_label"]
+        target = targets[label]
+        target_offset = target["source_file_offset_start"]
+        if pointer["target_addend"] is not None:
+            target_offset += pointer["target_addend"]
+        try:
+            cpu_address = lorom_cpu_address(target_offset)
+        except (TypeError, ValueError) as exc:
+            raise DungeonRoomPointerVerificationError(
+                f"target {label!r} offset 0x{target_offset:X} is outside the ROM image: {exc}"
+            ) from exc
+
+        if target_offset + target["declared_size_bytes"] > len(rom):
+            raise DungeonRoomPointerVerificationError(
+                f"declared payload for {label!r} extends beyond the ROM image"
+            )
+
+        offset = pointer["pointer_entry_file_offset"]
+        expected = cpu_address.to_bytes(DUNGEON_POINTER_ENTRY_WIDTH, "little")
+        actual = rom[offset:offset + DUNGEON_POINTER_ENTRY_WIDTH]
+        if len(actual) != DUNGEON_POINTER_ENTRY_WIDTH:
+            raise DungeonRoomPointerVerificationError(
+                f"pointer entry {pointer['table_index']} is outside the ROM image"
+            )
+
+        target["pointer_indices"].append(pointer["table_index"])
+        record = {
+            "table_index": pointer["table_index"],
+            "pointer_entry_file_offset": offset,
+            "pointer_expression": pointer["pointer_expression"],
+            "target_label": label,
+            "is_empty_target": pointer["is_empty_target"],
+            "target_source_file": target["source_file"],
+            "target_source_asset": target["source_asset"],
+            "target_source_file_offset": target_offset,
+            "target_declared_size_bytes": target["declared_size_bytes"],
+            "expected_cpu_address": "$" + format(cpu_address, "06X"),
+            "expected_hex": expected.hex().upper(),
+            "actual_hex": actual.hex().upper(),
+            "status": "pass" if actual == expected else "fail",
+        }
+        entries_report.append(record)
+        if actual != expected:
+            mismatches.append({
+                "table_index": pointer["table_index"],
+                "pointer_entry_file_offset": offset,
+                "pointer_expression": pointer["pointer_expression"],
+                "target_label": label,
+                "target_source_file_offset": target_offset,
+                "expected_cpu_address": "$" + format(cpu_address, "06X"),
+                "expected_hex": expected.hex().upper(),
+                "actual_hex": actual.hex().upper(),
+                "reason": "ROM pointer bytes do not match the source-commented target offset",
+            })
+
+    target_reports = [
+        targets[label]
+        for label in sorted(targets)
+    ]
+    return {
+        "format": "zelda-suite-dungeon-room-pointer-verification",
+        "format_version": 1,
+        "rom": {
+            "filename": image_path.name,
+            "size_bytes": len(rom),
+            "sha256": sha256_rom_bytes(rom),
+            "header_assessment": "headerless-by-expected-size",
+            "provenance_verified": False,
+        },
+        "source_revision": source_revision,
+        "pointer_table": {
+            "label": DUNGEON_POINTER_TABLE_LABEL,
+            "file_offset": DUNGEON_POINTER_TABLE_OFFSET,
+            "entry_width_bytes": DUNGEON_POINTER_ENTRY_WIDTH,
+            "entry_count": DUNGEON_POINTER_ENTRY_COUNT,
+            "unique_target_label_count": len(target_labels),
+            "empty_target_entry_count": sum(
+                entry["is_empty_target"] for entry in pointers["entries"]
+            ),
+            "source_payload_label_count": len(targets),
+            "checked_comparisons": len(entries_report),
+            "mismatch_count": len(mismatches),
+        },
+        "entries": entries_report,
+        "targets": target_reports,
+        "mismatches": mismatches,
+        "rom_modified": False,
+        "payload_bytes_verified": False,
+        "playable_room_set_resolved": False,
+    }

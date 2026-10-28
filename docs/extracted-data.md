@@ -443,10 +443,10 @@ not a canonical item catalog or a ROM-derived payload.
 - First pointer-entry location: `$0F8000`; last pointer-entry location: `$0F83BD`.
 - The inventory preserves every source expression, parsed target label/addend,
   source line, and pinned revision. Explicit `RoomDataTiles_Empty` targets are
-  marked as empty entries.
+  marked as empty entries. The read-only `verify-dungeon-room-pointers` command can compare all 320 pointer words with candidate addresses calculated from the three registered room-payload inventories.
 - The asset is registered as `dungeon-room-object-pointers`. The 320 entries
   are not assumed to be 320 playable rooms; the roadmap's 296-room figure and
-  this table's extent remain an unresolved count discrepancy.
+  this table's extent remain an unresolved count discrepancy. The verifier uses source-commented payload offsets only as candidates; local byte agreement does not validate the payload bytes or prove canonical offset provenance.
 
 Regenerate and compare the source-only export with:
 
