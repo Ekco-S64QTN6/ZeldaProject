@@ -79,7 +79,7 @@ def test_committed_oam_table_matches_pinned_source_and_lookup_consumer() -> None
     assert "; $06BA9E-$06BB09 DATA TABLE" in source
     assert "Upper limits for each OAM region" in source
     assert "fall back points for each OAM region" in source
-    assert "LDA.w .limits, Y" in source
+    assert "CMP.w .limits, Y" in source
     assert "LDA.w .fallback_points, Y : STA.b $90" in source
     assert "LDA.b $0C : ASL #3 : ADC.b $0E : TAY" in source
 
