@@ -46,6 +46,23 @@ Duplicate keys are rejected by default. Replacing an existing snapshot requires
 the explicit `--replace` flag. Each successful import refreshes the project JSON
 sidecar so the exported snapshot remains reviewable in Git.
 
+## Import a registered asset by name
+
+For assets already listed in `data/extracted/manifest.json`, prefer the
+manifest-backed command. It validates the registered name, selected filename,
+format, pinned source revision, and record count before persistence:
+
+```bash
+uv run zelda-suite import-extracted-asset \
+  project/my-hack.db falling-prize-item-values
+```
+
+The project key defaults to the registry asset name. Use `--asset-key KEY` to
+choose a different project-local key, `--registry PATH` for a different
+validated registry, and `--replace` only when deliberately refreshing an
+existing key. This is safer than copying a JSON path manually because the
+registry's metadata is checked before the payload is stored.
+
 ## Python API
 
 ```python
