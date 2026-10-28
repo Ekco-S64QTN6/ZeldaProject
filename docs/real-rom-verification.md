@@ -224,7 +224,7 @@ remaining Phase 0 integration gates.
   tar -tzf yaze-0.7.2-Linux.tar.gz | head -80
   mkdir -p "$HOME/.local/opt/yaze-0.7.2"
   tar -xzf yaze-0.7.2-Linux.tar.gz -C "$HOME/.local/opt/yaze-0.7.2"
-  find "$HOME/.local/opt/yaze-0.7.2" -type f \\( -name z3ed -o -name yaze \\) -print
+  find "$HOME/.local/opt/yaze-0.7.2" -type f \( -name z3ed -o -name yaze \) -print
   ```
 
   Inspect the archive listing and the paths printed by `find`; then invoke the
