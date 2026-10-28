@@ -40,6 +40,11 @@ from zelda_suite.extract.incbin_inventory import (
     IncbinInventoryError,
     parse_incbin_inventory,
 )
+from zelda_suite.extract.incbin_inventory_audit import (
+    INCBIN_INVENTORY_AUDIT_FORMAT,
+    IncbinInventoryAuditError,
+    audit_incbin_inventories,
+)
 from zelda_suite.extract.item_receipt_layout import (
     ItemReceiptLayoutError,
     build_item_receipt_layout,
@@ -107,7 +112,9 @@ __all__ = [
     "DictionaryInventoryError",
     "DisassemblyParseError",
     "DungeonRoomPointerVerificationError",
+    "INCBIN_INVENTORY_AUDIT_FORMAT",
     "IncbinDeclaration",
+    "IncbinInventoryAuditError",
     "IncbinInventoryError",
     "ItemReceiptLayoutError",
     "MessageSourceBlock",
@@ -127,6 +134,7 @@ __all__ = [
     "TextMessageIndex",
     "TextMessageIndexError",
     "TextMessageRecord",
+    "audit_incbin_inventories",
     "build_item_receipt_layout",
     "format_lorom_cpu_address",
     "inspect_rom_image",
