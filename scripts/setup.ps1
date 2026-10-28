@@ -44,19 +44,35 @@ if ($null -ne $Uv) {
     $CliPrefix = @("run", "zelda-suite")
 }
 else {
-    $Python = Get-Command python -ErrorAction SilentlyContinue
-    if ($null -ne $Python) {
-        Invoke-Checked -Executable $Python.Source -Arguments @("-m", "venv", (Join-Path $Root ".venv"))
-    }
-    else {
-        $PythonLauncher = Get-Command py -ErrorAction SilentlyContinue
-        if ($null -eq $PythonLauncher) {
-            throw "uv or Python 3.12+ is required to prepare the environment."
+    $Venv = Join-Path $Root ".venv"
+    $VenvPython = Join-Path $Root ".venv/Scripts/python.exe"
+    if (-not (Test-Path $VenvPython)) {
+        $Python = Get-Command python -ErrorAction SilentlyContinue
+        $UsePython = $false
+        if ($null -ne $Python) {
+            $VersionText = & $Python.Source -c "import sys; print('%d.%d' % sys.version_info[:2])"
+            $UsePython = ($LASTEXITCODE -eq 0 -and $VersionText -match '^3\.(\d+)$' -and [int]$Matches[1] -ge 12)
         }
-        Invoke-Checked -Executable $PythonLauncher.Source -Arguments @("-3.12", "-m", "venv", (Join-Path $Root ".venv"))
+
+        if ($UsePython) {
+            Invoke-Checked -Executable $Python.Source -Arguments @("-m", "venv", $Venv)
+        }
+        else {
+            $PythonLauncher = Get-Command py -ErrorAction SilentlyContinue
+            if ($null -eq $PythonLauncher) {
+                throw "uv or Python 3.12+ is required to prepare the environment."
+            }
+            Invoke-Checked -Executable $PythonLauncher.Source -Arguments @("-3.12", "-m", "venv", $Venv)
+        }
     }
 
-    $VenvPython = Join-Path $Root ".venv/Scripts/python.exe"
+    if (-not (Test-Path $VenvPython)) {
+        throw "Could not create the project-local Python 3.12+ virtual environment."
+    }
+    $VenvVersion = & $VenvPython -c "import sys; print('%d.%d' % sys.version_info[:2])"
+    if ($LASTEXITCODE -ne 0 -or $VenvVersion -notmatch '^3\.(\d+)$' -or [int]$Matches[1] -lt 12) {
+        throw "The existing .venv must use Python 3.12+; remove it or install with uv."
+    }
     $VenvCli = Join-Path $Root ".venv/Scripts/zelda-suite.exe"
     Invoke-Checked -Executable $VenvPython -Arguments @("-m", "pip", "install", "--upgrade", "pip")
     Push-Location $Root
