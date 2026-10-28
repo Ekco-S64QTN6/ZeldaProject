@@ -9,7 +9,7 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from zelda_suite.extract.data_table import DataTableParseError, parse_data_table
+from zelda_suite.extract.data_table import parse_data_table
 
 DUNGEON_CHEST_DATA_FORMAT = "zelda-suite-dungeon-chest-data"
 DUNGEON_CHEST_DATA_LABEL = "Dungeon_ChestData"
