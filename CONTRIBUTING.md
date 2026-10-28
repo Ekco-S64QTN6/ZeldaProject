@@ -53,6 +53,9 @@ must use that revision rather than silently updating to a newer upstream tree.
 5. **Validate the export.** Generate to a temporary output path, run
    `zelda-suite validate-source-export`, and compare it with the committed
    version. CLI output paths intentionally refuse to overwrite existing files.
+   Use `zelda-suite audit-unresolved-table-expressions` to review unresolved
+   expressions across the registered scalar tables. The audit preserves raw
+   source text and does not execute or resolve assembler syntax.
    When working with registered `incbin` exports, also run
    `zelda-suite audit-incbin-inventory` and review metadata gaps, source-range
    mismatches, and candidate overlaps. These are diagnostics only and must not
