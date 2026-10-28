@@ -111,6 +111,15 @@
       "description": "One hundred twenty-eight symbolic pointers for overworld hidden-item lists; record boundaries remain unresolved."
     },
     {
+      "name": "dungeon-room-object-pointers",
+      "file": "dungeon-room-object-pointers.json",
+      "format": "zelda-suite-pointer-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 320,
+      "subsystem": "dungeons",
+      "description": "320 source-indexed 24-bit RoomData_ObjectDataPointers expressions; target resolution and playable-room count remain unverified."
+    },
+    {
       "name": "overworld-payloads-bank0b",
       "file": "overworld-payloads-bank0b.json",
       "format": "zelda-suite-incbin-inventory",

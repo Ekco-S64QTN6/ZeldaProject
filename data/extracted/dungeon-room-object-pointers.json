@@ -1,0 +1,3212 @@
+{
+  "entries": [
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015808,
+      "pointer_expression": "RoomDataTiles_0000",
+      "source_line": 14,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0000"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015811,
+      "pointer_expression": "RoomDataTiles_0001",
+      "source_line": 15,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0001"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015814,
+      "pointer_expression": "RoomDataTiles_0002",
+      "source_line": 16,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0002"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015817,
+      "pointer_expression": "RoomDataTiles_0003",
+      "source_line": 17,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0003"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015820,
+      "pointer_expression": "RoomDataTiles_0004",
+      "source_line": 18,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0004"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1015823,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 19,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015826,
+      "pointer_expression": "RoomDataTiles_0006",
+      "source_line": 20,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0006"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015829,
+      "pointer_expression": "RoomDataTiles_0007",
+      "source_line": 21,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0007"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015832,
+      "pointer_expression": "RoomDataTiles_0008",
+      "source_line": 22,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0008"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015835,
+      "pointer_expression": "RoomDataTiles_0009",
+      "source_line": 23,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 9,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0009"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015838,
+      "pointer_expression": "RoomDataTiles_000A",
+      "source_line": 24,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 10,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_000A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015841,
+      "pointer_expression": "RoomDataTiles_000B",
+      "source_line": 25,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 11,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_000B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015844,
+      "pointer_expression": "RoomDataTiles_000C",
+      "source_line": 26,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 12,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_000C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015847,
+      "pointer_expression": "RoomDataTiles_000D",
+      "source_line": 27,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 13,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_000D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015850,
+      "pointer_expression": "RoomDataTiles_000E",
+      "source_line": 28,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 14,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_000E"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1015853,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 29,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 15,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015856,
+      "pointer_expression": "RoomDataTiles_0010",
+      "source_line": 30,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 16,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0010"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015859,
+      "pointer_expression": "RoomDataTiles_0011",
+      "source_line": 31,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 17,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0011"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015862,
+      "pointer_expression": "RoomDataTiles_0012",
+      "source_line": 32,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 18,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0012"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015865,
+      "pointer_expression": "RoomDataTiles_0013",
+      "source_line": 33,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 19,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0013"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015868,
+      "pointer_expression": "RoomDataTiles_0014",
+      "source_line": 34,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 20,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0014"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015871,
+      "pointer_expression": "RoomDataTiles_0015",
+      "source_line": 35,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 21,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0015"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015874,
+      "pointer_expression": "RoomDataTiles_0016",
+      "source_line": 36,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 22,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0016"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015877,
+      "pointer_expression": "RoomDataTiles_0017",
+      "source_line": 37,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 23,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0017"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015880,
+      "pointer_expression": "RoomDataTiles_0018",
+      "source_line": 38,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 24,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0018"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015883,
+      "pointer_expression": "RoomDataTiles_0019",
+      "source_line": 39,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 25,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0019"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015886,
+      "pointer_expression": "RoomDataTiles_001A",
+      "source_line": 40,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 26,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_001A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015889,
+      "pointer_expression": "RoomDataTiles_001B",
+      "source_line": 41,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 27,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_001B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015892,
+      "pointer_expression": "RoomDataTiles_001C",
+      "source_line": 42,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 28,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_001C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015895,
+      "pointer_expression": "RoomDataTiles_001D",
+      "source_line": 43,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 29,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_001D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015898,
+      "pointer_expression": "RoomDataTiles_001E",
+      "source_line": 44,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 30,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_001E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015901,
+      "pointer_expression": "RoomDataTiles_001F",
+      "source_line": 45,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 31,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_001F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015904,
+      "pointer_expression": "RoomDataTiles_000D",
+      "source_line": 46,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 32,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_000D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015907,
+      "pointer_expression": "RoomDataTiles_0021",
+      "source_line": 47,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 33,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0021"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015910,
+      "pointer_expression": "RoomDataTiles_0022",
+      "source_line": 48,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 34,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0022"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015913,
+      "pointer_expression": "RoomDataTiles_0023",
+      "source_line": 49,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 35,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0023"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015916,
+      "pointer_expression": "RoomDataTiles_0024",
+      "source_line": 50,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 36,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0024"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1015919,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 51,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 37,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015922,
+      "pointer_expression": "RoomDataTiles_0026",
+      "source_line": 52,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 38,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0026"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015925,
+      "pointer_expression": "RoomDataTiles_0027",
+      "source_line": 53,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 39,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0027"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015928,
+      "pointer_expression": "RoomDataTiles_0028",
+      "source_line": 54,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 40,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0028"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015931,
+      "pointer_expression": "RoomDataTiles_0029",
+      "source_line": 55,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 41,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0029"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015934,
+      "pointer_expression": "RoomDataTiles_002A",
+      "source_line": 56,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 42,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_002A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015937,
+      "pointer_expression": "RoomDataTiles_002B",
+      "source_line": 57,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 43,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_002B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015940,
+      "pointer_expression": "RoomDataTiles_002C",
+      "source_line": 58,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 44,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_002C"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1015943,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 59,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 45,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015946,
+      "pointer_expression": "RoomDataTiles_002E",
+      "source_line": 60,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 46,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_002E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015949,
+      "pointer_expression": "RoomDataTiles_002F",
+      "source_line": 61,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 47,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_002F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015952,
+      "pointer_expression": "RoomDataTiles_0030",
+      "source_line": 62,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 48,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0030"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015955,
+      "pointer_expression": "RoomDataTiles_0031",
+      "source_line": 63,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 49,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0031"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015958,
+      "pointer_expression": "RoomDataTiles_0032",
+      "source_line": 64,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 50,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0032"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015961,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 65,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 51,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015964,
+      "pointer_expression": "RoomDataTiles_0034",
+      "source_line": 66,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 52,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0034"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015967,
+      "pointer_expression": "RoomDataTiles_0035",
+      "source_line": 67,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 53,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0035"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015970,
+      "pointer_expression": "RoomDataTiles_0036",
+      "source_line": 68,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 54,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0036"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015973,
+      "pointer_expression": "RoomDataTiles_0037",
+      "source_line": 69,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 55,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0037"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015976,
+      "pointer_expression": "RoomDataTiles_0038",
+      "source_line": 70,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 56,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0038"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015979,
+      "pointer_expression": "RoomDataTiles_0039",
+      "source_line": 71,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 57,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0039"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015982,
+      "pointer_expression": "RoomDataTiles_003A",
+      "source_line": 72,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 58,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_003A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015985,
+      "pointer_expression": "RoomDataTiles_003B",
+      "source_line": 73,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 59,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_003B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015988,
+      "pointer_expression": "RoomDataTiles_003C",
+      "source_line": 74,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 60,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_003C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015991,
+      "pointer_expression": "RoomDataTiles_003D",
+      "source_line": 75,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 61,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_003D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015994,
+      "pointer_expression": "RoomDataTiles_003E",
+      "source_line": 76,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 62,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_003E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1015997,
+      "pointer_expression": "RoomDataTiles_003F",
+      "source_line": 77,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 63,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_003F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016000,
+      "pointer_expression": "RoomDataTiles_0040",
+      "source_line": 78,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 64,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0040"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016003,
+      "pointer_expression": "RoomDataTiles_0041",
+      "source_line": 79,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 65,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0041"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016006,
+      "pointer_expression": "RoomDataTiles_0042",
+      "source_line": 80,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 66,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0042"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016009,
+      "pointer_expression": "RoomDataTiles_0043",
+      "source_line": 81,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 67,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0043"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016012,
+      "pointer_expression": "RoomDataTiles_0044",
+      "source_line": 82,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 68,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0044"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016015,
+      "pointer_expression": "RoomDataTiles_0045",
+      "source_line": 83,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 69,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0045"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016018,
+      "pointer_expression": "RoomDataTiles_0046",
+      "source_line": 84,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 70,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0046"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016021,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 85,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 71,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016024,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 86,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 72,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016027,
+      "pointer_expression": "RoomDataTiles_0049",
+      "source_line": 87,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 73,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0049"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016030,
+      "pointer_expression": "RoomDataTiles_004A",
+      "source_line": 88,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 74,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016033,
+      "pointer_expression": "RoomDataTiles_004B",
+      "source_line": 89,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 75,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016036,
+      "pointer_expression": "RoomDataTiles_004C",
+      "source_line": 90,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 76,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016039,
+      "pointer_expression": "RoomDataTiles_004D",
+      "source_line": 91,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 77,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016042,
+      "pointer_expression": "RoomDataTiles_004E",
+      "source_line": 92,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 78,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016045,
+      "pointer_expression": "RoomDataTiles_004F",
+      "source_line": 93,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 79,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016048,
+      "pointer_expression": "RoomDataTiles_0050",
+      "source_line": 94,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 80,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0050"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016051,
+      "pointer_expression": "RoomDataTiles_0051",
+      "source_line": 95,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 81,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0051"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016054,
+      "pointer_expression": "RoomDataTiles_0052",
+      "source_line": 96,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 82,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0052"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016057,
+      "pointer_expression": "RoomDataTiles_0053",
+      "source_line": 97,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 83,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0053"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016060,
+      "pointer_expression": "RoomDataTiles_0054",
+      "source_line": 98,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 84,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0054"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016063,
+      "pointer_expression": "RoomDataTiles_0055",
+      "source_line": 99,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 85,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0055"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016066,
+      "pointer_expression": "RoomDataTiles_0056",
+      "source_line": 100,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 86,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0056"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016069,
+      "pointer_expression": "RoomDataTiles_0057",
+      "source_line": 101,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 87,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0057"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016072,
+      "pointer_expression": "RoomDataTiles_0058",
+      "source_line": 102,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 88,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0058"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016075,
+      "pointer_expression": "RoomDataTiles_0059",
+      "source_line": 103,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 89,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0059"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016078,
+      "pointer_expression": "RoomDataTiles_005A",
+      "source_line": 104,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 90,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_005A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016081,
+      "pointer_expression": "RoomDataTiles_005B",
+      "source_line": 105,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 91,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_005B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016084,
+      "pointer_expression": "RoomDataTiles_005C",
+      "source_line": 106,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 92,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_005C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016087,
+      "pointer_expression": "RoomDataTiles_005D",
+      "source_line": 107,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 93,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_005D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016090,
+      "pointer_expression": "RoomDataTiles_005E",
+      "source_line": 108,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 94,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_005E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016093,
+      "pointer_expression": "RoomDataTiles_005F",
+      "source_line": 109,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 95,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_005F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016096,
+      "pointer_expression": "RoomDataTiles_0060",
+      "source_line": 110,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 96,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0060"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016099,
+      "pointer_expression": "RoomDataTiles_0061",
+      "source_line": 111,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 97,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0061"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016102,
+      "pointer_expression": "RoomDataTiles_0062",
+      "source_line": 112,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 98,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0062"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016105,
+      "pointer_expression": "RoomDataTiles_0063",
+      "source_line": 113,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 99,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0063"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016108,
+      "pointer_expression": "RoomDataTiles_0064",
+      "source_line": 114,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 100,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0064"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016111,
+      "pointer_expression": "RoomDataTiles_0065",
+      "source_line": 115,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 101,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0065"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016114,
+      "pointer_expression": "RoomDataTiles_0066",
+      "source_line": 116,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 102,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0066"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016117,
+      "pointer_expression": "RoomDataTiles_0067",
+      "source_line": 117,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 103,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0067"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016120,
+      "pointer_expression": "RoomDataTiles_0068",
+      "source_line": 118,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 104,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0068"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016123,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 119,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 105,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016126,
+      "pointer_expression": "RoomDataTiles_006A",
+      "source_line": 120,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 106,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_006A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016129,
+      "pointer_expression": "RoomDataTiles_006B",
+      "source_line": 121,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 107,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_006B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016132,
+      "pointer_expression": "RoomDataTiles_006C",
+      "source_line": 122,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 108,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_006C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016135,
+      "pointer_expression": "RoomDataTiles_006D",
+      "source_line": 123,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 109,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_006D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016138,
+      "pointer_expression": "RoomDataTiles_006E",
+      "source_line": 124,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 110,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_006E"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016141,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 125,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 111,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016144,
+      "pointer_expression": "RoomDataTiles_0070",
+      "source_line": 126,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 112,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0070"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016147,
+      "pointer_expression": "RoomDataTiles_0071",
+      "source_line": 127,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 113,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0071"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016150,
+      "pointer_expression": "RoomDataTiles_0072",
+      "source_line": 128,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 114,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0072"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016153,
+      "pointer_expression": "RoomDataTiles_0073",
+      "source_line": 129,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 115,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0073"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016156,
+      "pointer_expression": "RoomDataTiles_0074",
+      "source_line": 130,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 116,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0074"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016159,
+      "pointer_expression": "RoomDataTiles_0075",
+      "source_line": 131,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 117,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0075"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016162,
+      "pointer_expression": "RoomDataTiles_0076",
+      "source_line": 132,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 118,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0076"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016165,
+      "pointer_expression": "RoomDataTiles_0077",
+      "source_line": 133,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 119,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0077"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016168,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 134,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 120,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016171,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 135,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 121,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016174,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 136,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 122,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016177,
+      "pointer_expression": "RoomDataTiles_007B",
+      "source_line": 137,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 123,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_007B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016180,
+      "pointer_expression": "RoomDataTiles_007C",
+      "source_line": 138,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 124,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_007C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016183,
+      "pointer_expression": "RoomDataTiles_007D",
+      "source_line": 139,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 125,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_007D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016186,
+      "pointer_expression": "RoomDataTiles_007E",
+      "source_line": 140,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 126,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_007E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016189,
+      "pointer_expression": "RoomDataTiles_007F",
+      "source_line": 141,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 127,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_007F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016192,
+      "pointer_expression": "RoomDataTiles_0080",
+      "source_line": 142,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 128,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0080"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016195,
+      "pointer_expression": "RoomDataTiles_0081",
+      "source_line": 143,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 129,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0081"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016198,
+      "pointer_expression": "RoomDataTiles_0082",
+      "source_line": 144,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 130,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0082"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016201,
+      "pointer_expression": "RoomDataTiles_0083",
+      "source_line": 145,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 131,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0083"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016204,
+      "pointer_expression": "RoomDataTiles_0084",
+      "source_line": 146,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 132,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0084"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016207,
+      "pointer_expression": "RoomDataTiles_0085",
+      "source_line": 147,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 133,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0085"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016210,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 148,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 134,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016213,
+      "pointer_expression": "RoomDataTiles_0087",
+      "source_line": 149,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 135,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0087"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016216,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 150,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 136,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016219,
+      "pointer_expression": "RoomDataTiles_0089",
+      "source_line": 151,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 137,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0089"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016222,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 152,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 138,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016225,
+      "pointer_expression": "RoomDataTiles_008B",
+      "source_line": 153,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 139,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_008B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016228,
+      "pointer_expression": "RoomDataTiles_008C",
+      "source_line": 154,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 140,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_008C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016231,
+      "pointer_expression": "RoomDataTiles_008D",
+      "source_line": 155,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 141,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_008D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016234,
+      "pointer_expression": "RoomDataTiles_008E",
+      "source_line": 156,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 142,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_008E"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016237,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 157,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 143,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016240,
+      "pointer_expression": "RoomDataTiles_0090",
+      "source_line": 158,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 144,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0090"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016243,
+      "pointer_expression": "RoomDataTiles_0091",
+      "source_line": 159,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 145,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0091"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016246,
+      "pointer_expression": "RoomDataTiles_0092",
+      "source_line": 160,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 146,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0092"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016249,
+      "pointer_expression": "RoomDataTiles_0093",
+      "source_line": 161,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 147,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0093"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016252,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 162,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 148,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016255,
+      "pointer_expression": "RoomDataTiles_0095",
+      "source_line": 163,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 149,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0095"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016258,
+      "pointer_expression": "RoomDataTiles_0096",
+      "source_line": 164,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 150,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0096"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016261,
+      "pointer_expression": "RoomDataTiles_0097",
+      "source_line": 165,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 151,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0097"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016264,
+      "pointer_expression": "RoomDataTiles_0098",
+      "source_line": 166,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 152,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0098"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016267,
+      "pointer_expression": "RoomDataTiles_0099",
+      "source_line": 167,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 153,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0099"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016270,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 168,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 154,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016273,
+      "pointer_expression": "RoomDataTiles_009B",
+      "source_line": 169,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 155,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_009B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016276,
+      "pointer_expression": "RoomDataTiles_009C",
+      "source_line": 170,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 156,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_009C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016279,
+      "pointer_expression": "RoomDataTiles_009D",
+      "source_line": 171,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 157,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_009D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016282,
+      "pointer_expression": "RoomDataTiles_009E",
+      "source_line": 172,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 158,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_009E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016285,
+      "pointer_expression": "RoomDataTiles_009F",
+      "source_line": 173,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 159,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_009F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016288,
+      "pointer_expression": "RoomDataTiles_00A0",
+      "source_line": 174,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 160,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A0"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016291,
+      "pointer_expression": "RoomDataTiles_00A1",
+      "source_line": 175,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 161,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A1"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016294,
+      "pointer_expression": "RoomDataTiles_00A2",
+      "source_line": 176,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 162,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A2"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016297,
+      "pointer_expression": "RoomDataTiles_00A3",
+      "source_line": 177,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 163,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A3"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016300,
+      "pointer_expression": "RoomDataTiles_00A4",
+      "source_line": 178,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 164,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A4"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016303,
+      "pointer_expression": "RoomDataTiles_00A5",
+      "source_line": 179,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 165,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A5"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016306,
+      "pointer_expression": "RoomDataTiles_00A6",
+      "source_line": 180,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 166,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A6"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016309,
+      "pointer_expression": "RoomDataTiles_00A7",
+      "source_line": 181,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 167,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A7"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016312,
+      "pointer_expression": "RoomDataTiles_00A8",
+      "source_line": 182,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 168,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A8"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016315,
+      "pointer_expression": "RoomDataTiles_00A9",
+      "source_line": 183,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 169,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00A9"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016318,
+      "pointer_expression": "RoomDataTiles_00AA",
+      "source_line": 184,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 170,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00AA"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016321,
+      "pointer_expression": "RoomDataTiles_00AB",
+      "source_line": 185,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 171,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00AB"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016324,
+      "pointer_expression": "RoomDataTiles_00AC",
+      "source_line": 186,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 172,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00AC"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016327,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 187,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 173,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016330,
+      "pointer_expression": "RoomDataTiles_00AE",
+      "source_line": 188,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 174,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00AE"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016333,
+      "pointer_expression": "RoomDataTiles_00AF",
+      "source_line": 189,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 175,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00AF"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016336,
+      "pointer_expression": "RoomDataTiles_00B0",
+      "source_line": 190,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 176,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B0"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016339,
+      "pointer_expression": "RoomDataTiles_00B1",
+      "source_line": 191,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 177,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B1"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016342,
+      "pointer_expression": "RoomDataTiles_00B2",
+      "source_line": 192,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 178,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B2"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016345,
+      "pointer_expression": "RoomDataTiles_00B3",
+      "source_line": 193,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 179,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B3"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016348,
+      "pointer_expression": "RoomDataTiles_00B4",
+      "source_line": 194,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 180,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B4"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016351,
+      "pointer_expression": "RoomDataTiles_00B5",
+      "source_line": 195,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 181,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B5"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016354,
+      "pointer_expression": "RoomDataTiles_00B6",
+      "source_line": 196,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 182,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B6"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016357,
+      "pointer_expression": "RoomDataTiles_00B7",
+      "source_line": 197,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 183,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B7"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016360,
+      "pointer_expression": "RoomDataTiles_00B8",
+      "source_line": 198,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 184,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B8"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016363,
+      "pointer_expression": "RoomDataTiles_00B9",
+      "source_line": 199,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 185,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00B9"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016366,
+      "pointer_expression": "RoomDataTiles_00BA",
+      "source_line": 200,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 186,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00BA"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016369,
+      "pointer_expression": "RoomDataTiles_00BB",
+      "source_line": 201,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 187,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00BB"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016372,
+      "pointer_expression": "RoomDataTiles_00BC",
+      "source_line": 202,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 188,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00BC"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016375,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 203,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 189,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016378,
+      "pointer_expression": "RoomDataTiles_00BE",
+      "source_line": 204,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 190,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00BE"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016381,
+      "pointer_expression": "RoomDataTiles_004F",
+      "source_line": 205,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 191,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_004F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016384,
+      "pointer_expression": "RoomDataTiles_00C0",
+      "source_line": 206,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 192,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C0"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016387,
+      "pointer_expression": "RoomDataTiles_00C1",
+      "source_line": 207,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 193,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C1"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016390,
+      "pointer_expression": "RoomDataTiles_00C2",
+      "source_line": 208,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 194,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C2"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016393,
+      "pointer_expression": "RoomDataTiles_00C3",
+      "source_line": 209,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 195,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C3"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016396,
+      "pointer_expression": "RoomDataTiles_00C4",
+      "source_line": 210,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 196,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C4"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016399,
+      "pointer_expression": "RoomDataTiles_00C5",
+      "source_line": 211,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 197,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C5"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016402,
+      "pointer_expression": "RoomDataTiles_00C6",
+      "source_line": 212,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 198,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C6"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016405,
+      "pointer_expression": "RoomDataTiles_00C7",
+      "source_line": 213,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 199,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C7"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016408,
+      "pointer_expression": "RoomDataTiles_00C8",
+      "source_line": 214,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 200,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C8"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016411,
+      "pointer_expression": "RoomDataTiles_00C9",
+      "source_line": 215,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 201,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00C9"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016414,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 216,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 202,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016417,
+      "pointer_expression": "RoomDataTiles_00CB",
+      "source_line": 217,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 203,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00CB"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016420,
+      "pointer_expression": "RoomDataTiles_00CC",
+      "source_line": 218,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 204,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00CC"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016423,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 219,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 205,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016426,
+      "pointer_expression": "RoomDataTiles_00CE",
+      "source_line": 220,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 206,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00CE"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016429,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 221,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 207,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016432,
+      "pointer_expression": "RoomDataTiles_00D0",
+      "source_line": 222,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 208,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D0"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016435,
+      "pointer_expression": "RoomDataTiles_00D1",
+      "source_line": 223,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 209,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D1"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016438,
+      "pointer_expression": "RoomDataTiles_00D2",
+      "source_line": 224,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 210,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D2"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016441,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 225,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 211,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016444,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 226,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 212,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016447,
+      "pointer_expression": "RoomDataTiles_00D5",
+      "source_line": 227,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 213,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D5"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016450,
+      "pointer_expression": "RoomDataTiles_00D6",
+      "source_line": 228,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 214,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D6"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016453,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 229,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 215,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016456,
+      "pointer_expression": "RoomDataTiles_00D8",
+      "source_line": 230,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 216,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D8"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016459,
+      "pointer_expression": "RoomDataTiles_00D9",
+      "source_line": 231,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 217,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00D9"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016462,
+      "pointer_expression": "RoomDataTiles_00DA",
+      "source_line": 232,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 218,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00DA"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016465,
+      "pointer_expression": "RoomDataTiles_00DB",
+      "source_line": 233,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 219,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00DB"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016468,
+      "pointer_expression": "RoomDataTiles_00DC",
+      "source_line": 234,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 220,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00DC"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016471,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 235,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 221,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016474,
+      "pointer_expression": "RoomDataTiles_00DE",
+      "source_line": 236,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 222,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00DE"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016477,
+      "pointer_expression": "RoomDataTiles_00DF",
+      "source_line": 237,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 223,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00DF"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016480,
+      "pointer_expression": "RoomDataTiles_00E0",
+      "source_line": 238,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 224,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E0"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016483,
+      "pointer_expression": "RoomDataTiles_00E1",
+      "source_line": 239,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 225,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E1"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016486,
+      "pointer_expression": "RoomDataTiles_00E2",
+      "source_line": 240,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 226,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E2"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016489,
+      "pointer_expression": "RoomDataTiles_00E3",
+      "source_line": 241,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 227,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E3"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016492,
+      "pointer_expression": "RoomDataTiles_00E4",
+      "source_line": 242,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 228,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E4"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016495,
+      "pointer_expression": "RoomDataTiles_00E5",
+      "source_line": 243,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 229,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E5"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016498,
+      "pointer_expression": "RoomDataTiles_00E6",
+      "source_line": 244,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 230,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E6"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016501,
+      "pointer_expression": "RoomDataTiles_00E7",
+      "source_line": 245,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 231,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E7"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016504,
+      "pointer_expression": "RoomDataTiles_00E8",
+      "source_line": 246,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 232,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00E8"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016507,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 247,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 233,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016510,
+      "pointer_expression": "RoomDataTiles_00EA",
+      "source_line": 248,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 234,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00EA"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016513,
+      "pointer_expression": "RoomDataTiles_00EB",
+      "source_line": 249,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 235,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00EB"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016516,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 250,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 236,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016519,
+      "pointer_expression": "RoomDataTiles_00ED",
+      "source_line": 251,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 237,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00ED"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016522,
+      "pointer_expression": "RoomDataTiles_00EE",
+      "source_line": 252,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 238,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00EE"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016525,
+      "pointer_expression": "RoomDataTiles_00EF",
+      "source_line": 253,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 239,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00EF"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016528,
+      "pointer_expression": "RoomDataTiles_00F0",
+      "source_line": 254,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 240,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F0"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016531,
+      "pointer_expression": "RoomDataTiles_00F1",
+      "source_line": 255,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 241,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F1"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016534,
+      "pointer_expression": "RoomDataTiles_00F2",
+      "source_line": 256,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 242,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F2"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016537,
+      "pointer_expression": "RoomDataTiles_00F3",
+      "source_line": 257,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 243,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F3"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016540,
+      "pointer_expression": "RoomDataTiles_00F4",
+      "source_line": 258,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 244,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F4"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016543,
+      "pointer_expression": "RoomDataTiles_00F5",
+      "source_line": 259,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 245,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F5"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016546,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 260,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 246,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016549,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 261,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 247,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016552,
+      "pointer_expression": "RoomDataTiles_00F8",
+      "source_line": 262,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 248,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F8"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016555,
+      "pointer_expression": "RoomDataTiles_00F9",
+      "source_line": 263,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 249,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00F9"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016558,
+      "pointer_expression": "RoomDataTiles_00FA",
+      "source_line": 264,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 250,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00FA"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016561,
+      "pointer_expression": "RoomDataTiles_00FB",
+      "source_line": 265,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 251,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00FB"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016564,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 266,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 252,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016567,
+      "pointer_expression": "RoomDataTiles_00FD",
+      "source_line": 267,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 253,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00FD"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016570,
+      "pointer_expression": "RoomDataTiles_00FE",
+      "source_line": 268,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 254,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00FE"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016573,
+      "pointer_expression": "RoomDataTiles_00FF",
+      "source_line": 269,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 255,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_00FF"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016576,
+      "pointer_expression": "RoomDataTiles_0100",
+      "source_line": 270,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 256,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0100"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016579,
+      "pointer_expression": "RoomDataTiles_0101",
+      "source_line": 271,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 257,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0101"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016582,
+      "pointer_expression": "RoomDataTiles_0102",
+      "source_line": 272,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 258,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0102"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016585,
+      "pointer_expression": "RoomDataTiles_0103",
+      "source_line": 273,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 259,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0103"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016588,
+      "pointer_expression": "RoomDataTiles_0104",
+      "source_line": 274,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 260,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0104"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016591,
+      "pointer_expression": "RoomDataTiles_0105",
+      "source_line": 275,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 261,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0105"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016594,
+      "pointer_expression": "RoomDataTiles_0106",
+      "source_line": 276,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 262,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0106"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016597,
+      "pointer_expression": "RoomDataTiles_0107",
+      "source_line": 277,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 263,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0107"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016600,
+      "pointer_expression": "RoomDataTiles_0108",
+      "source_line": 278,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 264,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0108"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016603,
+      "pointer_expression": "RoomDataTiles_0109",
+      "source_line": 279,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 265,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0109"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016606,
+      "pointer_expression": "RoomDataTiles_010A",
+      "source_line": 280,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 266,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_010A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016609,
+      "pointer_expression": "RoomDataTiles_010B",
+      "source_line": 281,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 267,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_010B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016612,
+      "pointer_expression": "RoomDataTiles_010C",
+      "source_line": 282,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 268,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_010C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016615,
+      "pointer_expression": "RoomDataTiles_010D",
+      "source_line": 283,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 269,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_010D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016618,
+      "pointer_expression": "RoomDataTiles_010E",
+      "source_line": 284,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 270,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_010E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016621,
+      "pointer_expression": "RoomDataTiles_010F",
+      "source_line": 285,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 271,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_010F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016624,
+      "pointer_expression": "RoomDataTiles_0110",
+      "source_line": 286,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 272,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0110"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016627,
+      "pointer_expression": "RoomDataTiles_0111",
+      "source_line": 287,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 273,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0111"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016630,
+      "pointer_expression": "RoomDataTiles_0112",
+      "source_line": 288,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 274,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0112"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016633,
+      "pointer_expression": "RoomDataTiles_0113",
+      "source_line": 289,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 275,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0113"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016636,
+      "pointer_expression": "RoomDataTiles_0114",
+      "source_line": 290,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 276,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0114"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016639,
+      "pointer_expression": "RoomDataTiles_0115",
+      "source_line": 291,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 277,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0115"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016642,
+      "pointer_expression": "RoomDataTiles_0116",
+      "source_line": 292,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 278,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0116"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016645,
+      "pointer_expression": "RoomDataTiles_0117",
+      "source_line": 293,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 279,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0117"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016648,
+      "pointer_expression": "RoomDataTiles_0118",
+      "source_line": 294,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 280,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0118"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016651,
+      "pointer_expression": "RoomDataTiles_0119",
+      "source_line": 295,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 281,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0119"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016654,
+      "pointer_expression": "RoomDataTiles_011A",
+      "source_line": 296,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 282,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_011A"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016657,
+      "pointer_expression": "RoomDataTiles_011B",
+      "source_line": 297,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 283,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_011B"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016660,
+      "pointer_expression": "RoomDataTiles_011C",
+      "source_line": 298,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 284,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_011C"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016663,
+      "pointer_expression": "RoomDataTiles_011D",
+      "source_line": 299,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 285,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_011D"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016666,
+      "pointer_expression": "RoomDataTiles_011E",
+      "source_line": 300,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 286,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_011E"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016669,
+      "pointer_expression": "RoomDataTiles_011F",
+      "source_line": 301,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 287,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_011F"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016672,
+      "pointer_expression": "RoomDataTiles_0120",
+      "source_line": 302,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 288,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0120"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016675,
+      "pointer_expression": "RoomDataTiles_0121",
+      "source_line": 303,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 289,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0121"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016678,
+      "pointer_expression": "RoomDataTiles_0122",
+      "source_line": 304,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 290,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0122"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016681,
+      "pointer_expression": "RoomDataTiles_0123",
+      "source_line": 305,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 291,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0123"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016684,
+      "pointer_expression": "RoomDataTiles_0124",
+      "source_line": 306,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 292,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0124"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016687,
+      "pointer_expression": "RoomDataTiles_0125",
+      "source_line": 307,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 293,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0125"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016690,
+      "pointer_expression": "RoomDataTiles_0126",
+      "source_line": 308,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 294,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0126"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016693,
+      "pointer_expression": "RoomDataTiles_0125",
+      "source_line": 309,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 295,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0125"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016696,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 310,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 296,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016699,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 311,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 297,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016702,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 312,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 298,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016705,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 313,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 299,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016708,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 314,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 300,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016711,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 315,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 301,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016714,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 316,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 302,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016717,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 317,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 303,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016720,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 318,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 304,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016723,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 319,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 305,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016726,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 320,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 306,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016729,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 321,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 307,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016732,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 322,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 308,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016735,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 323,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 309,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016738,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 324,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 310,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016741,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 325,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 311,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016744,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 326,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 312,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016747,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 327,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 313,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016750,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 328,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 314,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": false,
+      "pointer_entry_file_offset": 1016753,
+      "pointer_expression": "RoomDataTiles_0033",
+      "source_line": 329,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 315,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_0033"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016756,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 330,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 316,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016759,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 331,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 317,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016762,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 332,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 318,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    },
+    {
+      "is_empty_target": true,
+      "pointer_entry_file_offset": 1016765,
+      "pointer_expression": "RoomDataTiles_Empty",
+      "source_line": 333,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 319,
+      "target_addend": null,
+      "target_label": "RoomDataTiles_Empty"
+    }
+  ],
+  "entry_count": 320,
+  "entry_width": 3,
+  "format": "zelda-suite-pointer-table",
+  "format_version": 1,
+  "source_file": "Bank1F.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 1015808,
+  "table_label": "RoomData_ObjectDataPointers"
+}

@@ -396,3 +396,38 @@ its exclusive next label from
 [the receive-item discovery note](./schemas/item-receipt-metadata.md). Omit
 `--end-label` for `.item_masks`. Validate and diff the resulting JSON before
 reviewing a data update. No ROM bytes or binary slices are committed.
+
+
+## Dungeon room object-pointer table
+
+`data/extracted/dungeon-room-object-pointers.json` records the 320
+`dl` expressions under `RoomData_ObjectDataPointers` in pinned
+`Bank1F.asm` at revision `347c23f9fc019c72d32da537c9cb235f468d021d`.
+
+- Headerless source-commented range: `$0F8000–$0F83BF` (960 bytes).
+- Entry width/count: three bytes × 320 entries; indices `0x000–0x13F`.
+- First pointer-entry location: `$0F8000`; last pointer-entry location: `$0F83BD`.
+- The inventory preserves every source expression, parsed target label/addend,
+  source line, and pinned revision. Explicit `RoomDataTiles_Empty` targets are
+  marked as empty entries.
+- The asset is registered as `dungeon-room-object-pointers`. The 320 entries
+  are not assumed to be 320 playable rooms; the roadmap's 296-room figure and
+  this table's extent remain an unresolved count discrepancy.
+
+Regenerate and compare the source-only export with:
+
+```bash
+uv run zelda-suite inspect-pointer-table \
+  reference/AsarUSALTTPDisassembly/Bank1F.asm \
+  RoomData_ObjectDataPointers \
+  --table-offset '$0F8000' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/dungeon-room-object-pointers.json
+uv run zelda-suite validate-source-export /tmp/dungeon-room-object-pointers.json
+diff -u data/extracted/dungeon-room-object-pointers.json /tmp/dungeon-room-object-pointers.json
+```
+
+The parser-parity test verifies the export against the pinned assembly source.
+It does not resolve the three-byte target expressions against a local ROM or
+establish the playable-room set. The referenced `bin/rooms/*.bin` payloads
+are absent from the pinned submodule tree; no ROM bytes are committed.
