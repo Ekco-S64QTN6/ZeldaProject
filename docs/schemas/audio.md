@@ -186,3 +186,23 @@ uv run pytest tests/test_music_track_index.py
 
 This is source-symbol consistency only. It does not read the untracked
 `bin/music/*.bin` paths or validate any address against a local ROM.
+
+
+## Cross-check pointer targets and payload declarations
+
+Run `uv run zelda-suite audit-music-assets` to join the registered
+`music-track-index` and `music-payload-inventory` exports. It preserves empty
+pointer slots and aliases while reporting target labels that lack payload
+declarations, payload declarations that are not referenced by the index, and
+payload labels whose size is unknown.
+
+The committed source-only baseline has 35 pointer entries: 15 empty slots, four
+aliases, and 16 distinct non-empty target labels. All 15 declared payload labels
+appear in the pointer target set, but `Song0B_FairyTheme` has no matching
+declaration in the inventory. Three auxiliary payload declarations have source
+ranges but no declared byte size: `Song1D_AgahnimEscapes`,
+`Song1E_MeetingGanon`, and `Song1F_KingOfThieves`. Those are report findings,
+not conclusions that payload bytes are absent from a clean local ROM.
+The audit does not read audio payload bytes, resolve pointer values, or verify
+offsets against a ROM. See the
+[music audit schema](./music-asset-audit.schema.json).
