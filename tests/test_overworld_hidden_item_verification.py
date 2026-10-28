@@ -1,6 +1,7 @@
 """Tests for read-only overworld hidden-item pointer and record verification."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -187,3 +188,35 @@ def test_parser_rejects_a_missing_or_shortened_source_region() -> None:
         match="unsupported declaration|expected 67 two-byte sentinels",
     ):
         parse_overworld_hidden_item_source(altered)
+
+def test_hidden_item_source_cli_emits_report_and_refuses_overwrite(tmp_path: Path) -> None:
+    runner = CliRunner()
+
+    result = runner.invoke(cli, ["inspect-overworld-hidden-items"])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+
+    assert payload["format"] == "zelda-suite-overworld-hidden-item-source-layout"
+    assert payload["format_version"] == 1
+    assert payload["source_revision"] == PINNED_REVISION
+    assert payload["pointer_count"] == 128
+    assert payload["data_region_size_bytes"] == 1187
+    assert payload["distinct_target_label_count"] == 80
+    assert payload["record_count"] == 351
+    assert payload["sentinel_count"] == 67
+    assert payload["area_count"] == 128
+    assert payload["replacement_word_count"] == 4
+    assert payload["rom_verified"] is False
+    assert payload["semantic_values_decoded"] is False
+
+    output = tmp_path / "hidden-item-source-layout.json"
+    written = runner.invoke(cli, ["inspect-overworld-hidden-items", "--output", str(output)])
+    assert written.exit_code == 0, written.output
+    saved_text = output.read_text(encoding="utf-8")
+    assert saved_text.endswith("\\n")
+    assert json.loads(saved_text) == payload
+
+    refused = runner.invoke(cli, ["inspect-overworld-hidden-items", "--output", str(output)])
+    assert refused.exit_code != 0
+    assert "refusing to overwrite existing output" in refused.output
+
