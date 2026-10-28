@@ -142,7 +142,6 @@ def test_cli_emits_valid_sprite_dispatch_json(tmp_path: Path) -> None:
     assert registered["entry_count"] == 68
 
 
-
 def test_committed_dispatch_export_has_pinned_source_metadata_baseline() -> None:
     """Check the checked-in dispatch export even when the source submodule is absent."""
     payload = load_source_export(EXPORT_PATH)
