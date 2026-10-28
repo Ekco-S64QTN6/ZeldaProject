@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 import pytest
 
@@ -47,6 +48,53 @@ def test_committed_dungeon_pointer_export_matches_pinned_source() -> None:
     assert committed["entries"][5]["is_empty_target"] is True
     assert committed["entries"][-1]["table_index"] == 319
     assert committed["entries"][-1]["pointer_entry_file_offset"] == 0x0F83BD
+
+
+BANK03_PATH = ROOT / "reference" / "AsarUSALTTPDisassembly" / "Bank03.asm"
+BANK0A_PATH = ROOT / "reference" / "AsarUSALTTPDisassembly" / "Bank0A.asm"
+ROOM_PAYLOAD_EXPORT_PATH = ROOT / "data" / "extracted" / "dungeon-room-payload-inventory.json"
+
+
+@pytest.mark.skipif(
+    not all(path.is_file() for path in (BANK03_PATH, BANK0A_PATH, SOURCE_PATH)),
+    reason="AsarUSALTTPDisassembly submodule is not checked out",
+)
+def test_all_dungeon_pointer_targets_have_pinned_source_definitions() -> None:
+    pointers = load_source_export(EXPORT_PATH)
+    room_payloads = load_source_export(ROOM_PAYLOAD_EXPORT_PATH)
+
+    source_labels: set[str] = set()
+    labels_by_file: dict[str, set[str]] = {}
+    for path in (BANK03_PATH, BANK0A_PATH, SOURCE_PATH):
+        labels = {
+            match.group(1)
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if (
+                match := re.fullmatch(
+                    r"\\s*(RoomDataTiles_[A-Za-z0-9_]+)\\s*:\\s*",
+                    line.split(";", 1)[0],
+                )
+            )
+        }
+        labels_by_file[path.name] = labels
+        source_labels.update(labels)
+
+    target_labels = {entry["target_label"] for entry in pointers["entries"]}
+
+    assert len(labels_by_file["Bank03.asm"]) == 34
+    assert len(labels_by_file["Bank0A.asm"]) == 75
+    assert len(labels_by_file["Bank1F.asm"]) == 157
+    assert len(source_labels) == 266
+    assert len(target_labels) == 263
+    assert target_labels <= source_labels
+    assert sorted(source_labels - target_labels) == [
+        "RoomDataTiles_Orphan",
+        "RoomDataTiles_Zarby89",
+        "RoomDataTiles_Zarby90",
+    ]
+    assert {
+        declaration["label"] for declaration in room_payloads["declarations"]
+    } <= target_labels
 
 
 def test_dungeon_pointer_export_is_registered_and_loadable() -> None:
