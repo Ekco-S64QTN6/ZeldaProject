@@ -24,6 +24,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
 - [Text dictionary cross-reference audit](./text-dictionary-audit.schema.json) — version 1 source-only report emitted by `zelda-suite audit-text-dictionary`; pointer values remain unresolved and offsets remain unverified.
 - [Text message index](./text-message-index.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-messages`.
+- [Text-message index audit](./text-message-index-audit.schema.json) — version 1 source-only diagnostics emitted by `zelda-suite audit-text-message-index`.
 - [Named asset registry](./asset-registry.schema.json) — version 1 catalog schema for `data/extracted/manifest.json`.
 - [Sprite dispatch export](./sprite-dispatch-export.schema.json) — version 1 schema for `zelda-suite inspect-sprite-dispatch`.
 - [Music track index](./music-track-index.schema.json) — version 1 schema for `zelda-suite inspect-music-track-index`.
