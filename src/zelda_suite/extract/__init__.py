@@ -46,15 +46,15 @@ from zelda_suite.extract.music_track_index import (
     MusicTrackIndexError,
     parse_music_track_index,
 )
-from zelda_suite.extract.overworld_payload_pairs import (
-    OverworldPayloadPairError,
-    validate_overworld_payload_pairs,
-)
 from zelda_suite.extract.overworld_hidden_item_verification import (
     PINNED_SOURCE_REVISION,
     OverworldHiddenItemVerificationError,
     parse_overworld_hidden_item_source,
     verify_overworld_hidden_items,
+)
+from zelda_suite.extract.overworld_payload_pairs import (
+    OverworldPayloadPairError,
+    validate_overworld_payload_pairs,
 )
 from zelda_suite.extract.rom_image import (
     ROMImageInspection,
@@ -91,6 +91,7 @@ __all__ = [
     "DICTIONARY_INVENTORY_FORMAT",
     "ITEM_RECEIPT_LAYOUT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
+    "PINNED_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
     "ROM_TABLE_VERIFICATION_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
@@ -109,7 +110,6 @@ __all__ = [
     "MusicTrackIndex",
     "MusicTrackIndexError",
     "OverworldHiddenItemVerificationError",
-    "PINNED_SOURCE_REVISION",
     "OverworldPayloadPairError",
     "PointerTableEntry",
     "ROMImageInspection",
