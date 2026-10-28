@@ -25,6 +25,7 @@ from zelda_suite.extract import (
     parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
     parse_music_track_index,
+    parse_overworld_hidden_item_source,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
     parse_text_message_index,
