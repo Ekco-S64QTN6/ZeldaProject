@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Optional `zelda-suite inspect-data-table --entry-count N` and parser-level
+  expected-count validation so known table sizes can be asserted explicitly.
 - A staged, read-only local-ROM verification runbook covering file inspection,
   self-diff smoke testing, selected source-table byte comparisons, and
   external-tool capability checks.
