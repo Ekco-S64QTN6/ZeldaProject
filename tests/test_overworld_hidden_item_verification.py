@@ -83,6 +83,9 @@ def test_source_layout_parses_expected_mixed_width_region_and_pointer_targets() 
     assert layout["label_offsets"]["OverworldData_HiddenItems_Screen_00"] == 0x0DC3F9
     assert layout["pointer_entries"][0]["target_label"] == "OverworldData_HiddenItems_Screen_00"
     assert layout["replacement_words"][0]["value"] == 0x0DCC
+    assert len(layout["area_lists"]) == 128
+    assert layout["area_lists"][0]["record_count"] == 4
+    assert layout["area_lists"][7]["record_count"] == 0
 
 
 def test_verifier_matches_synthetic_rom_encoded_from_pinned_source_and_is_read_only(
@@ -111,6 +114,9 @@ def test_verifier_matches_synthetic_rom_encoded_from_pinned_source_and_is_read_o
         "data_end_exclusive": 0x0DC89C,
         "data_region_size_bytes": 1187,
     }
+    assert len(report["area_lists"]) == 128
+    assert report["area_lists"][0]["record_count"] == 4
+    assert report["area_lists"][7]["record_count"] == 0
     assert report["checked_comparisons"] == 550
     assert report["mismatch_count"] == 0
     assert report["mismatches"] == []
