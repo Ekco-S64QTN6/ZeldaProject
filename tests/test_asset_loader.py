@@ -316,7 +316,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 12
+    assert len(assets) == 14
     assert names == {
         "falling-prize-item-values",
         "falling-prize-fall-heights",
@@ -330,6 +330,8 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         "music-track-index",
         "music-payload-inventory",
         "overworld-hidden-item-pointers",
+        "overworld-payloads-bank0b",
+        "overworld-payloads-bank0c",
     }
 
     loaded = {
@@ -344,6 +346,8 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assert loaded["music-track-index"]["entry_count"] == 35
     assert loaded["music-payload-inventory"]["declaration_count"] == 15
     assert loaded["overworld-hidden-item-pointers"]["entry_count"] == 128
+    assert loaded["overworld-payloads-bank0b"]["declaration_count"] == 164
+    assert loaded["overworld-payloads-bank0c"]["declaration_count"] == 84
 
 
 def test_named_asset_loader_validates_registry_provenance_and_name(
