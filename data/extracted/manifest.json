@@ -154,6 +154,42 @@
       "record_count": 14,
       "subsystem": "items",
       "description": "Fourteen raw two-byte masks used by receive-item dungeon-item handling."
+    },
+    {
+      "name": "item-receipt-y-offsets",
+      "file": "item-receipt-y-offsets.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 76,
+      "subsystem": "items",
+      "description": "Raw signed-looking decimal Y-offset expressions from the receive-item routine; negative expressions are preserved verbatim."
+    },
+    {
+      "name": "item-receipt-x-offsets",
+      "file": "item-receipt-x-offsets.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 76,
+      "subsystem": "items",
+      "description": "Raw per-entry X offsets used by the receive-item routine."
+    },
+    {
+      "name": "item-receipt-wide-flags",
+      "file": "item-receipt-wide-flags.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 76,
+      "subsystem": "items",
+      "description": "Raw wide-item flag bytes; bit semantics are not normalized."
+    },
+    {
+      "name": "item-receipt-properties",
+      "file": "item-receipt-properties.json",
+      "format": "zelda-suite-data-table",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 76,
+      "subsystem": "items",
+      "description": "Raw property bytes for each receive-item table position."
     }
   ]
 }
