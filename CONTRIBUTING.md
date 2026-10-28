@@ -16,13 +16,10 @@ python -m compileall -q src tests
 python -m pytest -q
 ```
 
-CI runs syntax checking, Ruff on the configured Python components and tests,
+CI runs syntax checking, Ruff across all Python files in `src` and `tests`,
 strict MyPy checking for `src`, and the full pytest suite. The wheel packaging
-and cross-platform setup smoke jobs also run in CI. If a change adds a Python
-source or test file, add
-the relevant test path to the Ruff command in
-[`.github/workflows/tests.yml`](./.github/workflows/tests.yml); otherwise CI
-may not lint the new test.
+and cross-platform setup smoke jobs also run in CI. New Python source and test
+files are included automatically because linting targets the directories.
 
 Run targeted tests while iterating, then run the full suite before requesting
 review. The checked-in disassembly submodule is pinned; source-parity tests
@@ -103,7 +100,7 @@ Before requesting review, confirm that the change:
 - [ ] Has a clear Roadmap item or explains why it is necessary groundwork.
 - [ ] Preserves source expressions and annotates unknown/unverified values.
 - [ ] Includes synthetic tests and pinned-source parity tests where applicable.
-- [ ] Updates the manifest/schema/loader and Ruff test list when needed.
+- [ ] Updates the manifest/schema/loader when needed and adds tests for new invariants.
 - [ ] Updates relevant documentation and regeneration commands.
 - [ ] Updates `CHANGELOG.md` and any version/schema contract described by the change.
 - [ ] Adds no ROM or ROM-derived binary data.
