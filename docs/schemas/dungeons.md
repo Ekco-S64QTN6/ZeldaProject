@@ -49,24 +49,24 @@ user-facing room set only after corroborating with runtime/tool behavior.
   are useful evidence, but those binary chunks are not available as ready-made
   fixtures in this repository snapshot.
 
-## Initial extraction record
+## Committed source-only pointer inventory
 
-A future raw pointer-table export should preserve at least:
+The source declarations are now committed as [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) and registered under the name `dungeon-room-object-pointers`. This version-1 `zelda-suite-pointer-table` export contains 320 entries and retains the original index, source expression, parsed target label/addend, source line, and pinned revision. It is source metadata only: target expressions are not resolved into ROM offsets, and the asset does not decide which entries correspond to playable rooms.
+
+The export preserves these audit fields:
 
 | Field | Meaning |
 | --- | --- |
 | `table_index` | Original index, integer `0–319` (hex `0x000–0x13F`) |
 | `pointer_entry_file_offset` | Entry location calculated with the formula above |
 | `pointer_expression` | Exact source `dl` expression, retained verbatim |
-| `target_label` | Parsed label, nullable if parsing has not resolved it |
-| `target_offset_expression` | Any `+$NNNN` suffix preserved separately |
+| `target_label` | Parsed assembly target label; not a ROM-resolved address |
+| `target_addend` | Parsed signed numeric addend, or `null`; the complete raw expression remains in `pointer_expression` |
 | `resolved_target_file_offset` | Nullable until pointer resolution is verified against the ROM |
 | `is_empty_target` | Derived only from an explicit `RoomDataTiles_Empty` reference |
 | `source_revision` | Pinned disassembly revision used to interpret the table |
 
-This is an audit-oriented discovery record, not a final SQLite schema. It keeps
-the original index and source expression intact even if multiple indices point
-to shared data.
+This is an audit-oriented discovery record, not a final editable SQLite schema. It keeps the original index and source expression intact even when multiple indices point to shared data. The source table has 320 entries, but the documented 296-room count has not been reconciled. No pointer target has been independently verified against a local ROM.
 
 ## Validation gates before calling extraction complete
 
