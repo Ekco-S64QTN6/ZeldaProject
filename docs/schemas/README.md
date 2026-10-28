@@ -92,3 +92,5 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 Each schema doc must cite the corresponding label / address range in
 `AsarUSALTTPDisassembly` and must not claim extraction support until its loader
 and fixtures exist.
+
+The committed sprite dispatch export can be checked without the disassembly submodule; its regression test pins the `$79–$BC` range, source offsets, revision, and six handler alias groups. Handler address comments remain source annotations and are not independently verified ROM pointers.
