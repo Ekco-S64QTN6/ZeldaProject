@@ -2,7 +2,7 @@
 
 **Goal:** Build a scriptable, agent-native authoring suite for *The Legend of Zelda: A Link to the Past* (SNES). The long-term target is a structured project model with semantic editing APIs, deterministic ROM builds/diffs, verification, and eventually maker-style authoring.
 
-**Current state (2026-10-27): Phase 1 — Structured Extraction is in progress.** Phase 0 has useful scaffolding but still has environment-dependent verification gates. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project initialization/validation, read-only ROM inspection, and file-to-file ROM diff utilities. It does **not** yet provide semantic overworld/dungeon editors or a ROM writer/rebuilder.
+**Current state (2026-10-27): Phase 1 — Structured Extraction is in progress.** Phase 0 has useful scaffolding but still has environment-dependent verification gates. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project initialization/validation plus schema-v2 storage for validated source-export snapshots, read-only ROM inspection, and file-to-file ROM diff utilities. It does **not** yet provide semantic overworld/dungeon editors or a ROM writer/rebuilder.
 
 Status legend: **[x] verified in repository/automated tests** · **[~] partial; limitations remain** · **[ ] not implemented or not verified in the available environment**.
 
@@ -15,7 +15,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in [ADR 0001](./docs/decisions/0001-project-data-format.md).
-- [~] Provide `zelda-suite init` and `validate` for a versioned SQLite project plus canonical JSON metadata export. The current schema contains project metadata only; it is not yet the game-system data model.
+- [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v2 `migrate-project` for a versioned SQLite project plus canonical JSON export. The project can store validated source-export snapshots, but it is not yet the editable game-system data model.
 
 **Exit criteria:** Not met. Local ROM provenance and real YAZE/`z3ed` and agent-harness smoke tests remain outstanding.
 
@@ -25,6 +25,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
+- [x] Persist validated source-export snapshots in project SQLite databases with explicit v1-to-v2 migration, duplicate-key protection, source provenance, canonical JSON, and SHA-256 integrity checks. This is source metadata persistence, not a semantic game-data schema.
 - [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 21 assets covering:
   - Five seven-entry falling-prize parallel arrays.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
@@ -48,7 +49,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 **Objective:** Add safe semantic edits to the structured project model.
 
 - [ ] Define CRUD APIs for rooms, chests/items, overworld map elements, entrances, text, and sprite placements.
-- [ ] Store game-system records in SQLite with schema migrations, field constraints, and referential integrity.
+- [ ] Store semantic game-system records in SQLite with schema migrations, field constraints, and referential integrity. Current source_asset persistence only stores validated source-export snapshots and does not satisfy this item.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
 - [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
