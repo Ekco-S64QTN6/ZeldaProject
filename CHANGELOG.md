@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add source-only `zelda-suite audit-music-assets` report and schema to join
+  registered music pointer expressions with payload declarations, surfacing the
+  unmatched `Song0B_FairyTheme` target and three missing payload size annotations.
+  It does not read audio bytes or verify pointer offsets against a ROM.
+
 - Add source-only `zelda-suite audit-text-message-index` diagnostics and a
   version-1 schema for known source offset-comment and block-size discrepancies
   across the committed 397-message index; no ROM bytes or decoded text are read.
