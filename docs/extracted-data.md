@@ -534,3 +534,8 @@ playable-room semantics.
 ## Cross-inventory incbin audit
 
 Run `uv run zelda-suite audit-incbin-inventory --output /tmp/incbin-audit.json` to summarize the registered music, overworld, and dungeon-room `incbin` inventories in one deterministic report. It lists missing source starts/sizes, explicit range/size discrepancies, and intersections between candidate spans calculated from source annotations. These findings are diagnostic: the command does not correct comments, verify ROM offsets, open payload files, or read ROM bytes. See [`docs/incbin-inventory.md`](./incbin-inventory.md) and the [audit report schema](./schemas/incbin-inventory-audit.schema.json).
+
+
+## Audit unresolved scalar-table expressions
+
+`uv run zelda-suite audit-unresolved-table-expressions --output /tmp/source-expression-audit.json` summarizes registered scalar-table entries whose values are not represented as numeric literals. It retains their raw expressions and source locations, and classifies syntax shapes without attempting symbol resolution or assembler evaluation. This is useful for tracking extraction coverage before local-ROM verification is available; it is not a ROM-byte verification result. See [the raw data-table parser guide](./data-table-parser.md) and [report schema](./schemas/source-expression-audit.schema.json).
