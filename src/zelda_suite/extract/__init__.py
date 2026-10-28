@@ -110,6 +110,13 @@ from zelda_suite.extract.text_dictionary_pointer_verification import (
     TextDictionaryPointerVerificationError,
     verify_text_dictionary_pointers,
 )
+from zelda_suite.extract.text_message_byte_verification import (
+    PINNED_TEXT_SOURCE_REVISION,
+    TEXT_MESSAGE_BYTE_VERIFICATION_FORMAT,
+    TextMessageByteVerificationError,
+    default_text_message_source_blocks,
+    verify_text_message_bytes,
+)
 from zelda_suite.extract.text_message_index import (
     MessageSourceBlock,
     TextMessageBlockRecord,
@@ -134,12 +141,14 @@ __all__ = [
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "PINNED_SOURCE_REVISION",
+    "PINNED_TEXT_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
     "ROM_TABLE_VERIFICATION_FORMAT",
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
     "TEXT_DICTIONARY_AUDIT_FORMAT",
     "TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT",
+    "TEXT_MESSAGE_BYTE_VERIFICATION_FORMAT",
     "TEXT_MESSAGE_INDEX_AUDIT_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
@@ -172,6 +181,7 @@ __all__ = [
     "TextDictionaryAuditError",
     "TextDictionaryPointerVerificationError",
     "TextMessageBlockRecord",
+    "TextMessageByteVerificationError",
     "TextMessageIndex",
     "TextMessageIndexAuditError",
     "TextMessageIndexError",
@@ -183,6 +193,7 @@ __all__ = [
     "audit_text_message_index",
     "audit_unresolved_table_expressions",
     "build_item_receipt_layout",
+    "default_text_message_source_blocks",
     "format_lorom_cpu_address",
     "inspect_rom_image",
     "list_extracted_assets",
@@ -207,4 +218,5 @@ __all__ = [
     "verify_overworld_hidden_items",
     "verify_registered_scalar_tables",
     "verify_text_dictionary_pointers",
+    "verify_text_message_bytes",
 ]

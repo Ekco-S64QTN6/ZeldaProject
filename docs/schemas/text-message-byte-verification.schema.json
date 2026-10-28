@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite raw text message byte verification",
+  "description": "Read-only byte comparisons between literal db values in bounded text-data source blocks and a local 1 MiB ROM image. This does not decode text or verify ROM provenance or source-offset annotations.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "rom", "source_revision", "source_blocks", "summary",
+    "entries", "mismatches", "source_findings", "source_only", "rom_bytes_read",
+    "encoded_bytes_compared", "semantic_text_decoded", "rom_provenance_verified",
+    "source_offsets_verified", "rom_modified"
+  ],
+  "properties": {
+    "format": {"const": "zelda-suite-text-message-byte-verification"},
+    "format_version": {"const": 1},
+    "rom": {
+      "type": "object",
+      "required": ["filename", "size_bytes", "sha256", "header_assessment", "provenance_verified"],
+      "properties": {
+        "filename": {"type": "string", "minLength": 1},
+        "size_bytes": {"const": 1048576},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "header_assessment": {"const": "headerless-by-expected-size"},
+        "provenance_verified": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "source_revision": {"type": "string", "minLength": 1},
+    "source_blocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/source_block"}
+    },
+    "summary": {"$ref": "#/$defs/summary"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "mismatches": {"type": "array", "items": {"$ref": "#/$defs/mismatch"}},
+    "source_findings": {
+      "type": "array",
+      "items": {"oneOf": [
+        {"$ref": "#/$defs/block_size_finding"},
+        {"$ref": "#/$defs/offset_annotation_finding"}
+      ]}
+    },
+    "source_only": {"const": false},
+    "rom_bytes_read": {"const": true},
+    "encoded_bytes_compared": {"const": true},
+    "semantic_text_decoded": {"const": false},
+    "rom_provenance_verified": {"const": false},
+    "source_offsets_verified": {"const": false},
+    "rom_modified": {"const": false}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "source_block": {
+      "type": "object",
+      "required": [
+        "source_file", "block_label", "block_start_offset", "block_end_offset",
+        "block_range_byte_count", "source_literal_byte_count", "message_count",
+        "block_size_matches_source_bytes", "range_minus_source_bytes",
+        "checked_byte_count", "mismatch_byte_count"
+      ],
+      "properties": {
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "block_start_offset": {"type": "integer", "minimum": 0},
+        "block_end_offset": {"type": "integer", "minimum": 0},
+        "block_range_byte_count": {"type": "integer", "minimum": 1},
+        "source_literal_byte_count": {"type": "integer", "minimum": 0},
+        "message_count": {"type": "integer", "minimum": 1},
+        "block_size_matches_source_bytes": {"type": "boolean"},
+        "range_minus_source_bytes": {"type": "integer"},
+        "checked_byte_count": {"type": "integer", "minimum": 0},
+        "mismatch_byte_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "source_block_count", "message_count", "checked_byte_count",
+        "mismatch_byte_count", "message_mismatch_count", "block_size_mismatch_count",
+        "offset_annotation_mismatch_count", "invalid_offset_annotation_count",
+        "missing_offset_annotation_count", "source_finding_count"
+      ],
+      "properties": {
+        "source_block_count": {"type": "integer", "minimum": 1},
+        "message_count": {"type": "integer", "minimum": 1},
+        "checked_byte_count": {"type": "integer", "minimum": 0},
+        "mismatch_byte_count": {"type": "integer", "minimum": 0},
+        "message_mismatch_count": {"type": "integer", "minimum": 0},
+        "block_size_mismatch_count": {"type": "integer", "minimum": 0},
+        "offset_annotation_mismatch_count": {"type": "integer", "minimum": 0},
+        "invalid_offset_annotation_count": {"type": "integer", "minimum": 0},
+        "missing_offset_annotation_count": {"type": "integer", "minimum": 0},
+        "source_finding_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "message_index", "message_id", "message_label", "source_file", "block_label",
+        "source_line", "sequential_file_offset", "source_offset_annotation",
+        "source_offset_annotation_valid", "source_offset_matches_sequential",
+        "source_byte_count", "checked_byte_count", "mismatch_byte_count", "status"
+      ],
+      "properties": {
+        "message_index": {"type": "integer", "minimum": 0},
+        "message_id": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "message_label": {"type": "string", "pattern": "^Message_[0-9A-F]{4}$"},
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "source_line": {"type": "integer", "minimum": 1},
+        "sequential_file_offset": {"type": "integer", "minimum": 0},
+        "source_offset_annotation": {"type": ["string", "null"]},
+        "source_offset_annotation_valid": {"type": ["boolean", "null"]},
+        "source_offset_matches_sequential": {"type": ["boolean", "null"]},
+        "source_byte_count": {"type": "integer", "minimum": 1},
+        "checked_byte_count": {"type": "integer", "minimum": 1},
+        "mismatch_byte_count": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["pass", "fail"]}
+      },
+      "additionalProperties": false
+    },
+    "mismatch": {
+      "type": "object",
+      "required": [
+        "source_file", "block_label", "message_index", "message_id", "message_label",
+        "source_line", "offset", "offset_in_message", "expected_byte", "actual_byte"
+      ],
+      "properties": {
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "message_index": {"type": "integer", "minimum": 0},
+        "message_id": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "message_label": {"type": "string", "pattern": "^Message_[0-9A-F]{4}$"},
+        "source_line": {"type": "integer", "minimum": 1},
+        "offset": {"type": "integer", "minimum": 0},
+        "offset_in_message": {"type": "integer", "minimum": 0},
+        "expected_byte": {"type": "string", "pattern": "^\\$[0-9A-F]{2}$"},
+        "actual_byte": {"type": "string", "pattern": "^\\$[0-9A-F]{2}$"}
+      },
+      "additionalProperties": false
+    },
+    "block_size_finding": {
+      "type": "object",
+      "required": [
+        "code", "severity", "source_file", "block_label", "block_start_offset",
+        "block_end_offset", "block_range_byte_count", "source_literal_byte_count",
+        "difference_bytes", "message"
+      ],
+      "properties": {
+        "code": {"const": "block_size_mismatch"},
+        "severity": {"const": "warning"},
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "block_start_offset": {"type": "integer", "minimum": 0},
+        "block_end_offset": {"type": "integer", "minimum": 0},
+        "block_range_byte_count": {"type": "integer", "minimum": 1},
+        "source_literal_byte_count": {"type": "integer", "minimum": 0},
+        "difference_bytes": {"type": "integer"},
+        "message": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "offset_annotation_finding": {
+      "type": "object",
+      "required": [
+        "code", "severity", "source_file", "block_label", "message_id",
+        "message_label", "source_line", "source_offset_annotation",
+        "sequential_file_offset", "message"
+      ],
+      "properties": {
+        "code": {"enum": ["invalid_offset_annotation", "offset_annotation_mismatch"]},
+        "severity": {"const": "warning"},
+        "source_file": {"type": "string", "minLength": 1},
+        "block_label": {"type": "string", "minLength": 1},
+        "message_id": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "message_label": {"type": "string", "pattern": "^Message_[0-9A-F]{4}$"},
+        "source_line": {"type": "integer", "minimum": 1},
+        "source_offset_annotation": {"type": "string", "minLength": 1},
+        "sequential_file_offset": {"type": "integer", "minimum": 0},
+        "message": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

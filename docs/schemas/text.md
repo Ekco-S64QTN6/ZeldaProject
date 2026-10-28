@@ -192,3 +192,23 @@ comparison only shows that the bytes in the supplied file agree with the
 source-derived candidates. See the
 [text dictionary pointer verification schema](./text-dictionary-pointer-verification.schema.json)
 and [real-ROM runbook](../real-rom-verification.md).
+
+
+## Read-only encoded message byte verification
+
+Run `uv run zelda-suite verify-text-message-bytes PATH_TO_ROM` with two
+`--block` options to compare literal `db $XX` bytes from the pinned
+`Message_Data` and `Message_DataExtra` source regions to a local image.
+The command uses sequential offsets derived from the number of literal bytes
+in each message. It reports byte-level mismatches with message IDs and offsets,
+plus existing source offset-annotation and block-size discrepancies.
+
+The parser deliberately accepts only literal one-byte hexadecimal `db`
+values inside each bounded block; it fails closed on expressions instead of
+evaluating assembler syntax. The command reads a local ROM but does not decode
+message text, dictionary-compression tokens, or semantic control codes.
+Source-declared block ranges and ROM provenance are not independently
+verified by the command. A synthetic test or a matching byte report does not
+establish that the candidate source ranges are canonical. See the
+[text-message byte verification schema](./text-message-byte-verification.schema.json)
+and [real-ROM runbook](../real-rom-verification.md).

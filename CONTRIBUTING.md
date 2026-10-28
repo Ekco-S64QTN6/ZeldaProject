@@ -160,3 +160,6 @@ For changes to the dungeon pointer table or room payload inventories, also run `
 
  
 For dictionary pointer verifier changes, run `uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM` only with an authorized local image. CI uses synthetic ROM fixtures; keep the real-ROM verification gate open until a user-run check is recorded. Do not treat candidate offset agreement as ROM provenance evidence or modify source annotations based on synthetic results.
+
+
+For encoded text byte-verifier changes, run `uv run zelda-suite verify-text-message-bytes` tests, including the pinned-source smoke test when the disassembly submodule is checked out. CI fixtures are synthetic. Record a separate local-ROM run before claiming byte agreement against an actual image; the report does not independently validate source-offset annotations or decode text.
