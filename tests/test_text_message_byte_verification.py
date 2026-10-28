@@ -8,13 +8,14 @@ import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
-from zelda_suite.extract.text_message_index import MessageSourceBlock
+from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE
 from zelda_suite.extract.text_message_byte_verification import (
+    PINNED_TEXT_SOURCE_REVISION,
     TextMessageByteVerificationError,
     default_text_message_source_blocks,
     verify_text_message_bytes,
 )
-from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE
+from zelda_suite.extract.text_message_index import MessageSourceBlock
 
 SYNTHETIC_MAIN = """Message_Data:
 {
@@ -239,7 +240,7 @@ def test_pinned_source_blocks_parse_all_messages_and_preserve_source_warnings(
     report = verify_text_message_bytes(rom_path, source_blocks)
 
     summary = report["summary"]
-    assert report["source_revision"] == PINNED_SOURCE_REVISION
+    assert report["source_revision"] == PINNED_TEXT_SOURCE_REVISION
     assert summary["source_block_count"] == 2
     assert summary["message_count"] == 397
     assert summary["checked_byte_count"] > 0
