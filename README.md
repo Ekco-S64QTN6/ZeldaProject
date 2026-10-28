@@ -16,7 +16,7 @@ Prepare dependencies and initialize a project without a game ROM:
 
 ```bash
 bash scripts/setup.sh --name my-hack
-# Windows PowerShell: .\\scripts\\setup.ps1 -Name my-hack
+# Windows PowerShell: .\scripts\setup.ps1 -Name my-hack
 ```
 
 The setup script prefers `uv` and falls back to a Python 3.12+ virtual
