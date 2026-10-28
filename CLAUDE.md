@@ -172,7 +172,6 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 - ❌ **Do not commit ROM files.** The US base path and optional JP reference path above are local-only candidates; the JP file may be absent. Do not add translations, hacks, bad dumps, or other regional variants, and do not bypass the Git ignore rules.
 - ❌ **Do not put reference hacks in `base_game_roms/`.** They go in `reference/`.
-- ❌ **Do not commit ROM files.** `.gitignore` blocks `*.smc`/`*.sfc`; do not bypass it.
 - ❌ **Do not run `rm` on the ROM or project files** without explicit user confirmation.
 - ❌ **Do not use `Legend of Pervert` or any text‑hack ROMs** as references — they are irrelevant to this project.
 - ❌ **Do not build on Hyrule Magic, ZScream, or Black Magic.** They are useful as domain references only:
