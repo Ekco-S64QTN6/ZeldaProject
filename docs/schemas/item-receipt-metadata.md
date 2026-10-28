@@ -107,22 +107,27 @@ bytes and does not claim the item tables are editable yet.
 
 ## Committed raw table assets
 
-The following three source-derived files are registered in
-`data/extracted/manifest.json` and can be loaded by name with the shared asset
-loader:
+Seven source-derived files from this block are registered in
+`data/extracted/manifest.json` and can be loaded by name:
 
-- `item-receipt-target-addresses` — 76 two-byte values beginning at `$0484E8`.
-- `item-receipt-values` — 76 one-byte values beginning at `$048580`.
-- `item-receipt-dungeon-masks` — 14 two-byte masks beginning at `$0485CC`.
+- `item-receipt-y-offsets` — 76 byte-wide expressions at `$04836C`.
+- `item-receipt-x-offsets` — 76 byte-wide expressions at `$0483B8`.
+- `item-receipt-wide-flags` — 76 raw flag bytes at `$048450`.
+- `item-receipt-properties` — 76 raw property expressions at `$04849C`.
+- `item-receipt-target-addresses` — 76 two-byte WRAM targets at `$0484E8`.
+- `item-receipt-values` — 76 raw byte values at `$048580`.
+- `item-receipt-dungeon-masks` — 14 two-byte masks at `$0485CC`.
 
-They preserve the exact expressions and source positions from the pinned
-`Ancilla/ancilla_init.asm` and are checked against `parse_data_table()` output
-in CI. The first table records WRAM target addresses; they are not resolved ROM
-pointers. The second table retains raw byte patterns including `$FF`, `$FB`,
-and `$EC`; runtime handling such as skipping negative signed values is not
-normalized into editorial item meanings. The third table stores the raw mask
-words without inferring a full authoring API.
+The exports preserve source order, table index, expression, source line, file
+offset, and pinned revision; the pinned parser output is checked in CI. They
+do not decode the meaning of `.wide_item_flag` or `.properties`. Negative
+decimal expressions such as `-5` are preserved literally, with a null
+`literal_value`, rather than silently converted to unsigned/two's-complement
+numbers. The target-address values identify WRAM destinations, not ROM
+pointers, while `.item_values` retains raw byte patterns such as `$FF`,
+`$FB`, and `$EC`.
 
-The `.item_graphics_indices` table and its missing comment index `$40` are
-still an independent unresolved discovery issue; these three exports do not
-claim to settle that discrepancy or provide a complete item schema.
+The `.item_graphics_indices` table is not exported in this batch because its
+source comments skip index `$40` although the table contains 76 dense bytes.
+That mismatch still needs to be resolved before exposing canonical semantic
+item IDs. These assets are not a complete editable item schema.

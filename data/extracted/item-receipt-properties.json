@@ -1,0 +1,699 @@
+{
+  "directive": "db",
+  "end_label": ".item_target_addr",
+  "entries": [
+    {
+      "entry_file_offset": 296092,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 0
+    },
+    {
+      "entry_file_offset": 296093,
+      "expression": "-1",
+      "literal_value": null,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 1
+    },
+    {
+      "entry_file_offset": 296094,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 2
+    },
+    {
+      "entry_file_offset": 296095,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 3
+    },
+    {
+      "entry_file_offset": 296096,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 4
+    },
+    {
+      "entry_file_offset": 296097,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 5
+    },
+    {
+      "entry_file_offset": 296098,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 6
+    },
+    {
+      "entry_file_offset": 296099,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 681,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 7
+    },
+    {
+      "entry_file_offset": 296100,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 8
+    },
+    {
+      "entry_file_offset": 296101,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 9
+    },
+    {
+      "entry_file_offset": 296102,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 10
+    },
+    {
+      "entry_file_offset": 296103,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 11
+    },
+    {
+      "entry_file_offset": 296104,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 12
+    },
+    {
+      "entry_file_offset": 296105,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 13
+    },
+    {
+      "entry_file_offset": 296106,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 14
+    },
+    {
+      "entry_file_offset": 296107,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 682,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 15
+    },
+    {
+      "entry_file_offset": 296108,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 16
+    },
+    {
+      "entry_file_offset": 296109,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 17
+    },
+    {
+      "entry_file_offset": 296110,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 18
+    },
+    {
+      "entry_file_offset": 296111,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 19
+    },
+    {
+      "entry_file_offset": 296112,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 20
+    },
+    {
+      "entry_file_offset": 296113,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 21
+    },
+    {
+      "entry_file_offset": 296114,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 22
+    },
+    {
+      "entry_file_offset": 296115,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 683,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 23
+    },
+    {
+      "entry_file_offset": 296116,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 24
+    },
+    {
+      "entry_file_offset": 296117,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 25
+    },
+    {
+      "entry_file_offset": 296118,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 26
+    },
+    {
+      "entry_file_offset": 296119,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 27
+    },
+    {
+      "entry_file_offset": 296120,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 28
+    },
+    {
+      "entry_file_offset": 296121,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 29
+    },
+    {
+      "entry_file_offset": 296122,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 30
+    },
+    {
+      "entry_file_offset": 296123,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 684,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 31
+    },
+    {
+      "entry_file_offset": 296124,
+      "expression": "6",
+      "literal_value": 6,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 32
+    },
+    {
+      "entry_file_offset": 296125,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 33
+    },
+    {
+      "entry_file_offset": 296126,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 34
+    },
+    {
+      "entry_file_offset": 296127,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 35
+    },
+    {
+      "entry_file_offset": 296128,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 36
+    },
+    {
+      "entry_file_offset": 296129,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 37
+    },
+    {
+      "entry_file_offset": 296130,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 38
+    },
+    {
+      "entry_file_offset": 296131,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 685,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 39
+    },
+    {
+      "entry_file_offset": 296132,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 40
+    },
+    {
+      "entry_file_offset": 296133,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 41
+    },
+    {
+      "entry_file_offset": 296134,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 42
+    },
+    {
+      "entry_file_offset": 296135,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 43
+    },
+    {
+      "entry_file_offset": 296136,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 44
+    },
+    {
+      "entry_file_offset": 296137,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 45
+    },
+    {
+      "entry_file_offset": 296138,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 46
+    },
+    {
+      "entry_file_offset": 296139,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 686,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 47
+    },
+    {
+      "entry_file_offset": 296140,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 48
+    },
+    {
+      "entry_file_offset": 296141,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 49
+    },
+    {
+      "entry_file_offset": 296142,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 50
+    },
+    {
+      "entry_file_offset": 296143,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 51
+    },
+    {
+      "entry_file_offset": 296144,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 52
+    },
+    {
+      "entry_file_offset": 296145,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 53
+    },
+    {
+      "entry_file_offset": 296146,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 54
+    },
+    {
+      "entry_file_offset": 296147,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 687,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 55
+    },
+    {
+      "entry_file_offset": 296148,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 56
+    },
+    {
+      "entry_file_offset": 296149,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 57
+    },
+    {
+      "entry_file_offset": 296150,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 58
+    },
+    {
+      "entry_file_offset": 296151,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 59
+    },
+    {
+      "entry_file_offset": 296152,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 60
+    },
+    {
+      "entry_file_offset": 296153,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 61
+    },
+    {
+      "entry_file_offset": 296154,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 62
+    },
+    {
+      "entry_file_offset": 296155,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 688,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 63
+    },
+    {
+      "entry_file_offset": 296156,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 64
+    },
+    {
+      "entry_file_offset": 296157,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 65
+    },
+    {
+      "entry_file_offset": 296158,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 66
+    },
+    {
+      "entry_file_offset": 296159,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 67
+    },
+    {
+      "entry_file_offset": 296160,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 68
+    },
+    {
+      "entry_file_offset": 296161,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 69
+    },
+    {
+      "entry_file_offset": 296162,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 70
+    },
+    {
+      "entry_file_offset": 296163,
+      "expression": "4",
+      "literal_value": 4,
+      "source_label": ".properties",
+      "source_line": 689,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 71
+    },
+    {
+      "entry_file_offset": 296164,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 690,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 72
+    },
+    {
+      "entry_file_offset": 296165,
+      "expression": "5",
+      "literal_value": 5,
+      "source_label": ".properties",
+      "source_line": 690,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 73
+    },
+    {
+      "entry_file_offset": 296166,
+      "expression": "2",
+      "literal_value": 2,
+      "source_label": ".properties",
+      "source_line": 690,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 74
+    },
+    {
+      "entry_file_offset": 296167,
+      "expression": "1",
+      "literal_value": 1,
+      "source_label": ".properties",
+      "source_line": 690,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_index": 75
+    }
+  ],
+  "entry_count": 76,
+  "entry_width": 1,
+  "format": "zelda-suite-data-table",
+  "format_version": 1,
+  "parent_label": "Pool_AddReceiveItem",
+  "source_file": "ancilla_init.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 296092,
+  "table_label": ".properties"
+}

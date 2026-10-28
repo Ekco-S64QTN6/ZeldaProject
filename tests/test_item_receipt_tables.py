@@ -44,6 +44,42 @@ TABLES = [
         "end_label": None,
         "count": 14,
     },
+    {
+        "name": "item-receipt-y-offsets",
+        "file": ROOT / "data" / "extracted" / "item-receipt-y-offsets.json",
+        "label": ".y_offsets",
+        "offset": 0x04836C,
+        "directive": "db",
+        "end_label": ".x_offsets",
+        "count": 76,
+    },
+    {
+        "name": "item-receipt-x-offsets",
+        "file": ROOT / "data" / "extracted" / "item-receipt-x-offsets.json",
+        "label": ".x_offsets",
+        "offset": 0x0483B8,
+        "directive": "db",
+        "end_label": ".item_graphics_indices",
+        "count": 76,
+    },
+    {
+        "name": "item-receipt-wide-flags",
+        "file": ROOT / "data" / "extracted" / "item-receipt-wide-flags.json",
+        "label": ".wide_item_flag",
+        "offset": 0x048450,
+        "directive": "db",
+        "end_label": ".properties",
+        "count": 76,
+    },
+    {
+        "name": "item-receipt-properties",
+        "file": ROOT / "data" / "extracted" / "item-receipt-properties.json",
+        "label": ".properties",
+        "offset": 0x04849C,
+        "directive": "db",
+        "end_label": ".item_target_addr",
+        "count": 76,
+    },
 ]
 
 
@@ -112,6 +148,10 @@ def test_receive_item_tables_are_registered_by_name() -> None:
         "item-receipt-target-addresses": 76,
         "item-receipt-values": 76,
         "item-receipt-dungeon-masks": 14,
+        "item-receipt-y-offsets": 76,
+        "item-receipt-x-offsets": 76,
+        "item-receipt-wide-flags": 76,
+        "item-receipt-properties": 76,
     }
     for name, count in expected_counts.items():
         payload = load_extracted_asset(name, REGISTRY_PATH)
@@ -134,3 +174,20 @@ def test_receive_item_values_preserve_raw_negative_sentinels() -> None:
     # The table stores byte patterns. Signed-byte write suppression remains
     # consumer behavior; this export does not replace the values with meanings.
     assert payload["entries"][0]["expression"] == "$01"
+
+
+
+def test_signed_decimal_parallel_values_remain_raw_expressions() -> None:
+    y_offsets = load_source_export(
+        ROOT / "data" / "extracted" / "item-receipt-y-offsets.json"
+    )
+    properties = load_source_export(
+        ROOT / "data" / "extracted" / "item-receipt-properties.json"
+    )
+
+    assert y_offsets["entries"][0]["expression"] == "-5"
+    assert y_offsets["entries"][0]["literal_value"] is None
+    negative_property = next(
+        entry for entry in properties["entries"] if entry["expression"] == "-1"
+    )
+    assert negative_property["literal_value"] is None
