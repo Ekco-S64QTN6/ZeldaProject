@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
+import re
 from typing import Any
 
 from zelda_suite.extract.disassembly import parse_dw_pointer_table
@@ -33,7 +33,6 @@ _RECORD_RE = re.compile(
     re.IGNORECASE,
 )
 _SENTINEL_RE = re.compile(r"^dw\s+\$FFFF$", re.IGNORECASE)
-_ASSEMBLY_LABEL_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*):$")
 _WORD_RE = re.compile(r"^dw\s+\$([0-9A-Fa-f]{4})$", re.IGNORECASE)
 
 
