@@ -383,6 +383,28 @@ versus the visible `DictionaryPointers` declaration name. Do not change source
 annotations or treat the report as a clean-ROM certification based only on a
 matching result.
 
+## Encoded text-message byte comparison
+
+Use the pinned disassembly blocks with an authorized local 1 MiB headerless
+image:
+
+```bash
+uv run zelda-suite verify-text-message-bytes \
+  "base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc" \
+  --block reference/AsarUSALTTPDisassembly/Bank1C.asm Message_Data '$0E0000' '$0E7F29' \
+  --block reference/AsarUSALTTPDisassembly/Bank0E.asm Message_DataExtra '$075F40' '$076E21' \
+  --output /tmp/text-message-byte-verification.json
+```
+
+Review `summary.mismatch_byte_count`, the per-message `entries`, the
+byte-level `mismatches`, and `source_findings`. The verifier accepts only
+literal hexadecimal `db` bytes in the bounded source regions and does not
+evaluate assembler expressions or decode message text. Its sequential offsets
+are derived from source declarations; offset comments, block ranges, and ROM
+provenance are not independently trusted. A result with zero byte mismatches
+is evidence of agreement for that supplied image and the declared candidate
+ranges only, not proof of a canonical ROM or verified message semantics.
+
 ## What is and is not implemented
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,
