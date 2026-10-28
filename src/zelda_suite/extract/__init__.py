@@ -84,16 +84,16 @@ from zelda_suite.extract.source_expression_audit import (
     SourceExpressionAuditError,
     audit_unresolved_table_expressions,
 )
-from zelda_suite.extract.text_dictionary_audit import (
-    TEXT_DICTIONARY_AUDIT_FORMAT,
-    TextDictionaryAuditError,
-    audit_text_dictionary_assets,
-)
 from zelda_suite.extract.sprite_dispatch import (
     SpriteDispatchEntry,
     SpriteDispatchParseError,
     SpriteDispatchTable,
     parse_sprite_dispatch_table,
+)
+from zelda_suite.extract.text_dictionary_audit import (
+    TEXT_DICTIONARY_AUDIT_FORMAT,
+    TextDictionaryAuditError,
+    audit_text_dictionary_assets,
 )
 from zelda_suite.extract.text_message_index import (
     MessageSourceBlock,
@@ -115,8 +115,8 @@ __all__ = [
     "POINTER_DIRECTIVE_WIDTHS",
     "ROM_TABLE_VERIFICATION_FORMAT",
     "SOURCE_EXPRESSION_AUDIT_FORMAT",
-    "TEXT_DICTIONARY_AUDIT_FORMAT",
     "SPRITE_DISPATCH_FORMAT",
+    "TEXT_DICTIONARY_AUDIT_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
     "AssetLoadError",
     "DataTableEntry",
