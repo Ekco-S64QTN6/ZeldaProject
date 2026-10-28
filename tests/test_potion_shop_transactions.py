@@ -107,7 +107,7 @@ def test_loader_rejects_price_and_receipt_fields_that_disagree() -> None:
         source_revision=SOURCE_REVISION,
     ).to_dict()
     payload["entries"][0]["receipt_item_index"] = 46
-    with pytest.raises(AssetLoadError, match="receipt_item_index must be"):
+    with pytest.raises(AssetLoadError, match="receipt_item_index does not match receipt_index_expression"):
         validate_source_export(payload)
 
 
