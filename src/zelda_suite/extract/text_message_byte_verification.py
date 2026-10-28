@@ -254,17 +254,17 @@ def verify_text_message_bytes(
         index.source_blocks,
         key=lambda block: block.block_start_offset,
     )
-    for block in ordered_blocks:
-        if block.block_end_offset >= len(rom):
+    for block_record in ordered_blocks:
+        if block_record.block_end_offset >= len(rom):
             raise TextMessageByteVerificationError(
-                f"{block.source_file}:{block.data_block_label} declared range "
-                f"0x{block.block_start_offset:06X}–0x{block.block_end_offset:06X} "
+                f"{block_record.source_file}:{block_record.data_block_label} declared range "
+                f"0x{block_record.block_start_offset:06X}–0x{block_record.block_end_offset:06X} "
                 "extends beyond the ROM image"
             )
-        if block.declared_byte_count_total > block.block_size_bytes:
-            excess = block.declared_byte_count_total - block.block_size_bytes
+        if block_record.declared_byte_count_total > block_record.block_size_bytes:
+            excess = block_record.declared_byte_count_total - block_record.block_size_bytes
             raise TextMessageByteVerificationError(
-                f"{block.source_file}:{block.data_block_label} contains "
+                f"{block_record.source_file}:{block_record.data_block_label} contains "
                 f"{excess} literal byte(s) beyond its declared source block range"
             )
     for previous, current in itertools.pairwise(ordered_blocks):
