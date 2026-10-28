@@ -33,6 +33,7 @@ from zelda_suite.extract import (
 )
 from zelda_suite.project import (
     get_source_asset,
+    import_extracted_asset,
     import_source_asset,
     initialize_project,
     list_source_assets,
@@ -1055,6 +1056,49 @@ def import_source_asset_command(
     try:
         record = import_source_asset(
             database, asset_key, source_export, replace_existing=replace_existing
+        )
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    summary = {key: value for key, value in record.items() if key != "payload"}
+    click.echo(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="import-extracted-asset")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("asset_name")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Manifest path (defaults to data/extracted/manifest.json).",
+)
+@click.option("--asset-key", default=None, help="Project-local key (defaults to asset name).")
+@click.option(
+    "--replace",
+    "replace_existing",
+    is_flag=True,
+    help="Replace an existing project asset under the selected key.",
+)
+def import_extracted_asset_command(
+    database: Path,
+    asset_name: str,
+    registry_path: Path | None,
+    asset_key: str | None,
+    replace_existing: bool,
+) -> None:
+    """Import a committed asset by its validated manifest name."""
+    try:
+        record = import_extracted_asset(
+            database,
+            asset_name,
+            registry_path or "data/extracted/manifest.json",
+            asset_key=asset_key,
+            replace_existing=replace_existing,
         )
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
