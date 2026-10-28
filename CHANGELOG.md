@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Pin the current six-inventory `audit-incbin-inventory` summary in an integration test, so metadata gaps, range/size discrepancies, and candidate-overlap counts cannot drift silently. The baseline is source-only and does not verify ROM offsets.
+
 - ROM-independent `zelda-suite audit-unresolved-table-expressions` report
   and strict version-1 schema for unresolved registered scalar-table expressions.
   It preserves raw text and source locations and classifies syntax shape without
