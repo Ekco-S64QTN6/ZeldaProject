@@ -27,7 +27,7 @@ REPLACEMENT_WORD_COUNT = 4
 
 _REGION_START_MARKER = "; $0DC3F9-$0DC89B Overworld secrets data"
 _REGION_END_MARKER = "; $0DC89C-$0DC8A3 DATA"
-_LABEL_RE = re.compile(r"^OverworldData_HiddenItems_Screen_([0-9A-Fa-f]{2})$")
+_LABEL_RE = re.compile(r"^OverworldData_HiddenItems_Screen_([0-9A-Fa-f]{2}):$")
 _RECORD_RE = re.compile(
     r"^dw\s+\$([0-9A-Fa-f]{4})\s*:\s*db\s+\$([0-9A-Fa-f]{2})$",
     re.IGNORECASE,
