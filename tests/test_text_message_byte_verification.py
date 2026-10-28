@@ -254,3 +254,46 @@ def test_pinned_source_blocks_parse_all_messages_and_preserve_source_warnings(
     assert report["rom_provenance_verified"] is False
     assert report["source_offsets_verified"] is False
     assert report["rom_modified"] is False
+
+
+def test_verifier_refuses_literal_bytes_beyond_declared_source_block_range(
+    tmp_path: Path,
+) -> None:
+    undersized_block = MessageSourceBlock(
+        source_file="Bank1C.asm",
+        block_label="Message_Data",
+        block_start_offset=0x1000,
+        block_end_offset=0x1000,
+        source_text=SYNTHETIC_MAIN,
+    )
+    with pytest.raises(
+        TextMessageByteVerificationError,
+        match="literal byte\\(s\\) beyond its declared source block range",
+    ):
+        verify_text_message_bytes(
+            _write_rom(tmp_path / "undersized-block.smc"),
+            [undersized_block],
+            source_revision="synthetic-revision",
+        )
+
+
+def test_verifier_refuses_overlapping_source_block_offset_ranges(
+    tmp_path: Path,
+) -> None:
+    blocks = _source_blocks()
+    blocks[1] = MessageSourceBlock(
+        source_file="Bank0E.asm",
+        block_label="Message_DataExtra",
+        block_start_offset=0x1002,
+        block_end_offset=0x1004,
+        source_text=SYNTHETIC_EXTRA,
+    )
+    with pytest.raises(
+        TextMessageByteVerificationError,
+        match="source block offset ranges overlap",
+    ):
+        verify_text_message_bytes(
+            _write_rom(tmp_path / "overlapping-blocks.smc"),
+            blocks,
+            source_revision="synthetic-revision",
+        )
