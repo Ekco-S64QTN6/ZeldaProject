@@ -77,11 +77,17 @@ else
     else
         fail "uv or Python 3.12+ is required to prepare the environment"
     fi
+    if ! "$PYTHON_BIN" -c 'import sys; raise SystemExit(sys.version_info < (3, 12))'; then
+        fail "Python 3.12+ is required for the fallback installer; found $("$PYTHON_BIN" --version 2>&1)"
+    fi
 
     VENV="$ROOT_DIR/.venv"
     VENV_PYTHON="$VENV/bin/python"
     if [[ ! -x "$VENV_PYTHON" ]]; then
         "$PYTHON_BIN" -m venv "$VENV"
+    fi
+    if ! "$VENV_PYTHON" -c 'import sys; raise SystemExit(sys.version_info < (3, 12))'; then
+        fail "The existing .venv must use Python 3.12+; remove it or install with uv"
     fi
     "$VENV_PYTHON" -m pip install --upgrade pip
     (cd "$ROOT_DIR" && "$VENV_PYTHON" -m pip install -e ".[dev]")
