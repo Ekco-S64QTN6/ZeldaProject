@@ -1,0 +1,43 @@
+# Changelog
+
+Changes that have landed on `main` but have not been included in a published
+release are recorded under **Unreleased**. No numbered release history is
+listed here yet; this file starts tracking the current development state and
+does not imply that any release has been published.
+
+## [Unreleased]
+
+### Added
+
+- Source-derived, manifest-registered metadata inventories for the currently
+  covered falling-prize, text, sprite dispatch, music, overworld, receive-item,
+  and dungeon room-pointer/payload declarations. Source annotations and
+  unresolved values remain explicit; ROM bytes and binary `incbin` payloads
+  are not committed.
+- Read-only consistency checks for overworld High/Low payload pairs, dungeon
+  pointer targets versus the union of all three room payload inventories, and
+  the music pointer/payload label relationship.
+- SQLite project schema v2 for importing validated source-export snapshots,
+  with explicit v1-to-v2 migration, duplicate-key protection, source
+  provenance, canonical JSON exports, and SHA-256 integrity checks.
+- Manifest-backed project asset import by name, with registry format, source
+  revision, filename, and record-count validation before persistence.
+- Opt-in `zelda-suite inspect-data-table --include-comments` export format v2,
+  preserving per-line inline comments while keeping the default version-1
+  output contract unchanged.
+- `CONTRIBUTING.md` plus this changelog and the versioning policy.
+
+### Changed
+
+- Reconciled `ROADMAP.md`, `README.md`, `CLAUDE.md`, and subsystem
+  documentation with the implemented parser, registry, project-store, and
+  source-inventory capabilities. Local-ROM and external-tool verification gates
+  remain open until they are actually run against a trusted, locally supplied
+  ROM and installed tools.
+
+### Verification
+
+- Added and expanded parser-parity, export-validation, project migration,
+  registered-asset round-trip, dungeon-label cross-reference, music-label
+  cross-reference, overworld pair-integrity, and source-comment tests.
+- The main-branch CI suite checks Python syntax, Ruff, and the full pytest suite.
