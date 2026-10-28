@@ -122,18 +122,25 @@ output contract and parser limitations. The resulting table should be reviewed
 against a local ROM before any source record is treated as a resolved pointer.
 
 
-## Bank0A room payload declarations
+## Room payload inventories
 
-In addition to the pointer table, the committed
-[`dungeon-room-payload-inventory`](../../data/extracted/dungeon-room-payload-inventory.json)
-records 75 source-labelled `incbin` declarations from `Bank0A.asm`. This covers
-one room-data source region, and retains `RoomDataTiles_*` labels, include
-paths, source lines, size comments, and source-commented start offsets.
+The committed source-only room payload inventories cover all 266 labelled
+`incbin` declarations associated with room labels in the pinned source:
 
-The source file does not annotate inclusive end offsets for these declarations.
-The inventory keeps `source_file_offset_end=null` and
-`source_range_size_matches=null`; `computed_file_offset_end` is explicitly
-derived from the start offset and size comment. Those computed ends are not
-verified ROM locations. The source tree does not include `bin/rooms/*.bin`,
-and the 75 declarations must not be interpreted as the complete room set or
-as proof that all 320 table entries have distinct payload files.
+| Source file | Registry asset | Entries |
+| --- | --- | ---: |
+| `Bank03.asm` | [`dungeon-room-payloads-bank03`](../../data/extracted/dungeon-room-payloads-bank03.json) | 34 |
+| `Bank0A.asm` | [`dungeon-room-payload-inventory`](../../data/extracted/dungeon-room-payload-inventory.json) | 75 |
+| `Bank1F.asm` | [`dungeon-room-payloads-bank1f`](../../data/extracted/dungeon-room-payloads-bank1f.json) | 157 |
+
+The files preserve each source label, `bin/rooms/*.bin` path, declared size,
+source line, source-commented start, and separately computed end. The source
+comments do not give explicit end offsets for these records, so
+`source_file_offset_end` and `source_range_size_matches` remain null. The
+computed ends are not independently verified ROM offsets. The referenced
+binary payload files are absent from the pinned submodule.
+
+The 266 definitions cover all 263 distinct pointer-table target labels, plus
+three labels that are not referenced by the table. This verifies symbolic
+coverage in the source only; it does not resolve `dl` values to ROM addresses,
+establish the user-facing playable room set, or close the 296/320 count issue.
