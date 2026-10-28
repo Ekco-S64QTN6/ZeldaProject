@@ -15,6 +15,10 @@ does not imply that any release has been published.
   report for comparing registered scalar-table literals with a local ROM.
   Simple negative decimal expressions are compared as signed-width
   two's-complement values; other unresolved expressions remain skipped.
+- Registered `item-receipt-layout` joined view plus a strict versioned schema
+  and `zelda-suite join-item-receipt-tables` command for aligning six raw
+  76-entry receive-item arrays while preserving the separate 14-word dungeon
+  mask table and leaving canonical semantic item IDs unresolved.
 - A staged, read-only local-ROM verification runbook covering file inspection,
   self-diff smoke testing, scalar-table byte comparisons, clear reporting for
   skipped/unresolved entries, and external-tool installation/capability checks.
@@ -85,3 +89,6 @@ does not imply that any release has been published.
 - Synthetic tests exercise the scalar-table verifier's match/mismatch paths,
   skipped symbolic entries, signed decimal byte encoding, distinct directive
   byte width versus entry stride, report serialization, and expected-size guard.
+- Tests cover the joined receive-item export against its six registered raw
+  arrays, separate dungeon masks, reproducible CLI output, and failure on
+  misaligned entry offsets or false semantic-ID claims.
