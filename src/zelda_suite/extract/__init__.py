@@ -30,16 +30,16 @@ from zelda_suite.extract.disassembly import (
     parse_dw_pointer_table,
     parse_source_pointer_table,
 )
+from zelda_suite.extract.incbin_inventory import (
+    IncbinDeclaration,
+    IncbinInventoryError,
+    parse_incbin_inventory,
+)
 from zelda_suite.extract.music_track_index import (
     MusicTrackEntry,
     MusicTrackIndex,
     MusicTrackIndexError,
     parse_music_track_index,
-)
-from zelda_suite.extract.incbin_inventory import (
-    IncbinDeclaration,
-    IncbinInventoryError,
-    parse_incbin_inventory,
 )
 from zelda_suite.extract.rom_image import (
     ROMImageInspection,
