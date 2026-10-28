@@ -148,6 +148,17 @@ resolution, record bytes, and per-area grouping remain unverified against a
 local ROM.
 
 
+## Source-only layout report
+
+The ROM-independent `zelda-suite inspect-overworld-hidden-items` command emits a versioned JSON report containing the pinned source's 128 pointer entries, 80 target-label offsets, 351 three-byte records, 67 two-byte sentinels, 128 sentinel-delimited area lists, and four replacement words.
+
+```bash
+uv run zelda-suite inspect-overworld-hidden-items \
+  --output /tmp/overworld-hidden-item-source-layout.json
+```
+
+The output contract is documented in [`overworld-hidden-item-source-layout.schema.json`](./overworld-hidden-item-source-layout.schema.json). The command reads `reference/AsarUSALTTPDisassembly/Bank1B.asm` only; it neither opens a ROM nor writes to the asset registry. `rom_verified` and `semantic_values_decoded` remain `false`. Use the separate ROM verifier below before treating offsets or area grouping as confirmed against a game image.
+
 ## Read-only ROM verification command
 
 The `verify-overworld-hidden-items` command can be run from the repository
