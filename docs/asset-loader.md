@@ -47,7 +47,7 @@ entry provides a stable name, relative JSON filename, supported export format,
 pinned source revision, record count, subsystem, and short description. The
 JSON shape is defined in
 [asset-registry.schema.json](./schemas/asset-registry.schema.json). The current
-registry has 27 named exports across item lookup/receive tables, text, sprite
+registry has 33 named exports across item lookup/receive tables, text, sprite
 dispatch, music, overworld, and dungeon source inventories. The
 `item-receipt-layout` asset is a validated positional join of six raw
 receive-item arrays plus a separate 14-word mask table; it does not resolve
@@ -67,7 +67,8 @@ The lower-level `load_source_export(path)` remains available when a tool is
 working with a temporary export that is not registered. It validates pointer
 tables, incbin inventories, scalar data tables, joined receive-item layouts,
 dictionary fragment inventories, text message indexes, sprite dispatch tables,
-and music-track indexes before returning the parsed payload.
+music-track indexes, and mixed-width source tables before returning the parsed
+payload.
 
 ```python
 from zelda_suite.extract import load_source_export

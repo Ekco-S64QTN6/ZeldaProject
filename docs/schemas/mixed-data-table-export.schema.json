@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite mixed-width Asar data-table export",
+  "description": "Raw db/dw/dl fields grouped by source line; expressions are not evaluated.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "table_file_offset",
+    "record_count",
+    "byte_count",
+    "records"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-mixed-data-table"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "table_label": {
+      "type": "string",
+      "pattern": "^\\\\.?[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "table_file_offset": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "byte_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "entry_index",
+        "entry_file_offset",
+        "expression",
+        "literal_value"
+      ],
+      "properties": {
+        "entry_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "literal_value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "field": {
+      "type": "object",
+      "required": [
+        "field_index",
+        "field_file_offset",
+        "source_line",
+        "directive",
+        "entry_width",
+        "entry_count",
+        "entries"
+      ],
+      "properties": {
+        "field_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "field_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "directive": {
+          "enum": [
+            "db",
+            "dw",
+            "dl"
+          ]
+        },
+        "entry_width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "entry_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/entry"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "record_index",
+        "record_file_offset",
+        "source_line",
+        "source_label",
+        "byte_length",
+        "fields"
+      ],
+      "properties": {
+        "record_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "record_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\\\.?[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -3,6 +3,7 @@ from zelda_suite.extract.asset_loader import (
     ASSET_REGISTRY_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
+    MIXED_DATA_TABLE_FORMAT,
     MUSIC_TRACK_INDEX_FORMAT,
     SPRITE_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
@@ -53,6 +54,13 @@ from zelda_suite.extract.incbin_inventory_audit import (
 from zelda_suite.extract.item_receipt_layout import (
     ItemReceiptLayoutError,
     build_item_receipt_layout,
+)
+from zelda_suite.extract.mixed_data_table import (
+    MixedDataField,
+    MixedDataRecord,
+    MixedDataTable,
+    MixedDataTableParseError,
+    parse_mixed_data_table,
 )
 from zelda_suite.extract.music_asset_audit import (
     MUSIC_ASSET_AUDIT_FORMAT,
@@ -138,6 +146,7 @@ __all__ = [
     "DUNGEON_ROOM_ASSET_AUDIT_FORMAT",
     "INCBIN_INVENTORY_AUDIT_FORMAT",
     "ITEM_RECEIPT_LAYOUT_FORMAT",
+    "MIXED_DATA_TABLE_FORMAT",
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "PINNED_SOURCE_REVISION",
@@ -164,6 +173,10 @@ __all__ = [
     "IncbinInventoryError",
     "ItemReceiptLayoutError",
     "MessageSourceBlock",
+    "MixedDataField",
+    "MixedDataRecord",
+    "MixedDataTable",
+    "MixedDataTableParseError",
     "MusicAssetAuditError",
     "MusicTrackEntry",
     "MusicTrackIndex",
@@ -205,6 +218,7 @@ __all__ = [
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
+    "parse_mixed_data_table",
     "parse_music_track_index",
     "parse_overworld_hidden_item_source",
     "parse_source_pointer_table",

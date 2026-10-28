@@ -12,6 +12,7 @@ from zelda_suite.diff import compare_bytes
 from zelda_suite.extract import (
     DATA_DIRECTIVE_WIDTHS,
     DICTIONARY_INVENTORY_FORMAT,
+    MIXED_DATA_TABLE_FORMAT,
     PINNED_TEXT_SOURCE_REVISION,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
@@ -39,6 +40,7 @@ from zelda_suite.extract import (
     parse_data_table,
     parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
+    parse_mixed_data_table,
     parse_music_track_index,
     parse_overworld_hidden_item_source,
     parse_source_pointer_table,
@@ -389,6 +391,85 @@ def inspect_data_table(
     click.echo(
         f"Wrote {len(entries)} data-table entries to {output} "
         f"(format v{payload['format_version']})"
+    )
+
+
+@cli.command(name="inspect-mixed-data-table")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("label")
+@click.option(
+    "--table-offset",
+    required=True,
+    help="Source-commented file offset of the first byte (e.g. $0E80FC).",
+)
+@click.option(
+    "--record-count",
+    type=click.IntRange(min=1),
+    default=None,
+    help="Optional exact number of data-bearing source rows expected.",
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    show_default=False,
+    help="Pinned source revision to record; omitted values are marked unspecified.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_mixed_data_table(
+    source: Path,
+    label: str,
+    table_offset: str,
+    record_count: int | None,
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Export raw mixed-width db/dw/dl rows with byte-accurate offsets."""
+    try:
+        offset = _parse_offset_text(table_offset)
+        source_text = source.read_text(encoding="utf-8")
+        revision = source_revision or "unspecified"
+        table = parse_mixed_data_table(
+            source_text,
+            label,
+            offset,
+            expected_record_count=record_count,
+        )
+        payload = table.to_dict(source_file=source.name, source_revision=revision)
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    click.echo(
+        f"Wrote {table.record_count} mixed-width records / {table.byte_count} bytes to {output}"
     )
 
 
@@ -1933,7 +2014,10 @@ def validate_source_export_command(source_export: Path) -> None:
     except AssetLoadError as exc:
         raise click.ClickException(str(exc)) from exc
 
-    if payload["format"] == "zelda-suite-pointer-table":
+    if payload["format"] == MIXED_DATA_TABLE_FORMAT:
+        record_count = payload["record_count"]
+        record_label = "records"
+    elif payload["format"] == "zelda-suite-pointer-table":
         record_count = payload["entry_count"]
         record_label = "entries"
     elif payload["format"] == "zelda-suite-incbin-inventory":

@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add the `landmine-oam-groups` mixed-width source export and reusable `inspect-mixed-data-table` parser for colon-separated `db`/`dw`/`dl` fields, with byte-accurate offsets and pinned-source tests. The two rows remain raw source metadata, not decoded OAM semantics or ROM-verified data.
+
 - Register the nine-word `crystal-maiden-message-ids` export from pinned `Sprites/sprite_crystal_maiden.asm` with source-parity coverage and a regression cross-reference to all distinct IDs in the registered text-message index. Preserve the source-commented range and the unresolved local `.message_ids` mapping; no ROM verification is claimed.
 
 - Register the eight-word `crystal-maiden-palette-words` export from pinned `Sprites/sprite_crystal_maiden.asm` with parser parity and literal baselines. Preserve the raw 16-bit values and explicitly document the unresolved relationship between `CrystalMaiden_Configure_palette` and the routine's `.palette` reference; no color decoding or ROM verification is claimed.
