@@ -1,6 +1,7 @@
 """Read-only verification of raw encoded message bytes against pinned source literals."""
 from __future__ import annotations
 
+import itertools
 import re
 from pathlib import Path
 from typing import Any
@@ -266,7 +267,7 @@ def verify_text_message_bytes(
                 f"{block.source_file}:{block.data_block_label} contains "
                 f"{excess} literal byte(s) beyond its declared source block range"
             )
-    for previous, current in zip(ordered_blocks, ordered_blocks[1:]):
+    for previous, current in itertools.pairwise(ordered_blocks):
         if current.block_start_offset <= previous.block_end_offset:
             raise TextMessageByteVerificationError(
                 "source block offset ranges overlap: "
