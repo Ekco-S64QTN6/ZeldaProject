@@ -120,6 +120,15 @@
       "description": "320 source-indexed 24-bit RoomData_ObjectDataPointers expressions; target resolution and playable-room count remain unverified."
     },
     {
+      "name": "dungeon-room-payloads-bank03",
+      "file": "dungeon-room-payloads-bank03.json",
+      "format": "zelda-suite-incbin-inventory",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 34,
+      "subsystem": "dungeons",
+      "description": "34 labelled Bank03 room incbin declarations with source start offsets and size annotations; computed end offsets are not independently verified."
+    },
+    {
       "name": "dungeon-room-payload-inventory",
       "file": "dungeon-room-payload-inventory.json",
       "format": "zelda-suite-incbin-inventory",
@@ -136,6 +145,15 @@
       "record_count": 164,
       "subsystem": "overworld",
       "description": "Bank0B high/low overworld payload declarations with source-range and size diagnostics."
+    },
+    {
+      "name": "dungeon-room-payloads-bank1f",
+      "file": "dungeon-room-payloads-bank1f.json",
+      "format": "zelda-suite-incbin-inventory",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "record_count": 157,
+      "subsystem": "dungeons",
+      "description": "157 labelled Bank1F room incbin declarations with source start offsets and size annotations; computed end offsets are not independently verified."
     },
     {
       "name": "overworld-payloads-bank0c",
