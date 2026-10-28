@@ -150,3 +150,24 @@ layers. Before exposing entrance CRUD operations:
 
 This remains source-backed discovery, not a complete overworld editor schema.
 No ROM bytes are read or modified by this documentation.
+
+
+## Committed source payload inventories
+
+The source metadata from both physical banks is now captured in registered
+JSON files: `overworld-payloads-bank0b.json` (164 declarations from
+`Bank0B.asm`) and `overworld-payloads-bank0c.json` (84 declarations from
+`Bank0C.asm`). The records preserve exact labels, `incbin` paths, source lines,
+source-reported inclusive offsets, declared sizes, computed ends, and match
+flags. They do not include any map bytes or treat High/Low as fully understood
+semantic tile layers.
+
+The inventory exposes the current offset comments' anomalies rather than
+repairing them: Bank0B has one missing range on `Screen4F_High` and size/range
+mismatches on `Screen42_Low` and `Screen61_Low`; Bank0C has a mismatch on
+`Screen88_Low`. These must be reconciled with the consumer code and a local
+clean US ROM before using these ranges as a writable schema. The pinned source
+tree has no tracked `bin/ow/*.bin` payloads.
+
+See [the committed extracted-data guide](../extracted-data.md) for exact
+counts, anomalies, and commands to regenerate the two JSON inventories.
