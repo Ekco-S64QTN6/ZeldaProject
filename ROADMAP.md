@@ -25,7 +25,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [x] Add read-only parsers for source pointer tables, Asar `db`/`dw`/`dl` data tables, labelled `incbin` declarations, text dictionary fragments, text message labels, sprite dispatch, and music-track pointers.
 - [x] Add versioned JSON export validation and a manifest-backed named-asset loader that checks registered names, safe filenames, format, source revision, and record count.
-- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 14 assets covering:
+- [~] Commit source-derived metadata inventories with pinned-source parser-parity tests. The current registry contains 17 assets covering:
   - Five seven-entry falling-prize parallel arrays.
   - 98 text dictionary pointers and 98 pointer-to-fragment metadata records.
   - 397 source text-message labels with offset/length diagnostics.
@@ -33,8 +33,9 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   - 35 music-track pointer expressions and 15 music payload declarations.
   - 128 overworld hidden-item pointer expressions.
   - 164 `Bank0B.asm` plus 84 `Bank0C.asm` overworld High/Low payload declarations.
+  - Three raw receive-item lookup tables: 76 WRAM target addresses, 76 byte values, and 14 dungeon masks.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
-- [~] Inventory the two overworld High/Low payload banks: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C) by their source labels. An automated pair-integrity check has not yet been added.
+- [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers.
 - [ ] Decode the committed overworld High/Low payloads and establish their relationship to editable map layers. Reconcile all source range/size discrepancies against consumer code and a locally supplied clean US ROM first.
 - [ ] Establish complete editable schemas for items/chests/shops, doors/entrances, sprites/placements, message encoding, and audio payloads; distinguish raw metadata from verified semantic meaning.
@@ -101,7 +102,6 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Add an automated integrity check ensuring each source-labelled High/Low overworld screen pair has exactly one member of each kind.
-2. Use a locally supplied clean US ROM and source consumers to resolve the four source annotation issues without changing the source export facts.
-3. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
-4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
+1. Use a locally supplied clean US ROM and source consumers to resolve the four source annotation issues without changing the source export facts.
+2. Decode one small, well-understood source-data area end-to-end before expanding the editable project schema.
+3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
