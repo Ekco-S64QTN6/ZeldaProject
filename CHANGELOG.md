@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add a submodule-independent regression baseline for the committed 128-entry
+  overworld hidden-item pointer table. It pins all 80 target labels, sequential
+  two-byte offsets, and the 64-singleton/16-quadruple label distribution without
+  claiming target resolution or ROM verification.
+
 - Add a submodule-independent regression baseline for the committed 68-entry
   sprite dispatch export, pinning the source ID/offset range and six handler
   alias groups while preserving handler-address comments as unverified metadata.
