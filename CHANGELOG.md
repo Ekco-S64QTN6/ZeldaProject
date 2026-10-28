@@ -15,6 +15,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Register the 320-entry source-only `dungeon-room-door-pointers` export from `RoomData_DoorDataPointers`. Pinned-source parity and submodule-independent slot-alignment tests preserve raw numeric addends without resolving their meaning or claiming local-ROM verification.
+
 - Add read-only `zelda-suite verify-text-message-bytes` and a version-1
   report schema to compare literal encoded bytes in the 397 indexed text messages
   against a local ROM using sequential source-derived offsets. Synthetic and

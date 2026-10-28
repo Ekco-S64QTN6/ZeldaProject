@@ -230,7 +230,7 @@ The committed `sprite-active3-dispatch` export is checked independently of the d
 
 For `overworld-hidden-item-pointers`, preserve the full source-label set and repeated-target distribution pinned by `tests/test_overworld_hidden_item_pointer_baseline.py`. That test covers committed JSON independently of the disassembly submodule and must not be described as ROM target verification.
 
-When changing dungeon room pointer or payload inventory exports, run `zelda-suite audit-dungeon-room-assets`. Preserve the three known unreferenced payload labels unless the registered source exports change with evidence; the audit uses source metadata and must not be described as ROM pointer verification.
+When changing the dungeon room object-pointer or payload inventory exports, run `zelda-suite audit-dungeon-room-assets`. Preserve the three known unreferenced payload labels unless the registered source exports change with evidence; the audit uses source metadata and must not be described as ROM pointer verification. The separate `dungeon-room-door-pointers` export is checked for slot-by-slot target-label alignment with the object-pointer table; preserve numeric addends as source metadata and do not treat them as verified door-data offsets without independent source/ROM evidence.
 
 When changing text-dictionary pointer or fragment inventories, keep `audit-text-dictionary` and the source-only baseline green. The local-ROM `verify-text-dictionary-pointers` command compares 98 pointer words against candidate addresses computed from source offsets; its result does not establish ROM provenance or source-offset accuracy and does not resolve the `Text_DictionaryPointers`/ `DictionaryPointers` name discrepancy.
 
