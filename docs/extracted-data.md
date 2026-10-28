@@ -741,6 +741,23 @@ price behavior at runtime, verify source range annotations against a ROM, or
 describe room-specific potion stock. See the [item/chest guide](./schemas/items.md)
 and the [transaction audit schema](./schemas/potion-shop-transactions-audit.schema.json).
 
+## Bomb Shop and Bottle Vendor transactions
+
+The registered [`special-shop-transactions`](../data/extracted/special-shop-transactions.json) export records two Bomb Shop purchases and the Bottle Vendor's bottle sale from pinned `Sprites/sprite_bomb_shop_entity.asm` and `Sprites/sprite_bottle_vendor.asm` revision `347c23f9fc019c72d32da537c9cb235f468d021d`.
+
+All three paths encode a 100-rupee price. The Bomb Shop Bomb passes A/Y literals `$64/$00` to `ShopKeeper_TryToGetPaid` and calls `ShopItem_HandleReceipt` with selector `$28`. The Super Bomb uses the same payment literals but writes `$0D` to `$7EF3CC` and spawns a tagalong; it does not call the receipt handler, so its receipt selector stays null. The Bottle Vendor compares the rupee balance to `$0064`, later deducts `$0064`, and passes selector `$16` to `Link_ReceiveItem`; the associated source comment is preserved as an annotation, not a canonical item identity.
+
+Reproduce and audit the export:
+
+```bash
+uv run zelda-suite inspect-special-shop-transactions reference/AsarUSALTTPDisassembly/Sprites/sprite_bomb_shop_entity.asm reference/AsarUSALTTPDisassembly/Sprites/sprite_bottle_vendor.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --entry-count 3 --output /tmp/special-shop-transactions.json
+uv run zelda-suite validate-source-export /tmp/special-shop-transactions.json
+diff -u data/extracted/special-shop-transactions.json /tmp/special-shop-transactions.json
+uv run zelda-suite audit-special-shop-transactions
+```
+
+The audit joins only receipt selectors `$28` and `$16` to dense positions in the 76-entry receive-item layout and retains the graphics-table comment annotations at those positions. It does not infer room-specific shop stock, resolve semantic item IDs, verify prices/rewards against runtime, or prove that source range comments are ROM offsets. See the [item/chest guide](./schemas/items.md) and the [export](./schemas/special-shop-transactions-export.schema.json) and [audit](./schemas/special-shop-transactions-audit.schema.json) schemas.
+
 ## Receive-item graphics comment annotations
 
 The source-only `audit-item-receipt-annotations` report compares the dense

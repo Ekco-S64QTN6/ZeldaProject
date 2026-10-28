@@ -298,6 +298,15 @@
       "subsystem": "items"
     },
     {
+      "description": "Three source-coded special-shop purchases: Bomb Shop Bomb and Super Bomb handlers plus Bottle Vendor bottle sale. Receipt selectors remain positional; Super Bomb uses a source-flag/tagalong reward instead. Price behavior and source ranges are not ROM-verified.",
+      "file": "special-shop-transactions.json",
+      "format": "zelda-suite-special-shop-transactions",
+      "name": "special-shop-transactions",
+      "record_count": 3,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "shops"
+    },
+    {
       "description": "Sixty-eight source-mapped handlers for sprite type IDs $79-$BC, preserving aliases.",
       "file": "sprite-active3-dispatch.json",
       "format": "zelda-suite-sprite-dispatch",

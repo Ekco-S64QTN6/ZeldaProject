@@ -28,6 +28,7 @@ from zelda_suite.extract import (
     ROMImageInspectionError,
     ROMTableVerificationError,
     ShopItemHandlersAuditError,
+    SpecialShopTransactionsAuditError,
     SourceExpressionAuditError,
     SpritePrepDispatchAuditError,
     TextDictionaryAuditError,
@@ -42,6 +43,7 @@ from zelda_suite.extract import (
     audit_oam_allocation,
     audit_potion_shop_transactions,
     audit_shop_item_handlers,
+    audit_special_shop_transactions,
     audit_sprite_prep_dispatch,
     audit_text_dictionary_assets,
     audit_text_message_index,
@@ -58,6 +60,7 @@ from zelda_suite.extract import (
     parse_overworld_hidden_item_source,
     parse_potion_shop_transactions,
     parse_shop_item_handlers,
+    parse_special_shop_transactions,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
     parse_sprite_prep_dispatch_table,
@@ -2220,6 +2223,155 @@ def audit_shop_item_handlers_command(
         f"handlers={summary['handler_count']}, "
         f"receipt_slots={summary['distinct_receipt_item_index_count']}, "
         f"price_range={summary['minimum_price_value']}-{summary['maximum_price_value']}"
+    )
+
+
+
+@cli.command(name="inspect-special-shop-transactions")
+@click.argument(
+    "bomb_shop_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "bottle_vendor_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    required=True,
+    help="Pinned disassembly revision to record in the export.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=3,
+    show_default=True,
+    help="Expected number of Bomb Shop and Bottle Vendor purchase records.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_special_shop_transactions(
+    bomb_shop_source: Path,
+    bottle_vendor_source: Path,
+    source_revision: str,
+    entry_count: int,
+    output: Path | None,
+) -> None:
+    """Export Bomb Shop and Bottle Vendor purchases without resolving item identities."""
+    try:
+        table = parse_special_shop_transactions(
+            bomb_shop_source.read_text(encoding="utf-8"),
+            bottle_vendor_source.read_text(encoding="utf-8"),
+            source_revision=source_revision,
+            bomb_shop_source_file=bomb_shop_source.name,
+            bottle_vendor_source_file=bottle_vendor_source.name,
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    non_receipt = sum(entry.receipt_item_index is None for entry in table.entries)
+    click.echo(
+        f"Wrote {len(table.entries)} special-shop transactions to {output}; "
+        f"receipt_selectors={len(table.entries) - non_receipt}, "
+        f"non_receipt_rewards={non_receipt}; prices and reward behavior remain source-only"
+    )
+
+
+@cli.command(name="audit-special-shop-transactions")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--asset",
+    "asset_name",
+    default="special-shop-transactions",
+    show_default=True,
+    help="Registered Bomb Shop and Bottle Vendor transaction asset.",
+)
+@click.option(
+    "--receipt-asset",
+    "receipt_asset_name",
+    default="item-receipt-layout",
+    show_default=True,
+    help="Registered raw receive-item layout used by receipt selectors.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+def audit_special_shop_transactions_command(
+    registry_path: Path | None,
+    asset_name: str,
+    receipt_asset_name: str,
+    output: Path | None,
+) -> None:
+    """Cross-reference special-shop receipt selectors to raw receive-item slots."""
+    try:
+        report = audit_special_shop_transactions(
+            registry_path or "data/extracted/manifest.json",
+            asset_name=asset_name,
+            receipt_asset_name=receipt_asset_name,
+        )
+    except (SpecialShopTransactionsAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote special-shop transaction audit to {output}; "
+        f"transactions={summary['transaction_count']}, "
+        f"receipt_slots={summary['distinct_receipt_item_index_count']}, "
+        f"non_receipt_rewards={summary['non_receipt_reward_count']}"
     )
 
 
