@@ -4,7 +4,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
+from zelda_suite.cli.main import cli
 from zelda_suite.extract import (
     lorom_cpu_address,
     parse_overworld_hidden_item_source,
@@ -157,10 +159,6 @@ def test_verifier_reports_pointer_record_sentinel_and_replacement_mismatches(
 
 
 def test_hidden_item_cli_emits_report_and_refuses_overwrite(tmp_path: Path) -> None:
-    from click.testing import CliRunner
-
-    from zelda_suite.cli.main import cli
-
     rom_path, _layout = _write_rom_from_source(tmp_path)
     output = tmp_path / "hidden-items.json"
     arguments = [
