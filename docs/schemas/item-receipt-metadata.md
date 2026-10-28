@@ -127,10 +127,14 @@ numbers. The target-address values identify WRAM destinations, not ROM
 pointers, while `.item_values` retains raw byte patterns such as `$FF`,
 `$FB`, and `$EC`.
 
-The `.item_graphics_indices` table is not exported in this batch because its
-source comments skip index `$40` although the table contains 76 dense bytes.
-That mismatch still needs to be resolved before exposing canonical semantic
-item IDs. These assets are not a complete editable item schema.
+The `.item_graphics_indices` table is now exported separately as
+`item-receipt-graphics-indices`, format version 2, so each raw byte retains its
+inline source comment. The table contains 76 dense bytes: comments enumerate
+`0x00–0x3F` and then `0x41–0x4C`, omitting `0x40`. The export's
+`table_index` remains the dense byte position; the comment number is kept as
+text and is not used as a canonical item ID. The discrepancy still needs to be
+explained before exposing a semantic item catalog. These assets are not a
+complete editable item schema.
 
 ## Joined positional view
 

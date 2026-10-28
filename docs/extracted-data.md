@@ -375,22 +375,24 @@ the payloads.
 
 ## Receive-item source tables
 
-Seven raw tables from `Pool_AddReceiveItem` in pinned
+Eight raw tables from `Pool_AddReceiveItem` in pinned
 `Ancilla/ancilla_init.asm` are committed and registered:
 
 | Asset | Source label | Offset range | Width / count |
 | --- | --- | --- | --- |
 | `item-receipt-y-offsets` | `.y_offsets` | `$04836C–$0483B7` | 1 byte × 76 |
 | `item-receipt-x-offsets` | `.x_offsets` | `$0483B8–$048403` | 1 byte × 76 |
+| `item-receipt-graphics-indices` | `.item_graphics_indices` | `$048404–$04844F` | 1 byte × 76 (v2 comments) |
 | `item-receipt-wide-flags` | `.wide_item_flag` | `$048450–$04849B` | 1 byte × 76 |
 | `item-receipt-properties` | `.properties` | `$04849C–$0484E7` | 1 byte × 76 |
 | `item-receipt-target-addresses` | `.item_target_addr` | `$0484E8–$04857F` | 2 bytes × 76 |
 | `item-receipt-values` | `.item_values` | `$048580–$0485CB` | 1 byte × 76 |
 | `item-receipt-dungeon-masks` | `.item_masks` | `$0485CC–$0485E7` | 2 bytes × 14 |
 
-Each version-1 `zelda-suite-data-table` export records table index, calculated
-file offset, source line, exact expression, literal value when directly
-expressible, and pinned revision. These are raw positional arrays, not a
+The seven version-1 `zelda-suite-data-table` exports record table index,
+calculated file offset, source line, exact expression, literal value when
+directly expressible, and pinned revision. The graphics-index table uses
+version 2 to preserve its inline comment on each entry. These are raw positional arrays, not a
 complete semantic item catalog. The target-address table contains WRAM
 destinations, not ROM pointers. Byte patterns such as `$FF`, `$FB`, and
 `$EC` remain raw values; runtime signed-byte behavior has not been normalized
@@ -400,9 +402,10 @@ as `-5` or `-1` stay as expressions with a null literal value.
 The parallel arrays `.y_offsets`, `.x_offsets`, `.wide_item_flag`, and
 `.properties` share the same 76-position table index as the two 76-entry
 target/value arrays. The 14-word `.item_masks` array is separate. The
-`.item_graphics_indices` table is deliberately not included in this batch:
-its inline comments skip source index `$40` while the data occupies 76 dense
-bytes. The discrepancy remains documented and is not silently normalized into
+The separate `item-receipt-graphics-indices` export preserves all 76 dense bytes
+and the inline comments that enumerate `0x00–0x3F`, then `0x41–0x4C`.
+Its dense `table_index` is deliberately not rewritten to match those comment
+IDs; the missing `0x40` comment remains unresolved and is not normalized into
 a canonical item-ID schema.
 
 Regenerate each table using `zelda-suite inspect-data-table` with

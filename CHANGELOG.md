@@ -24,6 +24,9 @@ does not imply that any release has been published.
   and `zelda-suite join-item-receipt-tables` command for aligning six raw
   76-entry receive-item arrays while preserving the separate 14-word dungeon
   mask table and leaving canonical semantic item IDs unresolved.
+- Registered `item-receipt-graphics-indices` as a version-2 raw table export,
+  preserving each source inline comment while keeping dense byte positions
+  separate from comment IDs that skip `0x40`.
 - A staged, read-only local-ROM verification runbook covering file inspection,
   self-diff smoke testing, scalar-table byte comparisons, clear reporting for
   skipped/unresolved entries, and external-tool installation/capability checks.
@@ -97,6 +100,9 @@ does not imply that any release has been published.
 - Tests cover the joined receive-item export against its six registered raw
   arrays, separate dungeon masks, reproducible CLI output, and failure on
   misaligned entry offsets or false semantic-ID claims.
+- Source-parity and CLI reproduction tests cover the graphics-index v2 export
+  and assert that the `0x40` source-comment gap is preserved without changing
+  dense `table_index` values.
 - Synthetic hidden-item ROM fixtures exercise all 550 comparison spans, area
   grouping, per-kind mismatch reporting, CLI JSON output, no-overwrite
   behavior, and fail-closed parsing of changed sentinel declarations.

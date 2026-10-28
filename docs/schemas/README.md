@@ -26,7 +26,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-six named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-seven named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
@@ -54,6 +54,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [`data/extracted/item-receipt-wide-flags.json`](../../data/extracted/item-receipt-wide-flags.json) — 76 raw wide-item flags.
 - [`data/extracted/item-receipt-properties.json`](../../data/extracted/item-receipt-properties.json) — 76 raw property bytes.
 - [`data/extracted/item-receipt-layout.json`](../../data/extracted/item-receipt-layout.json) — joined 76-position receive-item view with raw source traceability and a separate 14-mask table; it does not resolve canonical item IDs.
+- [`data/extracted/item-receipt-graphics-indices.json`](../../data/extracted/item-receipt-graphics-indices.json) — 76 raw graphics-index bytes with source comments preserved; comment IDs skip `0x40` and are not canonicalized.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 

@@ -47,11 +47,14 @@ entry provides a stable name, relative JSON filename, supported export format,
 pinned source revision, record count, subsystem, and short description. The
 JSON shape is defined in
 [asset-registry.schema.json](./schemas/asset-registry.schema.json). The current
-registry has 26 named exports across item lookup/receive tables, text, sprite
+registry has 27 named exports across item lookup/receive tables, text, sprite
 dispatch, music, overworld, and dungeon source inventories. The
 `item-receipt-layout` asset is a validated positional join of six raw
 receive-item arrays plus a separate 14-word mask table; it does not resolve
-canonical item IDs.
+canonical item IDs. The
+`item-receipt-graphics-indices` asset preserves all 76 bytes and inline
+comments in version 2, including the gap between the `0x3F` and `0x41`
+comment IDs.
 
 Add an asset by committing its validated export, adding exactly one registry
 entry, adding test coverage for its provenance/count, and documenting any

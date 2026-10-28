@@ -80,6 +80,16 @@ TABLES = [
         "end_label": ".item_target_addr",
         "count": 76,
     },
+    {
+        "name": "item-receipt-graphics-indices",
+        "file": ROOT / "data" / "extracted" / "item-receipt-graphics-indices.json",
+        "label": ".item_graphics_indices",
+        "offset": 0x048404,
+        "directive": "db",
+        "end_label": ".wide_item_flag",
+        "count": 76,
+        "include_comments": True,
+    },
 ]
 
 
@@ -102,6 +112,7 @@ def test_committed_item_receipt_tables_match_pinned_source() -> None:
         )
 
         assert payload["format"] == "zelda-suite-data-table"
+        assert payload["format_version"] == (2 if spec.get("include_comments") else 1)
         assert payload["source_file"] == "ancilla_init.asm"
         assert payload["source_revision"] == PINNED_REVISION
         assert payload["parent_label"] == "Pool_AddReceiveItem"
@@ -110,7 +121,10 @@ def test_committed_item_receipt_tables_match_pinned_source() -> None:
         assert payload["directive"] == spec["directive"]
         assert payload["entry_width"] == (1 if spec["directive"] == "db" else 2)
         assert payload["entry_count"] == spec["count"]
-        assert payload["entries"] == [entry.to_dict() for entry in entries]
+        assert payload["entries"] == [
+            entry.to_dict(include_inline_comment=spec.get("include_comments", False))
+            for entry in entries
+        ]
 
 
 @pytest.mark.skipif(
@@ -137,6 +151,8 @@ def test_inspect_data_table_cli_reproduces_receive_item_exports(tmp_path: Path) 
         ]
         if spec["end_label"] is not None:
             args.extend(["--end-label", spec["end_label"]])
+        if spec.get("include_comments"):
+            args.append("--include-comments")
 
         result = CliRunner().invoke(cli, args)
         assert result.exit_code == 0, result.output
@@ -152,6 +168,7 @@ def test_receive_item_tables_are_registered_by_name() -> None:
         "item-receipt-x-offsets": 76,
         "item-receipt-wide-flags": 76,
         "item-receipt-properties": 76,
+        "item-receipt-graphics-indices": 76,
     }
     for name, count in expected_counts.items():
         payload = load_extracted_asset(name, REGISTRY_PATH)
@@ -191,3 +208,22 @@ def test_signed_decimal_parallel_values_remain_raw_expressions() -> None:
         entry for entry in properties["entries"] if entry["expression"] == "-1"
     )
     assert negative_property["literal_value"] is None
+
+
+
+def test_graphics_index_comments_preserve_the_missing_0x40_comment_id() -> None:
+    payload = load_extracted_asset("item-receipt-graphics-indices", REGISTRY_PATH)
+
+    assert payload["format_version"] == 2
+    entries = payload["entries"]
+    assert len(entries) == 76
+    assert [entry["table_index"] for entry in entries] == list(range(76))
+    comment_indices = [
+        int(entry["inline_comment"].split("-", 1)[0].strip(), 16)
+        for entry in entries
+    ]
+    assert comment_indices == [*range(0x40), *range(0x41, 0x4D)]
+    assert entries[63]["inline_comment"].startswith("0x3F")
+    assert entries[64]["inline_comment"].startswith("0x41")
+    assert entries[64]["entry_file_offset"] == 0x048444
+    assert entries[-1]["entry_file_offset"] == 0x04844F
