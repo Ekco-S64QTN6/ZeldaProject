@@ -21,6 +21,7 @@ from zelda_suite.extract import (
     parse_data_table,
     parse_dictionary_fragment_inventory,
     parse_incbin_inventory,
+    parse_music_track_index,
     parse_source_pointer_table,
     parse_sprite_dispatch_table,
     parse_text_message_index,
@@ -332,6 +333,109 @@ def inspect_data_table(
         raise click.ClickException(f"could not write {output}: {exc}") from exc
 
     click.echo(f"Wrote {len(entries)} data-table entries to {output}")
+
+
+@cli.command(name="inspect-music-track-index")
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--table-offset",
+    required=True,
+    help="Verified file offset of the first two-byte track pointer.",
+)
+@click.option(
+    "--block-label",
+    default="SongBank_Underworld_Main",
+    show_default=True,
+    help="Global source block containing the pointer table.",
+)
+@click.option(
+    "--base-expression",
+    default="SONG_POINTERS",
+    show_default=True,
+    help="Assembler base target that precedes the track pointer entries.",
+)
+@click.option(
+    "--track-index-start",
+    default="$01",
+    show_default=True,
+    help="Source track index annotated on the first pointer entry.",
+)
+@click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=35,
+    show_default=True,
+    help="Expected count of two-byte pointer expressions.",
+)
+@click.option(
+    "--source-revision",
+    default=None,
+    help="Pinned source revision to record in the export.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_music_track_index(
+    source: Path,
+    table_offset: str,
+    block_label: str,
+    base_expression: str,
+    track_index_start: str,
+    entry_count: int,
+    source_revision: str | None,
+    output: Path | None,
+) -> None:
+    """Export source-indexed music pointer expressions without audio payloads."""
+    try:
+        table = parse_music_track_index(
+            source.read_text(encoding="utf-8"),
+            table_file_offset=_parse_offset_text(table_offset),
+            source_revision=source_revision or "unspecified",
+            source_file=source.name,
+            block_label=block_label,
+            base_expression=base_expression,
+            track_index_start=_parse_offset_text(track_index_start),
+            expected_entry_count=entry_count,
+        )
+        payload = table.to_dict()
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    empty_count = sum(entry.is_empty for entry in table.entries)
+    alias_count = sum(entry.alias_of_track_index is not None for entry in table.entries)
+    click.echo(
+        f"Wrote {len(table.entries)} music track pointers to {output}; "
+        f"{empty_count} empty and {alias_count} aliased entries"
+    )
 
 
 @cli.command(name="inspect-sprite-dispatch")

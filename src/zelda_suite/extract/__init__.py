@@ -2,6 +2,7 @@
 from zelda_suite.extract.asset_loader import (
     ASSET_REGISTRY_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
+    MUSIC_TRACK_INDEX_FORMAT,
     SPRITE_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
     AssetLoadError,
@@ -34,6 +35,12 @@ from zelda_suite.extract.incbin_inventory import (
     IncbinInventoryError,
     parse_incbin_inventory,
 )
+from zelda_suite.extract.music_track_index import (
+    MusicTrackEntry,
+    MusicTrackIndex,
+    MusicTrackIndexError,
+    parse_music_track_index,
+)
 from zelda_suite.extract.rom_image import (
     ROMImageInspection,
     ROMImageInspectionError,
@@ -62,6 +69,7 @@ __all__ = [
     "ASSET_REGISTRY_FORMAT",
     "DATA_DIRECTIVE_WIDTHS",
     "DICTIONARY_INVENTORY_FORMAT",
+    "MUSIC_TRACK_INDEX_FORMAT",
     "POINTER_DIRECTIVE_WIDTHS",
     "SPRITE_DISPATCH_FORMAT",
     "TEXT_MESSAGE_INDEX_FORMAT",
@@ -74,6 +82,9 @@ __all__ = [
     "IncbinDeclaration",
     "IncbinInventoryError",
     "MessageSourceBlock",
+    "MusicTrackEntry",
+    "MusicTrackIndex",
+    "MusicTrackIndexError",
     "PointerTableEntry",
     "ROMImageInspection",
     "ROMImageInspectionError",
@@ -95,6 +106,7 @@ __all__ = [
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
     "parse_incbin_inventory",
+    "parse_music_track_index",
     "parse_source_pointer_table",
     "parse_sprite_dispatch_table",
     "parse_text_message_index",

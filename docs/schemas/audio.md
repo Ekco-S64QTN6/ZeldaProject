@@ -93,3 +93,41 @@ constitute a reproducible audio build today.
 
 This note documents source declarations only; it neither reads nor modifies ROM
 bytes or audio payloads.
+
+
+## Music track pointer index
+
+The first committed source inventory is
+`data/extracted/music-track-index.json`. It records the 35 two-byte
+expressions under `base SONG_POINTERS` in `SongBank_Underworld_Main` at
+pinned revision `347c23f9fc019c72d32da537c9cb235f468d021d`.
+
+- Table file offsets: `$0D8004–$0D8049` (35 entries, two bytes each).
+- Source track indices: `$01–$23`; a separate zero-based `table_index` is
+  provided for programmatic iteration.
+- Fifteen entries are explicit `$0000` empty pointers.
+- Four entries alias a previously named target: `$18` to `Song12_Cave`,
+  `$21` to `Song1D_AgahnimEscapes`, `$22` to `Song1E_MeetingGanon`, and
+  `$23` to `Song1F_KingOfThieves`.
+
+Aliases and empty entries are retained as data. The inventory does not resolve
+the symbolic expressions to SPC RAM addresses, assume indices map one-to-one
+to payload labels, or read the referenced song chunks. The pinned source tree
+has no tracked files under `bin/music/`, so this is a pointer-index export,
+not a reproducible audio build or audio decoder.
+
+Regenerate the index with:
+
+```bash
+uv run zelda-suite inspect-music-track-index \
+  reference/AsarUSALTTPDisassembly/Bank1B.asm \
+  --table-offset '$0D8004' \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/music-track-index.json
+uv run zelda-suite validate-source-export /tmp/music-track-index.json
+diff -u data/extracted/music-track-index.json /tmp/music-track-index.json
+```
+
+The JSON schema for the export is
+[`music-track-index.schema.json`](./music-track-index.schema.json). The named
+asset loader exposes it as `load_extracted_asset("music-track-index")`.

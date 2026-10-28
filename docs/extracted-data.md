@@ -223,3 +223,25 @@ and is not treated as a resolved ROM file offset.
 Regenerate it with `zelda-suite inspect-sprite-dispatch` as documented in
 [`sprite-dispatch.md`](./schemas/sprite-dispatch.md). The record contract is
 defined by the [sprite-dispatch export schema](./schemas/sprite-dispatch-export.schema.json).
+
+
+## Music track pointer index
+
+`data/extracted/music-track-index.json` indexes the 35 entries under
+`base SONG_POINTERS` in `Bank1B.asm` from pinned source revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. Its source file offsets cover
+`$0D8004–$0D8049`; each pointer entry is two bytes and has a source comment
+index from `$01` through `$23`.
+
+The export preserves all 15 empty `$0000` entries and four aliases to earlier
+song labels. A zero-based table index is stored alongside the source-comment
+track index, and every row retains the original expression, source line,
+pointer-entry offset, and source revision. The table is registered under the
+name `music-track-index` and can be loaded with
+`load_extracted_asset("music-track-index")`.
+
+Regenerate and compare it using the CLI in
+[the audio discovery note](./schemas/audio.md). No song payload bytes are
+included, and no source pointer is treated as an independently verified SPC
+RAM address. The payload files are absent from the pinned submodule, so the
+table is metadata-only and does not make audio rebuilding available.
