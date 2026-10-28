@@ -103,7 +103,7 @@ def test_import_source_asset_round_trips_and_updates_canonical_export(
 
     assert imported["key"] == "falling-prize-values"
     assert imported["format"] == "zelda-suite-data-table"
-    assert imported["source_file"].endswith("Bank0C.asm")
+    assert imported["source_file"] == "ancilla_init.asm"
     canonical_payload = json.dumps(
         imported["payload"], ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False
     ) + "\n"
@@ -143,7 +143,7 @@ def test_duplicate_source_asset_requires_explicit_replacement(tmp_path: Path) ->
         replace_existing=True,
     )
     assert replaced["key"] == "item-layout"
-    assert replaced["payload"]["table_label"] == "Item_FallHeights"
+    assert replaced["payload"]["table_label"] == ".fall_height"
     assert get_source_asset(database, "item-layout") == replaced
     assert validate_project(database) == []
 
