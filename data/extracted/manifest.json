@@ -1,6 +1,15 @@
 {
   "assets": [
     {
+      "description": "Nine raw Crystal Maiden message-ID words; all unique IDs appear in the registered text-message index, while the routine's local .message_ids relationship to the global label and source offsets remain unverified.",
+      "file": "crystal-maiden-message-ids.json",
+      "format": "zelda-suite-data-table",
+      "name": "crystal-maiden-message-ids",
+      "record_count": 9,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
       "description": "Eight raw 16-bit words in the source-commented Crystal Maiden palette data table; literal values only, with the source label relationship to the routine's .palette reference left unresolved and ROM offsets unverified.",
       "file": "crystal-maiden-palette-words.json",
       "format": "zelda-suite-data-table",

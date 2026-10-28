@@ -316,8 +316,9 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
     assets = list_extracted_assets(registry_path)
     names = {asset["name"] for asset in assets}
 
-    assert len(assets) == 31
+    assert len(assets) == 32
     assert names == {
+        "crystal-maiden-message-ids",
         "crystal-maiden-palette-words",
         "crystal-switch-palette-selectors",
         "falling-prize-item-values",
@@ -355,6 +356,7 @@ def test_named_asset_loader_lists_and_loads_committed_assets() -> None:
         asset["name"]: load_extracted_asset(asset["name"], registry_path)
         for asset in assets
     }
+    assert loaded["crystal-maiden-message-ids"]["entry_count"] == 9
     assert loaded["crystal-maiden-palette-words"]["entry_count"] == 8
     assert loaded["crystal-switch-palette-selectors"]["entry_count"] == 2
     assert loaded["falling-prize-item-values"]["entry_count"] == 7

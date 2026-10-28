@@ -207,6 +207,42 @@ invalid source export payloads. See the
 [named asset loader guide](./asset-loader.md) and
 [registry schema](./schemas/asset-registry.schema.json).
 
+## Crystal Maiden message IDs
+
+`data/extracted/crystal-maiden-message-ids.json` preserves nine raw `dw` expressions under
+`CrystalMaiden_ShowMessage_message_ids` in pinned
+`Sprites/sprite_crystal_maiden.asm` revision `347c23f9fc019c72d32da537c9cb235f468d021d`. The source comment
+marks `$0F4EBC–$0F4ECD`. The values are message IDs rather than decoded message
+content.
+
+Each of the eight distinct IDs cross-references to an existing record in the
+committed `text-message-index.json` export (from `Message_0132` through
+`Message_013C` across the listed values). The nearby
+`CrystalMaiden_ShowMessage` routine reads from a local `.message_ids`
+reference; this export does not establish that this local name resolves to the
+global `CrystalMaiden_ShowMessage_message_ids` label. Keep that source-label
+relationship unresolved. Source-commented offsets have not been verified
+against a local ROM.
+
+Regenerate the table from the pinned source:
+
+```bash
+uv run zelda-suite inspect-data-table \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_crystal_maiden.asm \
+  CrystalMaiden_ShowMessage_message_ids \
+  --table-offset '$0F4EBC' \
+  --directive dw \
+  --entry-count 9 \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/crystal-maiden-message-ids.json
+uv run zelda-suite validate-source-export /tmp/crystal-maiden-message-ids.json
+diff -u data/extracted/crystal-maiden-message-ids.json /tmp/crystal-maiden-message-ids.json
+```
+
+CI checks source-parser parity and that all distinct IDs exist in the registered
+message index. It does not decode text or resolve the local `.message_ids`
+label to the global table label, and it does not read ROM bytes.
+
 ## Crystal Maiden palette words
 
 `data/extracted/crystal-maiden-palette-words.json` records the eight raw
