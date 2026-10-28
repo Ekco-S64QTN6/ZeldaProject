@@ -212,17 +212,6 @@ def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
 
     format_version = int(project_row["format_version"])
     schema_version = int(version_row[0])
-    if format_version != PROJECT_FORMAT_VERSION:
-        raise ValueError(
-            f"unsupported project format version {format_version}; "
-            f"this tool supports {PROJECT_FORMAT_VERSION}"
-        )
-    if schema_version != CURRENT_SCHEMA_VERSION:
-        raise ValueError(
-            f"unsupported database schema version {schema_version}; "
-            f"this tool supports {CURRENT_SCHEMA_VERSION}"
-        )
-
     return {
         "format": PROJECT_FORMAT,
         "format_version": format_version,
