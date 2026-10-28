@@ -168,3 +168,39 @@ def test_preserves_inline_comments_only_when_requested_in_json_records() -> None
     assert entries[0].to_dict(include_inline_comment=True)["inline_comment"] == "first group"
     assert entries[-1].to_dict(include_inline_comment=True)["inline_comment"] is None
 
+
+def test_expected_entry_count_accepts_exact_count_and_rejects_mismatch() -> None:
+    entries = parse_data_table(
+        SAMPLE_SOURCE,
+        ".values",
+        0x0200,
+        directive="db",
+        parent_label="ParentTable",
+        end_label=".next",
+        expected_entry_count=4,
+    )
+    assert len(entries) == 4
+
+    with pytest.raises(DataTableParseError, match="expected 5 entries.*found 4"):
+        parse_data_table(
+            SAMPLE_SOURCE,
+            ".values",
+            0x0200,
+            directive="db",
+            parent_label="ParentTable",
+            end_label=".next",
+            expected_entry_count=5,
+        )
+
+
+def test_expected_entry_count_must_be_a_positive_non_boolean_integer() -> None:
+    for invalid in (0, -1):
+        with pytest.raises(ValueError, match="expected_entry_count must be positive"):
+            parse_data_table(
+                SAMPLE_SOURCE, ".values", 0x0200, expected_entry_count=invalid
+            )
+
+    with pytest.raises(TypeError, match="expected_entry_count must be an integer"):
+        parse_data_table(
+            SAMPLE_SOURCE, ".values", 0x0200, expected_entry_count=True
+        )

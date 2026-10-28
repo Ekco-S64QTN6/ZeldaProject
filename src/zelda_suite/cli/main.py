@@ -261,6 +261,12 @@ def inspect_pointer_table(
     help="Exclusive ending label when several tables share a block.",
 )
 @click.option(
+    "--entry-count",
+    type=click.IntRange(min=1),
+    default=None,
+    help="Optional exact number of entries expected in the bounded table.",
+)
+@click.option(
     "--source-revision",
     default=None,
     show_default=False,
@@ -285,6 +291,7 @@ def inspect_data_table(
     entry_width: int | None,
     parent_label: str | None,
     end_label: str | None,
+    entry_count: int | None,
     source_revision: str | None,
     include_comments: bool,
     output: Path | None,
@@ -304,6 +311,7 @@ def inspect_data_table(
             parent_label=parent_label,
             end_label=end_label,
             source_revision=recorded_revision,
+            expected_entry_count=entry_count,
         )
     except (OSError, UnicodeError, ValueError) as exc:
         raise click.ClickException(str(exc)) from exc

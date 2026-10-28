@@ -38,6 +38,8 @@ def test_cli_exports_raw_data_table_json_and_matches_schema(tmp_path: Path) -> N
             "ExampleScope",
             "--end-label",
             ".end_values",
+            "--entry-count",
+            "2",
             "--source-revision",
             "synthetic-revision",
         ],
@@ -167,3 +169,33 @@ def test_cli_opt_in_comment_export_uses_v2_schema_and_validates(
     with pytest.raises(AssetLoadError, match="inline_comment must be a string or null"):
         validate_source_export(malformed)
 
+
+def test_cli_rejects_unexpected_data_table_entry_count(tmp_path: Path) -> None:
+    source = tmp_path / "example.asm"
+    source.write_text(SAMPLE_SOURCE, encoding="utf-8")
+    output = tmp_path / "should-not-exist.json"
+    result = CliRunner().invoke(
+        cli,
+        [
+            "inspect-data-table",
+            str(source),
+            ".values",
+            "--table-offset",
+            "$0200",
+            "--directive",
+            "db",
+            "--parent-label",
+            "ExampleScope",
+            "--end-label",
+            ".end_values",
+            "--entry-count",
+            "3",
+            "--output",
+            str(output),
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "expected 3 entries" in result.output
+    assert "found 2" in result.output
+    assert not output.exists()

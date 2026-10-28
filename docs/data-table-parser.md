@@ -17,6 +17,7 @@ uv run zelda-suite inspect-data-table \
   --directive db \
   --parent-label Pool_AddPendantOrCrystal \
   --end-label .fall_height \
+  --entry-count 7 \
   --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
   --output /tmp/falling-prize-item-values.json
 
@@ -40,6 +41,11 @@ than once. Use `--end-label` when multiple adjacent arrays live inside the
 same parent block. If no end label is supplied, a global brace-delimited table
 is bounded by its braces; other forms are bounded at the next global label.
 Ambiguous local labels fail instead of silently selecting the wrong table.
+Use optional `--entry-count N` when the expected size is independently known;
+the command fails if the bounded parser returns any other number of entries.
+This catches accidentally truncated or overlong tables without evaluating
+assembler expressions. The option is an assertion, not a way to infer a
+table's boundary.
 
 The directive determines the legal literal range and default storage width:
 `db` is one byte, `dw` is two, and `dl` is three. `--entry-width` only
@@ -61,6 +67,7 @@ uv run zelda-suite inspect-data-table \
   --directive db \
   --parent-label Pool_AddPendantOrCrystal \
   --end-label .fall_height \
+  --entry-count 7 \
   --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
   --include-comments \
   --output /tmp/falling-prize-item-values-v2.json
