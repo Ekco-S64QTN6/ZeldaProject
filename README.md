@@ -51,3 +51,5 @@ For a source-only join of the 35-slot music pointer table and its 15 payload dec
 The committed sprite dispatch export has a submodule-independent regression baseline for its 68 IDs (`$79–$BC`), offsets, and six handler alias groups; source handler-address comments remain unverified annotations.
 
 The 128-entry overworld hidden-item pointer export also has a source-independent CI baseline for all target labels and pointer offsets; that baseline checks metadata consistency, not ROM bytes or resolved target offsets.
+
+For a source-only cross-check of the 320 dungeon room pointers against the three committed room-payload inventories, run `uv run zelda-suite audit-dungeon-room-assets`. It reports the three unreferenced payload labels without reading ROM bytes or resolving candidate offsets; see [`docs/schemas/dungeons.md`](./docs/schemas/dungeons.md).

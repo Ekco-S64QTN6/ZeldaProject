@@ -14,6 +14,7 @@ from zelda_suite.extract import (
     DICTIONARY_INVENTORY_FORMAT,
     POINTER_DIRECTIVE_WIDTHS,
     AssetLoadError,
+    DungeonRoomAssetAuditError,
     IncbinInventoryAuditError,
     MessageSourceBlock,
     MusicAssetAuditError,
@@ -23,6 +24,7 @@ from zelda_suite.extract import (
     SourceExpressionAuditError,
     TextDictionaryAuditError,
     TextMessageIndexAuditError,
+    audit_dungeon_room_assets,
     audit_incbin_inventories,
     audit_music_assets,
     audit_text_dictionary_assets,
@@ -1435,6 +1437,72 @@ def verify_rom_tables_command(
         click.echo(summary_text)
 
     if report["summary"]["mismatches"]:
+        raise click.exceptions.Exit(1)
+
+
+@cli.command(name="audit-dungeon-room-assets")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+@click.option(
+    "--fail-on-findings",
+    is_flag=True,
+    help="Return exit status 1 when an error or warning is present.",
+)
+def audit_dungeon_room_assets_command(
+    registry_path: Path | None,
+    output: Path | None,
+    fail_on_findings: bool,
+) -> None:
+    """Cross-reference the registered dungeon pointer and room payload assets."""
+    try:
+        report = audit_dungeon_room_assets(
+            registry_path or "data/extracted/manifest.json"
+        )
+    except (DungeonRoomAssetAuditError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote dungeon-room asset audit to {output}; "
+            f"pointers={summary['pointer_entry_count']}, "
+            f"targets={summary['unique_pointer_target_label_count']}, "
+            f"payloads={summary['payload_declaration_count']}, "
+            f"missing_targets={summary['missing_payload_target_count']}, "
+            f"unreferenced_payloads={summary['unreferenced_payload_count']}, "
+            f"errors={summary['error_count']}, warnings={summary['warning_count']}"
+        )
+
+    if fail_on_findings and report["summary"]["finding_count"]:
         raise click.exceptions.Exit(1)
 
 
