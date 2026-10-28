@@ -301,3 +301,46 @@ diff -u data/extracted/overworld-hidden-item-pointers.json /tmp/overworld-hidden
 
 The parser parity test ensures all 128 pointer records match the pinned source;
 it does not mark the hidden-item list data as fully extracted or editable.
+
+## Overworld high/low payload inventories
+
+The source-only inventory is split by source file into
+`data/extracted/overworld-payloads-bank0b.json` (164 declarations) and
+`data/extracted/overworld-payloads-bank0c.json` (84 declarations). Together
+they capture 248 labelled `incbin` declarations under `bin/ow/` from pinned
+revision `347c23f9fc019c72d32da537c9cb235f468d021d`. They remain separate
+because each version-1 incbin export retains its source filename and revision.
+
+The records do not include payload bytes. The source comments provide a useful
+initial offset map, but they contain known gaps and mismatches:
+
+- Bank0B has 164 entries: 161 range/size matches, two mismatches, and one
+  declaration (`OverworldMap32_Screen4F_High`) with no source-commented range.
+- `OverworldMap32_Screen42_Low` has a declared size of 237 bytes while its
+  source-commented inclusive range covers 269 bytes.
+- `OverworldMap32_Screen61_Low` has a declared size of 241 bytes while its
+  source-commented inclusive range covers 242 bytes.
+- Bank0C has 84 entries: 83 range/size matches and one mismatch.
+- `OverworldMap32_Screen88_Low` has a declared size of 84 bytes while its
+  source-commented inclusive range covers 83 bytes.
+
+These differences are preserved by the inventory's distinct fields for the
+source-commented end, computed end, and boolean comparison. They are not
+silently corrected, and the maps' high/low payloads are not decoded by this
+export. The pinned submodule has no tracked `bin/ow/*.bin` files.
+
+Reproduce the two inventory files with the existing `inspect-incbin` command:
+
+```bash
+uv run zelda-suite inspect-incbin reference/AsarUSALTTPDisassembly/Bank0B.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --output /tmp/overworld-payloads-bank0b.json
+uv run zelda-suite inspect-incbin reference/AsarUSALTTPDisassembly/Bank0C.asm --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d --output /tmp/overworld-payloads-bank0c.json
+uv run zelda-suite validate-source-export /tmp/overworld-payloads-bank0b.json
+uv run zelda-suite validate-source-export /tmp/overworld-payloads-bank0c.json
+diff -u data/extracted/overworld-payloads-bank0b.json /tmp/overworld-payloads-bank0b.json
+diff -u data/extracted/overworld-payloads-bank0c.json /tmp/overworld-payloads-bank0c.json
+```
+
+Both inventories are registered by name as `overworld-payloads-bank0b` and
+`overworld-payloads-bank0c`. CI compares the files to parsed pinned-source
+metadata and loads them through the named-asset registry. No editable tile or
+layer representation is claimed yet.
