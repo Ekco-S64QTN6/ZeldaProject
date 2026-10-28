@@ -156,9 +156,46 @@ def test_verifier_reports_pointer_record_sentinel_and_replacement_mismatches(
                for item in report["mismatches"])
 
 
+def test_hidden_item_cli_emits_report_and_refuses_overwrite(tmp_path: Path) -> None:
+    from click.testing import CliRunner
+
+    from zelda_suite.cli.main import cli
+
+    rom_path, _layout = _write_rom_from_source(tmp_path)
+    output = tmp_path / "hidden-items.json"
+    arguments = [
+        "verify-overworld-hidden-items",
+        str(rom_path),
+        "--source",
+        str(SOURCE_PATH),
+        "--source-revision",
+        PINNED_REVISION,
+    ]
+    runner = CliRunner()
+
+    result = runner.invoke(cli, arguments)
+    assert result.exit_code == 0, result.output
+    assert '"mismatch_count": 0' in result.output
+
+    written = runner.invoke(cli, [*arguments, "--output", str(output)])
+    assert written.exit_code == 0, written.output
+    assert '"mismatch_count": 0' in output.read_text(encoding="utf-8")
+    assert "checked=550, mismatches=0" in written.output
+
+    refused = runner.invoke(cli, [*arguments, "--output", str(output)])
+    assert refused.exit_code != 0
+    assert "refusing to overwrite existing output" in refused.output
+
+
 def test_parser_rejects_a_missing_or_shortened_source_region() -> None:
     source = _source_text()
-    altered = source.replace("dw $FFFF", "dw $FFFE", 1)
+    start = source.index("; $0DC3F9-$0DC89B Overworld secrets data")
+    end = source.index("; $0DC89C-$0DC8A3 DATA", start)
+    altered_region = source[start:end].replace("dw $FFFF", "dw $FFFE", 1)
+    altered = source[:start] + altered_region + source[end:]
 
-    with pytest.raises(ValueError, match="unsupported declaration|expected 67 two-byte sentinels"):
+    with pytest.raises(
+        ValueError,
+        match="unsupported declaration|expected 67 two-byte sentinels",
+    ):
         parse_overworld_hidden_item_source(altered, source_revision=PINNED_REVISION)
