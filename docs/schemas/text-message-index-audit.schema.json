@@ -4,7 +4,7 @@
   "description": "Source-only diagnostics for source offset annotations and declared message-block sizes in a registered text-message index. It does not read ROM bytes or decode text.",
   "type": "object",
   "required": [
-    "format", "format_version", "registry", "asset_name", "source_file",
+    "format", "format_version", "registry", "asset_name", "source_files",
     "source_revision", "source_blocks", "findings", "summary", "evidence"
   ],
   "properties": {
@@ -12,7 +12,12 @@
     "format_version": {"const": 1},
     "registry": {"type": "string", "minLength": 1},
     "asset_name": {"type": "string", "minLength": 1},
-    "source_file": {"type": "string", "minLength": 1},
+    "source_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
     "source_revision": {"type": "string", "minLength": 1},
     "source_blocks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source_block"}},
     "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
