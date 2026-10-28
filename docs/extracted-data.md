@@ -245,3 +245,24 @@ Regenerate and compare it using the CLI in
 included, and no source pointer is treated as an independently verified SPC
 RAM address. The payload files are absent from the pinned submodule, so the
 table is metadata-only and does not make audio rebuilding available.
+
+
+## Music payload source inventory
+
+`data/extracted/music-payload-inventory.json` inventories the 15 source-labeled
+`incbin` declarations in `Bank1B.asm` under `bin/music/`. It is registered
+as `music-payload-inventory` and loaded through the same named asset API.
+
+The records preserve the exact include path, label, source line, source-commented
+inclusive ROM file range, explicit `Size:` annotation when present, computed
+end when a source start and declared size are both available, and the comparison
+result when a range and declared size can be compared. The twelve main-song
+entries include explicit size annotations and agree with their source ranges.
+The three auxiliary entries have range comments but no inline size annotation;
+those size/comparison fields remain null, which distinguishes source statements
+from arithmetic inferred from their comments.
+
+To reproduce it, run the existing `inspect-incbin` command shown in
+[the audio discovery note](./schemas/audio.md), then validate and diff the JSON.
+The command never opens the `incbin` targets; the pinned submodule does not track
+the `bin/music/` payload files.
