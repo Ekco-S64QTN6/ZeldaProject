@@ -70,6 +70,25 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+  setup-posix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+      - name: Run POSIX workspace setup smoke test
+        run: |
+          workspace="$RUNNER_TEMP/zelda-setup-smoke"
+          bash scripts/setup.sh --name ci-smoke --workspace "$workspace"
+          test -f "$workspace/project/ci-smoke.db"
+          test -f "$workspace/project/ci-smoke.json"
+          uv run zelda-suite validate "$workspace/project/ci-smoke.db"
+
   setup-windows:
     runs-on: windows-latest
     steps:
@@ -83,7 +102,7 @@ jobs:
         shell: pwsh
         run: |
           $workspace = Join-Path $env:RUNNER_TEMP "zelda-setup-smoke"
-          .\scripts\setup.ps1 -Name "ci-smoke" -Workspace $workspace
+          .\\scripts\\setup.ps1 -Name "ci-smoke" -Workspace $workspace
           $database = Join-Path $workspace "project/ci-smoke.db"
           $jsonExport = Join-Path $workspace "project/ci-smoke.json"
           if (-not (Test-Path $database)) { throw "Setup did not create the SQLite project." }
