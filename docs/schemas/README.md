@@ -22,7 +22,7 @@ The supported version-1 source exports can be loaded and validated with the [ass
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the seventeen named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the twenty-one named source exports and their expected formats, counts, and pinned revision.
 
 - [`data/extracted/falling-prize-item-values.json`](../../data/extracted/falling-prize-item-values.json) — item values.
 - [`data/extracted/falling-prize-fall-heights.json`](../../data/extracted/falling-prize-fall-heights.json) — indexed falling heights.
@@ -41,6 +41,10 @@ The supported version-1 source exports can be loaded and validated with the [ass
 - [`data/extracted/item-receipt-target-addresses.json`](../../data/extracted/item-receipt-target-addresses.json) — 76 raw two-byte WRAM target addresses.
 - [`data/extracted/item-receipt-values.json`](../../data/extracted/item-receipt-values.json) — 76 raw byte values used by the receive-item routine.
 - [`data/extracted/item-receipt-dungeon-masks.json`](../../data/extracted/item-receipt-dungeon-masks.json) — 14 two-byte dungeon-item masks.
+- [`data/extracted/item-receipt-y-offsets.json`](../../data/extracted/item-receipt-y-offsets.json) — 76 raw Y-offset expressions.
+- [`data/extracted/item-receipt-x-offsets.json`](../../data/extracted/item-receipt-x-offsets.json) — 76 X offsets.
+- [`data/extracted/item-receipt-wide-flags.json`](../../data/extracted/item-receipt-wide-flags.json) — 76 raw wide-item flags.
+- [`data/extracted/item-receipt-properties.json`](../../data/extracted/item-receipt-properties.json) — 76 raw property bytes.
 
 All exports retain pinned source provenance; see [reproduction instructions](../extracted-data.md).
 
