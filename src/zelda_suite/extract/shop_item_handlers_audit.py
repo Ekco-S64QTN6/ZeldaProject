@@ -11,6 +11,11 @@ from zelda_suite.extract.asset_loader import (
     list_extracted_assets,
     load_extracted_asset,
 )
+from zelda_suite.extract.item_receipt_annotation_audit import (
+    ITEM_RECEIPT_GRAPHICS_ASSET_NAME,
+    ItemReceiptAnnotationAuditError,
+    audit_item_receipt_annotations,
+)
 
 SHOP_ITEM_HANDLERS_AUDIT_FORMAT = "zelda-suite-shop-item-handlers-audit"
 SHOP_ITEM_HANDLERS_ASSET_NAME = "shop-item-handlers"
@@ -56,13 +61,23 @@ def audit_shop_item_handlers(
             )
         purchases = load_extracted_asset(asset_name, registry_path)
         receipts = load_extracted_asset(receipt_asset_name, registry_path)
-    except (AssetLoadError, OSError) as exc:
+        annotation_report = audit_item_receipt_annotations(
+            registry_path, asset_name=ITEM_RECEIPT_GRAPHICS_ASSET_NAME
+        )
+    except (AssetLoadError, ItemReceiptAnnotationAuditError, OSError) as exc:
         raise ShopItemHandlersAuditError(str(exc)) from exc
 
     if purchases["source_revision"] != receipts["source_revision"]:
         raise ShopItemHandlersAuditError(
             "shop-item handler and item-receipt exports do not share a source revision"
         )
+    if purchases["source_revision"] != annotation_report["source_revision"]:
+        raise ShopItemHandlersAuditError(
+            "shop-item handlers and graphics comment annotations do not share a source revision"
+        )
+    annotation_by_index = {
+        row["table_index"]: row for row in annotation_report["entries"]
+    }
     receipt_entries = receipts["entries"]
     receipt_count = len(receipt_entries)
     rows: list[dict[str, Any]] = []
@@ -79,6 +94,11 @@ def audit_shop_item_handlers(
             raise ShopItemHandlersAuditError(
                 f"receipt layout slot {receipt_index} has table_index "
                 f"{slot['table_index']!r}"
+            )
+        annotation = annotation_by_index.get(receipt_index)
+        if annotation is None:
+            raise ShopItemHandlersAuditError(
+                f"no graphics comment annotation exists for receipt table index {receipt_index}"
             )
         seen_receipt_indexes.add(receipt_index)
         rows.append({
@@ -103,6 +123,21 @@ def audit_shop_item_handlers(
                 "properties": slot["properties"],
                 "x_offset": slot["x_offset"],
                 "y_offset": slot["y_offset"],
+                "graphics_index_annotation": {
+                    "table_index": annotation["table_index"],
+                    "expression": annotation["expression"],
+                    "literal_value": annotation["literal_value"],
+                    "source_comment": annotation["source_comment"],
+                    "source_comment_item_id": annotation["source_comment_item_id"],
+                    "source_comment_label": annotation["source_comment_label"],
+                    "source_comment_annotation_parsed": annotation[
+                        "source_comment_annotation_parsed"
+                    ],
+                    "source_comment_id_matches_table_index": annotation[
+                        "source_comment_id_matches_table_index"
+                    ],
+                    "annotation_id_delta": annotation["annotation_id_delta"],
+                },
             },
         })
 
@@ -114,6 +149,7 @@ def audit_shop_item_handlers(
         "registry": str(registry_path),
         "asset_name": asset_name,
         "receipt_asset_name": receipt_asset_name,
+        "graphics_annotation_asset_name": ITEM_RECEIPT_GRAPHICS_ASSET_NAME,
         "source_file": purchases["source_file"],
         "source_revision": purchases["source_revision"],
         "dispatch_routine_label": purchases["dispatch_routine_label"],
@@ -129,6 +165,12 @@ def audit_shop_item_handlers(
             "maximum_price_value": max(prices),
             "receipt_layout_entry_count": receipt_count,
             "receipt_indexes_within_layout": len(seen_receipt_indexes),
+            "receipt_indexes_with_comment_id_mismatch": sum(
+                row["receipt_slot"]["graphics_index_annotation"][
+                    "source_comment_id_matches_table_index"
+                ] is False
+                for row in rows
+            ),
         },
         "evidence": {
             "source_only": True,
@@ -139,5 +181,7 @@ def audit_shop_item_handlers(
             "receipt_item_names_resolved": False,
             "room_specific_shop_stock_resolved": False,
             "receipt_slot_semantics_verified": False,
+            "source_comment_ids_are_canonical": False,
+            "source_comment_labels_are_raw_annotations": True,
         },
     }

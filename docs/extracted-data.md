@@ -714,6 +714,32 @@ names, or establish which handlers are stocked in particular rooms. See
 [export schema](./schemas/shop-item-handlers-export.schema.json), and the
 [audit schema](./schemas/shop-item-handlers-audit.schema.json).
 
+## Receive-item graphics comment annotations
+
+The source-only `audit-item-receipt-annotations` report compares the dense
+76-slot `.item_graphics_indices` table in pinned `Ancilla/ancilla_init.asm`
+against the IDs written in each inline comment. It finds 64 comments whose IDs
+match their table positions and 12 mismatches: table positions `$40–$4B` carry
+comments `$41–$4C`, because comment ID `$40` is missing. The report keeps the
+raw comment text and calculated delta; it does not treat labels as canonical
+item IDs or repair the source.
+
+The shop purchase-handler audit includes the same raw annotations on each
+receipt-slot cross-reference. Selectors `$42` and `$44` join by dense table
+position and therefore retain comments `0x43 - HEART` and `0x45 - 10 ARROWS`
+as source annotations with a +1 delta. These mismatches are explicitly
+reported rather than hidden behind inferred semantic names.
+
+Run the annotation audit with:
+
+```bash
+uv run zelda-suite audit-item-receipt-annotations
+uv run zelda-suite audit-item-receipt-annotations --output /tmp/item-receipt-annotation-audit.json
+```
+
+See the [item/chest discovery guide](./schemas/items.md) and the
+[annotation audit schema](./schemas/item-receipt-annotation-audit.schema.json).
+
 ## Packed dungeon chest records
 
 The registered [`dungeon-chest-data`](../data/extracted/dungeon-chest-data.json)

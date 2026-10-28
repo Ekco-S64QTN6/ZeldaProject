@@ -25,7 +25,8 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Dungeon chest data export](./dungeon-chest-data-export.schema.json) — version 1 packed three-byte `Dungeon_ChestData` records with raw item/room values and the big-chest flag.
 - [Dungeon chest data audit](./dungeon-chest-data-audit.schema.json) — version 1 source-only repeated-room, raw item-value frequency, and big-chest summary.
 - [Shop-item handlers export](./shop-item-handlers-export.schema.json) — version 1 source export for seven `Sprite_ShopKeeper` purchase handlers, including source-coded prices and receipt selectors.
-- [Shop-item handlers audit](./shop-item-handlers-audit.schema.json) — version 1 cross-reference from receipt indexes to raw `item-receipt-layout` slots; no semantic item-name or shop-stock claim.
+- [Shop-item handlers audit](./shop-item-handlers-audit.schema.json) — version 1 cross-reference from receipt indexes to raw `item-receipt-layout` slots; now includes raw graphics-table comment annotations without treating them as canonical IDs.
+- [Item-receipt annotation audit](./item-receipt-annotation-audit.schema.json) — version 1 source-only report of the missing `0x40` comment ID and the 12 source-comment IDs that differ from dense table indexes.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
@@ -105,7 +106,7 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 
 - `overworld.md` — full editable map schema (tiles, layers, palettes, warps); the current file is discovery-only.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
-- [`items.md`](./items.md) — source-only packed chest and purchase-handler inventories, plus remaining gaps before a complete editable item/chest/shop schema.
+- [`items.md`](./items.md) — source-only packed chest/purchase-handler inventories, receive-item comment-ID discrepancy, and remaining gaps before a complete editable item/chest/shop schema.
 - `text.md` — message table, encoding, compression.
 - `sprites.md` — sprite types, placements, gfx banks.
 - `audio.md` — source discovery for music pointer and payload inventories; semantic audio schema and payload decoding remain future work.

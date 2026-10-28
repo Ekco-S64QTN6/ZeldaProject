@@ -5,7 +5,7 @@
   "type": "object",
   "required": [
     "format", "format_version", "registry", "asset_name", "receipt_asset_name",
-    "source_file", "source_revision", "dispatch_routine_label",
+    "graphics_annotation_asset_name", "source_file", "source_revision", "dispatch_routine_label",
     "dispatch_routine_source_range_annotation", "dispatch_table_file_offset",
     "rows", "summary", "evidence"
   ],
@@ -15,6 +15,7 @@
     "registry": { "type": "string", "minLength": 1 },
     "asset_name": { "type": "string", "minLength": 1 },
     "receipt_asset_name": { "type": "string", "minLength": 1 },
+    "graphics_annotation_asset_name": { "const": "item-receipt-graphics-indices" },
     "source_file": { "const": "sprite_shopkeeper.asm" },
     "source_revision": { "type": "string", "minLength": 1 },
     "dispatch_routine_label": { "const": "Sprite_ShopKeeper" },
@@ -41,7 +42,7 @@
       "type": "object",
       "required": [
         "table_index", "item_value", "target_address", "wide_item_flag",
-        "properties", "x_offset", "y_offset"
+        "properties", "x_offset", "y_offset", "graphics_index_annotation"
       ],
       "properties": {
         "table_index": { "type": "integer", "minimum": 0 },
@@ -50,7 +51,29 @@
         "wide_item_flag": { "$ref": "#/$defs/slot_field" },
         "properties": { "$ref": "#/$defs/slot_field" },
         "x_offset": { "$ref": "#/$defs/slot_field" },
-        "y_offset": { "$ref": "#/$defs/slot_field" }
+        "y_offset": { "$ref": "#/$defs/slot_field" },
+        "graphics_index_annotation": { "$ref": "#/$defs/graphics_index_annotation" }
+      },
+      "additionalProperties": false
+    },
+    "graphics_index_annotation": {
+      "type": "object",
+      "required": [
+        "table_index", "expression", "literal_value", "source_comment",
+        "source_comment_item_id", "source_comment_label",
+        "source_comment_annotation_parsed", "source_comment_id_matches_table_index",
+        "annotation_id_delta"
+      ],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "expression": { "type": "string", "minLength": 1 },
+        "literal_value": { "type": ["integer", "null"] },
+        "source_comment": { "type": ["string", "null"] },
+        "source_comment_item_id": { "type": ["integer", "null"], "minimum": 0, "maximum": 255 },
+        "source_comment_label": { "type": ["string", "null"] },
+        "source_comment_annotation_parsed": { "type": "boolean" },
+        "source_comment_id_matches_table_index": { "type": ["boolean", "null"] },
+        "annotation_id_delta": { "type": ["integer", "null"] }
       },
       "additionalProperties": false
     },
@@ -85,7 +108,8 @@
       "type": "object",
       "required": [
         "handler_count", "distinct_receipt_item_index_count", "minimum_price_value",
-        "maximum_price_value", "receipt_layout_entry_count", "receipt_indexes_within_layout"
+        "maximum_price_value", "receipt_layout_entry_count", "receipt_indexes_within_layout",
+        "receipt_indexes_with_comment_id_mismatch"
       ],
       "properties": {
         "handler_count": { "const": 7 },
@@ -93,7 +117,8 @@
         "minimum_price_value": { "type": "integer", "minimum": 1 },
         "maximum_price_value": { "type": "integer", "minimum": 1 },
         "receipt_layout_entry_count": { "const": 76 },
-        "receipt_indexes_within_layout": { "type": "integer", "minimum": 1 }
+        "receipt_indexes_within_layout": { "type": "integer", "minimum": 1 },
+        "receipt_indexes_with_comment_id_mismatch": { "type": "integer", "minimum": 0, "maximum": 7 }
       },
       "additionalProperties": false
     },
@@ -103,7 +128,8 @@
         "source_only", "rom_bytes_read", "dispatch_table_offset_established",
         "handler_address_annotations_verified", "price_behavior_runtime_verified",
         "receipt_item_names_resolved", "room_specific_shop_stock_resolved",
-        "receipt_slot_semantics_verified"
+        "receipt_slot_semantics_verified", "source_comment_ids_are_canonical",
+        "source_comment_labels_are_raw_annotations"
       ],
       "properties": {
         "source_only": { "const": true },
@@ -113,7 +139,9 @@
         "price_behavior_runtime_verified": { "const": false },
         "receipt_item_names_resolved": { "const": false },
         "room_specific_shop_stock_resolved": { "const": false },
-        "receipt_slot_semantics_verified": { "const": false }
+        "receipt_slot_semantics_verified": { "const": false },
+        "source_comment_ids_are_canonical": { "const": false },
+        "source_comment_labels_are_raw_annotations": { "const": true }
       },
       "additionalProperties": false
     }

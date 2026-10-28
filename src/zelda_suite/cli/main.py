@@ -19,6 +19,7 @@ from zelda_suite.extract import (
     DungeonChestDataAuditError,
     DungeonRoomAssetAuditError,
     IncbinInventoryAuditError,
+    ItemReceiptAnnotationAuditError,
     MessageSourceBlock,
     MusicAssetAuditError,
     OAMAllocationAuditError,
@@ -35,6 +36,7 @@ from zelda_suite.extract import (
     audit_dungeon_chest_data,
     audit_dungeon_room_assets,
     audit_incbin_inventories,
+    audit_item_receipt_annotations,
     audit_music_assets,
     audit_oam_allocation,
     audit_shop_item_handlers,
@@ -1938,6 +1940,70 @@ def inspect_shop_item_handlers(
     click.echo(
         f"Wrote {len(table.entries)} shop purchase handlers to {output}; "
         "room-specific shop stock and receipt item names remain unresolved"
+    )
+
+
+
+@cli.command(name="audit-item-receipt-annotations")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--asset",
+    "asset_name",
+    default="item-receipt-graphics-indices",
+    show_default=True,
+    help="Registered dense receive-item graphics-index table.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+def audit_item_receipt_annotations_command(
+    registry_path: Path | None,
+    asset_name: str,
+    output: Path | None,
+) -> None:
+    """Compare source-comment item IDs to dense table indexes without normalizing them."""
+    try:
+        report = audit_item_receipt_annotations(
+            registry_path or "data/extracted/manifest.json",
+            asset_name=asset_name,
+        )
+    except (ItemReceiptAnnotationAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote item-receipt annotation audit to {output}; "
+        f"entries={summary['table_entry_count']}, "
+        f"comment_id_mismatches={summary['source_comment_ids_mismatched_count']}, "
+        f"missing_comment_ids={report['missing_source_comment_ids']}"
     )
 
 

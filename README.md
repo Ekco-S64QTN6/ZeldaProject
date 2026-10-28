@@ -54,6 +54,8 @@ For a source-only view of packed dungeon chest records, run `uv run zelda-suite 
 
 For a source-only catalog of the seven standard shopkeeper purchase handlers, run `uv run zelda-suite audit-shop-item-handlers`. It cross-references source-coded price bytes with raw receive-item slots by positional index; it does not resolve item names or infer shop stock by room.
 
+To expose a source-comment discrepancy in the receive-item graphics table, run `uv run zelda-suite audit-item-receipt-annotations`. The 76 dense slots use indexes `$00–$4B`, while the comments omit `$40` and label the final 12 slots `$41–$4C`; the audit preserves that as a discrepancy rather than normalizing it into canonical item IDs.
+
 The committed `SpritePrep_Main` export preserves 243 source-commented preparation entries (IDs `$00–$F2`) without inventing an inline-table offset; `uv run zelda-suite audit-sprite-prep-dispatch` joins its ID range with the 68 `SpriteActive3_Table` entries and reports the 68 shared IDs. This is index-domain cross-reference only, not proof that the handlers or annotated addresses have equivalent runtime semantics. The existing sprite dispatch export also has a submodule-independent baseline for its 68 IDs (`$79–$BC`), offsets, and six handler alias groups; handler-address comments remain unverified annotations.
 
 The 128-entry overworld hidden-item pointer export also has a source-independent CI baseline for all target labels and pointer offsets; that baseline checks metadata consistency, not ROM bytes or resolved target offsets.
