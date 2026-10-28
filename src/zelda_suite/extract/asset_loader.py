@@ -13,6 +13,7 @@ from typing import Any
 POINTER_TABLE_FORMAT = "zelda-suite-pointer-table"
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
 DATA_TABLE_FORMAT = "zelda-suite-data-table"
+MIXED_DATA_TABLE_FORMAT = "zelda-suite-mixed-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
 TEXT_MESSAGE_INDEX_FORMAT = "zelda-suite-text-message-index"
 SPRITE_DISPATCH_FORMAT = "zelda-suite-sprite-dispatch"
@@ -88,6 +89,41 @@ _DATA_TABLE_ENTRY_KEYS = {
     "source_revision",
 }
 _DATA_TABLE_ENTRY_V2_KEYS = _DATA_TABLE_ENTRY_KEYS | {"inline_comment"}
+
+_MIXED_DATA_TABLE_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "table_label",
+    "table_file_offset",
+    "record_count",
+    "byte_count",
+    "records",
+}
+_MIXED_DATA_RECORD_KEYS = {
+    "record_index",
+    "record_file_offset",
+    "source_line",
+    "source_label",
+    "byte_length",
+    "fields",
+}
+_MIXED_DATA_FIELD_KEYS = {
+    "field_index",
+    "field_file_offset",
+    "source_line",
+    "directive",
+    "entry_width",
+    "entry_count",
+    "entries",
+}
+_MIXED_DATA_ENTRY_KEYS = {
+    "entry_index",
+    "entry_file_offset",
+    "expression",
+    "literal_value",
+}
 
 _ITEM_RECEIPT_LAYOUT_TOP_KEYS = {
     "format",
@@ -445,6 +481,150 @@ def _validate_data_table_export(payload: dict[str, Any]) -> None:
             raise AssetLoadError(
                 f"{context}.source_revision does not match top-level source_revision"
             )
+
+
+
+def _validate_mixed_data_table_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _MIXED_DATA_TABLE_TOP_KEYS, "mixed data-table export")
+    if payload["format"] != MIXED_DATA_TABLE_FORMAT:
+        raise AssetLoadError("mixed data-table export has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != 1:
+        raise AssetLoadError(
+            f"unsupported mixed data-table format version {version}; this loader supports 1"
+        )
+
+    _string(payload["source_file"], "source_file")
+    _string(payload["source_revision"], "source_revision")
+    _source_label(payload["table_label"], "table_label")
+    table_start = _integer(payload["table_file_offset"], "table_file_offset", minimum=0)
+    record_count = _integer(payload["record_count"], "record_count", minimum=1)
+    byte_count = _integer(payload["byte_count"], "byte_count", minimum=1)
+    records = payload["records"]
+    if not isinstance(records, list) or not records:
+        raise AssetLoadError("records must be a non-empty array")
+    if record_count != len(records):
+        raise AssetLoadError(
+            f"record_count is {record_count}, but records contains {len(records)} items"
+        )
+
+    width_by_directive = _DATA_DIRECTIVE_WIDTHS
+    cursor = table_start
+    counted_bytes = 0
+    for expected_record_index, raw_record in enumerate(records):
+        context = f"records[{expected_record_index}]"
+        record = _object(raw_record, context)
+        _exact_keys(record, _MIXED_DATA_RECORD_KEYS, context)
+        record_index = _integer(record["record_index"], f"{context}.record_index", minimum=0)
+        if record_index != expected_record_index:
+            raise AssetLoadError(
+                f"{context}.record_index must be {expected_record_index}, got {record_index}"
+            )
+        record_offset = _integer(
+            record["record_file_offset"], f"{context}.record_file_offset", minimum=0
+        )
+        if record_offset != cursor:
+            raise AssetLoadError(
+                f"{context}.record_file_offset must be {cursor}, got {record_offset}"
+            )
+        record_line = _integer(record["source_line"], f"{context}.source_line", minimum=1)
+        source_label = record["source_label"]
+        if source_label is not None:
+            _source_label(source_label, f"{context}.source_label")
+        record_byte_length = _integer(
+            record["byte_length"], f"{context}.byte_length", minimum=1
+        )
+        fields = record["fields"]
+        if not isinstance(fields, list) or not fields:
+            raise AssetLoadError(f"{context}.fields must be a non-empty array")
+        record_start = cursor
+
+        for expected_field_index, raw_field in enumerate(fields):
+            field_context = f"{context}.fields[{expected_field_index}]"
+            field = _object(raw_field, field_context)
+            _exact_keys(field, _MIXED_DATA_FIELD_KEYS, field_context)
+            field_index = _integer(
+                field["field_index"], f"{field_context}.field_index", minimum=0
+            )
+            if field_index != expected_field_index:
+                raise AssetLoadError(
+                    f"{field_context}.field_index must be {expected_field_index}, got {field_index}"
+                )
+            field_offset = _integer(
+                field["field_file_offset"], f"{field_context}.field_file_offset", minimum=0
+            )
+            if field_offset != cursor:
+                raise AssetLoadError(
+                    f"{field_context}.field_file_offset must be {cursor}, got {field_offset}"
+                )
+            field_line = _integer(
+                field["source_line"], f"{field_context}.source_line", minimum=1
+            )
+            if field_line != record_line:
+                raise AssetLoadError(
+                    f"{field_context}.source_line must match its parent record"
+                )
+            directive = _string(field["directive"], f"{field_context}.directive")
+            if directive not in width_by_directive:
+                raise AssetLoadError(f"{field_context}.directive must be db, dw, or dl")
+            width = _integer(field["entry_width"], f"{field_context}.entry_width", minimum=1)
+            if width != width_by_directive[directive]:
+                raise AssetLoadError(
+                    f"{field_context}.entry_width does not match directive {directive!r}"
+                )
+            entry_count = _integer(
+                field["entry_count"], f"{field_context}.entry_count", minimum=1
+            )
+            entries = field["entries"]
+            if not isinstance(entries, list) or not entries:
+                raise AssetLoadError(f"{field_context}.entries must be a non-empty array")
+            if entry_count != len(entries):
+                raise AssetLoadError(
+                    f"{field_context}.entry_count is {entry_count}, "
+                    f"but entries contains {len(entries)} items"
+                )
+            literal_limit = 1 << (8 * width)
+
+            for expected_entry_index, raw_entry in enumerate(entries):
+                entry_context = f"{field_context}.entries[{expected_entry_index}]"
+                entry = _object(raw_entry, entry_context)
+                _exact_keys(entry, _MIXED_DATA_ENTRY_KEYS, entry_context)
+                entry_index = _integer(
+                    entry["entry_index"], f"{entry_context}.entry_index", minimum=0
+                )
+                if entry_index != expected_entry_index:
+                    raise AssetLoadError(
+                        f"{entry_context}.entry_index must be {expected_entry_index}, "
+                        f"got {entry_index}"
+                    )
+                entry_offset = _integer(
+                    entry["entry_file_offset"], f"{entry_context}.entry_file_offset", minimum=0
+                )
+                if entry_offset != cursor:
+                    raise AssetLoadError(
+                        f"{entry_context}.entry_file_offset must be {cursor}, got {entry_offset}"
+                    )
+                _string(entry["expression"], f"{entry_context}.expression")
+                literal_value = _nullable_integer(
+                    entry["literal_value"], f"{entry_context}.literal_value", minimum=0
+                )
+                if literal_value is not None and literal_value >= literal_limit:
+                    raise AssetLoadError(
+                        f"{entry_context}.literal_value does not fit {width}-byte directive"
+                    )
+                cursor += width
+
+        if cursor - record_start != record_byte_length:
+            raise AssetLoadError(
+                f"{context}.byte_length is inconsistent with its field widths"
+            )
+        counted_bytes += record_byte_length
+
+    if counted_bytes != byte_count:
+        raise AssetLoadError(
+            f"byte_count is {byte_count}, but records contain {counted_bytes} bytes"
+        )
+
 
 
 def _validate_item_receipt_layout_export(payload: dict[str, Any]) -> None:
@@ -1304,6 +1484,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_incbin_export(export)
     elif format_name == DATA_TABLE_FORMAT:
         _validate_data_table_export(export)
+    elif format_name == MIXED_DATA_TABLE_FORMAT:
+        _validate_mixed_data_table_export(export)
     elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
         _validate_item_receipt_layout_export(export)
     elif format_name == DICTIONARY_INVENTORY_FORMAT:
@@ -1337,6 +1519,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     POINTER_TABLE_FORMAT,
     INCBIN_INVENTORY_FORMAT,
     DATA_TABLE_FORMAT,
+    MIXED_DATA_TABLE_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
@@ -1462,6 +1645,7 @@ def load_extracted_asset(
         POINTER_TABLE_FORMAT: "entry_count",
         INCBIN_INVENTORY_FORMAT: "declaration_count",
         DATA_TABLE_FORMAT: "entry_count",
+        MIXED_DATA_TABLE_FORMAT: "record_count",
         ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",
         TEXT_MESSAGE_INDEX_FORMAT: "message_count",

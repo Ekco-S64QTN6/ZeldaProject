@@ -199,6 +199,15 @@
       "subsystem": "items"
     },
     {
+      "description": "Two source rows composed of mixed dw/db fields from Landmine_Draw_OAM_groups; preserves raw expressions and byte offsets only, not interpreted OAM semantics or ROM-verified bytes.",
+      "file": "landmine-oam-groups.json",
+      "format": "zelda-suite-mixed-data-table",
+      "name": "landmine-oam-groups",
+      "record_count": 2,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "sprites"
+    },
+    {
       "description": "Eight raw palette-selector bytes used by the Mad Batter pseudo-attack routine; selector metadata only, not decoded color palette data or ROM-verified bytes.",
       "file": "mad-batter-pseudo-attack-palettes.json",
       "format": "zelda-suite-data-table",

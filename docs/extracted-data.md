@@ -243,6 +243,39 @@ CI checks source-parser parity and that all distinct IDs exist in the registered
 message index. It does not decode text or resolve the local `.message_ids`
 label to the global table label, and it does not read ROM bytes.
 
+## Mixed-width Landmine OAM group rows
+
+`data/extracted/landmine-oam-groups.json` preserves both source rows under
+`Landmine_Draw_OAM_groups` from pinned
+`Sprites/sprite_landmine.asm` revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. The source comment marks
+`$0E80FC–$0E810B`. Each row contains a two-entry `dw` field followed by a
+four-entry `db` field, for eight bytes per row and 16 bytes total.
+
+The new `inspect-mixed-data-table` parser records each directive field,
+expression, numeric literal where directly present, source line, and calculated
+byte offset. It does not evaluate Asar expressions or infer sprite/OAM
+semantics. The offset remains source-commented metadata, not a verified ROM
+address.
+
+Regenerate and validate the source-only export:
+
+```bash
+uv run zelda-suite inspect-mixed-data-table \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_landmine.asm \
+  Landmine_Draw_OAM_groups \
+  --table-offset '$0E80FC' \
+  --record-count 2 \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/landmine-oam-groups.json
+uv run zelda-suite validate-source-export /tmp/landmine-oam-groups.json
+diff -u data/extracted/landmine-oam-groups.json /tmp/landmine-oam-groups.json
+```
+
+CI covers both the generic mixed-width parser and the committed export's parity
+with the pinned source. No ROM bytes, decoded sprite geometry, or editable OAM
+model are claimed.
+
 ## Crystal Maiden palette words
 
 `data/extracted/crystal-maiden-palette-words.json` records the eight raw

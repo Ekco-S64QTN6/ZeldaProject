@@ -1,0 +1,142 @@
+{
+  "byte_count": 16,
+  "format": "zelda-suite-mixed-data-table",
+  "format_version": 1,
+  "record_count": 2,
+  "records": [
+    {
+      "byte_length": 8,
+      "fields": [
+        {
+          "directive": "dw",
+          "entries": [
+            {
+              "entry_file_offset": 950524,
+              "entry_index": 0,
+              "expression": "0",
+              "literal_value": 0
+            },
+            {
+              "entry_file_offset": 950526,
+              "entry_index": 1,
+              "expression": "4",
+              "literal_value": 4
+            }
+          ],
+          "entry_count": 2,
+          "entry_width": 2,
+          "field_file_offset": 950524,
+          "field_index": 0,
+          "source_line": 69
+        },
+        {
+          "directive": "db",
+          "entries": [
+            {
+              "entry_file_offset": 950528,
+              "entry_index": 0,
+              "expression": "$70",
+              "literal_value": 112
+            },
+            {
+              "entry_file_offset": 950529,
+              "entry_index": 1,
+              "expression": "$00",
+              "literal_value": 0
+            },
+            {
+              "entry_file_offset": 950530,
+              "entry_index": 2,
+              "expression": "$00",
+              "literal_value": 0
+            },
+            {
+              "entry_file_offset": 950531,
+              "entry_index": 3,
+              "expression": "$00",
+              "literal_value": 0
+            }
+          ],
+          "entry_count": 4,
+          "entry_width": 1,
+          "field_file_offset": 950528,
+          "field_index": 1,
+          "source_line": 69
+        }
+      ],
+      "record_file_offset": 950524,
+      "record_index": 0,
+      "source_label": "Landmine_Draw_OAM_groups",
+      "source_line": 69
+    },
+    {
+      "byte_length": 8,
+      "fields": [
+        {
+          "directive": "dw",
+          "entries": [
+            {
+              "entry_file_offset": 950532,
+              "entry_index": 0,
+              "expression": "8",
+              "literal_value": 8
+            },
+            {
+              "entry_file_offset": 950534,
+              "entry_index": 1,
+              "expression": "4",
+              "literal_value": 4
+            }
+          ],
+          "entry_count": 2,
+          "entry_width": 2,
+          "field_file_offset": 950532,
+          "field_index": 0,
+          "source_line": 70
+        },
+        {
+          "directive": "db",
+          "entries": [
+            {
+              "entry_file_offset": 950536,
+              "entry_index": 0,
+              "expression": "$70",
+              "literal_value": 112
+            },
+            {
+              "entry_file_offset": 950537,
+              "entry_index": 1,
+              "expression": "$40",
+              "literal_value": 64
+            },
+            {
+              "entry_file_offset": 950538,
+              "entry_index": 2,
+              "expression": "$00",
+              "literal_value": 0
+            },
+            {
+              "entry_file_offset": 950539,
+              "entry_index": 3,
+              "expression": "$00",
+              "literal_value": 0
+            }
+          ],
+          "entry_count": 4,
+          "entry_width": 1,
+          "field_file_offset": 950536,
+          "field_index": 1,
+          "source_line": 70
+        }
+      ],
+      "record_file_offset": 950532,
+      "record_index": 1,
+      "source_label": "Landmine_Draw_OAM_groups",
+      "source_line": 70
+    }
+  ],
+  "source_file": "sprite_landmine.asm",
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+  "table_file_offset": 950524,
+  "table_label": "Landmine_Draw_OAM_groups"
+}

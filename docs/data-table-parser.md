@@ -113,3 +113,19 @@ because the ROM verifier can compare their bounded two's-complement encodings.
 These counts describe the committed source exports, not bytes checked against a
 ROM. Update the baseline and this section together when source exports
 intentionally change, after reviewing the diff and their source-parity tests.
+
+
+## Mixed-width source data rows
+
+Use `uv run zelda-suite inspect-mixed-data-table SOURCE LABEL --table-offset OFFSET`
+for source rows that combine `db`, `dw`, or `dl` directive segments on one
+line. A colon separates fields; each field records its directive width, raw
+expressions, source line, and calculated offsets. Each data-bearing source line
+becomes a record with a byte length derived from all field widths. The parser
+does not evaluate expressions or infer semantic OAM/gameplay fields.
+
+The pinned `Landmine_Draw_OAM_groups` export is the regression fixture for two
+rows containing a two-word `dw` field followed by four `db` bytes. The source
+annotation reports `$0E80FC–$0E810B`, but the parser only checks layout
+arithmetic implied by directive widths; it does not establish ROM provenance or
+verify these offsets against a ROM.

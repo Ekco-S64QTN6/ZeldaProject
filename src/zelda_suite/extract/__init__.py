@@ -3,6 +3,7 @@ from zelda_suite.extract.asset_loader import (
     ASSET_REGISTRY_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
+    MIXED_DATA_TABLE_FORMAT,
     MUSIC_TRACK_INDEX_FORMAT,
     SPRITE_DISPATCH_FORMAT,
     TEXT_MESSAGE_INDEX_FORMAT,
@@ -58,6 +59,13 @@ from zelda_suite.extract.music_asset_audit import (
     MUSIC_ASSET_AUDIT_FORMAT,
     MusicAssetAuditError,
     audit_music_assets,
+)
+from zelda_suite.extract.mixed_data_table import (
+    MixedDataField,
+    MixedDataRecord,
+    MixedDataTable,
+    MixedDataTableParseError,
+    parse_mixed_data_table,
 )
 from zelda_suite.extract.music_track_index import (
     MusicTrackEntry,
@@ -140,6 +148,7 @@ __all__ = [
     "ITEM_RECEIPT_LAYOUT_FORMAT",
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
+    "MIXED_DATA_TABLE_FORMAT",
     "PINNED_SOURCE_REVISION",
     "PINNED_TEXT_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
@@ -168,6 +177,10 @@ __all__ = [
     "MusicTrackEntry",
     "MusicTrackIndex",
     "MusicTrackIndexError",
+    "MixedDataField",
+    "MixedDataRecord",
+    "MixedDataTable",
+    "MixedDataTableParseError",
     "OverworldHiddenItemVerificationError",
     "OverworldPayloadPairError",
     "PointerTableEntry",
@@ -201,6 +214,7 @@ __all__ = [
     "load_source_export",
     "lorom_cpu_address",
     "parse_data_table",
+    "parse_mixed_data_table",
     "parse_dictionary_fragment_inventory",
     "parse_dl_pointer_table",
     "parse_dw_pointer_table",
