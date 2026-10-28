@@ -65,7 +65,6 @@ def test_only_parses_the_requested_brace_delimited_table() -> None:
     assert entries[0].target_addend == 0x4D
 
 
-
 def test_rejects_duplicate_requested_table_labels() -> None:
     source = """ExamplePointers:
 {
