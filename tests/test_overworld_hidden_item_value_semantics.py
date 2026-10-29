@@ -1,10 +1,11 @@
 """Tests for source-consumer classification of overworld hidden-item value bytes."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
-from click.testing import CliRunner
 import pytest
+from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.overworld_hidden_item_value_semantics import (
