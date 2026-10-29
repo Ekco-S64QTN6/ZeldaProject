@@ -166,7 +166,7 @@ def test_pinned_source_value_semantics_baseline() -> None:
     assert report["replacement_words"] == [
         {
             "table_index": 0,
-            "source_line": 2812,
+            "source_line": 2813,
             "file_offset": 0x0DC89C,
             "selector_byte_offset": 0,
             "expression": "dw $0DCC",
@@ -175,7 +175,7 @@ def test_pinned_source_value_semantics_baseline() -> None:
         },
         {
             "table_index": 1,
-            "source_line": 2813,
+            "source_line": 2814,
             "file_offset": 0x0DC89E,
             "selector_byte_offset": 2,
             "expression": "dw $0212",
@@ -184,7 +184,7 @@ def test_pinned_source_value_semantics_baseline() -> None:
         },
         {
             "table_index": 2,
-            "source_line": 2814,
+            "source_line": 2815,
             "file_offset": 0x0DC8A0,
             "selector_byte_offset": 4,
             "expression": "dw $FFFF",
@@ -193,7 +193,7 @@ def test_pinned_source_value_semantics_baseline() -> None:
         },
         {
             "table_index": 3,
-            "source_line": 2815,
+            "source_line": 2816,
             "file_offset": 0x0DC8A2,
             "selector_byte_offset": 6,
             "expression": "dw $0DB4",
