@@ -35,7 +35,12 @@ for read-only size, SHA-256, header assessment, and LoROM mapping diagnostics.
 These checks have not been established by repository CI; see the open Phase 0
 gates in [`ROADMAP.md`](./ROADMAP.md). Setup and CI remain ROM-independent.
 For a staged, read-only local-ROM smoke test and selected table-byte checks,
-follow [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
+follow [`docs/real-rom-verification.md`](./docs/real-rom-verification.md). To
+run the bundled read-only checks in one pass, set `ROM` in that shell and run
+`bash scripts/verify-rom-readonly.sh "$ROM"`. It creates a fresh report
+directory, preserves each JSON report plus a `checks.tsv` status summary, and
+returns nonzero if a check fails; it never modifies the ROM. A size check is
+not proof of canonical ROM provenance.
 
 For setup and diagnostics, see [`docs/install.md`](./docs/install.md) and [`docs/doctor.md`](./docs/doctor.md). For read-only local-ROM checks, including `zelda-suite verify-rom-tables`, `zelda-suite verify-overworld-hidden-items`, and `zelda-suite verify-dungeon-room-pointers`, see [`docs/real-rom-verification.md`](./docs/real-rom-verification.md). Also see [`docs/project-format.md`](./docs/project-format.md) for the SQLite/JSON project format, [`docs/disassembly-parser.md`](./docs/disassembly-parser.md) for pointer-table inspection, [`docs/data-table-parser.md`](./docs/data-table-parser.md) for raw `db`/`dw`/`dl` tables, [`docs/asset-loader.md`](./docs/asset-loader.md) for validating source-export JSON, [`docs/project-assets.md`](./docs/project-assets.md) for importing validated source exports into a project, [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md) for local ROM metadata and LoROM offset mapping, [`docs/rom-diff.md`](./docs/rom-diff.md) for file-backed ROM diff usage, and [`docs/extracted-data.md`](./docs/extracted-data.md) for committed source-derived table exports.
 
