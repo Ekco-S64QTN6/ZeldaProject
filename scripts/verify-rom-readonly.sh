@@ -90,8 +90,8 @@ run_check "audit-overworld-hidden-item-value-semantics" "${CLI[@]}" \
     audit-overworld-hidden-item-value-semantics \
     --output "$REPORT_DIR/overworld-hidden-item-value-semantics.json"
 
-ROM_SIZE="$(python3 -c 'import os, sys; print(os.path.getsize(sys.argv[1]))' "$ROM_PATH")" ||
-    fail "could not determine ROM size with python3"
+ROM_SIZE="$(uv run python -c 'import os, sys; print(os.path.getsize(sys.argv[1]))' "$ROM_PATH")" ||
+    fail "could not determine ROM size with the uv-managed Python"
 if [[ "$ROM_SIZE" != "$EXPECTED_ROM_SIZE" ]]; then
     printf 'BLOCKED: expected a headerless 1 MiB ROM (%s bytes), got %s bytes. No ROM byte-comparison commands were run. See rom-inspection.json and source-only reports.\n' \
         "$EXPECTED_ROM_SIZE" "$ROM_SIZE" | tee "$REPORT_DIR/preflight.txt" >&2
