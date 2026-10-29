@@ -7,7 +7,6 @@ import subprocess
 
 import pytest
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "verify-rom-readonly.sh"
 
