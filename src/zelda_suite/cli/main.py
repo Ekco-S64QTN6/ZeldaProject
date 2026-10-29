@@ -86,12 +86,15 @@ from zelda_suite.extract import (
     verify_text_message_bytes,
 )
 from zelda_suite.project import (
+    get_overworld_hidden_item_model,
     get_source_asset,
     import_extracted_asset,
+    import_overworld_hidden_item_model,
     import_source_asset,
     initialize_project,
     list_source_assets,
     migrate_project,
+    update_overworld_hidden_item,
     validate_project,
 )
 from zelda_suite.project.store import BASE_ROM_FILENAME
@@ -3341,7 +3344,7 @@ def migrate_project_command(database: Path, json_path: Path | None) -> None:
         raise click.ClickException(str(exc)) from exc
 
     if migrated:
-        click.echo(f"Migrated project to schema v{2}: {database}")
+        click.echo(f"Migrated project to schema v3: {database}")
     else:
         click.echo(f"Project already uses the current schema; refreshed export: {database}")
 
@@ -3452,6 +3455,134 @@ def get_source_asset_command(database: Path, asset_key: str) -> None:
     click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
 
 
+
+@cli.command(name="import-overworld-hidden-items")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--replace",
+    "replace_existing",
+    is_flag=True,
+    help="Replace the existing model and discard its project-local edits.",
+)
+def import_overworld_hidden_items_command(
+    database: Path, source: Path, replace_existing: bool
+) -> None:
+    """Import pinned source metadata as the first editable overworld domain model."""
+    try:
+        model = import_overworld_hidden_item_model(
+            database, source, replace_existing=replace_existing
+        )
+    except (KeyError, ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps({
+        "format": model["format"],
+        "format_version": model["format_version"],
+        "source_file": model["source_file"],
+        "source_revision": model["source_revision"],
+        "source_sha256": model["source_sha256"],
+        "area_count": model["summary"]["area_count"],
+        "record_count": model["summary"]["record_count"],
+        "modified_record_count": model["summary"]["modified_record_count"],
+    }, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="list-overworld-hidden-items")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--area-index",
+    type=click.IntRange(min=0, max=127),
+    default=None,
+    help="Return one area's ordered records and preserve all source pointer metadata.",
+)
+def list_overworld_hidden_items_command(database: Path, area_index: int | None) -> None:
+    """Print the project-local overworld hidden-item model as JSON."""
+    try:
+        model = get_overworld_hidden_item_model(database)
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if model is None:
+        raise click.ClickException(
+            "no overworld hidden-item model has been imported; run "
+            "'zelda-suite import-overworld-hidden-items' first"
+        )
+
+    if area_index is None:
+        payload = model
+    else:
+        area = next(
+            (item for item in model["areas"] if item["area_index"] == area_index),
+            None,
+        )
+        if area is None:
+            raise click.ClickException(f"overworld area not found: {area_index}")
+        records_by_index = {
+            record["record_index"]: record for record in model["records"]
+        }
+        payload = {
+            "format": model["format"],
+            "format_version": model["format_version"],
+            "source_file": model["source_file"],
+            "source_revision": model["source_revision"],
+            "area": area,
+            "records": [
+                records_by_index[index] for index in area["record_indices"]
+            ],
+            "evidence": model["evidence"],
+        }
+    click.echo(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="update-overworld-hidden-item")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("record_index", type=click.IntRange(min=0, max=350))
+@click.option(
+    "--coordinate-word",
+    default=None,
+    help="Raw 16-bit source word (decimal, 0x-prefixed, or Asar $-prefixed); $FFFF is reserved as the list sentinel.",
+)
+@click.option(
+    "--value-byte",
+    default=None,
+    help="New raw third byte (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+def update_overworld_hidden_item_command(
+    database: Path,
+    record_index: int,
+    coordinate_word: str | None,
+    value_byte: str | None,
+) -> None:
+    """Update one project-local record; this never writes or patches a ROM."""
+    if coordinate_word is None and value_byte is None:
+        raise click.UsageError("supply at least one of --coordinate-word or --value-byte")
+    try:
+        parsed_coordinate = (
+            None if coordinate_word is None else _parse_offset_text(coordinate_word)
+        )
+        parsed_value = None if value_byte is None else _parse_offset_text(value_byte)
+        record = update_overworld_hidden_item(
+            database,
+            record_index,
+            coordinate_word=parsed_coordinate,
+            value_byte=parsed_value,
+        )
+    except (KeyError, ValueError, OSError, click.BadParameter) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
+
+
 @cli.command(name="init")
 @click.argument("name")
 @click.option(
@@ -3471,8 +3602,8 @@ def init_project(name: str, workspace: Path) -> None:
     click.echo(f"Created SQLite project: {database_path}")
     click.echo(f"Created JSON export:    {json_path}")
     click.echo(
-        "No ROM was read or copied. Validated source exports can be imported; "
-        "semantic game-system schemas and ROM writing remain future work."
+        "No ROM was read or copied. Source exports and the first semantic "
+        "overworld hidden-item model can be imported; ROM writing remains future work."
     )
 
 

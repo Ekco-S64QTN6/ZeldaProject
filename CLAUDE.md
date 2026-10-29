@@ -20,16 +20,19 @@ This is **not** a wrapper around Hyrule Magic and **not** a ROM patcher. It is a
 
 ## 2. Canonical Assets
 
-**Intended US base ROM location (local-only; not yet verified):**
+**US base ROM location (local-only; user-verified fingerprint and boot):**
 
 ```
 base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 ```
 
-- This is the expected path for an authorized clean US dump used by future ROM-dependent tooling. The repository does not establish that the file is present, canonical, headerless, or otherwise valid.
+- This is the expected path for the user's locally supplied US ROM. On 2026-10-29 its size, CRC-32, SHA-1, and MD5 matched the cited No-Intro USA catalog entry, and the user confirmed that it boots. Treat this as byte-identity evidence and a manual boot result, not as independent chain-of-custody proof; do not ask the user to repeat the fingerprint gate without new evidence.
 - Repository setup and CI do not fetch, include, open, or modify a ROM. A size check is diagnostic, not proof of dump provenance or correctness.
-- Before relying on a local ROM, run `just doctor` and `zelda-suite inspect-rom PATH`, then follow the staged read-only checks in [`docs/real-rom-verification.md`](./docs/real-rom-verification.md), including the scalar-table, overworld hidden-item, dungeon-room pointer, text-dictionary pointer, and encoded text-message verifiers. Use `zelda-suite inspect-overworld-hidden-items` for a source-only layout report that does not open a ROM; `verify-overworld-hidden-items` performs the separate local-byte comparison. Byte agreement validates only the checked offsets; it does not establish ROM provenance. See [`docs/doctor.md`](./docs/doctor.md) and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
+- The known local image has passed `just doctor`-compatible size expectations, the No-Intro fingerprint comparison, all ten commands in `scripts/verify-rom-readonly.sh`, and a user-confirmed boot. On changes to ROM tooling or source mappings, rerun targeted checks from [`docs/real-rom-verification.md`](./docs/real-rom-verification.md), rather than restarting provenance checks automatically. Byte agreement still validates only the checked offsets and does not resolve every source annotation. See [`docs/doctor.md`](./docs/doctor.md) and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
 - Use `zelda-suite audit-overworld-hidden-item-value-semantics` to trace the hidden-item third byte through the pinned `Overworld_RevealSecret` consumer. Preserve raw values and report them as ordinary secret-state masks or extended selectors only; do not promote them to canonical item IDs or claim ROM validation.
+
+
+**Current semantic-model boundary:** SQLite schema/project format v3 provides the first editable domain, the overworld hidden-item table. Use `zelda-suite import-overworld-hidden-items`, `list-overworld-hidden-items`, and `update-overworld-hidden-item` to work with the project-local copy. The import preserves the pinned source coordinates/value bytes and multiple area aliases; updates modify SQLite plus its JSON sidecar only. It never writes a ROM, and the third byte remains a consumer-derived mask/selector rather than a resolved canonical item ID. Existing v1/v2 projects need an explicit `zelda-suite migrate-project` before using schema-v3 commands.
 
 **Optional JP reference (local-only; not read by current tooling):**
 
