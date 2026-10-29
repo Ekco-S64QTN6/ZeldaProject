@@ -26,9 +26,9 @@ This is **not** a wrapper around Hyrule Magic and **not** a ROM patcher. It is a
 base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 ```
 
-- This is the expected path for the user's locally supplied US ROM. On 2026-10-29 its size, CRC-32, SHA-1, and MD5 matched the cited No-Intro USA catalog entry, and the user confirmed that it boots. Treat this as byte-identity evidence and a manual boot result, not as independent chain-of-custody proof; do not ask the user to repeat the fingerprint gate without new evidence.
+- This is the expected path for the user's locally supplied US ROM. On 2026-10-29 its size, CRC-32, SHA-1, and MD5 matched the cited No-Intro USA catalog entry, and the user confirmed that it boots. `zelda-suite inspect-rom` reported SHA-256 `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb` for that local file. Treat the catalog fingerprint as byte-identity evidence and the boot as a manual result, not as independent chain-of-custody proof; do not ask the user to repeat the fingerprint gate without new evidence.
 - Repository setup and CI do not fetch, include, open, or modify a ROM. A size check is diagnostic, not proof of dump provenance or correctness.
-- The known local image has passed `just doctor`-compatible size expectations, the No-Intro fingerprint comparison, all ten commands in `scripts/verify-rom-readonly.sh`, and a user-confirmed boot. On changes to ROM tooling or source mappings, rerun targeted checks from [`docs/real-rom-verification.md`](./docs/real-rom-verification.md), rather than restarting provenance checks automatically. Byte agreement still validates only the checked offsets and does not resolve every source annotation. See [`docs/doctor.md`](./docs/doctor.md) and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
+- The user-run ROM checks passed the size preflight, the No-Intro fingerprint comparison, all ten commands in `scripts/verify-rom-readonly.sh`, and a manual boot. A further read-only smoke test with the official YAZE v0.7.2 Linux archive verified several `z3ed` read commands, but `overworld-describe-map --screen=80` failed with an out-of-range offset and a dungeon-room response contained a malformed staircase label. The ROM hash was unchanged. These results are command-specific, do not resolve every source annotation, and do not prove chain of custody or full integration. See [`docs/real-rom-verification.md`](./docs/real-rom-verification.md), [`docs/doctor.md`](./docs/doctor.md), and [`docs/rom-image-inspection.md`](./docs/rom-image-inspection.md).
 - Use `zelda-suite audit-overworld-hidden-item-value-semantics` to trace the hidden-item third byte through the pinned `Overworld_RevealSecret` consumer. Preserve raw values and report them as ordinary secret-state masks or extended selectors only; do not promote them to canonical item IDs or claim ROM validation.
 
 
@@ -65,7 +65,7 @@ Rules:
 
 | Tool | Role | Notes |
 |---|---|---|
-| **YAZE / `z3ed`** | Candidate low‑level ROM interface (CLI + GUI) | Intended for overworld/dungeon/graphics/palette/message access. Its behavior has not yet been smoke-tested against a locally verified ROM; wrap future integration behind an adapter. |
+| **YAZE / `z3ed`** | Candidate low‑level ROM interface (CLI + GUI) | Partially smoke-tested with official v0.7.2 against the user-supplied fingerprint-matched ROM: ROM info/raw-byte, dungeon, hex, palette, and message reads passed. The map read for screen 80 fails out-of-range and one room label is malformed; no write commands were tested. Keep integration and adapter semantics open. |
 | **`z3cli`** | Candidate agent harness (MCP, session management, model routing) | Proposed for Phase 3 workflows. Endpoint compatibility and a real tool call remain unverified. |
 | **Asar** | 65816 assembler | For any ASM patches we insert. |
 | **zcompress** | Graphics decompression/recompression | Reference for graphics round‑tripping. |
@@ -185,18 +185,18 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
   - *Black Magic* was never finished; key save paths are broken or absent.
   
   Concretely: do not use their internal data formats as the project schema, do not shell out to them as a write backend, and do not treat their limits as ROM limits. Constraints come from the disassembly and hardware, not from legacy editor behavior.
-- ❌ **Do not assume YAZE's GUI save paths are correct** — they are still in flux as of v0.8.0. Verify against the disassembly.
+- ❌ **Do not treat YAZE/`z3ed` access as a verified ROM-writing pipeline.** Only the documented read-only commands in the ROM runbook have been exercised against the local image; no writes, patches, saves, rebuilds, or editor-application workflows have been tested. Verify future behavior against the disassembly and hash/diff safeguards.
 - **Keep the roadmap honest.** Preserve phase ordering unless the user asks to change it, and update implementation status and affected docs whenever work lands.
 
 ---
 
 ## 10. Open Decisions and Local Verification Gates
 
-- [x] Project data format → **SQLite canonical + JSON export** (ADR 0001); schema v2 persists validated source-export snapshots with provenance and SHA-256. Editable game-system tables remain future work.
+- [x] Project data format → **SQLite canonical + JSON export** (ADR 0001). Current schema v4 preserves validated source-export snapshots and adds bounded semantic models for overworld hidden items and packed dungeon chest fields; broader game-system tables remain future work.
 - [x] Disassembly submodule configured and source exports use revision `347c23f9fc019c72d32da537c9cb235f468d021d`; source-only inventories have parser-parity tests.
-- [ ] Verify a trusted clean US ROM locally, including its header status and SHA-256. The ROM is user-supplied and intentionally absent from Git/CI.
-- [ ] Smoke-test YAZE/`z3ed` against that local ROM and record exactly which read operations succeed.
-- [ ] Choose the YAZE adapter strategy after the CLI smoke test (proposal: subprocess adapter).
+- [~] Compare the user-supplied US ROM against the documented catalog fingerprint and record local SHA-256/header assessment. The comparison matched size/CRC-32/SHA-1/MD5; `inspect-rom` reported headerless-by-expected-size and SHA-256 `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`. The user reports it boots. Independent chain of custody and automated emulator validation remain open.
+- [~] Smoke-test YAZE/`z3ed` against the local ROM: several read commands passed; `overworld-describe-map --screen=80` failed with an out-of-range offset, and one staircase label was malformed. See the detailed runbook; this is not complete integration.
+- [ ] Choose and implement the YAZE adapter strategy only after the supported read commands, error handling, and map-read failure are understood (candidate: subprocess adapter).
 - [ ] Test `z3cli` with the intended model endpoint or decide on a thin custom MCP server.
 - [ ] Select and verify a headless emulator smoke-test path before any ROM writer is introduced.
 

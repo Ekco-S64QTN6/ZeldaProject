@@ -9,6 +9,7 @@ does not imply that any release has been published.
 
 ### Changed
 
+- Record the 2026-10-29 user-run YAZE v0.7.2 read-only smoke test against the local ROM: ROM info, raw ROM bytes, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. The screen-80 overworld map read failed with an out-of-range offset; `dungeon-get-palette` was not a supported command, while `palette-get-colors --group=dungeon_main` worked. The ROM SHA-256 remained `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`. Partial read capability only; no ROM writes or full integration are claimed.
 - Advance the pre-release package version to `0.2.0` for the second bounded semantic authoring model.
 - Add SQLite-backed editing for the 168 packed dungeon chest records, preserving source fields alongside editable item byte, room value, and big-chest flag. Recompose the raw 24-bit value on edits; keep item names unresolved and candidate ROM offsets unverified.
 
