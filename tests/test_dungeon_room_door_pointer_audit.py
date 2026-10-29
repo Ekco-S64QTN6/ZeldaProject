@@ -27,20 +27,28 @@ def _write_registry(
     extracted.mkdir()
     revision = "synthetic-revision"
     targets = ["RoomDataTiles_A", "RoomDataTiles_Empty", "RoomDataTiles_B"]
+    targets.extend(["RoomDataTiles_A"] * 317)
     if missing_target:
         targets[2] = "RoomDataTiles_Missing"
-    addends = [1, 0, 4 if out_of_bounds else 2]
+
+    def addend_for(index: int) -> int:
+        if index == 1:
+            return 0
+        if index == 2:
+            return 4 if out_of_bounds else 2
+        return 1
 
     door_entries: list[dict[str, Any]] = []
     object_entries: list[dict[str, Any]] = []
     for index, label in enumerate(targets):
+        addend = addend_for(index)
         door_entries.append({
             "table_index": index,
             "pointer_entry_file_offset": 0x0F83C0 + index * 3,
             "source_line": index + 340,
-            "pointer_expression": f"{label}+$" + f"{addends[index]:04X}",
+            "pointer_expression": f"{label}+$" + f"{addend:04X}",
             "target_label": label,
-            "target_addend": addends[index],
+            "target_addend": addend,
             "is_empty_target": label == "RoomDataTiles_Empty",
             "source_revision": revision,
         })
@@ -172,7 +180,7 @@ def _write_registry(
 def test_synthetic_door_pointer_addends_fit_source_sizes(tmp_path: Path) -> None:
     report = audit_dungeon_room_door_pointer_bounds(_write_registry(tmp_path))
     assert report["summary"] == {
-        "pointer_entry_count": 3,
+        "pointer_entry_count": 320,
         "empty_pointer_count": 1,
         "unique_pointer_target_label_count": 3,
         "payload_declaration_count": 3,
@@ -183,7 +191,7 @@ def test_synthetic_door_pointer_addends_fit_source_sizes(tmp_path: Path) -> None
         "unreferenced_payload_count": 0,
         "duplicate_payload_label_count": 0,
         "payload_without_size_count": 0,
-        "addend_in_bounds_count": 3,
+        "addend_in_bounds_count": 320,
         "addend_out_of_bounds_count": 0,
         "addend_bounds_unknown_count": 0,
         "slot_target_mismatch_count": 0,
@@ -283,9 +291,9 @@ def test_cli_writes_json_and_refuses_overwrite(tmp_path: Path) -> None:
     written = runner.invoke(cli, args)
     assert written.exit_code == 0, written.output
     saved = json.loads(output.read_text(encoding="utf-8"))
-    assert saved["summary"]["pointer_entry_count"] == 3
-    assert saved["summary"]["addend_in_bounds_count"] == 3
-    assert "in_bounds=3" in written.output
+    assert saved["summary"]["pointer_entry_count"] == 320
+    assert saved["summary"]["addend_in_bounds_count"] == 320
+    assert "in_bounds=320" in written.output
 
     refused = runner.invoke(cli, args)
     assert refused.exit_code != 0
