@@ -16,6 +16,7 @@ from zelda_suite.extract.overworld_hidden_item_value_semantics import (
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_PATH = ROOT / "reference" / "AsarUSALTTPDisassembly" / "Bank1B.asm"
+SCHEMA_PATH = ROOT / "docs" / "schemas" / "overworld-hidden-item-value-semantics.schema.json"
 PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 
 REPLACEMENT_WORDS = [
@@ -105,6 +106,13 @@ def test_value_classifier_rejects_non_byte_inputs(value: object) -> None:
         classify_overworld_hidden_item_value_byte(value, REPLACEMENT_WORDS)  # type: ignore[arg-type]
 
 
+def test_schema_pins_replacement_table_source_lines() -> None:
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    assert schema["$defs"]["source_semantics"]["properties"][
+        "replacement_table_comment_lines"
+    ]["const"] == [2813, 2814, 2815, 2816]
+
+
 @pytest.mark.skipif(
     not SOURCE_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",
@@ -112,6 +120,10 @@ def test_value_classifier_rejects_non_byte_inputs(value: object) -> None:
 def test_pinned_source_value_semantics_baseline() -> None:
     source = SOURCE_PATH.read_text(encoding="utf-8")
     report = audit_overworld_hidden_item_value_semantics(source)
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    assert schema["$defs"]["source_semantics"]["properties"][
+        "replacement_table_comment_lines"
+    ]["const"] == report["source_semantics"]["replacement_table_comment_lines"]
 
     assert report["format"] == "zelda-suite-overworld-hidden-item-value-semantics"
     assert report["format_version"] == 1
