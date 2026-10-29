@@ -563,6 +563,27 @@ sentinels, source-derived area listings, and replacement words. It reads no ROM
 and is not a registered asset; `rom_verified` and `semantic_values_decoded` are
 explicitly false. See the [report schema](./schemas/overworld-hidden-item-source-layout.schema.json).
 
+
+To inspect how the third byte is used by the pinned \`Overworld_RevealSecret\`
+consumer, run:
+
+\`\`\`bash
+uv run zelda-suite audit-overworld-hidden-item-value-semantics \\
+  --output /tmp/overworld-hidden-item-value-semantics.json
+\`\`\`
+
+The report checks the relevant consumer instruction patterns and preserves the
+four raw words and comments in \`Overworld_SecretTileType\`. On the pinned source,
+325 of the 351 third bytes take the ordinary secret-state-mask path via
+\`TSB $0B9C\`; 26 take the extended-selector path, where the low nibble is a
+byte offset into that four-word table. The current extended values are \`$80\`,
+\`$82\`, \`$84\`, and \`$86\`; \`$84\` follows a special branch around the generic
+overlay-activation block. These are consumer-path classifications, not canonical
+item IDs. Neither this report nor its tests verify the byte values or table
+offsets against a ROM; see the
+[hidden-item value-semantics schema](./schemas/overworld-hidden-item-value-semantics.schema.json).
+
+
 ## Overworld high/low payload inventories
 
 The source-only inventory is split by source file into
