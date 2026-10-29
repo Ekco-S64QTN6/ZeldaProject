@@ -116,6 +116,12 @@ from zelda_suite.extract.overworld_hidden_item_verification import (
     parse_overworld_hidden_item_source,
     verify_overworld_hidden_items,
 )
+from zelda_suite.extract.overworld_hidden_item_value_semantics import (
+    OVERWORLD_HIDDEN_ITEM_VALUE_SEMANTICS_FORMAT,
+    OverworldHiddenItemValueSemanticsError,
+    audit_overworld_hidden_item_value_semantics,
+    classify_overworld_hidden_item_value_byte,
+)
 from zelda_suite.extract.overworld_payload_pairs import (
     OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT,
     OverworldPayloadPairError,
@@ -247,6 +253,7 @@ __all__ = [
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "OAM_ALLOCATION_AUDIT_FORMAT",
+    "OVERWORLD_HIDDEN_ITEM_VALUE_SEMANTICS_FORMAT",
     "OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT",
     "PAID_OVERWORLD_INTERACTIONS_AUDIT_FORMAT",
     "PAID_OVERWORLD_INTERACTIONS_FORMAT",
@@ -299,6 +306,7 @@ __all__ = [
     "MusicTrackIndexError",
     "OAMAllocationAuditError",
     "OverworldHiddenItemVerificationError",
+    "OverworldHiddenItemValueSemanticsError",
     "OverworldPayloadPairError",
     "PaidOverworldInteractionsAuditError",
     "PaidOverworldInteractionsParseError",
@@ -342,6 +350,7 @@ __all__ = [
     "audit_item_receipt_annotations",
     "audit_music_assets",
     "audit_oam_allocation",
+    "audit_overworld_hidden_item_value_semantics",
     "audit_overworld_payload_layout",
     "audit_paid_overworld_interactions",
     "audit_potion_shop_transactions",
@@ -352,6 +361,7 @@ __all__ = [
     "audit_text_message_index",
     "audit_unresolved_table_expressions",
     "build_item_receipt_layout",
+    "classify_overworld_hidden_item_value_byte",
     "default_text_message_source_blocks",
     "format_lorom_cpu_address",
     "inspect_rom_image",
