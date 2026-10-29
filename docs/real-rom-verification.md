@@ -24,8 +24,62 @@ sha256sum "$ROM"
 ```
 
 On macOS, use `stat -f '%N: %z bytes' "$ROM"` if `stat -c` is unavailable.
-The SHA-256 is an identity fingerprint; the repository does not bundle a
-trusted canonical-dump hash.
+The SHA-256 is retained as a local identity fingerprint. Before relying on
+the local bytes, also compare the established CRC-32, SHA-1, and MD5 values
+for the published No-Intro USA entry below. This checks byte identity against
+that database fingerprint; it does not prove the acquisition chain or by
+itself establish that the file is safe to modify.
+
+### Compare against the published USA dump fingerprint
+
+The No-Intro USA entry is listed as a 1,048,576-byte image with CRC-32
+`777AAC2F`, SHA-1
+`6d4f10a8b10e10dbe624cb23cf03b88bb8252973`, and MD5
+`608c22b8ff930c62dc2de54bcd6eba72`. The values are cross-listed in the
+[No-Intro catalog mirror](https://data.spludlow.co.uk/no-intro/no-intro/Nintendo%20-%20Super%20Nintendo%20Entertainment%20System/Legend%20of%20Zelda%2C%20The%20-%20A%20Link%20to%20the%20Past%20%28USA%29),
+[OpenRetro's No-Intro-tagged USA entry](https://openretro.org/snes/the-legend-of-zelda-a-link-to-the-past/edit),
+and the [A Link to the Past Redux project README](https://github.com/ShadowOne333/A-Link-to-the-Past-Redux/blob/main/ReadMe.md).
+Run this read-only check in the same shell after setting `ROM`:
+
+```bash
+python - "$ROM" <<'PY'
+import hashlib
+import sys
+import zlib
+from pathlib import Path
+
+path = Path(sys.argv[1])
+data = path.read_bytes()
+actual = {
+    "size": str(len(data)),
+    "crc32": f"{zlib.crc32(data) & 0xFFFFFFFF:08X}",
+    "sha1": hashlib.sha1(data).hexdigest(),
+    "md5": hashlib.md5(data).hexdigest(),
+}
+expected = {
+    "size": "1048576",
+    "crc32": "777AAC2F",
+    "sha1": "6d4f10a8b10e10dbe624cb23cf03b88bb8252973",
+    "md5": "608c22b8ff930c62dc2de54bcd6eba72",
+}
+for key, value in actual.items():
+    status = "MATCH" if value.lower() == expected[key].lower() else "DIFF"
+    print(f"{key}: {value} ({status})")
+if actual != expected:
+    print("Fingerprint differs from the cited USA database entry; do not label it a match.")
+    raise SystemExit(1)
+print("Fingerprint matches the cited USA database entry.")
+PY
+```
+
+This comparison is deliberately separate from the ROM byte-verification runner:
+the runner's zero-mismatch result establishes agreement at candidate offsets,
+whereas this fingerprint comparison checks whether the whole local image
+matches one documented database entry. If any value differs, record the actual
+fingerprints and investigate the variant or image format; do not normalize,
+strip headers, or alter the file automatically. Even a full fingerprint match
+is evidence of byte identity with that catalog entry, not proof of the file's
+chain of custody.
 
 ## 2. Inspect the image and environment
 

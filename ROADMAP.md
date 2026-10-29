@@ -206,10 +206,16 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    pointer mismatches and six source-offset findings; and all 98 text-dictionary
    pointer comparisons matched with zero mismatches and one separate `.You`
    source-extent warning. The image was 1 MiB, but the report bundle does not
-   establish canonical ROM hash/provenance. On Arch Linux, use the verified
-   generic YAZE release archive, inspect `z3ed --help`, then perform only a
-   confirmed read-only ROM operation. Keep ROM provenance and the
-   z3cli/model-endpoint gates open until independently resolved.
+   establish canonical ROM hash/provenance. Next, compare the local file's
+   CRC-32, SHA-1, and MD5 against the published No-Intro USA entry recorded in
+   `docs/real-rom-verification.md` (CRC-32 `777AAC2F`, SHA-1
+   `6d4f10a8b10e10dbe624cb23cf03b88bb8252973`, MD5
+   `608c22b8ff930c62dc2de54bcd6eba72`); those checksums have not yet been
+   confirmed against the latest run's file. A fingerprint match is byte-identity
+   evidence relative to that catalog entry, not proof of chain of custody. Then
+   use the verified generic YAZE release archive, inspect `z3ed --help`, and
+   perform only a confirmed read-only ROM operation. Keep ROM provenance and
+   the z3cli/model-endpoint gates open until independently resolved.
 2. Reconcile the six dungeon-room comments that disagree with source-order
    payload layout: `RoomDataTiles_00E1` (comment `$0509A9`, sequential
    `$05016E`), `RoomDataTiles_0011` (`$050F19`, `$050B9F`),
