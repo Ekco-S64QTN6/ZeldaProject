@@ -140,6 +140,7 @@ For text-message index changes, also run `uv run zelda-suite audit-text-message-
 
 
 For `Dungeon_ChestData` changes, run the pinned-source parser tests and `uv run zelda-suite audit-dungeon-chest-data`; preserve three-byte entry order, the top-byte/low-15-bit/bit-15 split, all 168 entries, and source-only offset caveats. Do not map raw item values to semantic names without evidence.
+When changing chest room values or room-pointer exports, also run `uv run zelda-suite audit-dungeon-chest-room-references`. The pinned `Bank01.asm` consumer supports the room-index relationship, but the audit does not validate offsets or payload bytes against a ROM or resolve playable-room status; update the report schema with any field changes.
 
 For standard shopkeeper purchase-handler changes, run the pinned-source parser tests and `uv run zelda-suite audit-shop-item-handlers`. Preserve the seven handler IDs, raw A/Y price encoding, receipt selector indexes, the slot-index join to `item-receipt-layout`, and the source-comment annotation alongside each slot. Also run `uv run zelda-suite audit-item-receipt-annotations`; the missing `$40` comment and shifted comment IDs are reported, not corrected.
 
