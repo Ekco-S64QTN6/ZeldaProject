@@ -219,7 +219,24 @@ uv run zelda-suite inspect-overworld-hidden-items \
   --output /tmp/overworld-hidden-item-source-layout.json
 ```
 
-This reports the declarations and computed offsets from the pinned disassembly; it is not a ROM check. The output schema is [`overworld-hidden-item-source-layout.schema.json`](./schemas/overworld-hidden-item-source-layout.schema.json). Continue with the byte-comparison command below only when an authorized local ROM is available.
+This reports the declarations and computed offsets from the pinned disassembly; it is not a ROM check. The output schema is [`overworld-hidden-item-source-layout.schema.json`](./schemas/overworld-hidden-item-source-layout.schema.json).
+
+Before comparing bytes, capture the source-consumer interpretation of each record's third byte:
+
+```bash
+TEST_DIR="${TEST_DIR:-$(mktemp -d)}"
+uv run zelda-suite audit-overworld-hidden-item-value-semantics \
+  --output "$TEST_DIR/hidden-item-value-semantics.json"
+printf 'Source-consumer report: %s\n' "$TEST_DIR/hidden-item-value-semantics.json"
+```
+
+At the pinned source revision this report classifies 325 ordinary secret-state-mask
+values and 26 extended selectors; the selector low nibble is used as a byte offset
+into the four-word `Overworld_SecretTileType` table. It calls out `$84`'s special
+branch. This is source-only evidence and reads no ROM; it does not establish that
+the third bytes or replacement words match your file or resolve canonical item IDs.
+Continue with the byte-comparison command below only when an authorized local ROM
+is available.
 
 The read-only `verify-overworld-hidden-items` command parses the pinned
 `Bank1B.asm` declaration region and compares it with your local ROM. It
