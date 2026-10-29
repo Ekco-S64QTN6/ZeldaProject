@@ -435,10 +435,38 @@ for tool in z3ed z3cli; do
 done
 ```
 
-Save the version/help output. The current doctor only checks PATH visibility,
-and the repository does not yet define a tested, version-independent command
-for a real YAZE/z3ed read. Confirm the installed tool's supported read-only
-arguments before attempting an actual read.
+`doctor` only checks PATH visibility; it does not prove a tool can read a ROM. The user-run test below used the discovered absolute `z3ed` path because the executable was not on `PATH`. `z3cli` was not installed/on `PATH`.
+
+### Recorded YAZE v0.7.2 read-only smoke test (2026-10-29)
+
+The user downloaded the official [YAZE v0.7.2 Linux archive](https://github.com/scawful/yaze/releases/tag/v0.7.2), and the archive SHA-256 matched the documented checksum `b7310862e4306830f5631e81a030df4ff976106d9001d9e21c314bb5ad3dc8db`. The extracted executable was found at:
+
+```text
+$HOME/.local/opt/yaze-0.7.2/yaze-0.7.2-Linux/z3ed
+```
+
+The local ROM used for this test was `base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc`, size 1,048,576 bytes, with observed SHA-256 `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`. This SHA-256 records the user's local file; the catalog fingerprint comparison itself used size, CRC-32, SHA-1, and MD5 described in step 1.
+
+The following commands returned exit status 0 (output quality limitations are called out in the table):
+
+| Read-only command | Observed result |
+| --- | --- |
+| `z3ed --help` | CLI starts and prints help. |
+| `z3ed rom-info --rom="$ROM"` | Reports title `THE LEGEND OF ZELDA` and size `0x100000` (1,048,576 bytes). |
+| `z3ed rom read --address=0x1000 --length=16 --rom="$ROM"` | Returns 16 bytes for requested address `0x1000`. |
+| `z3ed dungeon-describe-room --room=1 --rom="$ROM"` | Returns room metadata, 42 objects, and two doors; one staircase label is malformed/garbled, so this is not full output-quality validation. |
+| `z3ed dungeon-list-sprites --room=1 --rom="$ROM"` | Returns success and zero sprites for room 1 only. |
+| `z3ed hex-read --address=0x1C800 --length=16 --data-format=both --format=json --rom="$ROM"` | Returns 16 hex/ASCII bytes. |
+| `z3ed palette-get-colors --group=ow_main --index=0 --format=json --rom="$ROM"` | Returns overworld palette colors. |
+| `z3ed palette-get-colors --group=dungeon_main --index=7 --format=json --rom="$ROM"` | Returns dungeon palette colors (90 color entries reported). |
+| `z3ed message-list --limit=5 --rom="$ROM"` | Returns the first five entries and reports 397 total messages. |
+| `z3ed message-search --query=sword --limit=5 --rom="$ROM"` | Returns five matches and reports 30 matches found. |
+
+The overworld map check remains **failed**, even after correcting the command syntax. `overworld-describe-map --map=80` was rejected because this build requires `--screen`; the corrected command `overworld-describe-map --screen=80 --format=json --rom="$ROM"` then returned `Offset 1311049 out of range (size: 1048576)`. Do not call this an overworld-read success or guess at a different offset. The underlying cause is not yet established.
+
+`dungeon-get-palette` is not a command in this build (it returned `Unknown command`). Use the verified `palette-get-colors --group=dungeon_main --index=7` form for this tested palette read.
+
+The before-and-after SHA-256 values matched exactly, and `diff` produced no differences: the ROM remained unchanged during this smoke test. All tested calls were read-only; this does not validate any write, patch, save, rebuild, adapter, emulator, or end-to-end workflow. `z3ed` is not on `PATH` in the tested environment, so `zelda-suite doctor` can still warn about it even though the executable runs by absolute path. See `ROADMAP.md` for the remaining gates.
 
 ## Text dictionary pointer words
 
@@ -617,12 +645,13 @@ commands report candidate byte comparisons only; they do not prove every source
 offset or decode the messages.
 
 Still not implemented/verified: general semantic schemas for room objects, map
-layers, entrances, text, sprites, and audio; an edit-to-ROM
-build pipeline; ROM writer and patch generation; automated emulator smoke tests;
-and successful YAZE/z3ed or z3cli operations against the local image. The user
-reported that the ROM boots, and the local fingerprint matched the documented
-No-Intro USA entry, but those checks do not replace an automated emulator/tool
-integration test or independently prove chain of custody.
+layers, entrances, text, sprites, and audio; an edit-to-ROM build pipeline; ROM
+writer and patch generation; automated emulator smoke tests; complete YAZE/z3ed
+integration (the map read fails as recorded above); and z3cli/model-endpoint
+integration. Several YAZE read commands do succeed, but that is not an adapter or
+end-to-end verification. The user reported that the ROM boots and the local
+fingerprint matched the documented No-Intro USA entry; neither independently
+proves chain of custody.
 
 On 2026-10-29 the user-run fingerprint comparison matched size (1,048,576),
 CRC-32 (`777AAC2F`), SHA-1 (`6d4f10a8b10e10dbe624cb23cf03b88bb8252973`), and
@@ -632,5 +661,7 @@ returned success. The remaining warnings and unresolved source annotations are
 recorded in `ROADMAP.md`; do not restart the fingerprint gate without new
 contradictory evidence.
 
-Record tool help from step 9 when reporting results. Do not upload or commit the
-ROM, a ROM slice, or a raw binary dump.
+Record tool help and actual command outputs when reporting results. The latest
+YAZE result is mixed rather than a clean pass; the specific failure is preserved
+above and in `ROADMAP.md`. Do not upload or commit the ROM, a ROM slice, or a
+raw binary dump.

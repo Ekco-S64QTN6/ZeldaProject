@@ -2,7 +2,7 @@
 
 **Goal:** Build a scriptable, agent-native authoring suite for *The Legend of Zelda: A Link to the Past* (SNES). The long-term target is a structured project model with semantic editing APIs, deterministic ROM builds/diffs, verification, and eventually maker-style authoring.
 
-**Current state (2026-10-29): Phase 1 — Structured Extraction is in progress, with two bounded semantic editing slices in Phase 2.** The local US ROM matches the documented No-Intro USA fingerprint and the user confirms it boots. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project storage with schema-v4 migrations, plus source-preserving semantic models for overworld hidden items and packed dungeon chest records. Broader room/map authoring, ROM writing/rebuilding, and full emulator/tool integration are not implemented.
+**Current state (2026-10-29): Phase 1 — Structured Extraction is in progress, with two bounded semantic editing slices in Phase 2.** The user's local US ROM matches the documented No-Intro USA fingerprint and the user confirms it boots. A user-run YAZE v0.7.2 `z3ed` smoke test verified several read-only ROM, dungeon, graphics/palette, and message commands; the overworld-map command still fails on screen 80 with an out-of-range offset, and `z3cli` remains untested. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project storage with schema-v4 migrations, plus source-preserving semantic models for overworld hidden items and packed dungeon chest records. Broader room/map authoring, ROM writing/rebuilding, and full emulator/tool integration are not implemented.
 
 Status legend: **[x] verified in repository/automated tests** · **[~] partial; limitations remain** · **[ ] not implemented or not verified in the available environment**.
 
@@ -12,12 +12,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [~] Confirm local US-ROM identity and bootability. On 2026-10-29 the user-run file matched the documented No-Intro USA size, CRC-32, SHA-1, and MD5 fingerprints and the user confirmed it boots. This supports byte identity with that catalog entry plus a manual boot check; it does not independently establish chain of custody or provide an automated emulator test. ROMs remain untracked and are excluded from CI; see [the local-ROM verification runbook](./docs/real-rom-verification.md).
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
-- [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
+- [~] Smoke-test YAZE v0.7.2 `z3ed` against the locally supplied US ROM. ROM identification, raw reads, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. `overworld-describe-map --screen=80` fails with `Offset 1311049 out of range (size: 1048576)`; investigate before claiming overworld integration. One room response also contains a malformed staircase label. See [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
 - [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v4 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v4 stores source-preserving overworld hidden-item areas/records and packed dungeon chest records with constrained field edits; it is not yet a general game-system data model.
 
-**Exit criteria:** Not met. The local image matches the published reference fingerprint and the user reports a successful boot; YAZE/`z3ed` read-only integration and the z3cli/model-endpoint smoke test remain outstanding.
+**Exit criteria:** Not met. The local image matches the published reference fingerprint and the user reports a successful boot. Partial YAZE/`z3ed` read-only access is verified, but the overworld-map read fails and the malformed staircase label needs follow-up; z3cli/model-endpoint and automated emulator smoke tests remain outstanding.
 
 ## Phase 1 — Structured Extraction (current focus)
 
@@ -200,18 +200,18 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Complete the real YAZE/`z3ed` read-only smoke test and the z3cli/model-endpoint
-   test. On 2026-10-29 the user's one-command run passed all ten checks: 662
-   scalar-table values compared with zero mismatches and 98 unresolved; all 550
-   hidden-item spans matched; all 36,363 text-message bytes matched (seven source
-   warnings); all 320 dungeon pointers matched (six source-offset findings); and
-   all 98 dictionary pointers matched (one `.You` source-extent warning). The
-   local image's size, CRC-32, SHA-1, and MD5 then matched the documented No-Intro
-   USA entry, and the user confirmed the ROM boots. This is strong byte-identity
-   evidence plus a manual boot result, not independent chain-of-custody evidence.
-   Install/inspect the verified YAZE release and establish a confirmed read-only
-   `z3ed` invocation; keep the z3cli/model-endpoint gate open until a reviewed
-   tool call succeeds.
+1. Investigate the known YAZE v0.7.2 read-only map failure, then exercise the
+   separate z3cli/model-endpoint path. On 2026-10-29 the user verified the
+   official Linux archive checksum and successfully ran `z3ed` reads for
+   ROM info, raw bytes, dungeon room/sprite inspection, graphics bytes, both
+   overworld and dungeon palette groups, and message list/search. The call
+   `overworld-describe-map --screen=80` fails with
+   `Offset 1311049 out of range (size: 1048576)`; the room description
+   also emitted a malformed staircase label. The ROM SHA-256 was identical
+   before and after the checks (`66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`).
+   This verifies partial reads only, not a complete YAZE adapter or map access.
+   Do not issue write commands. `z3cli` is not installed/on PATH and has
+   not been tested with a model endpoint.
 2. Reconcile the six dungeon-room comments that disagree with source-order
    payload layout: `RoomDataTiles_00E1` (comment `$0509A9`, sequential
    `$05016E`), `RoomDataTiles_0011` (`$050F19`, `$050B9F`),

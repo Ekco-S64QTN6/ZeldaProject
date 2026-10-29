@@ -40,7 +40,12 @@ does not match the expected headerless image.
 ## Interpretation
 
 Treat the SHA-256 as an identity fingerprint for the local file, not as a
-claim that its contents match a known-good canonical dump. A clean-ROM
-verification gate still needs the expected known-good hash from a trusted
-source and, where available, successful YAZE/z3ed reads. ROMs and ROM-derived
-bytes remain local and must not be committed.
+claim by itself that the contents match a known-good canonical dump. The user's
+2026-10-29 local image matched the documented No-Intro USA size/CRC-32/SHA-1/MD5
+fingerprint, and a read-only YAZE v0.7.2 smoke test successfully read several
+ROM, dungeon, graphics/palette, and message views. The overworld screen-80 read
+still fails with an out-of-range offset, and one staircase label was malformed;
+this is partial capability evidence, not a completed editor integration gate.
+See [`real-rom-verification.md`](./real-rom-verification.md) for the exact hash,
+commands, and limitations. ROMs and ROM-derived bytes remain local and must not
+be committed.

@@ -19,6 +19,13 @@ YAZE/z3ed or z3cli and do not claim that either can successfully parse the ROM.
 The ROM check uses filesystem metadata only; it does not read or modify ROM
 bytes. Keep ROMs local and never commit them.
 
-For a staged local-ROM workflow, including a self-diff smoke test and a
-read-only cross-check of selected source-annotated table bytes, see
+For a staged local-ROM workflow, including a self-diff smoke test, a read-only
+cross-check of selected source-annotated table bytes, and the current partial
+YAZE v0.7.2 capability results, see
 [`real-rom-verification.md`](./real-rom-verification.md).
+
+Environment note (2026-10-29): `z3ed` was extracted under
+`$HOME/.local/opt/yaze-0.7.2/yaze-0.7.2-Linux/z3ed` and run by absolute path,
+not added to `PATH`; `doctor` therefore correctly continued to report its PATH
+warning. `z3cli` was not installed/on `PATH`. The tested YAZE commands and the
+remaining overworld map-read failure are documented in the runbook.

@@ -5,16 +5,16 @@ This document catalogs the ecosystem tools and projects that should inform or be
 
 What it is: A cross‑platform ROM editor for ALttP built in C++23 with ImGui. Includes a built‑in SNES emulator, the Asar 65816 assembler, and a CLI called z3ed explicitly designed for scripted ROM operations and AI‑agent integration.
 
-Relevance: This is the closest existing foundation for the project. z3ed provides a ready‑made CLI for overworld/dungeon/graphics/palette/message editing, and the project already contemplates Ollama or cloud API integration for AI workflows. Use it as the reference implementation and low‑level ROM access layer in Phase 0–2.
+Relevance: `z3ed` offers scripted ROM inspection commands for ROM metadata/raw bytes, dungeon rooms/sprites, graphics bytes, palette groups, and messages. In a user-run smoke test on 2026-10-29, the official v0.7.2 Linux release successfully performed these read-only operations against the project's locally supplied ROM. Treat the tested binary as a candidate low-level interface, not as an already integrated backend; keep it behind an adapter and validate its output against the disassembly and project model.
 
-Caveats: v0.8.0 is still in active development; several editors (Graphics, Screen, Music) are view‑only or have incomplete save paths. Treat YAZE as a moving target and wrap it behind an adapter.
+Caveats: the same v0.7.2 smoke test could not read overworld screen 80: `overworld-describe-map --screen=80` failed with `Offset 1311049 out of range (size: 1048576)`. A dungeon-room response also contained a malformed staircase label. A successful exit status is not sufficient to establish output correctness. No write/save/rebuild operations were tested. The repository's newer development line may differ from the tested release; consult the [local-ROM verification runbook](./docs/real-rom-verification.md) for the exact version, checksum, commands, and current limitations.
 2. z3cli — scawful/z3cli
 
 What it is: A “model‑first Zelda hacking CLI” designed to feel like a lightweight Claude Code session. Supports local LM Studio / llama.cpp models, MCP tool calling, resumable sessions, diff review, and a JSON‑RPC daemon mode.
 
 Relevance: This is effectively the agent harness the project needs in Phase 3. Rather than building session management, tool permissions, and model routing from scratch, z3cli can serve as the backend that connects Claude (or a local model) to the authoring API. Its MCP support and @file attachment model align directly with the project’s goal of structured, auditable AI edits.
 
-Caveats: It is explicitly experimental and oriented toward local models / LM Studio. Verify that it can route to Claude via an Anthropic‑compatible endpoint before committing to it as the sole harness.
+Caveats: It is explicitly experimental and oriented toward local models / LM Studio. As of the user's 2026-10-29 environment check, `z3cli` was not on `PATH` and no model-endpoint tool call had been tested. Verify that it can route to Claude via an Anthropic-compatible endpoint before committing to it as the sole harness.
 3. Super Zelda Editor — Derek McPherson / DMCP2143
 
 What it is: A complete ALttP game editor based on Hyrule Magic, with bug fixes and new features. Notably supports expanded 2 MB ROMs, a full dungeon‑room visualization mode showing all layers and invisible objects, prefab room segments, and a three‑sprite‑per‑overworld‑tile capacity.
@@ -71,4 +71,4 @@ These are not primary building blocks, but they define the ecosystem’s convent
 
 Summary Recommendation
 
-For the immediate next steps, focus on YAZE/z3ed as the low‑level ROM interface, z3cli as the agent harness, and AsarUSALTTPDisassembly as the semantic ground truth. Study Z3R’s YAML asset pipeline for the data‑model design, and keep SpriteSomething and zcompress in mind for graphics/sprite round‑tripping. The legacy GUI editors (Hyrule Magic, ZScream, Super Zelda Editor) are useful as domain references but should not be treated as dependencies for a Claude‑native workflow.
+For the immediate next steps, investigate the known v0.7.2 screen-80 map-read failure and malformed room label before designing a YAZE adapter; test z3cli with the intended model endpoint; and continue to use AsarUSALTTPDisassembly as the semantic ground truth. Study Z3R’s YAML asset pipeline for the data‑model design, and keep SpriteSomething and zcompress in mind for graphics/sprite round‑tripping. The legacy GUI editors (Hyrule Magic, ZScream, Super Zelda Editor) are useful as domain references but should not be treated as dependencies for a Claude‑native workflow.
