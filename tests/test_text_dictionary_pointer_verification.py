@@ -10,6 +10,7 @@ from click.testing import CliRunner
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE, lorom_cpu_address
 from zelda_suite.extract.text_dictionary_pointer_verification import (
+    TEXT_DICTIONARY_END_EXCLUSIVE_OFFSET,
     verify_text_dictionary_pointers,
 )
 
@@ -29,7 +30,11 @@ def _write_synthetic_rom(tmp_path: Path) -> Path:
     rom = bytearray(EXPECTED_US_ROM_SIZE)
     for pointer in pointers["entries"]:
         fragment = fragments_by_expression[pointer["expression"]]
-        offset = fragment["fragment_file_offset"]
+        offset = (
+            TEXT_DICTIONARY_END_EXCLUSIVE_OFFSET
+            if fragment["is_end_of_table"]
+            else fragment["fragment_file_offset"]
+        )
         candidate_word = lorom_cpu_address(offset) & 0xFFFF
         entry_offset = pointer["entry_file_offset"]
         rom[entry_offset:entry_offset + 2] = candidate_word.to_bytes(2, "little")
@@ -48,7 +53,7 @@ def test_verifier_checks_98_words_and_preserves_known_source_diagnostics(
     report = verify_text_dictionary_pointers(rom_path, REGISTRY_PATH)
 
     assert report["format"] == "zelda-suite-text-dictionary-pointer-verification"
-    assert report["format_version"] == 1
+    assert report["format_version"] == 2
     assert report["source_revision"] == PINNED_SOURCE_REVISION
     assert report["rom"]["provenance_verified"] is False
     assert report["pointer_table"] == {
@@ -68,7 +73,15 @@ def test_verifier_checks_98_words_and_preserves_known_source_diagnostics(
     assert report["entries"][96]["target_fragment_file_offset"] == 0x0748D6
     assert report["entries"][96]["candidate_pointer_word"] == "$C8D6"
     assert report["entries"][-1]["target_fragment_label"] == ".endOfTable"
-    assert report["entries"][-1]["candidate_pointer_word"] == "$C8D8"
+    assert report["entries"][-1]["target_fragment_file_offset"] == 0x0748D9
+    assert report["entries"][-1]["target_fragment_source_comment_offset"] == 0x0748D8
+    assert report["entries"][-1]["target_offset_basis"] == (
+        "exclusive_end_after_inclusive_data_range"
+    )
+    assert report["entries"][-1]["candidate_pointer_word"] == "$C8D9"
+    assert report["terminal_pointer_rule"] == (
+        "exclusive end of the inclusive source-commented dictionary data range"
+    )
     assert report["mismatches"] == []
     assert report["source_findings"] == [{
         "code": "source_extent_mismatch",
