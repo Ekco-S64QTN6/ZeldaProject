@@ -48,6 +48,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Music track index](./music-track-index.schema.json) — version 1 schema for `zelda-suite inspect-music-track-index`.
 - [Music asset cross-reference audit](./music-asset-audit.schema.json) — version 1 source-only join between registered music pointer targets and payload declarations.
 - [Overworld High/Low pair check](./overworld.md) — validates that each source-local screen token has one High and one Low payload declaration.
+- [Overworld payload layout audit](./overworld-payload-layout-audit.schema.json) — version 1 source-only report of the 124 High/Low pairs, size/range discrepancies, and candidate adjacency of source annotations.
 
 ## Committed source-derived data
 

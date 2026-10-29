@@ -42,6 +42,7 @@ from zelda_suite.extract import (
     audit_item_receipt_annotations,
     audit_music_assets,
     audit_oam_allocation,
+    audit_overworld_payload_layout,
     audit_paid_overworld_interactions,
     audit_potion_shop_transactions,
     audit_shop_item_handlers,
@@ -3039,6 +3040,60 @@ def validate_source_export_command(source_export: Path) -> None:
     click.echo(
         f"[OK] {payload['format']} v{payload['format_version']}: "
         f"{record_count} {record_label} ({source_export})"
+    )
+
+
+
+@cli.command(name="audit-overworld-payload-layout")
+@click.argument(
+    "inventories",
+    nargs=-1,
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def audit_overworld_payload_layout_command(
+    inventories: tuple[Path, ...],
+    output: Path | None,
+) -> None:
+    """Report paired High/Low source annotations and unresolved range-size discrepancies."""
+    try:
+        payloads = [load_source_export(path) for path in inventories]
+        report = audit_overworld_payload_layout(payloads)
+    except (AssetLoadError, OverworldPayloadPairError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+
+    summary = report["summary"]
+    click.echo(
+        f"Wrote overworld payload layout audit to {output}; "
+        f"pairs={summary['screen_pair_count']}, "
+        f"range_mismatches={summary['range_size_mismatch_count']}, "
+        f"range_unknown={summary['range_size_unknown_count']}, "
+        f"source_ranges_nonadjacent={summary['candidate_source_ranges_nonadjacent_count']}"
     )
 
 

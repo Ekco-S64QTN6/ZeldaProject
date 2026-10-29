@@ -175,3 +175,5 @@ For dictionary pointer verifier changes, run `uv run zelda-suite verify-text-dic
 
 
 For encoded text byte-verifier changes, run `uv run zelda-suite verify-text-message-bytes` tests, including the pinned-source smoke test when the disassembly submodule is checked out. CI fixtures are synthetic. Record a separate local-ROM run before claiming byte agreement against an actual image; the report does not independently validate source-offset annotations or decode text.
+
+For overworld High/Low payload inventory changes, run `tests/test_overworld_payload_pairs.py` and `tests/test_overworld_payload_inventories.py`, then `uv run zelda-suite audit-overworld-payload-layout`. Keep source-annotated ranges separate from trusted ROM offsets, retain all range-size diagnostics, and leave actual map decoding / editable layer generation open until the referenced binaries or an authorized local ROM are available.
