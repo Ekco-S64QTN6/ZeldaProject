@@ -316,18 +316,17 @@ def test_migrate_schema_v3_project_adds_dungeon_chest_tables(
     tmp_path: Path,
 ) -> None:
     database, json_path = initialize_project("legacy_v3", tmp_path)
-    with sqlite3.connect(database) as connection:
-        with connection:
-            connection.execute("DROP TABLE dungeon_chest_record")
-            connection.execute("DROP TABLE dungeon_chest_model")
-            connection.execute(
-                "DELETE FROM schema_version WHERE version = ?",
-                (CURRENT_SCHEMA_VERSION,),
-            )
-            connection.execute(
-                "UPDATE project SET format_version = ? WHERE singleton = 1",
-                (CURRENT_SCHEMA_VERSION - 1,),
-            )
+    with sqlite3.connect(database) as connection, connection:
+        connection.execute("DROP TABLE dungeon_chest_record")
+        connection.execute("DROP TABLE dungeon_chest_model")
+        connection.execute(
+            "DELETE FROM schema_version WHERE version = ?",
+            (CURRENT_SCHEMA_VERSION,),
+        )
+        connection.execute(
+            "UPDATE project SET format_version = ? WHERE singleton = 1",
+            (CURRENT_SCHEMA_VERSION - 1,),
+        )
 
     assert migrate_project(database) is True
 
