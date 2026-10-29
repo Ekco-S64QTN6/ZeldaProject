@@ -1,7 +1,7 @@
 """Cross-reference packed dungeon chest room values with source room-pointer slots."""
 from __future__ import annotations
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 

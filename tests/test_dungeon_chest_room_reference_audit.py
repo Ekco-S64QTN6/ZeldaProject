@@ -9,11 +9,11 @@ import pytest
 from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
+from zelda_suite.extract.dungeon_chest_data import parse_dungeon_chest_data
 from zelda_suite.extract.dungeon_chest_room_reference_audit import (
     DungeonChestRoomReferenceAuditError,
     audit_dungeon_chest_room_references,
 )
-from zelda_suite.extract.dungeon_chest_data import parse_dungeon_chest_data
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTERED_MANIFEST = ROOT / "data" / "extracted" / "manifest.json"
