@@ -13,7 +13,7 @@ import sqlite3
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from zelda_suite.extract.asset_loader import (
     AssetLoadError,
@@ -1276,7 +1276,7 @@ def update_overworld_hidden_item(
         raise ValueError("no overworld hidden-item model has been imported")
     for record in model["records"]:
         if record["record_index"] == record_index:
-            return record
+            return cast(dict[str, Any], record)
     raise KeyError(f"overworld hidden-item record not found: {record_index}")
 
 
