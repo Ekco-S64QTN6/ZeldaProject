@@ -192,10 +192,11 @@ uv run zelda-suite verify-dungeon-room-pointers "$ROM" \
 ```
 
 The command cross-references the 320 source pointer expressions with all three
-registered room-payload inventories. It encodes each source-commented start
-offset as a three-byte LoROM CPU address and compares those bytes at the
-pointer table's declared file offsets. Its report schema is
-[`dungeon-room-pointer-verification.schema.json`](./dungeon-room-pointer-verification.schema.json).
+registered room-payload inventories. It anchors each inventory at its first
+source-commented start, advances by the declarations' source-declared payload
+sizes, and encodes each resulting candidate as a three-byte LoROM CPU address.
+Conflicting comments are preserved in `source_offset_findings`. Its version-2
+report schema is [`dungeon-room-pointer-verification.schema.json`](./dungeon-room-pointer-verification.schema.json).
 It is strictly read-only and deliberately reports
 `provenance_verified: false`, `payload_bytes_verified: false`, and
 `playable_room_set_resolved: false`. Run it against a local image and review
