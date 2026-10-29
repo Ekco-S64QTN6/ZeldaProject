@@ -110,17 +110,17 @@ from zelda_suite.extract.oam_allocation_audit import (
     OAMAllocationAuditError,
     audit_oam_allocation,
 )
-from zelda_suite.extract.overworld_hidden_item_verification import (
-    PINNED_SOURCE_REVISION,
-    OverworldHiddenItemVerificationError,
-    parse_overworld_hidden_item_source,
-    verify_overworld_hidden_items,
-)
 from zelda_suite.extract.overworld_hidden_item_value_semantics import (
     OVERWORLD_HIDDEN_ITEM_VALUE_SEMANTICS_FORMAT,
     OverworldHiddenItemValueSemanticsError,
     audit_overworld_hidden_item_value_semantics,
     classify_overworld_hidden_item_value_byte,
+)
+from zelda_suite.extract.overworld_hidden_item_verification import (
+    PINNED_SOURCE_REVISION,
+    OverworldHiddenItemVerificationError,
+    parse_overworld_hidden_item_source,
+    verify_overworld_hidden_items,
 )
 from zelda_suite.extract.overworld_payload_pairs import (
     OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT,
@@ -305,8 +305,8 @@ __all__ = [
     "MusicTrackIndex",
     "MusicTrackIndexError",
     "OAMAllocationAuditError",
-    "OverworldHiddenItemVerificationError",
     "OverworldHiddenItemValueSemanticsError",
+    "OverworldHiddenItemVerificationError",
     "OverworldPayloadPairError",
     "PaidOverworldInteractionsAuditError",
     "PaidOverworldInteractionsParseError",
