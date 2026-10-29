@@ -210,6 +210,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`docs/glossary.md`** — terminology (IPS, ASM, MSU‑1, rooms vs. maps, etc.).
 - **`docs/schemas/overworld.md`** — overworld source discovery and High/Low pair validator.
 - **`docs/schemas/dungeons.md`** — source-only 320-entry room pointer inventory and 266-entry room payload inventories across Bank03, Bank0A, and Bank1F; neither resolves target offsets or confirms playable-room count.
+- **`docs/schemas/dungeons.md`** — includes the source-only door-pointer addend audit and its known bounds, alignment, and ROM-verification limits.
 - **`docs/extracted-data.md`** — committed source inventory catalog and reproduction commands.
 - **`docs/asset-loader.md`** and **`docs/incbin-inventory.md`** — source-export loader and inventory contracts. Use `zelda-suite audit-incbin-inventory` to summarize metadata gaps, range/size mismatches, and candidate span overlaps without opening payloads or a ROM.
 - **`docs/project-assets.md`** — importing, querying, and validating source-export snapshots in SQLite projects. Use `import-extracted-asset` for committed registry assets so manifest provenance checks run before storage.
@@ -249,6 +250,7 @@ When changing `oam-buffer-position-table`, run `zelda-suite audit-oam-allocation
 For `overworld-hidden-item-pointers`, preserve the full source-label set and repeated-target distribution pinned by `tests/test_overworld_hidden_item_pointer_baseline.py`. That test covers committed JSON independently of the disassembly submodule and must not be described as ROM target verification.
 
 When changing the dungeon room object-pointer or payload inventory exports, run `zelda-suite audit-dungeon-room-assets`. Preserve the three known unreferenced payload labels unless the registered source exports change with evidence; the audit uses source metadata and must not be described as ROM pointer verification. When changing `dungeon-room-door-pointers`, run `tests/test_extracted_dungeon_room_door_pointers.py`: it checks slot-by-slot target-label alignment and compares numeric addends with the target labels' source-annotated payload sizes. Those bounds are source-metadata arithmetic only, not verified ROM offsets or decoded door semantics.
+The `zelda-suite audit-dungeon-room-door-pointers` report is the CLI version of the addend-bounds regression; run `tests/test_dungeon_room_door_pointer_audit.py` for its synthetic and committed-metadata coverage. It never reads ROM/payload bytes and does not establish the playable-room count.
 
 When changing text-dictionary pointer or fragment inventories, keep `audit-text-dictionary` and the source-only baseline green. The local-ROM `verify-text-dictionary-pointers` command compares 98 pointer words against candidate addresses computed from source offsets; its result does not establish ROM provenance or source-offset accuracy and does not resolve the `Text_DictionaryPointers`/ `DictionaryPointers` name discrepancy.
 

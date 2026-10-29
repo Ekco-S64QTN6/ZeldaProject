@@ -239,3 +239,5 @@ checks only: source-declared sizes may be wrong, payload bytes are absent from
 the pinned tree, and no pointer offsets or door semantics are verified against
 a ROM. The 320 pointer slots do not establish a playable-room count.
 See the [door-pointer audit schema](./dungeon-room-door-pointer-audit.schema.json).
+
+The report contract is also indexed in [the schema catalog](./README.md). Its 320 in-range results apply only to the source-declared sizes in the pinned inventory; they do not independently validate the actual payload size or pointer offsets.
