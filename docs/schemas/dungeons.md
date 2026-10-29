@@ -221,3 +221,21 @@ and it does not resolve the 296-versus-320 playable-room count discrepancy.
 The separate `verify-dungeon-room-pointers` command still requires a local ROM
 for pointer-byte comparisons. See the
 [dungeon-room asset audit schema](./dungeon-room-asset-audit.schema.json).
+
+## Door-pointer addend audit
+
+Run `uv run zelda-suite audit-dungeon-room-door-pointers` to cross-reference
+all 320 `RoomData_DoorDataPointers` entries against their matching object-pointer
+slots and the three registered room-payload inventories. The report preserves
+each raw pointer expression and reports whether its numeric addend fits within
+the target payload's source-declared size. Use `--fail-on-findings` in scripts
+to make a warning or error fail the command.
+
+The pinned inventories currently report 320/320 addends within the annotated
+payload sizes, zero target-label slot differences, and zero missing target
+labels. The report also surfaces the same three payload declarations that are
+not referenced by the pointer table. These are source-metadata arithmetic
+checks only: source-declared sizes may be wrong, payload bytes are absent from
+the pinned tree, and no pointer offsets or door semantics are verified against
+a ROM. The 320 pointer slots do not establish a playable-room count.
+See the [door-pointer audit schema](./dungeon-room-door-pointer-audit.schema.json).

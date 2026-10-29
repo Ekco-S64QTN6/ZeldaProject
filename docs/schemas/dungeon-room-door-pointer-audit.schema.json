@@ -1,0 +1,455 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite dungeon-room door-pointer addend audit",
+  "description": "Source-only cross-reference of the 320-entry door-pointer table against the matching object-pointer slots and room payload inventories. Addends are compared with source-declared sizes; this does not verify offsets or bytes against ROM.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "registry",
+    "door_pointer_asset_name",
+    "object_pointer_asset_name",
+    "payload_asset_names",
+    "source_revision",
+    "door_pointer_table_label",
+    "door_pointer_table_file_offset",
+    "pointer_entry_width_bytes",
+    "object_pointer_table_label",
+    "object_pointer_table_file_offset",
+    "cross_references",
+    "missing_payload_targets",
+    "unreferenced_payload_labels",
+    "payloads_missing_size",
+    "findings",
+    "summary",
+    "evidence"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-dungeon-room-door-pointer-audit"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "registry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "door_pointer_asset_name": {
+      "const": "dungeon-room-door-pointers"
+    },
+    "object_pointer_asset_name": {
+      "const": "dungeon-room-object-pointers"
+    },
+    "payload_asset_names": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "door_pointer_table_label": {
+      "const": "RoomData_DoorDataPointers"
+    },
+    "door_pointer_table_file_offset": {
+      "const": 1016768
+    },
+    "pointer_entry_width_bytes": {
+      "const": 3
+    },
+    "object_pointer_table_label": {
+      "const": "RoomData_ObjectDataPointers"
+    },
+    "object_pointer_table_file_offset": {
+      "const": 1015808
+    },
+    "cross_references": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/cross_reference"
+      }
+    },
+    "missing_payload_targets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "unreferenced_payload_labels": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "payloads_missing_size": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/payload_gap"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only",
+        "rom_bytes_read",
+        "room_payload_bytes_read",
+        "addends_checked_against_source_declared_sizes",
+        "door_data_semantics_decoded",
+        "offsets_verified",
+        "payload_bytes_verified",
+        "playable_room_set_resolved"
+      ],
+      "properties": {
+        "source_only": {
+          "const": true
+        },
+        "rom_bytes_read": {
+          "const": false
+        },
+        "room_payload_bytes_read": {
+          "const": false
+        },
+        "addends_checked_against_source_declared_sizes": {
+          "const": true
+        },
+        "door_data_semantics_decoded": {
+          "const": false
+        },
+        "offsets_verified": {
+          "const": false
+        },
+        "payload_bytes_verified": {
+          "const": false
+        },
+        "playable_room_set_resolved": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "cross_reference": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "pointer_entry_file_offset",
+        "pointer_expression",
+        "target_label",
+        "target_addend",
+        "is_empty_target",
+        "object_pointer_target_label",
+        "target_matches_object_pointer_slot",
+        "payload_declaration_count",
+        "payload_declaration_found",
+        "payload_asset_name",
+        "payload_source_file",
+        "incbin_path",
+        "declared_size_bytes",
+        "addend_within_declared_size"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointer_entry_file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointer_expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_addend": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "is_empty_target": {
+          "type": "boolean"
+        },
+        "object_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_matches_object_pointer_slot": {
+          "type": "boolean"
+        },
+        "payload_declaration_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payload_declaration_found": {
+          "type": "boolean"
+        },
+        "payload_asset_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "payload_source_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "incbin_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "declared_size_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "addend_within_declared_size": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "payload_gap": {
+      "type": "object",
+      "required": [
+        "label",
+        "payload_asset_name",
+        "source_file",
+        "incbin_path",
+        "declared_size_bytes"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payload_asset_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "incbin_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declared_size_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "code",
+        "severity",
+        "message",
+        "pointer_index",
+        "target_label",
+        "payload_label",
+        "payload_asset_name",
+        "incbin_path"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "pointer_table_metadata_mismatch",
+            "object_pointer_table_metadata_mismatch",
+            "source_provenance_mismatch",
+            "duplicate_payload_label",
+            "missing_payload_declaration",
+            "unreferenced_payload_declaration",
+            "payload_size_missing",
+            "pointer_entry_offset_mismatch",
+            "target_label_slot_mismatch",
+            "target_addend_out_of_bounds",
+            "invalid_target_addend"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pointer_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "payload_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "payload_asset_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "incbin_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "pointer_entry_count",
+        "empty_pointer_count",
+        "unique_pointer_target_label_count",
+        "payload_declaration_count",
+        "unique_payload_label_count",
+        "matched_target_label_count",
+        "missing_payload_target_count",
+        "missing_payload_reference_count",
+        "unreferenced_payload_count",
+        "duplicate_payload_label_count",
+        "payload_without_size_count",
+        "addend_in_bounds_count",
+        "addend_out_of_bounds_count",
+        "addend_bounds_unknown_count",
+        "slot_target_mismatch_count",
+        "pointer_entry_offset_mismatch_count",
+        "error_count",
+        "warning_count",
+        "finding_count"
+      ],
+      "properties": {
+        "pointer_entry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "empty_pointer_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique_pointer_target_label_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payload_declaration_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique_payload_label_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "matched_target_label_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_payload_target_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_payload_reference_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unreferenced_payload_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duplicate_payload_label_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payload_without_size_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "addend_in_bounds_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "addend_out_of_bounds_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "addend_bounds_unknown_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "slot_target_mismatch_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pointer_entry_offset_mismatch_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "error_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warning_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "finding_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

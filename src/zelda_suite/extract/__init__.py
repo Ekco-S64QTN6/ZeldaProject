@@ -54,6 +54,11 @@ from zelda_suite.extract.dungeon_room_asset_audit import (
     DungeonRoomAssetAuditError,
     audit_dungeon_room_assets,
 )
+from zelda_suite.extract.dungeon_room_door_pointer_audit import (
+    DUNGEON_ROOM_DOOR_POINTER_AUDIT_FORMAT,
+    DungeonRoomDoorPointerAuditError,
+    audit_dungeon_room_door_pointer_bounds,
+)
 from zelda_suite.extract.dungeon_room_pointer_verification import (
     DungeonRoomPointerVerificationError,
     verify_dungeon_room_pointers,
@@ -228,6 +233,7 @@ __all__ = [
     "DUNGEON_CHEST_DATA_AUDIT_FORMAT",
     "DUNGEON_CHEST_DATA_FORMAT",
     "DUNGEON_ROOM_ASSET_AUDIT_FORMAT",
+    "DUNGEON_ROOM_DOOR_POINTER_AUDIT_FORMAT",
     "INCBIN_INVENTORY_AUDIT_FORMAT",
     "ITEM_RECEIPT_ANNOTATION_AUDIT_FORMAT",
     "ITEM_RECEIPT_LAYOUT_FORMAT",
@@ -268,6 +274,7 @@ __all__ = [
     "DungeonChestDataParseError",
     "DungeonChestDataTable",
     "DungeonRoomAssetAuditError",
+    "DungeonRoomDoorPointerAuditError",
     "DungeonRoomPointerVerificationError",
     "IncbinDeclaration",
     "IncbinInventoryAuditError",
@@ -322,6 +329,7 @@ __all__ = [
     "TextMessageRecord",
     "audit_dungeon_chest_data",
     "audit_dungeon_room_assets",
+    "audit_dungeon_room_door_pointer_bounds",
     "audit_incbin_inventories",
     "audit_item_receipt_annotations",
     "audit_music_assets",
