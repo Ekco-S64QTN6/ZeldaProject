@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Zelda Suite overworld High/Low payload layout audit",
-  "description": "Source-only join of 124 overworld Map32 High/Low incbin pairs. Range offsets are source annotations/calculations, not ROM-verified offsets; compressed payloads are not decoded.",
+  "description": "Source-only audit of the pinned Bank0B/Bank0C Map32 High/Low inventories at disassembly revision 347c23f9fc019c72d32da537c9cb235f468d021d. Range offsets are source annotations/calculations, not ROM-verified offsets; compressed payloads are not decoded.",
   "type": "object",
   "required": [
     "format", "format_version", "source_revision", "source_files",
@@ -11,7 +11,7 @@
   "properties": {
     "format": { "const": "zelda-suite-overworld-payload-layout-audit" },
     "format_version": { "const": 1 },
-    "source_revision": { "type": "string", "minLength": 1 },
+    "source_revision": { "const": "347c23f9fc019c72d32da537c9cb235f468d021d" },
     "source_files": {
       "type": "array", "minItems": 2, "maxItems": 2,
       "items": { "enum": ["Bank0B.asm", "Bank0C.asm"] }
@@ -128,12 +128,12 @@
       "properties": {
         "description": { "type": "string", "minLength": 1 },
         "source_log_file": { "const": "Logs/Zelda_3_ROM.log" },
-        "source_log_revision": { "type": "string", "minLength": 1 },
+        "source_log_revision": { "const": "347c23f9fc019c72d32da537c9cb235f468d021d" },
         "source_log_lines": {
           "const": [969, 970]
         },
         "consumer_source_file": { "const": "Bank0A.asm" },
-        "consumer_source_revision": { "type": "string", "minLength": 1 },
+        "consumer_source_revision": { "const": "347c23f9fc019c72d32da537c9cb235f468d021d" },
         "consumer_source_line": { "const": 673 },
         "consumer_label": { "const": "Overworld_LoadAndBuildScreen_long" },
         "consumer_comment": { "type": "string", "minLength": 1 },

@@ -192,6 +192,37 @@ def test_layout_audit_reports_source_range_discrepancies_without_decoding() -> N
     }
 
 
+def test_pair_validator_is_generic_but_layout_audit_requires_pinned_revision() -> None:
+    inventories = _load_inventories()
+    for inventory in inventories:
+        inventory["source_revision"] = "another-revision"
+        for declaration in inventory["declarations"]:
+            declaration["source_revision"] = "another-revision"
+
+    assert validate_overworld_payload_pairs(inventories)["valid"] is True
+    with pytest.raises(OverworldPayloadPairError, match="requires source revision"):
+        audit_overworld_payload_layout(inventories)
+
+
+def test_layout_audit_rejects_incomplete_pinned_inventory_baseline() -> None:
+    inventories = _load_inventories()
+    bank0b = copy.deepcopy(inventories[0])
+    bank0b["declarations"] = [
+        declaration
+        for declaration in bank0b["declarations"]
+        if declaration["label"] not in {
+            "OverworldMap32_Screen00_High",
+            "OverworldMap32_Screen00_Low",
+        }
+    ]
+    bank0b["declaration_count"] = len(bank0b["declarations"])
+    inventories[0] = bank0b
+
+    assert validate_overworld_payload_pairs(inventories)["screen_pair_count"] == 123
+    with pytest.raises(OverworldPayloadPairError, match="requires the pinned Bank0B.asm"):
+        audit_overworld_payload_layout(inventories)
+
+
 def test_layout_audit_cli_writes_json_and_refuses_overwrite(tmp_path: Path) -> None:
     output = tmp_path / "overworld-layout-audit.json"
     runner = CliRunner()
