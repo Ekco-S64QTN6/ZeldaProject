@@ -1,5 +1,8 @@
 """Project storage, migration, source assets, validation, and export helpers."""
 
+from zelda_suite.project.dungeon_chest_room_references import (
+    audit_project_dungeon_chest_room_references,
+)
 from zelda_suite.project.store import (
     CURRENT_SCHEMA_VERSION,
     PROJECT_FORMAT,
@@ -22,6 +25,7 @@ from zelda_suite.project.store import (
 
 __all__ = [
     "CURRENT_SCHEMA_VERSION",
+    "audit_project_dungeon_chest_room_references",
     "PROJECT_FORMAT",
     "PROJECT_FORMAT_VERSION",
     "export_project",

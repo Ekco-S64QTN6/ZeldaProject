@@ -201,3 +201,34 @@ export stored elsewhere, pass `--json PATH`.
 Validation never repairs or rewrites either artifact. To intentionally refresh
 a stale JSON sidecar without changing data, run `zelda-suite migrate-project`
 on the current database or call `export_project(database_path)` from Python.
+
+ 
+## Audit project-local chest room references
+
+After importing `Dungeon_ChestData`, run the project-aware audit:
+
+```bash
+uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.db
+uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.db \
+  --fail-on-findings
+uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.db \
+  --output /tmp/chest-room-reference-audit.json
+```
+
+Unlike `audit-dungeon-chest-room-references`, which audits the immutable source
+inventory, this command reads the current editable values from the project's
+SQLite chest model and joins each current room value to the registered
+`RoomData_ObjectDataPointers` and `RoomData_DoorDataPointers` source exports.
+Each row includes the original source room value, current room value, edit
+status, table indexes, source labels, and source-annotated pointer offsets. An
+edited value that no longer selects a slot in both 320-entry pointer tables is
+reported as an error; `--fail-on-findings` returns exit status 1 when findings
+exist. Output files are created exclusively and are never overwritten.
+
+The report is pinned to disassembly revision
+`347c23f9fc019c72d32da537c9cb235f468d021d`. It reads the project database and
+validated source metadata only. Candidate chest/pointer offsets and room
+payload bytes are not thereby verified, room values are not converted into
+canonical room names, the 296-versus-320 playable-room issue remains open, and
+the command never reads or writes ROM bytes. Its separate contract is
+[`project-dungeon-chest-room-reference-audit.schema.json`](./schemas/project-dungeon-chest-room-reference-audit.schema.json).

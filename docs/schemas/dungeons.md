@@ -271,3 +271,23 @@ a ROM. The 320 pointer slots do not establish a playable-room count.
 See the [door-pointer audit schema](./dungeon-room-door-pointer-audit.schema.json).
 
 The report contract is also indexed in [the schema catalog](./README.md). Its 320 in-range results apply only to the source-declared sizes in the pinned inventory; they do not independently validate the actual payload size or pointer offsets.
+
+ 
+## Project-aware chest room-reference audit
+
+Run `uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.db`
+after importing the chest model and making any local edits. This query uses each
+record's current `room_value`, not its original source room value, to select
+the corresponding object- and door-pointer slots. It carries the original room
+value and `is_modified` state into each report row so edits can be reviewed
+against the imported baseline.
+
+This differs from `audit-dungeon-chest-room-references`, which joins only the
+committed source inventory. The project-aware report is still source-metadata
+evidence: pointer offsets are unverified annotations, payload bytes are not
+read, raw item values are not names, and a pointer-table slot is not proof of a
+playable room. It does not access or modify ROM bytes. The 296-versus-320
+playable-room count discrepancy remains unresolved. Use `--fail-on-findings`
+to make out-of-range edited room values or object/door target-label mismatches
+return a failing exit code. The report contract is
+[`project-dungeon-chest-room-reference-audit.schema.json`](project-dungeon-chest-room-reference-audit.schema.json).
