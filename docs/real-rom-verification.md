@@ -610,14 +610,14 @@ source-only table/pointer/inventory export, export validation, read-only
 verification of registered scalar-table literals, the overworld hidden-item
 pointer/record region, the dungeon-room long-pointer table, text-dictionary
 pointer words, and raw encoded text-message bytes. The first project-local
-semantic model also supports import/list/update for 128 hidden-item area slots
-and 351 records, preserving source baselines and classification by the pinned
-consumer; it stores edits only in SQLite and canonical JSON. The text verifier
+semantic models also support import/list/update for 128 hidden-item area slots
+and 351 records, plus 168 packed dungeon chest records with recomposed field edits.
+Both preserve source baselines and store edits only in SQLite and canonical JSON. The text verifier
 commands report candidate byte comparisons only; they do not prove every source
 offset or decode the messages.
 
-Still not implemented/verified: a general semantic schema for dungeon rooms,
-chests/items, map layers, entrances, text, sprites, and audio; an edit-to-ROM
+Still not implemented/verified: general semantic schemas for room objects, map
+layers, entrances, text, sprites, and audio; an edit-to-ROM
 build pipeline; ROM writer and patch generation; automated emulator smoke tests;
 and successful YAZE/z3ed or z3cli operations against the local image. The user
 reported that the ROM boots, and the local fingerprint matched the documented

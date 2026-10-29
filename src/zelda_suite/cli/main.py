@@ -86,14 +86,18 @@ from zelda_suite.extract import (
     verify_text_message_bytes,
 )
 from zelda_suite.project import (
+    CURRENT_SCHEMA_VERSION,
+    get_dungeon_chest_model,
     get_overworld_hidden_item_model,
     get_source_asset,
+    import_dungeon_chest_data,
     import_extracted_asset,
     import_overworld_hidden_item_model,
     import_source_asset,
     initialize_project,
     list_source_assets,
     migrate_project,
+    update_dungeon_chest_record,
     update_overworld_hidden_item,
     validate_project,
 )
@@ -3344,7 +3348,7 @@ def migrate_project_command(database: Path, json_path: Path | None) -> None:
         raise click.ClickException(str(exc)) from exc
 
     if migrated:
-        click.echo(f"Migrated project to schema v3: {database}")
+        click.echo(f"Migrated project to schema v{CURRENT_SCHEMA_VERSION}: {database}")
     else:
         click.echo(f"Project already uses the current schema; refreshed export: {database}")
 
@@ -3583,6 +3587,149 @@ def update_overworld_hidden_item_command(
     click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
 
 
+
+@cli.command(name="import-dungeon-chest-data")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--registry",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=Path("data/extracted/manifest.json"),
+    show_default=True,
+    help="Validated extracted-asset registry.",
+)
+@click.option(
+    "--replace",
+    "replace_existing",
+    is_flag=True,
+    help="Replace the existing chest model and discard its project-local edits.",
+)
+def import_dungeon_chest_data_command(
+    database: Path, registry: Path, replace_existing: bool
+) -> None:
+    """Import the registered 168-entry Dungeon_ChestData table for authoring."""
+    try:
+        model = import_dungeon_chest_data(
+            database, registry, replace_existing=replace_existing
+        )
+    except (KeyError, ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps({
+        "format": model["format"],
+        "format_version": model["format_version"],
+        "source_file": model["source_file"],
+        "source_revision": model["source_revision"],
+        "source_sha256": model["source_sha256"],
+        "summary": model["summary"],
+    }, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="list-dungeon-chest-records")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--table-index",
+    type=click.IntRange(min=0, max=167),
+    default=None,
+    help="Return only one source-order table entry.",
+)
+@click.option(
+    "--room-value",
+    default=None,
+    help="Filter by the raw low-15-bit room value (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+def list_dungeon_chest_records_command(
+    database: Path, table_index: int | None, room_value: str | None
+) -> None:
+    """List project-local dungeon chest entries with source values and editable fields."""
+    try:
+        model = get_dungeon_chest_model(database)
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if model is None:
+        raise click.ClickException(
+            "no dungeon chest model has been imported; run "
+            "'zelda-suite import-dungeon-chest-data' first"
+        )
+
+    entries = model["entries"]
+    if table_index is not None:
+        entries = [entry for entry in entries if entry["table_index"] == table_index]
+    if room_value is not None:
+        try:
+            parsed_room = _parse_offset_text(room_value)
+        except click.BadParameter as exc:
+            raise click.ClickException(str(exc)) from exc
+        if not 0 <= parsed_room <= 0x7FFF:
+            raise click.ClickException("room-value must be in 0..32767")
+        entries = [entry for entry in entries if entry["room_value"] == parsed_room]
+    if table_index is None and room_value is None:
+        payload = model
+    else:
+        payload = {
+            key: value for key, value in model.items() if key not in {"entries", "summary"}
+        }
+        payload["entries"] = entries
+        payload["summary"] = {
+            **model["summary"],
+            "returned_entry_count": len(entries),
+        }
+    click.echo(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="update-dungeon-chest-record")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("table_index", type=click.IntRange(min=0, max=167))
+@click.option(
+    "--item-value",
+    default=None,
+    help="Raw top-byte item value (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+@click.option(
+    "--room-value",
+    default=None,
+    help="Raw low-15-bit room value (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+@click.option(
+    "--big-chest/--small-chest",
+    "is_big_chest",
+    default=None,
+    help="Set or clear the packed big-chest flag.",
+)
+def update_dungeon_chest_record_command(
+    database: Path,
+    table_index: int,
+    item_value: str | None,
+    room_value: str | None,
+    is_big_chest: bool | None,
+) -> None:
+    """Edit the raw packed fields of one chest record in the project, never the ROM."""
+    if item_value is None and room_value is None and is_big_chest is None:
+        raise click.UsageError(
+            "supply at least one of --item-value, --room-value, --big-chest, or --small-chest"
+        )
+    try:
+        parsed_item = None if item_value is None else _parse_offset_text(item_value)
+        parsed_room = None if room_value is None else _parse_offset_text(room_value)
+        record = update_dungeon_chest_record(
+            database,
+            table_index,
+            item_value=parsed_item,
+            room_value=parsed_room,
+            is_big_chest=is_big_chest,
+        )
+    except (KeyError, ValueError, OSError, click.BadParameter) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
+
+
 @cli.command(name="init")
 @click.argument("name")
 @click.option(
@@ -3602,8 +3749,8 @@ def init_project(name: str, workspace: Path) -> None:
     click.echo(f"Created SQLite project: {database_path}")
     click.echo(f"Created JSON export:    {json_path}")
     click.echo(
-        "No ROM was read or copied. Source exports and the first semantic "
-        "overworld hidden-item model can be imported; ROM writing remains future work."
+        "No ROM was read or copied. Source exports, overworld hidden items, and "
+        "dungeon chest records can be imported and edited locally; ROM writing remains future work."
     )
 
 

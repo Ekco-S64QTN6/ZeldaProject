@@ -55,7 +55,7 @@ is appropriate.
    version, registry version, and source-export versions explicit in release
    notes whenever they change.
 
-The package currently declares version `0.1.0` in `pyproject.toml`. That value
+The package currently declares version `0.2.0` in `pyproject.toml`. That value
 is not evidence of a published release. The versioned-format rules in this
 document are policy; a formal release/tag workflow still needs to be exercised
 before claiming release automation is complete.

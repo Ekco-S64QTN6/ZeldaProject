@@ -1,7 +1,7 @@
-"""SQLite project metadata, semantic overworld records, migrations, and JSON export.
+"""SQLite project metadata, semantic game records, migrations, and JSON export.
 
-Schema v3 stores validated source-export snapshots and the first editable
-semantic domain. ROM writing and general game-system models remain future work.
+Schema v4 stores source-preserving overworld hidden-item and dungeon-chest
+models. ROM writing and broad game-system coverage remain future work.
 """
 from __future__ import annotations
 
@@ -32,8 +32,8 @@ from zelda_suite.extract.overworld_hidden_item_verification import (
 )
 
 PROJECT_FORMAT = "zelda-suite-project"
-PROJECT_FORMAT_VERSION = 3
-CURRENT_SCHEMA_VERSION = 3
+PROJECT_FORMAT_VERSION = 4
+CURRENT_SCHEMA_VERSION = 4
 BASE_ROM_FILENAME = "Legend of Zelda, The - A Link to the Past (U) [!].smc"
 _PROJECT_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
 _ASSET_KEY_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}")
@@ -137,6 +137,58 @@ _OVERWORLD_TABLE_NAMES = {
     "overworld_hidden_item_replacement_word",
 }
 
+
+_DUNGEON_CHEST_SCHEMA_SQL = """
+CREATE TABLE dungeon_chest_model (
+    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+    source_file TEXT NOT NULL CHECK (length(source_file) > 0),
+    source_revision TEXT NOT NULL CHECK (length(source_revision) = 40),
+    source_sha256 TEXT NOT NULL CHECK (
+        length(source_sha256) = 64 AND source_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    imported_at TEXT NOT NULL CHECK (length(imported_at) > 0),
+    table_label TEXT NOT NULL CHECK (table_label = 'Dungeon_ChestData'),
+    source_range_annotation TEXT NOT NULL CHECK (length(source_range_annotation) > 0),
+    source_annotated_start_offset INTEGER NOT NULL CHECK (source_annotated_start_offset >= 0),
+    source_annotated_end_offset INTEGER NOT NULL CHECK (
+        source_annotated_end_offset >= source_annotated_start_offset
+    ),
+    table_size_bytes INTEGER NOT NULL CHECK (table_size_bytes = 504),
+    entry_width_bytes INTEGER NOT NULL CHECK (entry_width_bytes = 3),
+    entry_count INTEGER NOT NULL CHECK (entry_count = 168)
+);
+
+CREATE TABLE dungeon_chest_record (
+    table_index INTEGER PRIMARY KEY CHECK (table_index BETWEEN 0 AND 167),
+    candidate_entry_offset INTEGER NOT NULL CHECK (candidate_entry_offset >= 0),
+    source_line INTEGER NOT NULL CHECK (source_line > 0),
+    source_expression TEXT NOT NULL CHECK (length(source_expression) = 7),
+    source_literal_value INTEGER NOT NULL CHECK (source_literal_value BETWEEN 0 AND 16777215),
+    literal_value INTEGER NOT NULL CHECK (literal_value BETWEEN 0 AND 16777215),
+    source_item_value INTEGER NOT NULL CHECK (source_item_value BETWEEN 0 AND 255),
+    item_value INTEGER NOT NULL CHECK (item_value BETWEEN 0 AND 255),
+    source_room_value INTEGER NOT NULL CHECK (source_room_value BETWEEN 0 AND 32767),
+    room_value INTEGER NOT NULL CHECK (room_value BETWEEN 0 AND 32767),
+    source_is_big_chest INTEGER NOT NULL CHECK (source_is_big_chest IN (0, 1)),
+    is_big_chest INTEGER NOT NULL CHECK (is_big_chest IN (0, 1)),
+    source_revision TEXT NOT NULL CHECK (length(source_revision) = 40),
+    CHECK (source_literal_value =
+        (source_item_value << 16) |
+        (source_room_value) |
+        (source_is_big_chest << 15)
+    ),
+    CHECK (literal_value =
+        (item_value << 16) |
+        (room_value) |
+        (is_big_chest << 15)
+    )
+);
+"""
+_DUNGEON_CHEST_TABLE_NAMES = {
+    "dungeon_chest_model",
+    "dungeon_chest_record",
+}
+
 _SCHEMA_SQL = """
 CREATE TABLE project (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
@@ -151,7 +203,7 @@ CREATE TABLE schema_version (
     version INTEGER PRIMARY KEY CHECK (version > 0),
     applied_at TEXT NOT NULL
 );
-""" + _SOURCE_ASSET_TABLE_SQL + _OVERWORLD_SCHEMA_SQL
+""" + _SOURCE_ASSET_TABLE_SQL + _OVERWORLD_SCHEMA_SQL + _DUNGEON_CHEST_SCHEMA_SQL
 
 
 def _utc_timestamp() -> str:
@@ -281,11 +333,11 @@ def _require_current_schema(connection: sqlite3.Connection) -> None:
             "SELECT name FROM sqlite_master WHERE type = 'table'"
         ).fetchall()
     }
-    required_tables = {"schema_version", "source_asset"} | _OVERWORLD_TABLE_NAMES
+    required_tables = {"schema_version", "source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
     missing_tables = sorted(required_tables - tables)
     if missing_tables:
         raise ValueError(
-            "project schema v3 is required; run 'zelda-suite migrate-project' first "
+            "project schema v4 is required; run 'zelda-suite migrate-project' first "
             "(missing: " + ", ".join(missing_tables) + ")"
         )
     current_row = connection.execute("SELECT MAX(version) FROM schema_version").fetchone()
@@ -520,6 +572,165 @@ def _export_overworld_hidden_items(
     }
 
 
+
+def _export_dungeon_chests(
+    connection: sqlite3.Connection,
+) -> dict[str, Any] | None:
+    """Validate and serialize the editable raw-field model for Dungeon_ChestData."""
+    model = connection.execute(
+        """SELECT source_file, source_revision, source_sha256, imported_at,
+                  table_label, source_range_annotation, source_annotated_start_offset,
+                  source_annotated_end_offset, table_size_bytes, entry_width_bytes,
+                  entry_count
+           FROM dungeon_chest_model WHERE singleton = 1"""
+    ).fetchone()
+    row_count = int(
+        connection.execute("SELECT COUNT(*) FROM dungeon_chest_record").fetchone()[0]
+    )
+    if model is None:
+        if row_count:
+            raise ValueError("dungeon chest records exist without model provenance metadata")
+        return None
+
+    if row_count != 168 or int(model["entry_count"]) != 168:
+        raise ValueError("dungeon chest model must contain 168 records")
+    if int(model["entry_width_bytes"]) != 3 or int(model["table_size_bytes"]) != 504:
+        raise ValueError("dungeon chest model has inconsistent packed-entry dimensions")
+
+    rows = connection.execute(
+        """SELECT table_index, candidate_entry_offset, source_line, source_expression,
+                  source_literal_value, literal_value, source_item_value, item_value,
+                  source_room_value, room_value, source_is_big_chest, is_big_chest,
+                  source_revision
+           FROM dungeon_chest_record ORDER BY table_index"""
+    ).fetchall()
+    if [int(row["table_index"]) for row in rows] != list(range(168)):
+        raise ValueError("dungeon chest record indexes must cover 0..167")
+
+    entries: list[dict[str, Any]] = []
+    source_entries: list[dict[str, Any]] = []
+    room_values: set[int] = set()
+    item_values: set[int] = set()
+    big_chest_count = 0
+    modified_count = 0
+    for row in rows:
+        table_index = int(row["table_index"])
+        source_item = int(row["source_item_value"])
+        source_room = int(row["source_room_value"])
+        source_big = bool(row["source_is_big_chest"])
+        item = int(row["item_value"])
+        room = int(row["room_value"])
+        big = bool(row["is_big_chest"])
+        source_packed = (source_item << 16) | source_room | (int(source_big) << 15)
+        packed = (item << 16) | room | (int(big) << 15)
+        if int(row["source_literal_value"]) != source_packed:
+            raise ValueError(
+                f"dungeon chest {table_index} has inconsistent source packed fields"
+            )
+        source_entries.append({
+            "table_index": table_index,
+            "candidate_entry_offset": int(row["candidate_entry_offset"]),
+            "source_line": int(row["source_line"]),
+            "expression": str(row["source_expression"]),
+            "literal_value": int(row["source_literal_value"]),
+            "item_value": source_item,
+            "room_value": source_room,
+            "is_big_chest": source_big,
+            "source_revision": str(row["source_revision"]),
+        })
+        if int(row["literal_value"]) != packed:
+            raise ValueError(
+                f"dungeon chest {table_index} has inconsistent edited packed fields"
+            )
+        is_modified = (
+            item != source_item or room != source_room or big != source_big
+        )
+        if is_modified:
+            modified_count += 1
+        room_values.add(room)
+        item_values.add(item)
+        big_chest_count += int(big)
+        entries.append({
+            "table_index": table_index,
+            "candidate_entry_offset": int(row["candidate_entry_offset"]),
+            "source_line": int(row["source_line"]),
+            "source_revision": str(row["source_revision"]),
+            "source_expression": str(row["source_expression"]),
+            "source_literal_value": int(row["source_literal_value"]),
+            "source_literal_hex": "$" + format(int(row["source_literal_value"]), "06X"),
+            "literal_value": packed,
+            "literal_hex": "$" + format(packed, "06X"),
+            "expression": "$" + format(packed, "06X"),
+            "source_item_value": source_item,
+            "item_value": item,
+            "source_room_value": source_room,
+            "room_value": room,
+            "room_pointer_index": room,
+            "room_pointer_table_byte_displacement": room * 3,
+            "source_is_big_chest": source_big,
+            "is_big_chest": big,
+            "is_modified": is_modified,
+        })
+
+    source_payload = {
+        "format": "zelda-suite-dungeon-chest-data",
+        "format_version": 1,
+        "source_file": str(model["source_file"]),
+        "source_revision": str(model["source_revision"]),
+        "table_label": str(model["table_label"]),
+        "source_range_annotation": str(model["source_range_annotation"]),
+        "source_annotated_start_offset": int(model["source_annotated_start_offset"]),
+        "source_annotated_end_offset": int(model["source_annotated_end_offset"]),
+        "table_size_bytes": int(model["table_size_bytes"]),
+        "entry_width_bytes": int(model["entry_width_bytes"]),
+        "entry_count": int(model["entry_count"]),
+        "entries": source_entries,
+        "evidence": {
+            "source_only": True,
+            "rom_bytes_read": False,
+            "source_range_offsets_verified": False,
+            "item_value_names_resolved": False,
+            "room_values_verified_against_rom": False,
+        },
+    }
+    source_payload_hash = hashlib.sha256(_render_json(source_payload).encode("utf-8")).hexdigest()
+    if source_payload_hash != str(model["source_sha256"]):
+        raise ValueError("dungeon chest source fields no longer match their import SHA-256 digest")
+
+    return {
+        "format": "zelda-suite-dungeon-chest-model",
+        "format_version": 1,
+        "source_file": str(model["source_file"]),
+        "source_revision": str(model["source_revision"]),
+        "source_sha256": str(model["source_sha256"]),
+        "imported_at": str(model["imported_at"]),
+        "table_label": str(model["table_label"]),
+        "source_range_annotation": str(model["source_range_annotation"]),
+        "source_annotated_start_offset": int(model["source_annotated_start_offset"]),
+        "source_annotated_end_offset": int(model["source_annotated_end_offset"]),
+        "table_size_bytes": int(model["table_size_bytes"]),
+        "entry_width_bytes": int(model["entry_width_bytes"]),
+        "entry_count": int(model["entry_count"]),
+        "entries": entries,
+        "summary": {
+            "entry_count": len(entries),
+            "distinct_room_value_count": len(room_values),
+            "distinct_item_value_count": len(item_values),
+            "big_chest_count": big_chest_count,
+            "modified_record_count": modified_count,
+        },
+        "evidence": {
+            "source_revision_pinned": True,
+            "packed_fields_recomposed": True,
+            "source_range_offsets_verified": False,
+            "item_value_names_resolved": False,
+            "room_values_verified_against_rom": False,
+            "rom_bytes_read": False,
+            "rom_modified": False,
+        },
+    }
+
+
 def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
     connection.row_factory = sqlite3.Row
     project_row = connection.execute(
@@ -542,11 +753,11 @@ def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
             "SELECT name FROM sqlite_master WHERE type = 'table'"
         ).fetchall()
     }
-    required_tables = {"source_asset"} | _OVERWORLD_TABLE_NAMES
+    required_tables = {"source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
     missing_tables = sorted(required_tables - tables)
     if missing_tables:
         raise ValueError(
-            "project schema v3 is required; run 'zelda-suite migrate-project' first "
+            "project schema v4 is required; run 'zelda-suite migrate-project' first "
             "(missing: " + ", ".join(missing_tables) + ")"
         )
     assets = [
@@ -574,6 +785,7 @@ def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
         "schema_version": schema_version,
         "source_assets": assets,
         "overworld_hidden_items": _export_overworld_hidden_items(connection),
+        "dungeon_chests": _export_dungeon_chests(connection),
     }
 
 
@@ -687,7 +899,7 @@ def initialize_project(
                 )
                 connection.executemany(
                     "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
-                    [(1, created_at), (2, created_at), (CURRENT_SCHEMA_VERSION, created_at)],
+                    [(1, created_at), (2, created_at), (3, created_at), (CURRENT_SCHEMA_VERSION, created_at)],
                 )
         finally:
             connection.close()
@@ -705,7 +917,7 @@ def initialize_project(
 def migrate_project(
     database_path: str | Path, json_path: str | Path | None = None
 ) -> bool:
-    """Migrate a schema-v1 or schema-v2 project to the current schema and refresh JSON.
+    """Migrate a schema-v1, schema-v2, or schema-v3 project to current schema.
 
     Returns True when migration was applied, or False when already current.
     Validation and import never trigger an automatic migration.
@@ -752,9 +964,9 @@ def migrate_project(
                     "schema-v1 project unexpectedly contains source_asset; "
                     "refusing an ambiguous partial migration"
                 )
-            if tables & _OVERWORLD_TABLE_NAMES:
+            if tables & (_OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES):
                 raise ValueError(
-                    "schema-v1 project unexpectedly contains overworld model tables; "
+                    "schema-v1 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
                 )
             with connection:
@@ -779,13 +991,42 @@ def migrate_project(
             if "source_asset" not in tables:
                 raise ValueError("schema-v2 project is missing the source_asset table")
             existing_overworld_tables = tables & _OVERWORLD_TABLE_NAMES
-            if existing_overworld_tables:
+            if existing_overworld_tables or tables & _DUNGEON_CHEST_TABLE_NAMES:
                 raise ValueError(
-                    "schema-v2 project unexpectedly contains overworld model tables; "
+                    "schema-v2 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
                 )
             with connection:
                 for statement in _OVERWORLD_SCHEMA_SQL.split(";"):
+                    if statement.strip():
+                        connection.execute(statement)
+                connection.execute(
+                    "UPDATE project SET format_version = 3 WHERE singleton = 1"
+                )
+                connection.execute(
+                    "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
+                    (3, _utc_timestamp()),
+                )
+            tables.update(_OVERWORLD_TABLE_NAMES)
+            current = 3
+            migrated = True
+
+        if current == 3:
+            project_row = connection.execute(
+                "SELECT format_version FROM project WHERE singleton = 1"
+            ).fetchone()
+            if project_row is None or project_row[0] != 3:
+                raise ValueError("schema-v3 project metadata is inconsistent")
+            if "source_asset" not in tables or not _OVERWORLD_TABLE_NAMES.issubset(tables):
+                raise ValueError("schema-v3 project is missing its source-asset or overworld tables")
+            existing_chest_tables = tables & _DUNGEON_CHEST_TABLE_NAMES
+            if existing_chest_tables:
+                raise ValueError(
+                    "schema-v3 project unexpectedly contains dungeon chest tables; "
+                    "refusing an ambiguous partial migration"
+                )
+            with connection:
+                for statement in _DUNGEON_CHEST_SCHEMA_SQL.split(";"):
                     if statement.strip():
                         connection.execute(statement)
                 connection.execute(
@@ -806,18 +1047,18 @@ def migrate_project(
                     "SELECT name FROM sqlite_master WHERE type = 'table'"
                 ).fetchall()
             }
-            required_tables = {"source_asset"} | _OVERWORLD_TABLE_NAMES
+            required_tables = {"source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
             missing_tables = sorted(required_tables - tables)
             if missing_tables:
                 raise ValueError(
-                    "schema-v3 project is missing required table(s): "
+                    "schema-v4 project is missing required table(s): "
                     + ", ".join(missing_tables)
                 )
             project_row = connection.execute(
                 "SELECT format_version FROM project WHERE singleton = 1"
             ).fetchone()
             if project_row is None or project_row[0] != PROJECT_FORMAT_VERSION:
-                raise ValueError("schema-v3 project metadata is inconsistent")
+                raise ValueError("schema-v4 project metadata is inconsistent")
 
 
     except sqlite3.Error as exc:
@@ -1280,6 +1521,216 @@ def update_overworld_hidden_item(
     raise KeyError(f"overworld hidden-item record not found: {record_index}")
 
 
+
+
+def import_dungeon_chest_data(
+    database_path: str | Path,
+    registry_path: str | Path = "data/extracted/manifest.json",
+    *,
+    replace_existing: bool = False,
+) -> dict[str, Any]:
+    """Import the registered packed chest inventory as editable raw-field records.
+
+    Original item byte, room word, flag, expression, source line, and candidate
+    offset are retained as baselines. Re-import requires explicit replacement,
+    which resets local edits. This operation reads source metadata, not a ROM.
+    """
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+    try:
+        payload = load_extracted_asset("dungeon-chest-data", registry_path)
+    except (AssetLoadError, OSError) as exc:
+        raise ValueError(f"could not load registered dungeon chest data: {exc}") from exc
+
+    if payload.get("format") != "zelda-suite-dungeon-chest-data":
+        raise ValueError("registered dungeon chest asset has an unsupported format")
+    if payload.get("entry_count") != 168 or len(payload.get("entries", [])) != 168:
+        raise ValueError("registered dungeon chest asset must contain 168 entries")
+    if payload.get("entry_width_bytes") != 3 or payload.get("table_size_bytes") != 504:
+        raise ValueError("registered dungeon chest asset has inconsistent entry dimensions")
+
+    canonical_payload = _render_json(payload)
+    payload_hash = hashlib.sha256(canonical_payload.encode("utf-8")).hexdigest()
+    imported_at = _utc_timestamp()
+
+    connection = sqlite3.connect(db_path)
+    connection.row_factory = sqlite3.Row
+    try:
+        _require_current_schema(connection)
+        existing = connection.execute(
+            "SELECT 1 FROM dungeon_chest_model WHERE singleton = 1"
+        ).fetchone()
+        if existing is not None and not replace_existing:
+            raise ValueError(
+                "dungeon chest model already exists; pass replace_existing=True "
+                "to intentionally discard project-local edits"
+            )
+        if existing is None:
+            record_count = int(
+                connection.execute("SELECT COUNT(*) FROM dungeon_chest_record").fetchone()[0]
+            )
+            if record_count:
+                raise ValueError(
+                    "dungeon chest records exist without model metadata; refusing partial import"
+                )
+
+        with connection:
+            if existing is not None:
+                connection.execute("DELETE FROM dungeon_chest_record")
+                connection.execute("DELETE FROM dungeon_chest_model")
+
+            connection.execute(
+                """INSERT INTO dungeon_chest_model (
+                       singleton, source_file, source_revision, source_sha256,
+                       imported_at, table_label, source_range_annotation,
+                       source_annotated_start_offset, source_annotated_end_offset,
+                       table_size_bytes, entry_width_bytes, entry_count
+                   ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    str(payload["source_file"]),
+                    str(payload["source_revision"]),
+                    payload_hash,
+                    imported_at,
+                    str(payload["table_label"]),
+                    str(payload["source_range_annotation"]),
+                    int(payload["source_annotated_start_offset"]),
+                    int(payload["source_annotated_end_offset"]),
+                    int(payload["table_size_bytes"]),
+                    int(payload["entry_width_bytes"]),
+                    int(payload["entry_count"]),
+                ),
+            )
+
+            records = []
+            for entry in payload["entries"]:
+                literal_value = int(entry["literal_value"])
+                item_value = int(entry["item_value"])
+                room_value = int(entry["room_value"])
+                big_chest = bool(entry["is_big_chest"])
+                packed = (item_value << 16) | room_value | (int(big_chest) << 15)
+                if packed != literal_value:
+                    raise ValueError(
+                        f"registered dungeon chest entry {entry['table_index']} has inconsistent fields"
+                    )
+                records.append((
+                    int(entry["table_index"]),
+                    int(entry["candidate_entry_offset"]),
+                    int(entry["source_line"]),
+                    str(entry["expression"]),
+                    literal_value,
+                    literal_value,
+                    item_value,
+                    item_value,
+                    room_value,
+                    room_value,
+                    int(big_chest),
+                    int(big_chest),
+                    str(entry["source_revision"]),
+                ))
+            connection.executemany(
+                """INSERT INTO dungeon_chest_record (
+                       table_index, candidate_entry_offset, source_line, source_expression,
+                       source_literal_value, literal_value, source_item_value, item_value,
+                       source_room_value, room_value, source_is_big_chest, is_big_chest,
+                       source_revision
+                   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                records,
+            )
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not store dungeon chest model: {exc}") from exc
+    finally:
+        connection.close()
+
+    export_project(db_path)
+    model = get_dungeon_chest_model(db_path)
+    if model is None:
+        raise ValueError("dungeon chest model import did not persist")
+    return model
+
+
+def get_dungeon_chest_model(
+    database_path: str | Path,
+) -> dict[str, Any] | None:
+    """Return the project-local dungeon chest inventory and its source comparison."""
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = sqlite3.connect(read_only_uri, uri=True)
+    connection.row_factory = sqlite3.Row
+    try:
+        _require_current_schema(connection)
+        return _export_dungeon_chests(connection)
+    finally:
+        connection.close()
+
+
+def update_dungeon_chest_record(
+    database_path: str | Path,
+    table_index: int,
+    *,
+    item_value: int | None = None,
+    room_value: int | None = None,
+    is_big_chest: bool | None = None,
+) -> dict[str, Any]:
+    """Edit packed chest fields in the project store without writing ROM bytes."""
+    if isinstance(table_index, bool) or not isinstance(table_index, int) or not 0 <= table_index <= 167:
+        raise ValueError("table_index must be an integer in 0..167")
+    if item_value is None and room_value is None and is_big_chest is None:
+        raise ValueError("supply item_value, room_value, or is_big_chest")
+    if item_value is not None and (
+        isinstance(item_value, bool) or not isinstance(item_value, int) or not 0 <= item_value <= 0xFF
+    ):
+        raise ValueError("item_value must be an integer in 0..255")
+    if room_value is not None and (
+        isinstance(room_value, bool) or not isinstance(room_value, int) or not 0 <= room_value <= 0x7FFF
+    ):
+        raise ValueError("room_value must be an integer in 0..32767")
+    if is_big_chest is not None and not isinstance(is_big_chest, bool):
+        raise ValueError("is_big_chest must be a boolean")
+
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+    connection = sqlite3.connect(db_path)
+    connection.row_factory = sqlite3.Row
+    try:
+        _require_current_schema(connection)
+        existing = connection.execute(
+            """SELECT item_value, room_value, is_big_chest
+               FROM dungeon_chest_record WHERE table_index = ?""",
+            (table_index,),
+        ).fetchone()
+        if existing is None:
+            raise KeyError(f"dungeon chest record not found: {table_index}")
+
+        new_item = int(existing["item_value"]) if item_value is None else item_value
+        new_room = int(existing["room_value"]) if room_value is None else room_value
+        new_big = bool(existing["is_big_chest"]) if is_big_chest is None else is_big_chest
+        packed = (new_item << 16) | new_room | (int(new_big) << 15)
+        with connection:
+            connection.execute(
+                """UPDATE dungeon_chest_record
+                   SET item_value = ?, room_value = ?, is_big_chest = ?, literal_value = ?
+                   WHERE table_index = ?""",
+                (new_item, new_room, int(new_big), packed, table_index),
+            )
+        export_project(db_path)
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not update dungeon chest record: {exc}") from exc
+    finally:
+        connection.close()
+
+    model = get_dungeon_chest_model(db_path)
+    if model is None:
+        raise ValueError("no dungeon chest model has been imported")
+    for record in model["entries"]:
+        if record["table_index"] == table_index:
+            return cast(dict[str, Any], record)
+    raise KeyError(f"dungeon chest record not found: {table_index}")
+
+
 def validate_project(
     database_path: str | Path, json_path: str | Path | None = None
 ) -> list[str]:
@@ -1321,6 +1772,7 @@ def validate_project(
             "schema_version",
             "source_asset",
             *_OVERWORLD_TABLE_NAMES,
+            *_DUNGEON_CHEST_TABLE_NAMES,
         }
         missing_tables = sorted(required_tables - tables)
         if missing_tables:
