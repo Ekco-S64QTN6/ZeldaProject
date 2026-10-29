@@ -1,13 +1,54 @@
 # Authoring API
 
-Status: **not yet designed**. Target: Phase 2 (see `ROADMAP.md`).
+Status: **partially implemented**. The current public Python surface supports
+bounded source-preserving edits for overworld hidden-item records and packed
+dungeon chest fields. The complete game-system authoring API remains a Phase 2
+goal; room/map editing, create/delete operations, ROM writes, and MCP exposure
+are not implemented.
 
-This document will define the semantic surface Claude uses to make edits —
-`list_rooms`, `get_room(room_id)`, `update_chest(chest_id, item_id)`,
-`move_entrance(entrance_id, room_id)`, `set_tile(map_id, x, y, tile_id)`, etc.
+## Current project functions
 
-Design constraints (from CLAUDE.md §7):
+- `initialize_project()`, `migrate_project()`, `validate_project()`, and
+  `export_project()` manage the SQLite-canonical project and JSON sidecar.
+- `import_overworld_hidden_item_model()`,
+  `get_overworld_hidden_item_model()`, and
+  `update_overworld_hidden_item()` operate on the bounded overworld model.
+- `import_dungeon_chest_data()`, `get_dungeon_chest_model()`, and
+  `update_dungeon_chest_record()` operate on the 168 source-indexed packed
+  chest entries. Editable fields are raw item byte, low-15-bit room value, and
+  big-chest flag; the packed 24-bit literal is recomposed with storage checks.
+- `audit_project_dungeon_chest_room_references()` joins the current project
+  room values to the validated source object/door-pointer exports. It preserves
+  each original source room value and edit status and reports out-of-range room
+  references and pointer target-label mismatches.
 
-1. Every mutating call supports `dry_run=True`.
-2. Every response cites the extracted data file and the disassembly label(s).
-3. Referential integrity is enforced at this layer, not the byte layer.
+## Command-line entry points
+
+Use the CLI wrapper to produce the same versioned project-reference report:
+
+```bash
+uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.db
+uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.db \
+  --fail-on-findings
+```
+
+All existing semantic edit operations update SQLite and its JSON sidecar only;
+they do not write ROM bytes. The project-aware audit reads SQLite and registered
+source metadata but does not access the ROM. Source-commented pointer offsets
+are not verified binary locations, item names remain unresolved, and the
+playable-room count discrepancy remains open. The report schema is documented
+in `docs/schemas/project-dungeon-chest-room-reference-audit.schema.json`.
+
+## Design constraints for future operations
+
+1. Every mutating call must support `dry_run=True` before it can write external
+   artifacts; ROM writes remain prohibited until the explicit safeguards in
+   `CLAUDE.md` are met.
+2. Every response must cite the project record and supporting disassembly
+   label/offset range while distinguishing source annotations from verified
+   offsets.
+3. Referential integrity must be enforced at the API and storage layers, not
+   deferred to binary serialization.
+4. New fields and operations require bounded validation, deterministic
+   serialization, source baselines, regression tests, and explicit migration
+   policy where the persisted format changes.

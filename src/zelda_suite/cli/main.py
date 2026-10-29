@@ -87,6 +87,7 @@ from zelda_suite.extract import (
 )
 from zelda_suite.project import (
     CURRENT_SCHEMA_VERSION,
+    audit_project_dungeon_chest_room_references,
     get_dungeon_chest_model,
     get_overworld_hidden_item_model,
     get_source_asset,
@@ -1956,6 +1957,78 @@ def audit_dungeon_chest_room_references_command(
             f"Wrote dungeon chest room-reference audit to {output}; "
             f"chests={summary['chest_entry_count']}, "
             f"rooms={summary['unique_room_value_count']}, "
+            f"out_of_range={summary['chest_entries_without_pointer_slots']}, "
+            f"target_mismatches={summary['object_door_pointer_target_mismatch_room_count']}, "
+            f"errors={summary['error_count']}"
+        )
+
+    if fail_on_findings and report["summary"]["finding_count"]:
+        raise click.exceptions.Exit(1)
+
+
+
+
+@cli.command(name="audit-project-dungeon-chest-room-references")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+@click.option(
+    "--fail-on-findings",
+    is_flag=True,
+    help="Return exit status 1 when an error finding is present.",
+)
+def audit_project_dungeon_chest_room_references_command(
+    database: Path,
+    registry_path: Path | None,
+    output: Path | None,
+    fail_on_findings: bool,
+) -> None:
+    """Join current project chest room values to the source pointer metadata."""
+    try:
+        report = audit_project_dungeon_chest_room_references(
+            database, registry_path or "data/extracted/manifest.json"
+        )
+    except (AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote project dungeon chest room-reference audit to {output}; "
+            f"chests={summary['chest_entry_count']}, "
+            f"modified={summary['modified_record_count']}, "
             f"out_of_range={summary['chest_entries_without_pointer_slots']}, "
             f"target_mismatches={summary['object_door_pointer_target_mismatch_room_count']}, "
             f"errors={summary['error_count']}"

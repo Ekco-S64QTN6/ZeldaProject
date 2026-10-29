@@ -1,6 +1,6 @@
 # Project data schemas
 
-The project database uses schema v2 for project metadata and validated source-export snapshots; see [project-format.md](../project-format.md). Editable game-system schemas are introduced alongside Phase 1 extractors so that every field is grounded in the ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
+The project database uses schema v4 for project metadata, validated source-export snapshots, overworld hidden-item records, and packed dungeon chest records; see [project-format.md](../project-format.md). Editable game-system schemas are introduced alongside Phase 1 extractors so that every field is grounded in the ROM layout and the pinned `AsarUSALTTPDisassembly` reference.
 
 [Version and compatibility rules](../versioning.md) explain how the registry, project format, SQLite schema, and source-export formats evolve.
 
@@ -26,7 +26,8 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [OAM allocation audit](./oam-allocation-audit.schema.json) — version 1 source-only report grouping six OAM limits and 48 fallback points into six regions.
 - [Dungeon chest data export](./dungeon-chest-data-export.schema.json) — version 1 packed three-byte `Dungeon_ChestData` records with raw item/room values and the big-chest flag.
 - [Dungeon chest data audit](./dungeon-chest-data-audit.schema.json) — version 1 source-only repeated-room, raw item-value frequency, and big-chest summary.
-- [Dungeon chest room-reference audit](./dungeon-chest-room-reference-audit.schema.json) — version 1 source-only cross-reference of chest room values to object/door pointer slots, backed by the pinned Bank01 consumer.
+- [Dungeon chest room-reference audit](./dungeon-chest-room-reference-audit.schema.json) — version 1 source-only cross-reference of the immutable chest inventory to object/door pointer slots, backed by the pinned Bank01 consumer.
+- [Project dungeon chest room-reference audit](./project-dungeon-chest-room-reference-audit.schema.json) — version 1 read-only join of current edited SQLite chest room values to source object/door-pointer metadata, retaining original room values and edit status.
 - [Shop-item handlers export](./shop-item-handlers-export.schema.json) — version 1 source export for seven `Sprite_ShopKeeper` purchase handlers, including source-coded prices and receipt selectors.
 - [Shop-item handlers audit](./shop-item-handlers-audit.schema.json) — version 1 cross-reference from receipt indexes to raw `item-receipt-layout` slots; now includes raw graphics-table comment annotations without treating them as canonical IDs.
 - [Item-receipt annotation audit](./item-receipt-annotation-audit.schema.json) — version 1 source-only report of the missing `0x40` comment ID and the 12 source-comment IDs that differ from dense table indexes.

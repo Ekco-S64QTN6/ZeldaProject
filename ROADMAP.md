@@ -146,6 +146,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads/updates and packed dungeon chest field edits in schema v4. Create/delete operations, area editing, broader room/map models, and ROM writes remain unimplemented.
 - [~] Store semantic game-system records in SQLite schema v4 with migrations, field bounds, packed-value checks, and foreign-key area/record relationships. Other domains remain source_asset snapshots until their schemas are implemented.
+- [x] Add a project-facing read-only audit that joins the editable chest model's current room values to the pinned object/door pointer inventories, retaining source room baselines and edit status. Regression coverage verifies clean joins, edited values outside pointer range, missing models, and CLI failure behavior. Candidate offsets and ROM bytes remain unverified; the command does not read or write ROM bytes.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
 - [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
@@ -221,11 +222,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    candidates or room payload bytes are canonical. Keep the six findings visible.
    The dictionary terminal pointer matches exclusive-end candidate `$C8D9`.
    The `.You` extent discrepancy and symbol-name mapping remain unresolved.
-3. Build the next project-facing query layer by joining the editable chest model's
-   raw room values to the existing object/door-pointer inventory, clearly preserving
-   source-level confidence and candidate offsets. Then extend the API with safe
-   create/delete operations or room-object editing, retaining source baselines,
-   explicit constraints, alias relationships and the no-ROM-write boundary.
+3. Extend the project-facing authoring API with safe create/delete operations or
+   room-object editing, retaining source baselines, explicit constraints, alias
+   relationships, deterministic exports, and the no-ROM-write boundary. The new
+   project-aware chest/room-reference audit reports current edited room values
+   alongside immutable source baselines but does not resolve item names or playable
+   room semantics.
 4. Complete Phase 1 extraction and Phase 0 tool checks. The existing matching byte
    comparisons do not decode overworld map payloads, prove all source annotations,
    or establish that the whole editor pipeline works.
