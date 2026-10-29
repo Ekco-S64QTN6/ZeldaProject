@@ -469,6 +469,31 @@ bootability, or correctness of untested semantics. Review each JSON report,
 especially any source-commented offset mismatches, rather than shifting offsets
 to force a pass.
 
+### Latest recorded user-run bundle (2026-10-29)
+
+The user reran this script after the dungeon and dictionary verifier updates. All
+ten entries in `checks.tsv` returned exit status 0. Summary from the command
+output:
+
+| Check | Result |
+| --- | --- |
+| Scalar-table values | 662 checked, 0 mismatches; 98 skipped/unresolved |
+| Overworld hidden-item bytes | 550 checked, 0 mismatches |
+| Hidden-item source layout | 128 pointers, 351 records, 67 sentinels, 128 areas |
+| Hidden-item third-byte source audit | 351 records: 325 ordinary masks, 26 extended selectors, 0 unmapped |
+| Dungeon-room pointers | 320 checked, 0 mismatches; 6 source-offset findings |
+| Text-dictionary pointers | 98 checked, 0 mismatches; 1 source-extent warning |
+| Encoded text-message bytes | 397 messages, 36,363 bytes checked, 0 mismatches; 7 source warnings |
+| Self-diff | Passed |
+| ROM inspection and size preflight | Passed; 1,048,576 bytes |
+
+This confirms byte agreement for the candidate offsets used by these checks on
+the supplied image. The six dungeon findings are source-comment conflicts, not
+pointer-byte failures. The dictionary warning is the independent `.You`
+2-byte-versus-6-byte extent discrepancy. The runner's summary did not establish
+a trusted canonical hash or ROM provenance, does not decode message text, and
+does not prove emulator bootability or the full editor pipeline.
+
 ## Diagnosing pointer mismatches from a report bundle
 
 If either pointer verifier reports mismatches, print just the relevant fields

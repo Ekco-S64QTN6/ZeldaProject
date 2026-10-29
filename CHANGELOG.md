@@ -11,6 +11,7 @@ does not imply that any release has been published.
 
 - Change dungeon-room pointer verification to compare target addresses against sequential payload layout, anchored at each inventory's first annotated offset and advanced by declared payload sizes. Report v2 preserves six conflicting source-comment offsets as findings instead of rewriting the source annotations.
 - Change text-dictionary pointer verification so the terminal pointer uses the exclusive end of the pinned inclusive data range. Report v2 keeps both the raw terminal comment and computed target basis; the separate `.You` extent warning remains visible, and ROM provenance is not established.
+- Record the 2026-10-29 user-run read-only ROM bundle: all ten checks returned success, including 320 dungeon pointers and 98 dictionary pointers with zero byte mismatches. Preserve six dungeon source-offset findings, the `.You` source-extent warning, seven text-source warnings, 98 unresolved scalar-table expressions, and the unverified ROM-provenance caveat in `ROADMAP.md` and the verification runbook.
 
 - Make the overworld payload layout audit fail closed unless both inventories match the pinned disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` and the expected 82/42 Bank0B/Bank0C pair counts. This keeps the source-log/consumer line references and fixed version-1 report schema honest; generic pair validation remains revision-agnostic.
 

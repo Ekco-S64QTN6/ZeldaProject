@@ -198,36 +198,38 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 ## Immediate next work
 
 1. Complete ROM provenance validation and external-tool smoke tests. The
-   initial user-run report bundle on 2026-10-29 reported 662 scalar-table
-   values checked with zero mismatches and 98 unresolved entries; all 550
-   overworld hidden-item spans matched; all 36,363 checked text-message bytes
-   matched (seven source warnings); six of 320 dungeon-room pointers disagreed
-   with source-comment offset candidates; and one of 98 text-dictionary pointer
-   candidates mismatched, alongside the `.You` source-extent warning. The
-   pinned source review found six room-payload offset comments that conflict
-   with source order plus declared payload sizes. The updated dungeon verifier
-   reports these separately and compares pointers against that sequential
-   layout without rewriting comments; re-run it against the local image to
-   confirm its result. The image was 1 MiB, but no trusted canonical
-   hash/provenance was established. On Arch Linux, use the verified generic
-   YAZE release archive, inspect `z3ed --help`, then perform only a confirmed
-   read-only ROM operation. Keep ROM provenance and the z3cli/model-endpoint
-   gates open until independently resolved.
-2. Re-run the updated dungeon and text-dictionary pointer verifiers against
-   the 2026-10-29 local image. Preserve the dungeon verifier's source-offset
-   findings: the six comment conflicts are `RoomDataTiles_00E1` (comment
-   `$0509A9`, sequential `$05016E`), `RoomDataTiles_0011` (`$050F19`,
-   `$050B9F`), `RoomDataTiles_0050` (`$0516A1`, `$05102F`),
-   `RoomDataTiles_00F9` (`$053FF5`, `$052FF5`), `RoomDataTiles_011C`
-   (`$01FF53`, `$01F456`), and `RoomDataTiles_0015` (`$0FE171`,
-   `$0FE474`). These conclusions come from pinned declaration order and
-   sizes, not canonical-ROM or payload-byte verification. For the dictionary
-   terminal entry, the source consumer reads each token until the next pointer
-   (an exclusive end); the inclusive data range ends at `$0748D8` and the next
-   code section starts at `$0748D9`. The updated verifier uses `$C8D9` as the
-   end-exclusive candidate while preserving the raw `$0748D8` comment.
-   Re-run it to confirm the local bytes agree. The `.You` 2-byte extent versus
-   six-byte `dw` warning remains independent and unresolved; don't edit that
-   directive or the source symbol mapping without further evidence.
-3. Compare one hidden-item area's pointer, record bytes, sentinel grouping, and consumer-derived third-byte behavior against a trusted local ROM. The source-level value-byte consumer trace is now documented and tested, but it does not establish byte agreement or canonical item identity. Keep the editable schema gate open until the trusted-ROM comparison is complete.
-4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
+   latest user-run report bundle on 2026-10-29 returned exit status 0 for all
+   ten checks. It reported 662 scalar-table comparisons with zero mismatches
+   and 98 unresolved entries; all 550 overworld hidden-item byte comparisons
+   matched; all 36,363 checked text-message bytes matched (seven source
+   warnings); all 320 dungeon-room pointer comparisons matched with zero
+   pointer mismatches and six source-offset findings; and all 98 text-dictionary
+   pointer comparisons matched with zero mismatches and one separate `.You`
+   source-extent warning. The image was 1 MiB, but the report bundle does not
+   establish canonical ROM hash/provenance. On Arch Linux, use the verified
+   generic YAZE release archive, inspect `z3ed --help`, then perform only a
+   confirmed read-only ROM operation. Keep ROM provenance and the
+   z3cli/model-endpoint gates open until independently resolved.
+2. Reconcile the six dungeon-room comments that disagree with source-order
+   payload layout: `RoomDataTiles_00E1` (comment `$0509A9`, sequential
+   `$05016E`), `RoomDataTiles_0011` (`$050F19`, `$050B9F`),
+   `RoomDataTiles_0050` (`$0516A1`, `$05102F`), `RoomDataTiles_00F9`
+   (`$053FF5`, `$052FF5`), `RoomDataTiles_011C` (`$01FF53`, `$01F456`),
+   and `RoomDataTiles_0015` (`$0FE171`, `$0FE474`). The fresh local run
+   confirms the ROM pointer bytes agree with computed sequential-layout
+   candidates; it does not prove those candidates or room payload bytes are
+   canonical. Keep the six source findings visible and do not rewrite comments
+   merely to remove warnings. The dictionary terminal pointer now matches the
+   exclusive-end candidate `$C8D9` derived from the inclusive `$0747C7-$0748D8`
+   DATA range and the next code section at `$0748D9`. The `.You` 2-byte extent
+   versus six-byte `dw` warning and the `Text_DictionaryPointers`/
+   `DictionaryPointers` symbol-name mapping remain separate and unresolved.
+3. With provenance still unverified, treat the 550 matching hidden-item spans
+   as byte agreement for this supplied image only. After establishing a trusted
+   image identity, continue validating one area's pointer, record bytes,
+   sentinel grouping, and consumer-derived third-byte behavior together. Keep
+   the editable schema gate open until the semantic and provenance evidence
+   are independently adequate.
+4. Keep Phase 0 local-tool checks visible as blockers; the read-only runner's
+   success does not establish emulator bootability or prove that the complete
+   editor pipeline works.
