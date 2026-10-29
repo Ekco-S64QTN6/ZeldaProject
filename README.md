@@ -52,6 +52,8 @@ For a structured, source-only view of the OAM allocator, run `uv run zelda-suite
 
 For a source-only view of packed dungeon chest records, run `uv run zelda-suite audit-dungeon-chest-data`. It summarizes raw room/item values, repeated room values, and the source-commented big-chest flag without resolving item names or verifying range offsets; see [`docs/schemas/items.md`](./docs/schemas/items.md).
 
+To cross-reference the 168 packed chest records with their object/door pointer slots using the pinned `Bank01.asm` consumer, run `uv run zelda-suite audit-dungeon-chest-room-references`. This checks source-table index consistency only; it does not verify ROM offsets or resolve the playable-room set.
+
 For a source-only catalog of the seven standard shopkeeper purchase handlers, run `uv run zelda-suite audit-shop-item-handlers`. It cross-references source-coded price bytes with raw receive-item slots by positional index; it does not resolve item names or infer shop stock by room.
 
 For the three potion-shop transactions, run `uv run zelda-suite audit-potion-shop-transactions`. It records source checks/deductions of 60, 160, and 120 rupees, receipt selectors `$2F/$30/$2E`, and joins those indexes to raw receipt fields and comment annotations. Runtime price behavior, canonical item IDs, and room-specific stock remain unresolved.

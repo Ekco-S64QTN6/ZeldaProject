@@ -1,0 +1,519 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite dungeon chest room-reference audit",
+  "description": "Source-only join between packed Dungeon_ChestData room values and matching object/door pointer-table slots. Pinned source consumer code supports the relationship; pointer offsets, payload bytes, item names, and playable-room status remain unverified.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "registry",
+    "source_revision",
+    "chest_asset_name",
+    "object_pointer_asset_name",
+    "door_pointer_asset_name",
+    "room_groups",
+    "cross_references",
+    "object_door_pointer_mismatch_room_values",
+    "findings",
+    "summary",
+    "source_semantics",
+    "evidence"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-dungeon-chest-room-reference-audit"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "registry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_revision": {
+      "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    "chest_asset_name": {
+      "const": "dungeon-chest-data"
+    },
+    "object_pointer_asset_name": {
+      "const": "dungeon-room-object-pointers"
+    },
+    "door_pointer_asset_name": {
+      "const": "dungeon-room-door-pointers"
+    },
+    "room_groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/room_group"
+      }
+    },
+    "cross_references": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/cross_reference"
+      }
+    },
+    "object_door_pointer_mismatch_room_values": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "source_semantics": {
+      "$ref": "#/$defs/source_semantics"
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "cross_reference": {
+      "type": "object",
+      "required": [
+        "chest_table_index",
+        "chest_source_line",
+        "chest_expression",
+        "room_value",
+        "item_value",
+        "is_big_chest",
+        "room_pointer_table_index",
+        "room_value_in_pointer_tables",
+        "object_pointer_target_label",
+        "object_pointer_is_empty_target",
+        "door_pointer_target_label",
+        "door_pointer_target_addend",
+        "pointer_target_labels_match"
+      ],
+      "properties": {
+        "chest_table_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chest_source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "chest_expression": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-Fa-f]{6}$"
+        },
+        "room_value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32767
+        },
+        "item_value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "is_big_chest": {
+          "type": "boolean"
+        },
+        "room_pointer_table_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "room_value_in_pointer_tables": {
+          "type": "boolean"
+        },
+        "object_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "object_pointer_is_empty_target": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "door_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "door_pointer_target_addend": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "pointer_target_labels_match": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "room_group": {
+      "type": "object",
+      "required": [
+        "room_value",
+        "chest_entry_count",
+        "chest_table_indexes",
+        "item_values",
+        "big_chest_entry_indexes",
+        "room_pointer_table_index",
+        "room_value_in_pointer_tables",
+        "object_pointer_target_label",
+        "object_pointer_is_empty_target",
+        "door_pointer_target_label",
+        "door_pointer_target_addend",
+        "pointer_target_labels_match"
+      ],
+      "properties": {
+        "room_value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32767
+        },
+        "chest_entry_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "chest_table_indexes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "item_values": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        },
+        "big_chest_entry_indexes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "room_pointer_table_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "room_value_in_pointer_tables": {
+          "type": "boolean"
+        },
+        "object_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "object_pointer_is_empty_target": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "door_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "door_pointer_target_addend": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "pointer_target_labels_match": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "code",
+        "severity",
+        "message",
+        "chest_table_index",
+        "room_value",
+        "object_pointer_target_label",
+        "door_pointer_target_label"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "chest_table_metadata_mismatch",
+            "object_pointer_table_metadata_mismatch",
+            "door_pointer_table_metadata_mismatch",
+            "room_value_out_of_pointer_range",
+            "object_door_pointer_target_mismatch"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chest_table_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "room_value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "object_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "door_pointer_target_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "chest_entry_count",
+        "unique_room_value_count",
+        "room_values_with_multiple_chests",
+        "chest_entries_with_pointer_slots",
+        "chest_entries_without_pointer_slots",
+        "unique_room_values_without_pointer_slots",
+        "empty_object_pointer_target_chest_count",
+        "unique_room_values_targeting_empty_object_pointer",
+        "object_door_pointer_target_mismatch_room_count",
+        "error_count",
+        "warning_count",
+        "finding_count",
+        "minimum_room_value",
+        "maximum_room_value"
+      ],
+      "properties": {
+        "chest_entry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique_room_value_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "room_values_with_multiple_chests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chest_entries_with_pointer_slots": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chest_entries_without_pointer_slots": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique_room_values_without_pointer_slots": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "empty_object_pointer_target_chest_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unique_room_values_targeting_empty_object_pointer": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "object_door_pointer_target_mismatch_room_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "error_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warning_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "finding_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minimum_room_value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "maximum_room_value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_semantics": {
+      "type": "object",
+      "required": [
+        "source_file",
+        "source_revision",
+        "chest_field_comment_lines",
+        "chest_room_compare_line",
+        "chest_item_value_load_line",
+        "chest_big_chest_flag_test_line",
+        "room_index_times_three_comment_line",
+        "room_index_times_three_calculation_line",
+        "door_pointer_read_lines",
+        "object_pointer_room_index_comment_line",
+        "object_pointer_read_lines",
+        "relationship_description",
+        "room_value_is_used_to_select_pointer_slot_in_source"
+      ],
+      "properties": {
+        "source_file": {
+          "const": "Bank01.asm"
+        },
+        "source_revision": {
+          "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+        },
+        "chest_field_comment_lines": {
+          "const": [
+            15108,
+            15109
+          ]
+        },
+        "chest_room_compare_line": {
+          "const": 15231
+        },
+        "chest_item_value_load_line": {
+          "const": 15236
+        },
+        "chest_big_chest_flag_test_line": {
+          "const": 15239
+        },
+        "room_index_times_three_comment_line": {
+          "const": 7908
+        },
+        "room_index_times_three_calculation_line": {
+          "const": 7909
+        },
+        "door_pointer_read_lines": {
+          "const": [
+            7910,
+            7911
+          ]
+        },
+        "object_pointer_room_index_comment_line": {
+          "const": 826
+        },
+        "object_pointer_read_lines": {
+          "const": [
+            828,
+            829
+          ]
+        },
+        "relationship_description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "room_value_is_used_to_select_pointer_slot_in_source": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only",
+        "rom_bytes_read",
+        "room_payload_bytes_read",
+        "room_value_compared_to_source_pointer_slots",
+        "source_consumer_relationship_traced",
+        "pointer_offsets_verified",
+        "payload_bytes_verified",
+        "item_value_names_resolved",
+        "playable_room_set_resolved"
+      ],
+      "properties": {
+        "source_only": {
+          "const": true
+        },
+        "rom_bytes_read": {
+          "const": false
+        },
+        "room_payload_bytes_read": {
+          "const": false
+        },
+        "room_value_compared_to_source_pointer_slots": {
+          "const": true
+        },
+        "source_consumer_relationship_traced": {
+          "const": true
+        },
+        "pointer_offsets_verified": {
+          "const": false
+        },
+        "payload_bytes_verified": {
+          "const": false
+        },
+        "item_value_names_resolved": {
+          "const": false
+        },
+        "playable_room_set_resolved": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

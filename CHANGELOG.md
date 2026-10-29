@@ -17,6 +17,7 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add `zelda-suite audit-dungeon-chest-room-references` and a version-1 schema to join all 168 packed chest room values with the corresponding object/door pointer slots. The pinned `Bank01.asm` consumer explicitly compares the chest room field with `$A0` and indexes the pointer tables using `$A0 * 3`; ROM offsets, payload bytes, item names, and playable-room status remain unverified.
 - Add `zelda-suite audit-dungeon-room-door-pointers`, a deterministic source-only report for all 320 door-pointer addends, corresponding object-pointer slot labels, and source-declared room-payload bounds. It preserves unreferenced target findings and explicitly does not verify offsets or bytes against a ROM.
 - Add `potion-shop-transactions`, a three-entry source catalog for green, blue, and red potion purchases. `inspect-potion-shop-transactions` preserves source compare/deduction literals, empty-bottle check lines, and receipt indexes `$2F/$30/$2E`; `audit-potion-shop-transactions` joins these to raw receive-item slots and graphics-comment annotations. Runtime prices and canonical item IDs are not verified.
 - Add `special-shop-transactions` for Bomb Shop Bomb, Bomb Shop Super Bomb, and the Bottle Vendor bottle sale. The strict parser preserves the 100-rupee purchase paths, the two receipt selectors (`$28` and `$16`), and the Super Bomb's direct flag/tagalong reward; the audit joins only actual receipt selectors to raw receipt slots and graphics-comment annotations.

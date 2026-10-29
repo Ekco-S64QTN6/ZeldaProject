@@ -222,6 +222,34 @@ The separate `verify-dungeon-room-pointers` command still requires a local ROM
 for pointer-byte comparisons. See the
 [dungeon-room asset audit schema](./dungeon-room-asset-audit.schema.json).
 
+## Chest room-to-pointer cross-reference
+
+Pinned \`Bank01.asm\` source supports joining the packed chest room field with the
+same room-index domain used by the two room-pointer tables:
+
+- Lines 15108–15109 describe the top-byte item value, low-15-bit room value, and
+  bit-15 big-chest flag.
+- Line 15231 masks each chest record with \`$7FFF\` and compares that room field
+  with the current-room variable \`$A0\`; lines 15236 and 15239 consume the item
+  byte and big-chest flag.
+- Lines 7908–7911 calculate \`$A0 * 3\` and load the corresponding door-data
+  pointer. Lines 826–829 use the same three-byte room index to load object data.
+
+Run \`uv run zelda-suite audit-dungeon-chest-room-references\` to produce a
+versioned JSON cross-reference for all 168 chest records and their matching
+object/door pointer slots. Against the committed exports, all 168 room values
+have matching table slots, there are 106 distinct room values and 32 room
+values with multiple chest records, and the object/door pointer target labels
+agree for every referenced room slot. Three chest entries reference slots whose
+object-pointer target label is \`RoomDataTiles_Empty\`; this preserves the source
+label only and does not claim that those rooms are unplayable or invalid.
+
+This verifies a relationship documented by the pinned source consumer, not a
+trusted-ROM offset or byte mapping. The room payload binaries are absent from
+the pinned tree; item names remain unresolved; and this audit does not settle
+the separate 296-versus-320 playable-room discrepancy. See the
+[chest room-reference audit schema](./dungeon-chest-room-reference-audit.schema.json).
+
 ## Door-pointer addend audit
 
 Run `uv run zelda-suite audit-dungeon-room-door-pointers` to cross-reference
