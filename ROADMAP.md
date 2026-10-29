@@ -127,7 +127,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [x] Add `audit-overworld-payload-layout` to join all 124 High/Low pairs and expose each declaration's source line, include path, declared size, annotated start/end, calculated end, range-size status, and candidate High/Low adjacency. The report is pinned to disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` and the 82/42 Bank0B/Bank0C pair counts because its source-log/consumer line references and version-1 schema depend on that baseline. It pins 244 range-size matches, three mismatches, and one missing/unparseable range while explicitly leaving payload decoding and trusted-ROM offset checks open.
 - [x] Add `zelda-suite audit-incbin-inventory` to summarize metadata gaps, explicit source-range/size mismatches, and overlaps between candidate spans across all registered incbin inventories. A CI integration test pins the six registered inventories (529 declarations, four metadata gaps, three range/size mismatches, ten candidate overlap pairs) to prevent silent baseline drift. The report is deterministic and source-only; candidate offsets remain unverified until checked against a trusted local ROM.
 - [x] Add `zelda-suite audit-text-dictionary` to cross-reference the 98 committed symbolic dictionary pointer entries against all 98 fragment records in CI. It checks source provenance, labels, indexes, entry offsets, and the terminal sentinel; the strict asset loader also rejects inconsistent adjacent fragment offsets and source-extent arithmetic. The known `.You` 2-byte versus 6-byte directive discrepancy remains a warning; pointer values and ROM offsets remain unverified.
-- [x] Add `zelda-suite verify-text-dictionary-pointers ROM` to compare the 98 two-byte dictionary pointer entries against source-offset-derived LoROM candidates, with synthetic-ROM match/mismatch tests and a versioned report. The local-ROM run, source-offset trust, fragment-byte verification, ROM provenance, and `Text_DictionaryPointers`/`DictionaryPointers` symbol-name mapping remain open.
+- [x] Add `zelda-suite verify-text-dictionary-pointers ROM` to compare the 98 two-byte dictionary pointer entries against source-commented fragment starts and an explicit exclusive-end candidate for the terminal pointer, with synthetic-ROM match/mismatch tests and a versioned report. The local-ROM re-run, source-offset trust, fragment-byte verification, ROM provenance, and `Text_DictionaryPointers`/`DictionaryPointers` symbol-name mapping remain open. The separate `.You` source-extent warning is preserved.
 - [x] Add `zelda-suite audit-text-message-index` and a CI baseline for the 397 committed message records. It reports six source offset-comment mismatches (three malformed), 38 records without comments in the extra block, and a one-byte extra-block size discrepancy without reading a ROM or decoding messages.
 - [x] Add `zelda-suite verify-text-message-bytes ROM` to compare literal message bytes from both pinned source blocks against candidate offsets in a local 1 MiB image. Synthetic tests cover byte matches/mismatches, fail-closed parsing, CLI output, and no-overwrite behavior; a pinned-source test checks all 397 messages and the six offset-comment / one block-size warnings. Actual local-ROM agreement and source-offset/ROM-provenance verification remain open.
 - [x] Add a submodule-independent regression baseline for the committed 128-entry `OverworldData_HiddenItems` pointer table. It pins contiguous two-byte slot offsets, the full set of 80 target labels, and the 64-singleton/16-quadruple target distribution; target labels are still source symbols, not verified ROM offsets.
@@ -213,19 +213,21 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    YAZE release archive, inspect `z3ed --help`, then perform only a confirmed
    read-only ROM operation. Keep ROM provenance and the z3cli/model-endpoint
    gates open until independently resolved.
-2. Re-run the updated dungeon-room pointer verifier against the 2026-10-29
-   local image and preserve both its byte-mismatch list and source-offset
-   findings. The six comment conflicts are `RoomDataTiles_00E1` (comment
+2. Re-run the updated dungeon and text-dictionary pointer verifiers against
+   the 2026-10-29 local image. Preserve the dungeon verifier's source-offset
+   findings: the six comment conflicts are `RoomDataTiles_00E1` (comment
    `$0509A9`, sequential `$05016E`), `RoomDataTiles_0011` (`$050F19`,
    `$050B9F`), `RoomDataTiles_0050` (`$0516A1`, `$05102F`),
    `RoomDataTiles_00F9` (`$053FF5`, `$052FF5`), `RoomDataTiles_011C`
    (`$01FF53`, `$01F456`), and `RoomDataTiles_0015` (`$0FE171`,
-   `$0FE474`). These conclusions come from the pinned source declaration
-   order and size annotations; they are not canonical-ROM or payload-byte
-   verification. Separately investigate the `DictionaryEntries_endOfTable`
-   pointer mismatch (`D9 C8` actual versus `D8 C8` candidate) and the `.You`
-   source-extent warning (2-byte comment extent versus a six-byte `dw`
-   directive). Do not alter the dictionary target/extent without additional
-   consumer or ROM-layout evidence.
+   `$0FE474`). These conclusions come from pinned declaration order and
+   sizes, not canonical-ROM or payload-byte verification. For the dictionary
+   terminal entry, the source consumer reads each token until the next pointer
+   (an exclusive end); the inclusive data range ends at `$0748D8` and the next
+   code section starts at `$0748D9`. The updated verifier uses `$C8D9` as the
+   end-exclusive candidate while preserving the raw `$0748D8` comment.
+   Re-run it to confirm the local bytes agree. The `.You` 2-byte extent versus
+   six-byte `dw` warning remains independent and unresolved; don't edit that
+   directive or the source symbol mapping without further evidence.
 3. Compare one hidden-item area's pointer, record bytes, sentinel grouping, and consumer-derived third-byte behavior against a trusted local ROM. The source-level value-byte consumer trace is now documented and tested, but it does not establish byte agreement or canonical item identity. Keep the editable schema gate open until the trusted-ROM comparison is complete.
 4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.

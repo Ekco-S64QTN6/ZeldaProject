@@ -2826,7 +2826,7 @@ def verify_text_dictionary_pointers_command(
     registry_path: Path | None,
     output: Path | None,
 ) -> None:
-    """Compare the 98 dictionary pointer words to source-offset candidates."""
+    """Compare dictionary pointers and the exclusive terminal data boundary."""
     try:
         report = verify_text_dictionary_pointers(
             rom_path,
