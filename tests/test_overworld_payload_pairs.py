@@ -192,7 +192,6 @@ def test_layout_audit_reports_source_range_discrepancies_without_decoding() -> N
     }
 
 
-
 def test_pair_validator_is_generic_but_layout_audit_requires_pinned_revision() -> None:
     inventories = _load_inventories()
     for inventory in inventories:
@@ -222,6 +221,7 @@ def test_layout_audit_rejects_incomplete_pinned_inventory_baseline() -> None:
     assert validate_overworld_payload_pairs(inventories)["screen_pair_count"] == 123
     with pytest.raises(OverworldPayloadPairError, match="requires the pinned Bank0B.asm"):
         audit_overworld_payload_layout(inventories)
+
 
 def test_layout_audit_cli_writes_json_and_refuses_overwrite(tmp_path: Path) -> None:
     output = tmp_path / "overworld-layout-audit.json"
