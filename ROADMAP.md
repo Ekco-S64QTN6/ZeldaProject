@@ -2,7 +2,7 @@
 
 **Goal:** Build a scriptable, agent-native authoring suite for *The Legend of Zelda: A Link to the Past* (SNES). The long-term target is a structured project model with semantic editing APIs, deterministic ROM builds/diffs, verification, and eventually maker-style authoring.
 
-**Current state (2026-10-29): Phase 1 — Structured Extraction is in progress, with the first semantic editing slice entering Phase 2.** The local US ROM matches the documented No-Intro USA fingerprint and the user confirms it boots. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project storage with schema-v3 migrations, and an initial SQLite-backed overworld hidden-item model with source-preserving edits. General semantic dungeon editing, ROM writing/rebuilding, and full emulator/tool integration are not implemented.
+**Current state (2026-10-29): Phase 1 — Structured Extraction is in progress, with two bounded semantic editing slices in Phase 2.** The local US ROM matches the documented No-Intro USA fingerprint and the user confirms it boots. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project storage with schema-v4 migrations, plus source-preserving semantic models for overworld hidden items and packed dungeon chest records. Broader room/map authoring, ROM writing/rebuilding, and full emulator/tool integration are not implemented.
 
 Status legend: **[x] verified in repository/automated tests** · **[~] partial; limitations remain** · **[ ] not implemented or not verified in the available environment**.
 
@@ -15,7 +15,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
-- [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v3 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v3 begins the editable model with SQLite-backed overworld hidden-item areas and records while preserving source baselines; it is not yet a general game-system data model.
+- [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v4 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v4 stores source-preserving overworld hidden-item areas/records and packed dungeon chest records with constrained field edits; it is not yet a general game-system data model.
 
 **Exit criteria:** Not met. The local image matches the published reference fingerprint and the user reports a successful boot; YAZE/`z3ed` read-only integration and the z3cli/model-endpoint smoke test remain outstanding.
 
@@ -144,14 +144,14 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Add safe semantic edits to the structured project model.
 
-- [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads and constrained record updates in schema v3. Create/delete operations, area editing, other game-system domains, and ROM writes remain unimplemented.
-- [~] Store the first semantic game-system records in SQLite schema v3 with migrations, field bounds, and foreign-key area/record relationships. The other domains remain source_asset snapshots until their schemas are implemented.
+- [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads/updates and packed dungeon chest field edits in schema v4. Create/delete operations, area editing, broader room/map models, and ROM writes remain unimplemented.
+- [~] Store semantic game-system records in SQLite schema v4 with migrations, field bounds, packed-value checks, and foreign-key area/record relationships. Other domains remain source_asset snapshots until their schemas are implemented.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
 - [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
 - [ ] Integrate SpriteSomething ZSPR support and zcompress only after asset round-trip tests exist.
 
-**Exit criteria:** Not met. Schema v3 now supports a bounded overworld hidden-item model and record updates, but a general authoring API, other semantic domains, dry-run ROM writes, and a ROM writer remain future work.
+**Exit criteria:** Not met. Schema v4 supports bounded overworld hidden-item and dungeon chest field edits, but general room/map editing, create/delete operations, dry-run ROM writes, and a ROM writer remain future work.
 
 ## Phase 3 — Claude Integration and Agent Workflows
 
@@ -221,10 +221,11 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    candidates or room payload bytes are canonical. Keep the six findings visible.
    The dictionary terminal pointer matches exclusive-end candidate `$C8D9`.
    The `.You` extent discrepancy and symbol-name mapping remain unresolved.
-3. Continue the semantic model beyond hidden items: validate editable coordinates
-   and value-byte behavior against the pinned consumer, then add another bounded
-   domain such as dungeon chests or room objects. Keep source baselines, explicit
-   constraints, area aliases, and the no-ROM-write boundary in the project model.
+3. Build the next project-facing query layer by joining the editable chest model's
+   raw room values to the existing object/door-pointer inventory, clearly preserving
+   source-level confidence and candidate offsets. Then extend the API with safe
+   create/delete operations or room-object editing, retaining source baselines,
+   explicit constraints, alias relationships and the no-ROM-write boundary.
 4. Complete Phase 1 extraction and Phase 0 tool checks. The existing matching byte
    comparisons do not decode overworld map payloads, prove all source annotations,
    or establish that the whole editor pipeline works.

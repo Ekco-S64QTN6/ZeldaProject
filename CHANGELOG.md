@@ -9,6 +9,9 @@ does not imply that any release has been published.
 
 ### Changed
 
+- Advance the pre-release package version to `0.2.0` for the second bounded semantic authoring model.
+- Add SQLite-backed editing for the 168 packed dungeon chest records, preserving source fields alongside editable item byte, room value, and big-chest flag. Recompose the raw 24-bit value on edits; keep item names unresolved and candidate ROM offsets unverified.
+
 - Advance the pre-release package version to `0.1.0` for the first public semantic authoring model and its CLI.
 - Add the first project-local semantic editing model for overworld hidden items. Schema and project JSON advance to v3; explicit migrations support both v1→v2→v3 and v2→v3. Import preserves source values/coordinates and the pinned consumer classification, area aliases become ordered foreign-key relationships, and constrained record updates refresh canonical JSON. These changes do not write the ROM or assign canonical item IDs.
 

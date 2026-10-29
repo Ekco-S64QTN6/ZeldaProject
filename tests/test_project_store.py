@@ -48,7 +48,7 @@ def test_initialize_project_creates_database_and_json_export(tmp_path: Path) -> 
         ).fetchall()
 
     assert project_row == ("demo_project", PROJECT_FORMAT_VERSION, None)
-    assert version_rows == [(1,), (2,), (CURRENT_SCHEMA_VERSION,)]
+    assert version_rows == [(1,), (2,), (3,), (CURRENT_SCHEMA_VERSION,)]
 
 
 def test_export_is_stable_for_unchanged_database(tmp_path: Path) -> None:
