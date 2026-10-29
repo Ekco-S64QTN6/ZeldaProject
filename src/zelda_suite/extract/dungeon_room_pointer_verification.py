@@ -101,6 +101,7 @@ def verify_dungeon_room_pointers(
         )
 
     targets: dict[str, dict[str, Any]] = {}
+    source_offset_findings: list[dict[str, Any]] = []
     for asset_name, payload in inventories.items():
         expected_source_file = DUNGEON_ROOM_PAYLOAD_FILES[asset_name]
         if payload["source_file"] != expected_source_file:
@@ -111,29 +112,71 @@ def verify_dungeon_room_pointers(
             raise DungeonRoomPointerVerificationError(
                 f"{asset_name!r} source revision does not match the pointer table"
             )
-        for declaration in payload["declarations"]:
+
+        declarations = payload["declarations"]
+        if not declarations:
+            raise DungeonRoomPointerVerificationError(
+                f"{asset_name!r} has no room payload declarations"
+            )
+        layout_offset = declarations[0]["source_file_offset_start"]
+        if type(layout_offset) is not int or layout_offset < 0:
+            raise DungeonRoomPointerVerificationError(
+                f"{asset_name!r} first declaration has no numeric source-commented "
+                "start offset to anchor its sequential layout"
+            )
+
+        for declaration in declarations:
             label = declaration["label"]
             if label in targets:
                 raise DungeonRoomPointerVerificationError(
                     f"duplicate room target label in registered payloads: {label}"
                 )
-            offset = declaration["source_file_offset_start"]
-            if type(offset) is not int:
-                raise DungeonRoomPointerVerificationError(
-                    f"{label!r} has no numeric source-commented start offset"
-                )
+            comment_offset = declaration["source_file_offset_start"]
             size = declaration["declared_size_bytes"]
             if type(size) is not int or size < 1:
                 raise DungeonRoomPointerVerificationError(
                     f"{label!r} has no positive declared payload size"
                 )
+            if type(comment_offset) is not int or comment_offset < 0:
+                source_offset_findings.append({
+                    "code": "source_comment_offset_missing",
+                    "severity": "warning",
+                    "source_file": payload["source_file"],
+                    "source_asset": asset_name,
+                    "source_line": declaration["source_line"],
+                    "label": label,
+                    "incbin_path": declaration["incbin_path"],
+                    "source_comment_file_offset": None,
+                    "computed_layout_file_offset_start": layout_offset,
+                    "declared_size_bytes": size,
+                    "offset_delta_bytes": None,
+                })
+            elif comment_offset != layout_offset:
+                source_offset_findings.append({
+                    "code": "source_comment_offset_disagrees_with_sequential_layout",
+                    "severity": "warning",
+                    "source_file": payload["source_file"],
+                    "source_asset": asset_name,
+                    "source_line": declaration["source_line"],
+                    "label": label,
+                    "incbin_path": declaration["incbin_path"],
+                    "source_comment_file_offset": comment_offset,
+                    "computed_layout_file_offset_start": layout_offset,
+                    "declared_size_bytes": size,
+                    "offset_delta_bytes": comment_offset - layout_offset,
+                })
+
             targets[label] = {
                 "label": label,
                 "source_file": payload["source_file"],
                 "source_asset": asset_name,
-                "source_file_offset_start": offset,
+                "source_comment_file_offset": (
+                    comment_offset if type(comment_offset) is int else None
+                ),
+                "computed_layout_file_offset_start": layout_offset,
                 "declared_size_bytes": size,
             }
+            layout_offset += size
 
     if len(targets) != 266:
         raise DungeonRoomPointerVerificationError(
@@ -157,7 +200,7 @@ def verify_dungeon_room_pointers(
     for pointer in pointers["entries"]:
         label = pointer["target_label"]
         target = targets[label]
-        target_offset = target["source_file_offset_start"]
+        target_offset = target["computed_layout_file_offset_start"]
         if pointer["target_addend"] is not None:
             target_offset += pointer["target_addend"]
         try:
@@ -190,6 +233,7 @@ def verify_dungeon_room_pointers(
             "target_source_file": target["source_file"],
             "target_source_asset": target["source_asset"],
             "target_source_file_offset": target_offset,
+            "target_source_comment_offset": target["source_comment_file_offset"],
             "target_declared_size_bytes": target["declared_size_bytes"],
             "expected_cpu_address": "$" + format(cpu_address, "06X"),
             "expected_hex": expected.hex().upper(),
@@ -204,10 +248,11 @@ def verify_dungeon_room_pointers(
                 "pointer_expression": pointer["pointer_expression"],
                 "target_label": label,
                 "target_source_file_offset": target_offset,
+                "target_source_comment_offset": target["source_comment_file_offset"],
                 "expected_cpu_address": "$" + format(cpu_address, "06X"),
                 "expected_hex": expected.hex().upper(),
                 "actual_hex": actual.hex().upper(),
-                "reason": "ROM pointer bytes do not match the source-commented target offset",
+                "reason": "ROM pointer bytes do not match the sequential payload-layout candidate",
             })
 
     target_reports = [
@@ -216,7 +261,7 @@ def verify_dungeon_room_pointers(
     ]
     return {
         "format": "zelda-suite-dungeon-room-pointer-verification",
-        "format_version": 1,
+        "format_version": 2,
         "rom": {
             "filename": image_path.name,
             "size_bytes": len(rom),
@@ -237,11 +282,15 @@ def verify_dungeon_room_pointers(
             "source_payload_label_count": len(targets),
             "checked_comparisons": len(entries_report),
             "mismatch_count": len(mismatches),
+            "source_comment_offset_mismatch_count": len(source_offset_findings),
         },
         "entries": entries_report,
         "targets": target_reports,
         "mismatches": mismatches,
+        "source_offset_findings": source_offset_findings,
+        "source_layout_method": "first source-commented offset per inventory plus sequential declared payload sizes",
         "rom_modified": False,
+        "source_comment_offsets_rewritten": False,
         "payload_bytes_verified": False,
         "playable_room_set_resolved": False,
     }
