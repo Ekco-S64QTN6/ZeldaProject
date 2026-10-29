@@ -12,6 +12,7 @@ from click.testing import CliRunner
 from zelda_suite.cli.main import cli
 from zelda_suite.extract import (
     OverworldPayloadPairError,
+    audit_overworld_payload_layout,
     load_source_export,
     validate_overworld_payload_pairs,
 )
@@ -128,3 +129,98 @@ def test_cli_returns_a_clear_error_for_an_incomplete_pair(tmp_path: Path) -> Non
     assert result.exit_code != 0
     assert "Screen00" in result.output
     assert "Low" in result.output
+
+
+def test_layout_audit_reports_source_range_discrepancies_without_decoding() -> None:
+    report = audit_overworld_payload_layout(_load_inventories())
+
+    assert report["format"] == "zelda-suite-overworld-payload-layout-audit"
+    assert report["format_version"] == 1
+    assert report["source_revision"] == "347c23f9fc019c72d32da537c9cb235f468d021d"
+    assert report["summary"] == {
+        "source_count": 2,
+        "declaration_count": 248,
+        "screen_pair_count": 124,
+        "high_layer_count": 124,
+        "low_layer_count": 124,
+        "range_size_match_count": 244,
+        "range_size_mismatch_count": 3,
+        "range_size_unknown_count": 1,
+        "candidate_source_ranges_adjacent_count": 123,
+        "candidate_source_ranges_nonadjacent_count": 0,
+        "candidate_source_ranges_adjacency_unknown_count": 1,
+    }
+    assert [
+        (item["source_file"], item["screen_token"], item["layer"], item["kind"])
+        for item in report["range_size_mismatches"]
+    ] == [
+        ("Bank0B.asm", "42", "Low", "range_size_mismatch"),
+        ("Bank0B.asm", "61", "Low", "range_size_mismatch"),
+        ("Bank0C.asm", "88", "Low", "range_size_mismatch"),
+    ]
+    assert [
+        (item["source_file"], item["screen_token"], item["layer"], item["kind"])
+        for item in report["range_size_unknowns"]
+    ] == [("Bank0B.asm", "4F", "High", "range_size_unknown")]
+
+    screen00 = next(
+        pair for pair in report["screen_pairs"]
+        if pair["source_file"] == "Bank0B.asm" and pair["screen_token"] == "00"
+    )
+    assert screen00["high"]["declared_size_bytes"] == 4
+    assert screen00["low"]["declared_size_bytes"] == 210
+    assert screen00["candidate_source_ranges_adjacent"] is True
+
+    screen4f = next(
+        pair for pair in report["screen_pairs"]
+        if pair["source_file"] == "Bank0B.asm" and pair["screen_token"] == "4F"
+    )
+    assert screen4f["high"]["source_range_size_matches"] is None
+    assert screen4f["candidate_source_ranges_adjacent"] is None
+
+    assert report["source_semantics"]["source_log_lines"] == [969, 970]
+    assert report["source_semantics"]["consumer_label"] == "Overworld_LoadAndBuildScreen_long"
+    assert report["source_semantics"]["semantic_decode_completed"] is False
+    assert report["evidence"] == {
+        "source_only": True,
+        "incbin_target_files_opened": False,
+        "rom_bytes_read": False,
+        "source_range_offsets_verified": False,
+        "compressed_payloads_decoded": False,
+        "editable_map_layers_emitted": False,
+        "runtime_map_semantics_verified": False,
+    }
+
+
+def test_layout_audit_cli_writes_json_and_refuses_overwrite(tmp_path: Path) -> None:
+    output = tmp_path / "overworld-layout-audit.json"
+    runner = CliRunner()
+    written = runner.invoke(
+        cli,
+        [
+            "audit-overworld-payload-layout",
+            str(BANK0B_EXPORT),
+            str(BANK0C_EXPORT),
+            "--output",
+            str(output),
+        ],
+    )
+    assert written.exit_code == 0, written.output
+    saved = json.loads(output.read_text(encoding="utf-8"))
+    assert saved["summary"]["screen_pair_count"] == 124
+    assert "range_mismatches=3" in written.output
+    assert "range_unknown=1" in written.output
+
+    refused = runner.invoke(
+        cli,
+        [
+            "audit-overworld-payload-layout",
+            str(BANK0B_EXPORT),
+            str(BANK0C_EXPORT),
+            "--output",
+            str(output),
+        ],
+    )
+    assert refused.exit_code != 0
+    assert "refusing to overwrite existing output" in refused.output
+    assert json.loads(output.read_text(encoding="utf-8")) == saved

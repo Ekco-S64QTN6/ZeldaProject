@@ -183,3 +183,30 @@ uv run zelda-suite validate-overworld-payload-pairs \
 The report currently confirms 82 pairs in Bank0B and 42 in Bank0C (124 total).
 It validates labels and metadata shape only; it does not reconcile annotated
 offsets with a local ROM or decode the payload binaries.
+
+## Source-level layout audit
+
+Run `audit-overworld-payload-layout` after regenerating the source inventories:
+
+```bash
+uv run zelda-suite audit-overworld-payload-layout \
+  data/extracted/overworld-payloads-bank0b.json \
+  data/extracted/overworld-payloads-bank0c.json \
+  --output /tmp/overworld-payload-layout-audit.json
+```
+
+This report pins the 124 screen pairs and exposes their High/Low declaration
+sizes and source-annotated offsets. On the current revision it records three
+range-size discrepancies and one missing range annotation. For known ranges,
+the High end and Low start are adjacent according to the comments; Screen4F
+High is the one pair whose candidate adjacency cannot be calculated.
+
+The source log describes High and Low as compressed high-byte and low-byte
+streams of Map32 words, and `Bank0A.asm` calls
+`Overworld_LoadAndBuildScreen_long` to load/build Map32 and subsequent Map16
+data. This is source context, not a payload decoder. The pinned repository does
+not track the included `bin/ow/*.bin` payloads, and no local ROM was read.
+The audit reports this explicitly; actual decoding, an editable map-layer
+schema, and ROM-offset reconciliation remain open.
+
+See the [versioned report schema](./overworld-payload-layout-audit.schema.json).

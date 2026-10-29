@@ -159,3 +159,170 @@ def validate_overworld_payload_pairs(
             for source_file, tokens in sorted(sources.items())
         ],
     }
+
+
+OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT = "zelda-suite-overworld-payload-layout-audit"
+
+
+def _layout_declaration(declaration: Mapping[str, Any]) -> dict[str, Any]:
+    """Expose source annotations and calculations with no ROM-offset implication."""
+    return {
+        "label": declaration["label"],
+        "incbin_path": declaration["incbin_path"],
+        "source_line": declaration["source_line"],
+        "declared_size_bytes": declaration["declared_size_bytes"],
+        "source_annotated_offset_start": declaration["source_file_offset_start"],
+        "source_annotated_offset_end": declaration["source_file_offset_end"],
+        "computed_offset_end": declaration["computed_file_offset_end"],
+        "source_range_size_matches": declaration["source_range_size_matches"],
+    }
+
+
+def audit_overworld_payload_layout(
+    inventories: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Audit paired High/Low declarations, sizes, and candidate source ranges.
+
+    The result connects each source-local screen token to its two incbin
+    declarations and reports all range/size diagnostics. Offsets are copied
+    from source comments or calculated from those comments; no incbin target
+    files or ROM bytes are opened.
+    """
+    paired_report = validate_overworld_payload_pairs(inventories)
+    declaration_by_key: dict[tuple[str, str], dict[str, Mapping[str, Any]]] = {}
+    declarations: list[Mapping[str, Any]] = []
+
+    for inventory in inventories:
+        source_file = inventory["source_file"]
+        for declaration in inventory["declarations"]:
+            declarations.append(declaration)
+            label = declaration["label"]
+            match = _SCREEN_LABEL.fullmatch(label)
+            if match is None:
+                # validate_overworld_payload_pairs already rejects this case.
+                raise OverworldPayloadPairError(
+                    f"unsupported overworld label {label!r} during layout audit"
+                )
+            screen_token = match.group(1).upper()
+            layer = match.group(2)
+            declaration_by_key.setdefault((source_file, screen_token), {})[layer] = declaration
+
+    screen_pairs: list[dict[str, Any]] = []
+    for source_file, source_report in (
+        (source["source_file"], source)
+        for source in paired_report["sources"]
+    ):
+        for screen_token in source_report["screen_tokens"]:
+            layers = declaration_by_key[(source_file, screen_token)]
+            high_decl = layers["High"]
+            low_decl = layers["Low"]
+            high_end = high_decl["source_file_offset_end"]
+            low_start = low_decl["source_file_offset_start"]
+            candidate_adjacent = (
+                high_end + 1 == low_start
+                if isinstance(high_end, int) and isinstance(low_start, int)
+                else None
+            )
+            screen_pairs.append({
+                "source_file": source_file,
+                "screen_token": screen_token,
+                "high": _layout_declaration(high_decl),
+                "low": _layout_declaration(low_decl),
+                "candidate_source_ranges_adjacent": candidate_adjacent,
+            })
+
+    range_mismatches: list[dict[str, Any]] = []
+    range_unknowns: list[dict[str, Any]] = []
+    for declaration in declarations:
+        matches = declaration["source_range_size_matches"]
+        if matches is False:
+            kind = "range_size_mismatch"
+        elif matches is None:
+            kind = "range_size_unknown"
+        else:
+            continue
+        match = _SCREEN_LABEL.fullmatch(declaration["label"])
+        if match is None:
+            continue
+        detail = {
+            "kind": kind,
+            "source_file": declaration["source_file"],
+            "screen_token": match.group(1).upper(),
+            "layer": match.group(2),
+            **_layout_declaration(declaration),
+        }
+        (range_mismatches if matches is False else range_unknowns).append(detail)
+
+    adjacency_known = [
+        pair for pair in screen_pairs
+        if pair["candidate_source_ranges_adjacent"] is not None
+    ]
+    adjacency_nonadjacent = [
+        pair for pair in adjacency_known
+        if pair["candidate_source_ranges_adjacent"] is False
+    ]
+    revision = paired_report["source_revision"]
+
+    return {
+        "format": OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT,
+        "format_version": 1,
+        "source_revision": revision,
+        "source_files": [source["source_file"] for source in paired_report["sources"]],
+        "screen_pairs": screen_pairs,
+        "range_size_mismatches": range_mismatches,
+        "range_size_unknowns": range_unknowns,
+        "summary": {
+            "source_count": paired_report["source_count"],
+            "declaration_count": len(declarations),
+            "screen_pair_count": len(screen_pairs),
+            "high_layer_count": sum(
+                pair["high"]["label"].endswith("_High") for pair in screen_pairs
+            ),
+            "low_layer_count": sum(
+                pair["low"]["label"].endswith("_Low") for pair in screen_pairs
+            ),
+            "range_size_match_count": sum(
+                declaration["source_range_size_matches"] is True
+                for declaration in declarations
+            ),
+            "range_size_mismatch_count": len(range_mismatches),
+            "range_size_unknown_count": len(range_unknowns),
+            "candidate_source_ranges_adjacent_count": sum(
+                pair["candidate_source_ranges_adjacent"] is True
+                for pair in screen_pairs
+            ),
+            "candidate_source_ranges_nonadjacent_count": len(adjacency_nonadjacent),
+            "candidate_source_ranges_adjacency_unknown_count": sum(
+                pair["candidate_source_ranges_adjacent"] is None
+                for pair in screen_pairs
+            ),
+        },
+        "source_semantics": {
+            "description": (
+                "The pinned disassembly's ROM log describes the High and Low "
+                "streams as compressed high-byte and low-byte components of "
+                "Map32 words. Bank0A.asm calls Overworld_LoadAndBuildScreen_long "
+                "with a comment that it loads Map32 and subsequently builds Map16."
+            ),
+            "source_log_file": "Logs/Zelda_3_ROM.log",
+            "source_log_revision": revision,
+            "source_log_lines": [969, 970],
+            "consumer_source_file": "Bank0A.asm",
+            "consumer_source_revision": revision,
+            "consumer_source_line": 673,
+            "consumer_label": "Overworld_LoadAndBuildScreen_long",
+            "consumer_comment": (
+                "Loads overworld map32 data (and subsequently map16, etc etc)."
+            ),
+            "semantic_decode_completed": False,
+        },
+        "evidence": {
+            "source_only": True,
+            "incbin_target_files_opened": False,
+            "rom_bytes_read": False,
+            "source_range_offsets_verified": False,
+            "compressed_payloads_decoded": False,
+            "editable_map_layers_emitted": False,
+            "runtime_map_semantics_verified": False,
+        },
+    }

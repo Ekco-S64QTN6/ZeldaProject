@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite overworld High/Low payload layout audit",
+  "description": "Source-only join of 124 overworld Map32 High/Low incbin pairs. Range offsets are source annotations/calculations, not ROM-verified offsets; compressed payloads are not decoded.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "source_revision", "source_files",
+    "screen_pairs", "range_size_mismatches", "range_size_unknowns",
+    "summary", "source_semantics", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-overworld-payload-layout-audit" },
+    "format_version": { "const": 1 },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "source_files": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "enum": ["Bank0B.asm", "Bank0C.asm"] }
+    },
+    "screen_pairs": {
+      "type": "array", "minItems": 124, "maxItems": 124,
+      "items": { "$ref": "#/$defs/screen_pair" }
+    },
+    "range_size_mismatches": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": { "$ref": "#/$defs/diagnostic" }
+    },
+    "range_size_unknowns": {
+      "type": "array", "minItems": 1, "maxItems": 1,
+      "items": { "$ref": "#/$defs/diagnostic" }
+    },
+    "summary": { "$ref": "#/$defs/summary" },
+    "source_semantics": { "$ref": "#/$defs/source_semantics" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "required": [
+        "label", "incbin_path", "source_line", "declared_size_bytes",
+        "source_annotated_offset_start", "source_annotated_offset_end",
+        "computed_offset_end", "source_range_size_matches"
+      ],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "incbin_path": { "type": "string", "pattern": "^bin/ow/" },
+        "source_line": { "type": "integer", "minimum": 1 },
+        "declared_size_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "source_annotated_offset_start": { "type": ["integer", "null"], "minimum": 0 },
+        "source_annotated_offset_end": { "type": ["integer", "null"], "minimum": 0 },
+        "computed_offset_end": { "type": ["integer", "null"], "minimum": 0 },
+        "source_range_size_matches": { "type": ["boolean", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "screen_pair": {
+      "type": "object",
+      "required": [
+        "source_file", "screen_token", "high", "low",
+        "candidate_source_ranges_adjacent"
+      ],
+      "properties": {
+        "source_file": { "enum": ["Bank0B.asm", "Bank0C.asm"] },
+        "screen_token": { "type": "string", "pattern": "^[0-9A-F]{2}$" },
+        "high": { "$ref": "#/$defs/layer" },
+        "low": { "$ref": "#/$defs/layer" },
+        "candidate_source_ranges_adjacent": { "type": ["boolean", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": [
+        "kind", "source_file", "screen_token", "layer", "label",
+        "incbin_path", "source_line", "declared_size_bytes",
+        "source_annotated_offset_start", "source_annotated_offset_end",
+        "computed_offset_end", "source_range_size_matches"
+      ],
+      "properties": {
+        "kind": { "enum": ["range_size_mismatch", "range_size_unknown"] },
+        "source_file": { "enum": ["Bank0B.asm", "Bank0C.asm"] },
+        "screen_token": { "type": "string", "pattern": "^[0-9A-F]{2}$" },
+        "layer": { "enum": ["High", "Low"] },
+        "label": { "type": "string", "minLength": 1 },
+        "incbin_path": { "type": "string", "pattern": "^bin/ow/" },
+        "source_line": { "type": "integer", "minimum": 1 },
+        "declared_size_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "source_annotated_offset_start": { "type": ["integer", "null"], "minimum": 0 },
+        "source_annotated_offset_end": { "type": ["integer", "null"], "minimum": 0 },
+        "computed_offset_end": { "type": ["integer", "null"], "minimum": 0 },
+        "source_range_size_matches": { "type": ["boolean", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "source_count", "declaration_count", "screen_pair_count",
+        "high_layer_count", "low_layer_count", "range_size_match_count",
+        "range_size_mismatch_count", "range_size_unknown_count",
+        "candidate_source_ranges_adjacent_count",
+        "candidate_source_ranges_nonadjacent_count",
+        "candidate_source_ranges_adjacency_unknown_count"
+      ],
+      "properties": {
+        "source_count": { "const": 2 },
+        "declaration_count": { "const": 248 },
+        "screen_pair_count": { "const": 124 },
+        "high_layer_count": { "const": 124 },
+        "low_layer_count": { "const": 124 },
+        "range_size_match_count": { "const": 244 },
+        "range_size_mismatch_count": { "const": 3 },
+        "range_size_unknown_count": { "const": 1 },
+        "candidate_source_ranges_adjacent_count": { "const": 123 },
+        "candidate_source_ranges_nonadjacent_count": { "const": 0 },
+        "candidate_source_ranges_adjacency_unknown_count": { "const": 1 }
+      },
+      "additionalProperties": false
+    },
+    "source_semantics": {
+      "type": "object",
+      "required": [
+        "description", "source_log_file", "source_log_revision",
+        "source_log_lines", "consumer_source_file", "consumer_source_revision",
+        "consumer_source_line", "consumer_label", "consumer_comment",
+        "semantic_decode_completed"
+      ],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "source_log_file": { "const": "Logs/Zelda_3_ROM.log" },
+        "source_log_revision": { "type": "string", "minLength": 1 },
+        "source_log_lines": {
+          "const": [969, 970]
+        },
+        "consumer_source_file": { "const": "Bank0A.asm" },
+        "consumer_source_revision": { "type": "string", "minLength": 1 },
+        "consumer_source_line": { "const": 673 },
+        "consumer_label": { "const": "Overworld_LoadAndBuildScreen_long" },
+        "consumer_comment": { "type": "string", "minLength": 1 },
+        "semantic_decode_completed": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "incbin_target_files_opened", "rom_bytes_read",
+        "source_range_offsets_verified", "compressed_payloads_decoded",
+        "editable_map_layers_emitted", "runtime_map_semantics_verified"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "incbin_target_files_opened": { "const": false },
+        "rom_bytes_read": { "const": false },
+        "source_range_offsets_verified": { "const": false },
+        "compressed_payloads_decoded": { "const": false },
+        "editable_map_layers_emitted": { "const": false },
+        "runtime_map_semantics_verified": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

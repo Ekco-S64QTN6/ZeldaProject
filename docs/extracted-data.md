@@ -619,6 +619,35 @@ The command confirms exactly one High and one Low declaration for each of the
 metadata check; it does not verify annotated offsets against the ROM or decode
 the payloads.
 
+### Source-level payload layout audit
+
+The `audit-overworld-payload-layout` command joins the High/Low records
+and exposes each declaration's source line, include path, declared size, annotated
+start/end, calculated end, and whether the annotated range length agrees with
+the declared size:
+
+```bash
+uv run zelda-suite audit-overworld-payload-layout \
+  data/extracted/overworld-payloads-bank0b.json \
+  data/extracted/overworld-payloads-bank0c.json \
+  --output /tmp/overworld-payload-layout-audit.json
+```
+
+For the pinned inventories, the audit reports 124 pairs / 248 declarations,
+244 range-size matches, three mismatches, and one declaration with an unknown
+range length. The mismatches are Bank0B Screen42 Low, Bank0B Screen61 Low, and
+Bank0C Screen88 Low; Screen4F High has no parseable range annotation. The
+candidate annotated ranges are adjacent for 123 pairs; adjacency cannot be
+checked for Screen4F because its High annotation is malformed. These are
+arithmetic checks on comments, not trusted ROM offsets.
+
+The pinned `Logs/Zelda_3_ROM.log` describes compressed Map32 data as separate
+high-byte and low-byte streams (lines 969–970). In `Bank0A.asm`, a comment above
+`Overworld_LoadAndBuildScreen_long` says it loads Map32 and subsequently builds
+Map16 (line 673). This explains the source-level High/Low naming but does not
+decode any of the missing `bin/ow/*.bin` files or establish their offsets
+against a clean local ROM. The audit therefore keeps payload decoding and
+editable map-layer generation open.
 ## Receive-item source tables
 
 Eight raw tables from `Pool_AddReceiveItem` in pinned

@@ -107,7 +107,9 @@ from zelda_suite.extract.overworld_hidden_item_verification import (
     verify_overworld_hidden_items,
 )
 from zelda_suite.extract.overworld_payload_pairs import (
+    OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT,
     OverworldPayloadPairError,
+    audit_overworld_payload_layout,
     validate_overworld_payload_pairs,
 )
 from zelda_suite.extract.paid_overworld_interactions import (
@@ -233,6 +235,7 @@ __all__ = [
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "OAM_ALLOCATION_AUDIT_FORMAT",
+    "OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT",
     "PAID_OVERWORLD_INTERACTIONS_AUDIT_FORMAT",
     "PAID_OVERWORLD_INTERACTIONS_FORMAT",
     "PINNED_SOURCE_REVISION",
@@ -323,6 +326,7 @@ __all__ = [
     "audit_item_receipt_annotations",
     "audit_music_assets",
     "audit_oam_allocation",
+    "audit_overworld_payload_layout",
     "audit_paid_overworld_interactions",
     "audit_potion_shop_transactions",
     "audit_shop_item_handlers",
