@@ -25,6 +25,7 @@ from zelda_suite.extract import (
     MessageSourceBlock,
     MusicAssetAuditError,
     OAMAllocationAuditError,
+    OverworldHiddenItemValueSemanticsError,
     OverworldPayloadPairError,
     PaidOverworldInteractionsAuditError,
     PotionShopTransactionsAuditError,
@@ -46,6 +47,7 @@ from zelda_suite.extract import (
     audit_item_receipt_annotations,
     audit_music_assets,
     audit_oam_allocation,
+    audit_overworld_hidden_item_value_semantics,
     audit_overworld_payload_layout,
     audit_paid_overworld_interactions,
     audit_potion_shop_transactions,
@@ -3091,6 +3093,66 @@ def inspect_overworld_hidden_items_command(output: Path | None) -> None:
         f"pointers={payload['pointer_count']}, records={payload['record_count']}, "
         f"sentinels={payload['sentinel_count']}, areas={payload['area_count']}"
     )
+
+
+
+@cli.command(name="audit-overworld-hidden-item-value-semantics")
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON report to a new file instead of stdout.",
+)
+@click.option(
+    "--fail-on-unmapped-selectors",
+    is_flag=True,
+    help="Return exit status 1 if an extended value does not map to a replacement-table word.",
+)
+def audit_overworld_hidden_item_value_semantics_command(
+    output: Path | None,
+    fail_on_unmapped_selectors: bool,
+) -> None:
+    """Classify hidden-item value bytes by the pinned source consumer, not as item IDs."""
+    source_path = Path("reference/AsarUSALTTPDisassembly/Bank1B.asm")
+    try:
+        source = source_path.read_text(encoding="utf-8")
+        report = audit_overworld_hidden_item_value_semantics(source)
+    except (OSError, OverworldHiddenItemValueSemanticsError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote hidden-item value-semantics report to {output}; "
+            f"records={summary['record_count']}, "
+            f"ordinary_masks={summary['ordinary_secret_mask_count']}, "
+            f"extended={summary['extended_secret_selector_count']}, "
+            f"unmapped={summary['extended_selector_unmapped_count']}"
+        )
+
+    if (
+        fail_on_unmapped_selectors
+        and report["summary"]["extended_selector_unmapped_count"]
+    ):
+        raise click.exceptions.Exit(1)
 
 
 @cli.command(name="join-item-receipt-tables")

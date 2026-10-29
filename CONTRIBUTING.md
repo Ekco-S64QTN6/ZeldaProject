@@ -160,6 +160,8 @@ The committed sprite dispatch export has a source-independent baseline test. If 
 
 The committed `overworld-hidden-item-pointers` export has a submodule-independent baseline test. When updating it intentionally, review the complete 80-label target set, all 128 slot offsets, and the repeated-target distribution; the test does not verify pointer values against ROM bytes.
 
+When changing hidden-item record values or their consumer trace, run `tests/test_overworld_hidden_item_value_semantics.py` and `uv run zelda-suite audit-overworld-hidden-item-value-semantics`. Keep ordinary mask values, extended selector offsets, and the `$84` special branch distinct; these source-consumer classifications do not establish canonical item IDs or ROM byte agreement.
+
 
 For any change to `data/extracted/*.json`, run the complete asset-loader tests.
 Every registered export must match the canonical UTF-8 JSON representation:

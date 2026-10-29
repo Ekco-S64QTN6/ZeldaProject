@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite overworld hidden-item value-byte semantics audit",
+  "description": "Versioned source-only classification of each hidden-item third byte by the pinned Overworld_RevealSecret consumer. It distinguishes secret-state mask values from high-bit selector values without assigning canonical item IDs or claiming ROM verification.",
+  "type": "object",
+  "required": [
+    "format",
+    "format_version",
+    "source_file",
+    "source_revision",
+    "consumer_label",
+    "replacement_table_label",
+    "replacement_words",
+    "records",
+    "summary",
+    "source_semantics",
+    "evidence"
+  ],
+  "properties": {
+    "format": {
+      "const": "zelda-suite-overworld-hidden-item-value-semantics"
+    },
+    "format_version": {
+      "const": 1
+    },
+    "source_file": {
+      "const": "Bank1B.asm"
+    },
+    "source_revision": {
+      "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    "consumer_label": {
+      "const": "Overworld_RevealSecret"
+    },
+    "replacement_table_label": {
+      "const": "Overworld_SecretTileType"
+    },
+    "replacement_words": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/replacement_word"
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 351,
+      "maxItems": 351,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "source_semantics": {
+      "$ref": "#/$defs/source_semantics"
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "replacement_word": {
+      "type": "object",
+      "required": [
+        "table_index",
+        "source_line",
+        "file_offset",
+        "selector_byte_offset",
+        "expression",
+        "value",
+        "comment"
+      ],
+      "properties": {
+        "table_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selector_byte_offset": {
+          "enum": [
+            0,
+            2,
+            4,
+            6
+          ]
+        },
+        "expression": {
+          "type": "string",
+          "pattern": "^dw\\s+\\$[0-9A-Fa-f]{4}$"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "comment": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "record_index",
+        "source_label",
+        "source_line",
+        "file_offset",
+        "coordinate_word",
+        "coordinate_word_hex",
+        "expression",
+        "value_byte",
+        "value_hex",
+        "canonical_item_id_resolved",
+        "consumer_class",
+        "consumer_operation",
+        "selector_byte_offset",
+        "replacement_table_index",
+        "replacement_word_value",
+        "replacement_word_comment",
+        "special_case"
+      ],
+      "properties": {
+        "record_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 350
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coordinate_word": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "coordinate_word_hex": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-F]{4}$"
+        },
+        "expression": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value_byte": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "value_hex": {
+          "type": "string",
+          "pattern": "^\\$[0-9A-F]{2}$"
+        },
+        "canonical_item_id_resolved": {
+          "const": false
+        },
+        "consumer_class": {
+          "enum": [
+            "zero_value",
+            "ordinary_secret_mask",
+            "extended_secret_selector"
+          ]
+        },
+        "consumer_operation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selector_byte_offset": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 15
+        },
+        "replacement_table_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 3
+        },
+        "replacement_word_value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "replacement_word_comment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "special_case": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "distribution_item": {
+      "type": "object",
+      "required": [
+        "value_byte",
+        "value_hex",
+        "record_count",
+        "selector_byte_offset",
+        "replacement_table_index",
+        "replacement_word_comment"
+      ],
+      "properties": {
+        "value_byte": {
+          "enum": [
+            128,
+            130,
+            132,
+            134
+          ]
+        },
+        "value_hex": {
+          "enum": [
+            "$80",
+            "$82",
+            "$84",
+            "$86"
+          ]
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "selector_byte_offset": {
+          "enum": [
+            0,
+            2,
+            4,
+            6
+          ]
+        },
+        "replacement_table_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "replacement_word_comment": {
+          "enum": [
+            "Hole",
+            "Portal",
+            "Garbage",
+            "Bomb hole"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "record_count",
+        "zero_value_count",
+        "ordinary_secret_mask_count",
+        "extended_secret_selector_count",
+        "extended_selector_unmapped_count",
+        "extended_value_distribution"
+      ],
+      "properties": {
+        "record_count": {
+          "const": 351
+        },
+        "zero_value_count": {
+          "const": 0
+        },
+        "ordinary_secret_mask_count": {
+          "const": 325
+        },
+        "extended_secret_selector_count": {
+          "const": 26
+        },
+        "extended_selector_unmapped_count": {
+          "const": 0
+        },
+        "extended_value_distribution": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/$defs/distribution_item"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_semantics": {
+      "type": "object",
+      "required": [
+        "source_file",
+        "source_revision",
+        "reader_label",
+        "sentinel_compare_line",
+        "room_word_mask_compare_line",
+        "value_byte_load_line",
+        "extended_value_threshold_line",
+        "secret_mask_update_line",
+        "extended_special_case_line",
+        "selector_byte_offset_line",
+        "replacement_table_load_line",
+        "replacement_table_comment_lines",
+        "description"
+      ],
+      "properties": {
+        "source_file": {
+          "const": "Bank1B.asm"
+        },
+        "source_revision": {
+          "const": "347c23f9fc019c72d32da537c9cb235f468d021d"
+        },
+        "reader_label": {
+          "const": "Overworld_RevealSecret"
+        },
+        "sentinel_compare_line": {
+          "const": 2847
+        },
+        "room_word_mask_compare_line": {
+          "const": 2848
+        },
+        "value_byte_load_line": {
+          "const": 2851
+        },
+        "extended_value_threshold_line": {
+          "const": 2852
+        },
+        "secret_mask_update_line": {
+          "const": 2853
+        },
+        "extended_special_case_line": {
+          "const": 2863
+        },
+        "selector_byte_offset_line": {
+          "const": 2878
+        },
+        "replacement_table_load_line": {
+          "const": 2879
+        },
+        "replacement_table_comment_lines": {
+          "const": [
+            2813,
+            2814,
+            2815,
+            2816
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only",
+        "source_consumer_patterns_checked",
+        "rom_bytes_read",
+        "room_payload_bytes_read",
+        "canonical_item_ids_resolved",
+        "value_byte_semantics_verified_in_rom"
+      ],
+      "properties": {
+        "source_only": {
+          "const": true
+        },
+        "source_consumer_patterns_checked": {
+          "const": true
+        },
+        "rom_bytes_read": {
+          "const": false
+        },
+        "room_payload_bytes_read": {
+          "const": false
+        },
+        "canonical_item_ids_resolved": {
+          "const": false
+        },
+        "value_byte_semantics_verified_in_rom": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

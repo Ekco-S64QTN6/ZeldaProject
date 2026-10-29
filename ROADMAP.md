@@ -87,11 +87,13 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     accounts for 351 three-byte entries plus 67 two-byte sentinels and derives
     all 128 area lists using the runtime's leading-`$FFFF` termination rule.
     The ROM-independent `zelda-suite inspect-overworld-hidden-items` command
-    now emits a versioned source-layout report with the raw records, offsets,
-    sentinels, area lists, and replacement words. The read-only verifier checks
-    550 byte spans; synthetic tests cover matches and mismatches. A user-run
-    check against the local ROM is still needed, and value semantics remain
-    unresolved. The source report does not establish ROM accuracy.
+    emits a versioned layout report, and `audit-overworld-hidden-item-value-semantics`
+    traces the third byte through the pinned `Overworld_RevealSecret` consumer:
+    325 ordinary mask values and 26 extended selectors using low-nibble byte
+    offsets into the four-word `Overworld_SecretTileType` table. This is source
+    consumer evidence only; canonical item IDs, pointer offsets, and value bytes
+    remain unverified against a ROM. The read-only verifier checks 550 byte spans;
+    a user-run local-ROM check is still needed.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`. The `verify-dungeon-room-pointers` command maps all 263 distinct target labels through the three registered source-offset inventories and compares all 320 long pointer values against a local ROM. Source-commented offsets are candidate inputs, not trusted ground truth; the local check, payload bytes, and playable-room count remain open.
   - A companion 320-entry `RoomData_DoorDataPointers` export from the same bank. Its target labels match the object-pointer slots, with 263 distinct labels and 39 empty targets. The regression test checks that all 320 numeric addends are less than the corresponding target label's source-annotated payload size; this bounds-consistency check does not validate those sizes against ROM bytes or decode addend semantics.
   - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
@@ -208,5 +210,5 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    `z3ed --help`, then perform only a confirmed read-only ROM operation.
    Keep ROM provenance and the z3cli/model-endpoint gates open until independently
    resolved.
-2. Use the new source-only hidden-item layout report to select one small area, then compare its pointer, record bytes, and sentinel grouping against a trusted local ROM. Trace the value-byte consumer before promoting any fields into an editable schema; the source report alone is not ROM verification.
+2. Compare one hidden-item area's pointer, record bytes, sentinel grouping, and consumer-derived third-byte behavior against a trusted local ROM. The source-level value-byte consumer trace is now documented and tested, but it does not establish byte agreement or canonical item identity. Keep the editable schema gate open until the trusted-ROM comparison is complete.
 3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
