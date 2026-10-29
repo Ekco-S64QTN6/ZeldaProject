@@ -131,6 +131,8 @@ def test_project_audit_reports_object_door_target_mismatch(
     tmp_path: Path,
 ) -> None:
     database = _populated_project(tmp_path)
+    # Move another chest to the same edited room to exercise room-group behavior.
+    update_dungeon_chest_record(database, 2, room_value=0x32)
     registry = _registry_with_door_target_mismatch(tmp_path, table_index=0x32)
 
     report = audit_project_dungeon_chest_room_references(database, registry)
@@ -146,6 +148,12 @@ def test_project_audit_reports_object_door_target_mismatch(
         for entry in affected
     )
     assert report["object_door_pointer_mismatch_room_values"] == [0x32]
+    group = next(
+        group for group in report["room_groups"] if group["room_value"] == 0x32
+    )
+    assert group["chest_table_indexes"] == [0, 2]
+    assert group["source_room_values"] == [0x32, 0x71]
+    assert report["summary"]["modified_record_count"] == 1
     assert report["summary"]["object_door_pointer_target_mismatch_room_count"] == 1
     assert report["summary"]["error_count"] == len(affected)
     assert {finding["code"] for finding in report["findings"]} == {
