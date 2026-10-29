@@ -146,7 +146,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads/updates and packed dungeon chest field edits in schema v4. Create/delete operations, area editing, broader room/map models, and ROM writes remain unimplemented.
 - [~] Store semantic game-system records in SQLite schema v4 with migrations, field bounds, packed-value checks, and foreign-key area/record relationships. Other domains remain source_asset snapshots until their schemas are implemented.
-- [~] Add a project-facing read-only audit that joins the editable chest model's current room values to the pinned object/door pointer inventories, retaining source room baselines and edit status. The report schema and regression tests are added; CI execution is pending review. The audit does not verify candidate offsets or read/write ROM bytes.
+- [x] Add a project-facing read-only audit that joins the editable chest model's current room values to the pinned object/door pointer inventories, retaining source room baselines and edit status. Regression coverage verifies clean joins, edited values outside pointer range, missing models, and CLI failure behavior. Candidate offsets and ROM bytes remain unverified; the command does not read or write ROM bytes.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
 - [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
