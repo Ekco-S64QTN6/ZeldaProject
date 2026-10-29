@@ -25,9 +25,9 @@ from zelda_suite.project.store import (
 
 __all__ = [
     "CURRENT_SCHEMA_VERSION",
-    "audit_project_dungeon_chest_room_references",
     "PROJECT_FORMAT",
     "PROJECT_FORMAT_VERSION",
+    "audit_project_dungeon_chest_room_references",
     "export_project",
     "get_dungeon_chest_model",
     "get_overworld_hidden_item_model",
