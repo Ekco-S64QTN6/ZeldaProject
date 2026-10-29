@@ -293,7 +293,9 @@ def verify_dungeon_room_pointers(
         "targets": target_reports,
         "mismatches": mismatches,
         "source_offset_findings": source_offset_findings,
-        "source_layout_method": "first source-commented offset per inventory plus sequential declared payload sizes",
+        "source_layout_method": (
+            "first source-commented offset per inventory plus sequential declared payload sizes"
+        ),
         "rom_modified": False,
         "source_comment_offsets_rewritten": False,
         "payload_bytes_verified": False,
