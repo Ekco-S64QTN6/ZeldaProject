@@ -3,8 +3,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from click.testing import CliRunner
 import pytest
 
+from zelda_suite.cli.main import cli
 from zelda_suite.extract.overworld_hidden_item_value_semantics import (
     OverworldHiddenItemValueSemanticsError,
     audit_overworld_hidden_item_value_semantics,
@@ -226,10 +228,6 @@ def test_audit_fails_closed_when_the_consumer_changes(tmp_path: Path) -> None:
     reason="AsarUSALTTPDisassembly submodule is not checked out",
 )
 def test_cli_writes_report_and_refuses_overwrite(tmp_path: Path) -> None:
-    from click.testing import CliRunner
-
-    from zelda_suite.cli.main import cli
-
     output = tmp_path / "hidden-item-value-semantics.json"
     args = [
         "audit-overworld-hidden-item-value-semantics",
