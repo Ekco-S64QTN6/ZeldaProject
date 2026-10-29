@@ -31,38 +31,51 @@ canonical US ROM filename, but leaves its SHA-256 unset until a later extraction
 workflow explicitly verifies the base ROM. ROM files are never copied into a
 project or added to Git.
 
-## Schema version 2
+## Schema version 3
 
-A current project has three tables:
+A current project has eight tables:
 
 - `project`: singleton project metadata, JSON format version, creation time,
-  expected base-ROM filename, and nullable verified ROM hash.
-- `schema_version`: schema version history. A fresh v2 project records the
-  baseline v1 and current v2 versions.
+  expected base-ROM filename, and nullable base-ROM SHA-256.
+- `schema_version`: migration history. Fresh projects record v1, v2, and v3.
 - `source_asset`: named source-export snapshots with format/version,
   source filename(s)/revision, import timestamp, canonical JSON, and SHA-256.
-  Multi-source exports use a sorted, semicolon-delimited source-file value.
+- `overworld_hidden_item_model`: source file/revision/hash and the pinned
+  consumer/table labels for the imported semantic domain.
+- `overworld_hidden_item_area`: all 128 pointer-table slots and their source
+  target and sentinel metadata. Separate slots remain separate even when they
+  alias the same data list.
+- `overworld_hidden_item_record`: 351 three-byte source records. Immutable
+  source coordinate/value fields are preserved beside editable coordinate and
+  value fields. Consumer-class fields are recomputed when a value byte changes.
+- `overworld_hidden_item_area_record`: ordered many-to-many relationships
+  between areas and records, preserving shared-pointer aliases.
+- `overworld_hidden_item_replacement_word`: the four raw words from
+  `Overworld_SecretTileType` that extended selectors can refer to.
 
-The `source_asset` table stores only validated source-derived JSON metadata
-exports, such as pointer or scalar-data table descriptions. It does not store
-ROM images, binary payload slices, or semantically edited game-system records.
-The project remains a scaffold for authoring work; semantic overworld/dungeon
-editing and a ROM writer are not implemented.
+The first semantic model deliberately does not name canonical item IDs: the
+third byte is classified from the pinned `Overworld_RevealSecret` consumer
+as a zero value, ordinary secret-state mask, or extended selector. Coordinates
+and bytes can be edited in the project; ROM bytes cannot be written. Project
+JSON format v3 adds an `overworld_hidden_items` member (null until imported,
+otherwise a structured snapshot of the semantic model and its source baseline).
+The existing `source_assets` metadata API remains available.
 
-## Migrate a schema-v1 project
+## Migrate older projects
 
-Projects created before schema v2 must be migrated explicitly:
+Schema-v1 and schema-v2 projects must be upgraded explicitly:
 
 ```bash
 uv run zelda-suite migrate-project project/my-hack.db
 ```
 
-The migration adds `source_asset`, upgrades the project JSON format version to
-2, preserves the project metadata and v1 migration record, and writes the v2
-JSON sidecar. Migration is not automatic during validation or asset import.
-Use `--json PATH` to write the export to a non-default location. Running the
-command on an already-current project does not change the database; it refreshes
-the JSON sidecar from SQLite.
+A v1 project migrates sequentially through schema v2 (adds `source_asset`) to
+schema v3 (adds the overworld hidden-item tables). A v2 project gets the v3
+tables directly. Both migrations preserve project metadata, record each schema
+version, and rewrite the JSON sidecar as format v3. Migration is not automatic
+during validation or asset import. Use `--json PATH` to write the export to
+a non-default location. Running the command on a current project does not
+change the database; it refreshes the JSON sidecar from SQLite.
 
 ## Import and query source assets
 
@@ -97,6 +110,29 @@ the stored export format, canonical JSON representation, denormalized source
 metadata, and SHA-256 digest before returning data. See
 [Project source assets](./project-assets.md) for the full contract.
 
+## Editable overworld hidden-item records
+
+Import the pinned source-derived area/record model into an initialized project:
+
+```bash
+uv run zelda-suite import-overworld-hidden-items \
+  project/my-hack.db reference/AsarUSALTTPDisassembly/Bank1B.asm
+uv run zelda-suite list-overworld-hidden-items project/my-hack.db --area-index 0
+uv run zelda-suite update-overworld-hidden-item project/my-hack.db 0 \
+  --coordinate-word '$1234' --value-byte '$84'
+uv run zelda-suite validate project/my-hack.db
+```
+
+Record indexes refer to the stable source record order, not to canonical item
+IDs. The CLI validates coordinate words (`$FFFF` is reserved as the area's list
+terminator), validates bytes, and reclassifies an edited byte using the pinned
+source consumer. Source values/coordinates remain alongside edits so the JSON
+export shows exactly which records differ from their baseline. Aliased areas
+can reference the same record through the relationship table. Re-importing
+an existing model is refused unless `--replace` is supplied; replacement resets
+project-local edits to the imported source. This model is an authoring-data
+foundation only: it does not calculate ROM write locations, modify the ROM,
+or resolve canonical item IDs.
 ## JSON export contract
 
 `export_project(database_path)` reads SQLite and writes a canonical JSON
@@ -123,9 +159,10 @@ uv run zelda-suite validate project/my-hack.db
 The validator opens SQLite in read-only mode and checks SQLite integrity,
 required schema tables, foreign-key consistency, supported format/schema
 versions, canonical project-name/ROM metadata, every stored source asset's
-format and digest, and exact agreement with the JSON export. It returns a
-nonzero exit code and a `[FAIL]` line for problems; a consistent project prints
-`[OK]`. To check an export stored elsewhere, pass `--json PATH`.
+format and digest, semantic hidden-item relationships and consumer classifications,
+and exact agreement with the JSON export. It returns a nonzero exit code and a
+`[FAIL]` line for problems; a consistent project prints `[OK]`. To check an
+export stored elsewhere, pass `--json PATH`.
 
 Validation never repairs or rewrites either artifact. To intentionally refresh
 a stale JSON sidecar without changing data, run `zelda-suite migrate-project`

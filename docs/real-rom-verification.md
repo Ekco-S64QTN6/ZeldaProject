@@ -609,16 +609,28 @@ Currently available: ROM metadata inspection, file-backed byte-diffing,
 source-only table/pointer/inventory export, export validation, read-only
 verification of registered scalar-table literals, the overworld hidden-item
 pointer/record region, the dungeon-room long-pointer table, text-dictionary
-pointer words, and raw encoded text-message bytes, plus ROM-free project
-initialization/storage tests. The text verifier commands report candidate
-byte comparisons only; their source offsets and ROM provenance are not
-independently verified, and the message command does not decode text.
+pointer words, and raw encoded text-message bytes. The first project-local
+semantic model also supports import/list/update for 128 hidden-item area slots
+and 351 records, preserving source baselines and classification by the pinned
+consumer; it stores edits only in SQLite and canonical JSON. The text verifier
+commands report candidate byte comparisons only; they do not prove every source
+offset or decode the messages.
 
-Not yet implemented/verified: general semantic ROM extraction into editable
-overworld/dungeon/item schemas; an edit-to-ROM build pipeline; ROM writer and
-patch generation; emulator boot/smoke tests; trusted US-ROM hash validation;
-local-ROM runs for the dictionary/message commands; and successful
-YAZE/z3ed or z3cli operations against the local image.
+Still not implemented/verified: a general semantic schema for dungeon rooms,
+chests/items, map layers, entrances, text, sprites, and audio; an edit-to-ROM
+build pipeline; ROM writer and patch generation; automated emulator smoke tests;
+and successful YAZE/z3ed or z3cli operations against the local image. The user
+reported that the ROM boots, and the local fingerprint matched the documented
+No-Intro USA entry, but those checks do not replace an automated emulator/tool
+integration test or independently prove chain of custody.
 
-Record the outputs from steps 1–7 and tool help from step 9 when reporting
-results. Do not upload or commit the ROM, a ROM slice, or a raw binary dump.
+On 2026-10-29 the user-run fingerprint comparison matched size (1,048,576),
+CRC-32 (`777AAC2F`), SHA-1 (`6d4f10a8b10e10dbe624cb23cf03b88bb8252973`), and
+MD5 (`608c22b8ff930c62dc2de54bcd6eba72`) against the cited USA catalog entry.
+The same user confirmed the image boots and all ten bundled read-only checks
+returned success. The remaining warnings and unresolved source annotations are
+recorded in `ROADMAP.md`; do not restart the fingerprint gate without new
+contradictory evidence.
+
+Record tool help from step 9 when reporting results. Do not upload or commit the
+ROM, a ROM slice, or a raw binary dump.

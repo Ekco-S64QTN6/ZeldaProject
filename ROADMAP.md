@@ -2,7 +2,7 @@
 
 **Goal:** Build a scriptable, agent-native authoring suite for *The Legend of Zelda: A Link to the Past* (SNES). The long-term target is a structured project model with semantic editing APIs, deterministic ROM builds/diffs, verification, and eventually maker-style authoring.
 
-**Current state (2026-10-28): Phase 1 — Structured Extraction is in progress.** Phase 0 has useful scaffolding but still has environment-dependent verification gates. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project initialization/validation plus schema-v2 storage for validated source-export snapshots, read-only ROM inspection, and file-to-file ROM diff utilities. It does **not** yet provide semantic overworld/dungeon editors or a ROM writer/rebuilder.
+**Current state (2026-10-29): Phase 1 — Structured Extraction is in progress, with the first semantic editing slice entering Phase 2.** The local US ROM matches the documented No-Intro USA fingerprint and the user confirms it boots. The repository provides source-derived metadata parsers, a named extracted-asset registry, SQLite project storage with schema-v3 migrations, and an initial SQLite-backed overworld hidden-item model with source-preserving edits. General semantic dungeon editing, ROM writing/rebuilding, and full emulator/tool integration are not implemented.
 
 Status legend: **[x] verified in repository/automated tests** · **[~] partial; limitations remain** · **[ ] not implemented or not verified in the available environment**.
 
@@ -10,14 +10,14 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Establish the canonical ROM, workspace layout, project format, and low-level access primitives.
 
-- [ ] Verify the provenance of the local US ROM and establish it as the canonical base-game ROM. ROMs remain untracked and are not included in CI. Start with [the local-ROM verification runbook](./docs/real-rom-verification.md); expected size and a SHA-256 fingerprint alone do not prove authenticity.
+- [~] Confirm local US-ROM identity and bootability. On 2026-10-29 the user-run file matched the documented No-Intro USA size, CRC-32, SHA-1, and MD5 fingerprints and the user confirmed it boots. This supports byte identity with that catalog entry plus a manual boot check; it does not independently establish chain of custody or provide an automated emulator test. ROMs remain untracked and are excluded from CI; see [the local-ROM verification runbook](./docs/real-rom-verification.md).
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
 - [ ] Install and smoke-test YAZE/`z3ed` against the locally supplied US ROM, including actual overworld, dungeon, graphics/palette, and message reads.
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
-- [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v2 `migrate-project` for a versioned SQLite project plus canonical JSON export. The project can store validated source-export snapshots, but it is not yet the editable game-system data model.
+- [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v3 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v3 begins the editable model with SQLite-backed overworld hidden-item areas and records while preserving source baselines; it is not yet a general game-system data model.
 
-**Exit criteria:** Not met. Local ROM provenance and real YAZE/`z3ed` and agent-harness smoke tests remain outstanding.
+**Exit criteria:** Not met. The local image matches the published reference fingerprint and the user reports a successful boot; YAZE/`z3ed` read-only integration and the z3cli/model-endpoint smoke test remain outstanding.
 
 ## Phase 1 — Structured Extraction (current focus)
 
@@ -91,9 +91,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     traces the third byte through the pinned `Overworld_RevealSecret` consumer:
     325 ordinary mask values and 26 extended selectors using low-nibble byte
     offsets into the four-word `Overworld_SecretTileType` table. This is source
-    consumer evidence only; canonical item IDs, pointer offsets, and value bytes
-    remain unverified against a ROM. The read-only verifier checks 550 byte spans;
-    a user-run local-ROM check is still needed.
+    consumer evidence only; canonical item IDs and decoded map semantics remain
+    unresolved. The read-only verifier checks 550 byte spans; the user's
+    2026-10-29 local run matched all of them and the image fingerprint matched
+    the cited USA entry.
   - 320 source-indexed `RoomData_ObjectDataPointers` three-byte expressions from `Bank1F.asm`. The `verify-dungeon-room-pointers` command maps all 263 distinct target labels through the three registered source-offset inventories and compares all 320 long pointer values against a local ROM. Source-commented offsets are candidate inputs, not trusted ground truth; the local check, payload bytes, and playable-room count remain open.
   - A companion 320-entry `RoomData_DoorDataPointers` export from the same bank. Its target labels match the object-pointer slots, with 263 distinct labels and 39 empty targets. The regression test checks that all 320 numeric addends are less than the corresponding target label's source-annotated payload size; this bounds-consistency check does not validate those sizes against ROM bytes or decode addend semantics.
   - 266 labelled room payload `incbin` declarations across Bank03, Bank0A, and Bank1F with source start offsets and size annotations; binary payloads and end-offset verification remain unavailable.
@@ -107,29 +108,30 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
     resolution and the user's expanded ROM check remain open.
 - [~] Provide read-only ROM image inspection and deterministic file-to-file ROM byte diff/audit output. The diff utility is not yet driven by semantic project edits and is not a ROM writer.
 - [x] Add `zelda-suite audit-unresolved-table-expressions` to inventory unresolved expressions in registered scalar-table exports without requiring a ROM. It preserves source expressions and locations, uses conservative syntax classifications only, and never evaluates assembler expressions. A CI integration test pins all 19 registered tables (760 entries: 585 direct numeric, 77 negative decimal, 98 unresolved symbols) to keep extraction coverage visible without claiming ROM verification.
-- [x] Provide `zelda-suite verify-rom-tables ROM` to compare numeric literals in registered scalar data-table exports to a headerless 1 MiB local ROM. Reports distinguish pass/partial/skip/fail, use the data directive's byte width separately from the file-offset stride, record a local SHA-256, and never write ROM bytes. Synthetic tests cover matching/mismatching bytes, unresolved expressions, signed decimal literals, strided word tables, report output, and ROM-size rejection. The user's reported real-ROM result (428 compared, 175 skipped, zero mismatches) was from the earlier runbook snippet. The graphics-index table adds 76 direct numeric values; the updated verifier also checks the 76 bounded negative Y-offset literals. With the current 760-entry registered inventory, the next complete local run is projected to compare 661 entries and skip 99 records under the existing verifier policy; this updated run has not yet been performed. The updated verifier additionally checks simple negative decimal literals as bounded two's-complement values, including the 76 receive-item Y-offset expressions; rerun it locally to verify those additional bytes. An opt-in format-v2 report classifies skipped raw expressions by syntax shape without evaluating them; default format-v1 output remains unchanged.
+- [x] Provide `zelda-suite verify-rom-tables ROM` to compare numeric literals in registered scalar data-table exports to a headerless 1 MiB local ROM. Reports distinguish pass/partial/skip/fail, use the data directive's byte width separately from the file-offset stride, record a local SHA-256, and never write ROM bytes. Synthetic tests cover matching/mismatching bytes, unresolved expressions, signed decimal literals, strided word tables, report output, and ROM-size rejection. The user's 2026-10-29 complete run compared 662 numeric values with zero mismatches and left 98 symbolic expressions unresolved. The verifier checks simple negative decimal literals as bounded two's-complement values, including the 76 receive-item Y-offset expressions; synthetic tests cover this behavior. The latest local count is recorded evidence for this image, not a semantic resolution of skipped expressions. An opt-in format-v2 report classifies skipped raw expressions by syntax shape without evaluating them; default format-v1 output remains unchanged.
 - [x] Add `zelda-suite verify-overworld-hidden-items ROM` for source-derived
   pointer, record, sentinel, and replacement-word checks. It recalculates
   label offsets from 3-byte records/2-byte sentinels, compares all 128 pointer
   words plus 351 records, 67 sentinels, and four replacement words, and reports
   sentinel-delimited area groups. Tests use a synthetic ROM built from the
-  pinned source; the actual user-supplied ROM comparison and canonical provenance
-  checks remain open.
+  pinned source; the user's local run matched all 550 spans and the image
+  fingerprint matched the cited USA entry. Canonical item IDs and decoded map
+  semantics remain unresolved.
 - [x] Add `zelda-suite verify-dungeon-room-pointers ROM` for the 320-entry
   room-object long-pointer table. It compares candidate CPU addresses calculated
   from the three registered payload inventories with three-byte ROM entries,
   includes all 266 payload labels (including three labels unused by the pointer
   table), and preserves the 296/320 playable-room-count discrepancy. Synthetic
-  tests validate matching and mismatching pointer bytes; the user's local-ROM
-  run, source-offset trust, payload-byte verification, and playable-room set
-  remain open.
+  tests validate matching and mismatching pointer bytes; the user's local ROM
+  matched all 320 pointer entries. Source-offset findings, room payload bytes,
+  and the playable-room set remain open.
 - [x] Inventory the two overworld High/Low payload banks and validate source-local pairs: 248 declarations form 124 screen tokens (82 in Bank0B and 42 in Bank0C), each with exactly one High and one Low member. The `validate-overworld-payload-pairs` CLI checks this metadata invariant.
 - [x] Add `audit-overworld-payload-layout` to join all 124 High/Low pairs and expose each declaration's source line, include path, declared size, annotated start/end, calculated end, range-size status, and candidate High/Low adjacency. The report is pinned to disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` and the 82/42 Bank0B/Bank0C pair counts because its source-log/consumer line references and version-1 schema depend on that baseline. It pins 244 range-size matches, three mismatches, and one missing/unparseable range while explicitly leaving payload decoding and trusted-ROM offset checks open.
 - [x] Add `zelda-suite audit-incbin-inventory` to summarize metadata gaps, explicit source-range/size mismatches, and overlaps between candidate spans across all registered incbin inventories. A CI integration test pins the six registered inventories (529 declarations, four metadata gaps, three range/size mismatches, ten candidate overlap pairs) to prevent silent baseline drift. The report is deterministic and source-only; candidate offsets remain unverified until checked against a trusted local ROM.
 - [x] Add `zelda-suite audit-text-dictionary` to cross-reference the 98 committed symbolic dictionary pointer entries against all 98 fragment records in CI. It checks source provenance, labels, indexes, entry offsets, and the terminal sentinel; the strict asset loader also rejects inconsistent adjacent fragment offsets and source-extent arithmetic. The known `.You` 2-byte versus 6-byte directive discrepancy remains a warning; pointer values and ROM offsets remain unverified.
-- [x] Add `zelda-suite verify-text-dictionary-pointers ROM` to compare the 98 two-byte dictionary pointer entries against source-commented fragment starts and an explicit exclusive-end candidate for the terminal pointer, with synthetic-ROM match/mismatch tests and a versioned report. The local-ROM re-run, source-offset trust, fragment-byte verification, ROM provenance, and `Text_DictionaryPointers`/`DictionaryPointers` symbol-name mapping remain open. The separate `.You` source-extent warning is preserved.
+- [x] Add `zelda-suite verify-text-dictionary-pointers ROM` to compare the 98 two-byte dictionary pointer entries against source-commented fragment starts and an explicit exclusive-end candidate for the terminal pointer, with synthetic-ROM match/mismatch tests and a versioned report. The local-ROM pointer-word re-run matched all 98 entries. Source-offset trust, fragment-byte verification, and the `Text_DictionaryPointers`/`DictionaryPointers` symbol-name mapping remain open; the fingerprint and manual boot evidence are recorded under Phase 0. The separate `.You` source-extent warning is preserved.
 - [x] Add `zelda-suite audit-text-message-index` and a CI baseline for the 397 committed message records. It reports six source offset-comment mismatches (three malformed), 38 records without comments in the extra block, and a one-byte extra-block size discrepancy without reading a ROM or decoding messages.
-- [x] Add `zelda-suite verify-text-message-bytes ROM` to compare literal message bytes from both pinned source blocks against candidate offsets in a local 1 MiB image. Synthetic tests cover byte matches/mismatches, fail-closed parsing, CLI output, and no-overwrite behavior; a pinned-source test checks all 397 messages and the six offset-comment / one block-size warnings. Actual local-ROM agreement and source-offset/ROM-provenance verification remain open.
+- [x] Add `zelda-suite verify-text-message-bytes ROM` to compare literal message bytes from both pinned source blocks against candidate offsets in a local 1 MiB image. Synthetic tests cover byte matches/mismatches, fail-closed parsing, CLI output, and no-overwrite behavior; a pinned-source test checks all 397 messages and the six offset-comment / one block-size warnings. The user's local-ROM run matched the checked message bytes. Source-offset trust and message decoding remain open; the image fingerprint matched the cited USA catalog entry.
 - [x] Add a submodule-independent regression baseline for the committed 128-entry `OverworldData_HiddenItems` pointer table. It pins contiguous two-byte slot offsets, the full set of 80 target labels, and the 64-singleton/16-quadruple target distribution; target labels are still source symbols, not verified ROM offsets.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers. The Landmine field export, OAM allocator audit and prep-dispatch inventory are bounded source inventories, not the complete sprite/graphics dataset.
 - [ ] Decode the committed overworld High/Low payloads into editable map layers from the actual `bin/ow/*.bin` data or a trusted local ROM. Source research now documents the Map32 high-byte/low-byte relationship and audits all current comment discrepancies, but the referenced payload files are absent from the pinned tree and their offsets still require trusted-ROM verification.
@@ -142,14 +144,14 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Add safe semantic edits to the structured project model.
 
-- [ ] Define CRUD APIs for rooms, chests/items, overworld map elements, entrances, text, and sprite placements.
-- [ ] Store semantic game-system records in SQLite with schema migrations, field constraints, and referential integrity. Current source_asset persistence only stores validated source-export snapshots and does not satisfy this item.
+- [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads and constrained record updates in schema v3. Create/delete operations, area editing, other game-system domains, and ROM writes remain unimplemented.
+- [~] Store the first semantic game-system records in SQLite schema v3 with migrations, field bounds, and foreign-key area/record relationships. The other domains remain source_asset snapshots until their schemas are implemented.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
 - [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
 - [ ] Integrate SpriteSomething ZSPR support and zcompress only after asset round-trip tests exist.
 
-**Exit criteria:** Not met. The current project store is metadata-only; no authoring CRUD API or ROM writer exists yet.
+**Exit criteria:** Not met. Schema v3 now supports a bounded overworld hidden-item model and record updates, but a general authoring API, other semantic domains, dry-run ROM writes, and a ROM writer remain future work.
 
 ## Phase 3 — Claude Integration and Agent Workflows
 
@@ -192,50 +194,37 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - Never commit ROM images or extracted ROM payload bytes. The source export inventories record declarations and metadata only.
 - Treat the pinned disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` as provenance for the current source exports; do not silently reinterpret or “repair” source comments.
 - Before any ROM write is supported, require a verified source/offset mapping, deterministic diff, explicit dry run, and an emulator or equivalent execution check.
-- A documented local ROM path is a setup convention, not evidence that a file exists or is a clean/canonical dump. Keep local-ROM checks explicitly marked as unverified until performed against a trusted local file.
+- A documented local ROM path is a setup convention, not proof that a file exists. The user's supplied image matches the published No-Intro USA fingerprint and the user reports a successful boot, but do not generalize this evidence to a different file or treat it as independent chain-of-custody proof.
 - Update this roadmap and the relevant subsystem docs in the same change that alters implementation or changes the verified status of a task.
 
 ## Immediate next work
 
-1. Complete ROM provenance validation and external-tool smoke tests. The
-   latest user-run report bundle on 2026-10-29 returned exit status 0 for all
-   ten checks. It reported 662 scalar-table comparisons with zero mismatches
-   and 98 unresolved entries; all 550 overworld hidden-item byte comparisons
-   matched; all 36,363 checked text-message bytes matched (seven source
-   warnings); all 320 dungeon-room pointer comparisons matched with zero
-   pointer mismatches and six source-offset findings; and all 98 text-dictionary
-   pointer comparisons matched with zero mismatches and one separate `.You`
-   source-extent warning. The image was 1 MiB, but the report bundle does not
-   establish canonical ROM hash/provenance. Next, compare the local file's
-   CRC-32, SHA-1, and MD5 against the published No-Intro USA entry recorded in
-   `docs/real-rom-verification.md` (CRC-32 `777AAC2F`, SHA-1
-   `6d4f10a8b10e10dbe624cb23cf03b88bb8252973`, MD5
-   `608c22b8ff930c62dc2de54bcd6eba72`); those checksums have not yet been
-   confirmed against the latest run's file. A fingerprint match is byte-identity
-   evidence relative to that catalog entry, not proof of chain of custody. Then
-   use the verified generic YAZE release archive, inspect `z3ed --help`, and
-   perform only a confirmed read-only ROM operation. Keep ROM provenance and
-   the z3cli/model-endpoint gates open until independently resolved.
+1. Complete the real YAZE/`z3ed` read-only smoke test and the z3cli/model-endpoint
+   test. On 2026-10-29 the user's one-command run passed all ten checks: 662
+   scalar-table values compared with zero mismatches and 98 unresolved; all 550
+   hidden-item spans matched; all 36,363 text-message bytes matched (seven source
+   warnings); all 320 dungeon pointers matched (six source-offset findings); and
+   all 98 dictionary pointers matched (one `.You` source-extent warning). The
+   local image's size, CRC-32, SHA-1, and MD5 then matched the documented No-Intro
+   USA entry, and the user confirmed the ROM boots. This is strong byte-identity
+   evidence plus a manual boot result, not independent chain-of-custody evidence.
+   Install/inspect the verified YAZE release and establish a confirmed read-only
+   `z3ed` invocation; keep the z3cli/model-endpoint gate open until a reviewed
+   tool call succeeds.
 2. Reconcile the six dungeon-room comments that disagree with source-order
    payload layout: `RoomDataTiles_00E1` (comment `$0509A9`, sequential
    `$05016E`), `RoomDataTiles_0011` (`$050F19`, `$050B9F`),
    `RoomDataTiles_0050` (`$0516A1`, `$05102F`), `RoomDataTiles_00F9`
    (`$053FF5`, `$052FF5`), `RoomDataTiles_011C` (`$01FF53`, `$01F456`),
-   and `RoomDataTiles_0015` (`$0FE171`, `$0FE474`). The fresh local run
-   confirms the ROM pointer bytes agree with computed sequential-layout
-   candidates; it does not prove those candidates or room payload bytes are
-   canonical. Keep the six source findings visible and do not rewrite comments
-   merely to remove warnings. The dictionary terminal pointer now matches the
-   exclusive-end candidate `$C8D9` derived from the inclusive `$0747C7-$0748D8`
-   DATA range and the next code section at `$0748D9`. The `.You` 2-byte extent
-   versus six-byte `dw` warning and the `Text_DictionaryPointers`/
-   `DictionaryPointers` symbol-name mapping remain separate and unresolved.
-3. With provenance still unverified, treat the 550 matching hidden-item spans
-   as byte agreement for this supplied image only. After establishing a trusted
-   image identity, continue validating one area's pointer, record bytes,
-   sentinel grouping, and consumer-derived third-byte behavior together. Keep
-   the editable schema gate open until the semantic and provenance evidence
-   are independently adequate.
-4. Keep Phase 0 local-tool checks visible as blockers; the read-only runner's
-   success does not establish emulator bootability or prove that the complete
-   editor pipeline works.
+   and `RoomDataTiles_0015` (`$0FE171`, `$0FE474`). The ROM pointer bytes
+   agree with computed sequential-layout candidates; they do not prove those
+   candidates or room payload bytes are canonical. Keep the six findings visible.
+   The dictionary terminal pointer matches exclusive-end candidate `$C8D9`.
+   The `.You` extent discrepancy and symbol-name mapping remain unresolved.
+3. Continue the semantic model beyond hidden items: validate editable coordinates
+   and value-byte behavior against the pinned consumer, then add another bounded
+   domain such as dungeon chests or room objects. Keep source baselines, explicit
+   constraints, area aliases, and the no-ROM-write boundary in the project model.
+4. Complete Phase 1 extraction and Phase 0 tool checks. The existing matching byte
+   comparisons do not decode overworld map payloads, prove all source annotations,
+   or establish that the whole editor pipeline works.

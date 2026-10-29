@@ -18,6 +18,7 @@ from zelda_suite.extract.asset_loader import (
 from zelda_suite.project.store import (
     CURRENT_SCHEMA_VERSION,
     PROJECT_FORMAT,
+    PROJECT_FORMAT_VERSION,
     get_source_asset,
     import_extracted_asset,
     import_source_asset,
@@ -125,7 +126,7 @@ def test_import_source_asset_round_trips_and_updates_canonical_export(
 
     project_export = json.loads(json_path.read_text(encoding="utf-8"))
     assert project_export["format"] == PROJECT_FORMAT
-    assert project_export["format_version"] == 2
+    assert project_export["format_version"] == PROJECT_FORMAT_VERSION
     assert project_export["schema_version"] == CURRENT_SCHEMA_VERSION
     assert project_export["source_assets"] == [imported]
     assert validate_project(database) == []
@@ -268,7 +269,7 @@ def test_stored_source_asset_digest_and_json_are_checked(tmp_path: Path) -> None
     assert any("project metadata is invalid" in problem for problem in problems)
 
 
-def test_migrate_schema_v1_project_preserves_metadata_and_exports_v2(
+def test_migrate_schema_v1_project_preserves_metadata_and_exports_v3(
     tmp_path: Path,
 ) -> None:
     database, json_path = _create_schema_v1_project(tmp_path / "legacy")
@@ -285,16 +286,17 @@ def test_migrate_schema_v1_project_preserves_metadata_and_exports_v2(
             "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'source_asset'"
         ).fetchone()
 
-    assert project_version == (2,)
-    assert versions == [(1,), (2,)]
+    assert project_version == (PROJECT_FORMAT_VERSION,)
+    assert versions == [(1,), (2,), (CURRENT_SCHEMA_VERSION,)]
     assert table == ("source_asset",)
 
     payload = json.loads(json_path.read_text(encoding="utf-8"))
-    assert payload["format_version"] == 2
-    assert payload["schema_version"] == 2
+    assert payload["format_version"] == PROJECT_FORMAT_VERSION
+    assert payload["schema_version"] == CURRENT_SCHEMA_VERSION
     assert payload["project"]["name"] == "legacy"
     assert payload["project"]["created_at"] == "2026-01-02T03:04:05Z"
     assert payload["source_assets"] == []
+    assert payload["overworld_hidden_items"] is None
     assert validate_project(database) == []
 
 
@@ -358,5 +360,5 @@ def test_cli_migration_and_source_asset_commands(tmp_path: Path) -> None:
     migrated_db, _ = _create_schema_v1_project(tmp_path / "cli_legacy")
     migrated = runner.invoke(cli, ["migrate-project", str(migrated_db)])
     assert migrated.exit_code == 0, migrated.output
-    assert "Migrated project to schema v2" in migrated.output
+    assert "Migrated project to schema v3" in migrated.output
     assert validate_project(migrated_db) == []
