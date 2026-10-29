@@ -166,7 +166,7 @@ def audit_overworld_hidden_item_value_semantics(source: str) -> dict[str, Any]:
             "value-byte logic: " + "; ".join(missing_fragments)
         )
 
-    table_start = source.find(REPLACEMENT_TABLE_LABEL + ":", consumer_end)
+    table_start = source.find(REPLACEMENT_TABLE_LABEL + ":")
     if table_start < 0:
         raise OverworldHiddenItemValueSemanticsError(
             "could not locate Overworld_SecretTileType source table"
