@@ -564,20 +564,20 @@ and is not a registered asset; `rom_verified` and `semantic_values_decoded` are
 explicitly false. See the [report schema](./schemas/overworld-hidden-item-source-layout.schema.json).
 
 
-To inspect how the third byte is used by the pinned \`Overworld_RevealSecret\`
+To inspect how the third byte is used by the pinned `Overworld_RevealSecret`
 consumer, run:
 
-\`\`\`bash
-uv run zelda-suite audit-overworld-hidden-item-value-semantics \\
+```bash
+uv run zelda-suite audit-overworld-hidden-item-value-semantics \
   --output /tmp/overworld-hidden-item-value-semantics.json
-\`\`\`
+```
 
 The report checks the relevant consumer instruction patterns and preserves the
-four raw words and comments in \`Overworld_SecretTileType\`. On the pinned source,
+four raw words and comments in `Overworld_SecretTileType`. On the pinned source,
 325 of the 351 third bytes take the ordinary secret-state-mask path via
-\`TSB $0B9C\`; 26 take the extended-selector path, where the low nibble is a
-byte offset into that four-word table. The current extended values are \`$80\`,
-\`$82\`, \`$84\`, and \`$86\`; \`$84\` follows a special branch around the generic
+`TSB $0B9C`; 26 take the extended-selector path, where the low nibble is a
+byte offset into that four-word table. The current extended values are `$80`,
+`$82`, `$84`, and `$86`; `$84` follows a special branch around the generic
 overlay-activation block. These are consumer-path classifications, not canonical
 item IDs. Neither this report nor its tests verify the byte values or table
 offsets against a ROM; see the
@@ -915,23 +915,23 @@ consumer iterates among multiple chest records for one room. See the
 
 ## Cross-reference chest room values to room pointer slots
 
-The chest-table consumer in pinned \`Bank01.asm\` compares the packed low-15-bit
-room field with the current room variable (\`$A0\`) and calculates the door and
-object pointer-table byte offset as \`$A0 * 3\` (see
-[\`docs/schemas/dungeons.md\`](./schemas/dungeons.md) for the source-line references).
+The chest-table consumer in pinned `Bank01.asm` compares the packed low-15-bit
+room field with the current room variable (`$A0`) and calculates the door and
+object pointer-table byte offset as `$A0 * 3` (see
+[`docs/schemas/dungeons.md`](./schemas/dungeons.md) for the source-line references).
 
 Run:
 
-\`\`\`bash
+```bash
 uv run zelda-suite audit-dungeon-chest-room-references \\
   --output /tmp/dungeon-chest-room-reference-audit.json
-\`\`\`
+```
 
 The committed source-only baseline cross-references all 168 chest records:
 106 distinct room values, 32 room values with multiple chest records, zero
 room values outside the 320-entry pointer tables, zero object/door target-label
 mismatches, and three chest entries whose object-pointer slot is labelled
-\`RoomDataTiles_Empty\`. Those three entries are preserved as source metadata,
+`RoomDataTiles_Empty`. Those three entries are preserved as source metadata,
 not treated as proof that a room is invalid or non-playable.
 
 The audit pins the source revision because the room-index relationship is
