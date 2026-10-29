@@ -2762,7 +2762,7 @@ def verify_dungeon_room_pointers_command(
     registry_path: Path | None,
     output: Path | None,
 ) -> None:
-    """Compare room-table long pointers with source-commented payload offsets."""
+    """Compare room pointers with sequential payload layout and report offset-comment conflicts."""
     try:
         report = verify_dungeon_room_pointers(
             rom_path,
@@ -2794,7 +2794,8 @@ def verify_dungeon_room_pointers_command(
         click.echo(
             f"Wrote dungeon-room pointer verification report to {output}; "
             f"checked={report['pointer_table']['checked_comparisons']}, "
-            f"mismatches={report['pointer_table']['mismatch_count']}"
+            f"mismatches={report['pointer_table']['mismatch_count']}, "
+            f"source_offset_findings={report['pointer_table']['source_comment_offset_mismatch_count']}"
         )
 
     if report["pointer_table"]["mismatch_count"]:
