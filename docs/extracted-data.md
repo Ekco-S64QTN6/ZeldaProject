@@ -1099,6 +1099,16 @@ addresses, or determine the playable-room set. See
 [`docs/schemas/dungeons.md`](./schemas/dungeons.md) and the
 [dungeon-room asset audit schema](./schemas/dungeon-room-asset-audit.schema.json).
 
+For the companion door-data pointer table, run
+`uv run zelda-suite audit-dungeon-room-door-pointers`. The report joins all 320
+door-pointer records with their object-pointer slot and payload declaration,
+then checks each numeric addend against the source-declared target size. The
+pinned inventory reports 320 in-range addends and zero slot-target mismatches;
+it also preserves three unreferenced payload-label warnings. These checks do
+not verify source-declared sizes, pointer offsets, or door semantics against
+ROM bytes. Use `--fail-on-findings` for automation. See the
+[dungeon-room door-pointer audit schema](./schemas/dungeon-room-door-pointer-audit.schema.json).
+
 
 ## Verify text dictionary pointer words against a local image
 

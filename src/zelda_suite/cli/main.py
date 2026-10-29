@@ -18,6 +18,7 @@ from zelda_suite.extract import (
     AssetLoadError,
     DungeonChestDataAuditError,
     DungeonRoomAssetAuditError,
+    DungeonRoomDoorPointerAuditError,
     IncbinInventoryAuditError,
     ItemReceiptAnnotationAuditError,
     MessageSourceBlock,
@@ -38,6 +39,7 @@ from zelda_suite.extract import (
     TextMessageIndexAuditError,
     audit_dungeon_chest_data,
     audit_dungeon_room_assets,
+    audit_dungeon_room_door_pointer_bounds,
     audit_incbin_inventories,
     audit_item_receipt_annotations,
     audit_music_assets,
@@ -2595,6 +2597,71 @@ def audit_dungeon_room_assets_command(
             f"payloads={summary['payload_declaration_count']}, "
             f"missing_targets={summary['missing_payload_target_count']}, "
             f"unreferenced_payloads={summary['unreferenced_payload_count']}, "
+            f"errors={summary['error_count']}, warnings={summary['warning_count']}"
+        )
+
+    if fail_on_findings and report["summary"]["finding_count"]:
+        raise click.exceptions.Exit(1)
+
+
+@cli.command(name="audit-dungeon-room-door-pointers")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the JSON audit to a new file instead of stdout.",
+)
+@click.option(
+    "--fail-on-findings",
+    is_flag=True,
+    help="Return exit status 1 when an error or warning is present.",
+)
+def audit_dungeon_room_door_pointers_command(
+    registry_path: Path | None,
+    output: Path | None,
+    fail_on_findings: bool,
+) -> None:
+    """Audit door-pointer addends against source-declared room payload sizes."""
+    try:
+        report = audit_dungeon_room_door_pointer_bounds(
+            registry_path or "data/extracted/manifest.json"
+        )
+    except (DungeonRoomDoorPointerAuditError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+    else:
+        try:
+            with output.open("x", encoding="utf-8", newline="\n") as output_file:
+                output_file.write(rendered)
+        except FileExistsError as exc:
+            raise click.ClickException(
+                f"refusing to overwrite existing output: {output}"
+            ) from exc
+        except OSError as exc:
+            raise click.ClickException(f"could not write {output}: {exc}") from exc
+        summary = report["summary"]
+        click.echo(
+            f"Wrote dungeon door-pointer audit to {output}; "
+            f"pointers={summary['pointer_entry_count']}, "
+            f"in_bounds={summary['addend_in_bounds_count']}, "
+            f"out_of_bounds={summary['addend_out_of_bounds_count']}, "
+            f"unknown_bounds={summary['addend_bounds_unknown_count']}, "
             f"errors={summary['error_count']}, warnings={summary['warning_count']}"
         )
 

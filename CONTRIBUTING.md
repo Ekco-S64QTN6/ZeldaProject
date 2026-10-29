@@ -170,6 +170,9 @@ formatting only and that no data values or arrays changed.
 
 For changes to the dungeon pointer table or room payload inventories, also run `uv run zelda-suite audit-dungeon-room-assets`. Review missing/duplicate targets and unreferenced payload labels as source-symbol findings; source-commented offsets remain candidates until the separate local-ROM verifier is run.
 
+For changes to the dungeon door-pointer export or room-payload sizes, also run `uv run zelda-suite audit-dungeon-room-door-pointers`. Review every out-of-bounds addend, slot-target mismatch, missing size, and unreferenced payload finding; bounds are measured against source-declared sizes and are not ROM verification.
+The audit report contract lives in `docs/schemas/dungeon-room-door-pointer-audit.schema.json`; update it alongside report-field changes and retain explicit false evidence flags for ROM/payload reads and semantic decoding.
+
  
 For dictionary pointer verifier changes, run `uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM` only with an authorized local image. CI uses synthetic ROM fixtures; keep the real-ROM verification gate open until a user-run check is recorded. Do not treat candidate offset agreement as ROM provenance evidence or modify source annotations based on synthetic results.
 
