@@ -422,6 +422,38 @@ provenance are not independently trusted. A result with zero byte mismatches
 is evidence of agreement for that supplied image and the declared candidate
 ranges only, not proof of a canonical ROM or verified message semantics.
 
+## One-command read-only report bundle
+
+After setting `ROM` in the current shell as shown in step 1, the bundled
+runner can execute the supported read-only checks and preserve their output:
+
+```bash
+bash scripts/verify-rom-readonly.sh "$ROM"
+```
+
+It creates a fresh temporary report directory by default. To choose a report
+directory, pass a second argument that does not already exist:
+
+```bash
+bash scripts/verify-rom-readonly.sh "$ROM" "/tmp/zelda-rom-checks-2026-10-29"
+```
+
+The script first writes `rom-inspection.json` and the two source-only hidden-item
+reports. If the input is not exactly 1,048,576 bytes, it records why byte
+comparisons were blocked and exits without running them. For a correctly sized
+input it runs the self-diff, scalar-table verification in formats v1 and v2,
+overworld hidden-item byte checks, dungeon-room pointer checks, text-dictionary
+pointer checks, and encoded text-message byte checks. The `checks.tsv` file
+records each command's exit status; all available findings are preserved even
+when an individual check returns nonzero.
+
+The runner never writes or normalizes the ROM. A zero exit status means only
+that these commands returned success for this file and these source-derived
+candidate offsets; it does not establish canonical ROM provenance, emulator
+bootability, or correctness of untested semantics. Review each JSON report,
+especially any source-commented offset mismatches, rather than shifting offsets
+to force a pass.
+
 ## What is and is not implemented
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,
