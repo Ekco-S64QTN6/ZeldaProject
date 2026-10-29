@@ -1,4 +1,8 @@
-"""Read-only verification of dungeon-room long pointers against local ROM bytes."""
+"""Read-only verification of dungeon-room long pointers against local ROM bytes.
+
+Source-comment offsets are kept as annotations; candidate offsets follow each
+registered inventory from its first commented start plus declared payload sizes.
+"""
 
 from __future__ import annotations
 
@@ -43,12 +47,13 @@ def verify_dungeon_room_pointers(
     rom_path: str | Path,
     registry_path: str | Path = "data/extracted/manifest.json",
 ) -> dict[str, Any]:
-    """Compare all 320 registered source pointer expressions to local ROM bytes.
+    """Compare 320 registered pointers with source-order payload-layout candidates.
 
-    Candidate targets are derived from the source-commented start offsets in the
-    three registered room-payload inventories. A successful check proves byte
-    agreement for this file only; the source-commented offsets and ROM identity
-    are not independently trusted by this operation.
+    Each inventory starts at its first source-commented offset; later candidate
+    offsets advance by declared payload sizes in source order. Conflicting or
+    missing comments are reported separately, never rewritten. A successful
+    byte check is evidence for this local file only and does not establish ROM
+    provenance or prove the source declarations describe canonical payloads.
     """
     image_path = Path(rom_path)
     if not image_path.is_file():
