@@ -146,6 +146,8 @@ For standard shopkeeper purchase-handler changes, run the pinned-source parser t
 For potion-shop transaction changes, run `tests/test_potion_shop_transactions.py`, `tests/test_extracted_potion_shop_transactions.py`, and `tests/test_potion_shop_transactions_audit.py`, plus `uv run zelda-suite audit-potion-shop-transactions`. Preserve source compare/deduction bytes, empty-bottle checks, and receipt selectors `$2F/$30/$2E`; do not claim runtime price verification, semantic item-name resolution, or room-specific shop stock.
 
 For Bomb Shop and Bottle Vendor transaction changes, run the three `tests/test_special_shop_transactions*.py` modules and `uv run zelda-suite audit-special-shop-transactions`. Preserve the two actual receipt selectors (`$28`, `$16`), the Super Bomb flag/tagalong path without a receipt selector, and Bottle Vendor compare/deduction parity; keep offsets, runtime behavior, semantic item identity, and room-specific stock unverified.
+For paid overworld fee/reward inventory changes, run the three `tests/test_paid_overworld_interactions*.py` modules plus `uv run zelda-suite audit-paid-overworld-interactions`. Maintain source order and raw expressions for the six files; keep fixed fees, table-selected fees, random reward dispatch, and the Digging Game heart-piece gate as separate evidence.
+
 
 For SpritePrep dispatch changes, run the pinned-source parser tests, `tests/test_extracted_sprite_prep_dispatch.py`, and `uv run zelda-suite audit-sprite-prep-dispatch`. Treat the shared SpritePrep/SpriteActive3 IDs as index coverage only; neither source address annotations nor handler semantic equivalence are verified.
 

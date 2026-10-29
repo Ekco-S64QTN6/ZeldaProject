@@ -758,6 +758,47 @@ uv run zelda-suite audit-special-shop-transactions
 
 The audit joins only receipt selectors `$28` and `$16` to dense positions in the 76-entry receive-item layout and retains the graphics-table comment annotations at those positions. It does not infer room-specific shop stock, resolve semantic item IDs, verify prices/rewards against runtime, or prove that source range comments are ROM offsets. See the [item/chest guide](./schemas/items.md) and the [export](./schemas/special-shop-transactions-export.schema.json) and [audit](./schemas/special-shop-transactions-audit.schema.json) schemas.
 
+## Paid overworld interaction catalog
+
+The registered [`paid-overworld-interactions`](../data/extracted/paid-overworld-interactions.json)
+export captures seven fee-bearing interactions from six files in pinned
+`AsarUSALTTPDisassembly` revision `347c23f9fc019c72d32da537c9cb235f468d021d`:
+
+- Fortune Teller readings: `FortuneTeller_Prices` selects 10, 15, 20, or 30 rupees and is consumed by both Light World and Dark World paths.
+- Digging Game entry: source compare and deduction use `$0050` (80 rupees), followed by minigame initialization.
+- Zora King Flippers sale: `$01F4` (500 rupees) is deducted before the Flippers spawn path.
+- Kiki: 10 rupees for the follow transaction and 100 rupees for the follow-up progression transaction.
+- Archery Game: the game-entry branch deducts `$0014` (20 rupees).
+- Lake Hylia Fairy: `FairyPond.prices` selects 5, 20, 25, or 50 rupees; the accepted amount is deducted and added to the happiness-pond total.
+
+The Digging Game reward structures remain separate: the eight-entry
+`DiggingGameGuy_AttemptPrizeSpawn` dispatch table, four raw basic reward bytes
+(`$DB/$DA/$D9/$DF`) with source comments, and the heart-piece gate at 25 holes
+with flag `$7FFE00`, random mask `#$03`, and write of `$EB` to that flag.
+This preserves source logic without claiming a runtime probability or canonical
+item catalog.
+
+Regenerate and audit the inventory:
+
+```bash
+uv run zelda-suite inspect-paid-overworld-interactions \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_archery_game_guy.asm \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_digging_game_guy.asm \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_fortune_teller.asm \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_kiki.asm \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_ponds.asm \
+  reference/AsarUSALTTPDisassembly/Sprites/sprite_zora_king.asm \
+  --source-revision 347c23f9fc019c72d32da537c9cb235f468d021d \
+  --output /tmp/paid-overworld-interactions.json
+uv run zelda-suite validate-source-export /tmp/paid-overworld-interactions.json
+diff -u data/extracted/paid-overworld-interactions.json /tmp/paid-overworld-interactions.json
+uv run zelda-suite audit-paid-overworld-interactions
+```
+
+The catalog and audit are source-only; source annotations, fee behavior, and
+reward probabilities have not been verified against ROM execution.
+
+
 ## Receive-item graphics comment annotations
 
 The source-only `audit-item-receipt-annotations` report compares the dense

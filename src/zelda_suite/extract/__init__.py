@@ -6,6 +6,7 @@ from zelda_suite.extract.asset_loader import (
     ITEM_RECEIPT_LAYOUT_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     MUSIC_TRACK_INDEX_FORMAT,
+    PAID_OVERWORLD_INTERACTIONS_FORMAT,
     POTION_SHOP_TRANSACTIONS_FORMAT,
     SHOP_ITEM_HANDLERS_FORMAT,
     SPECIAL_SHOP_TRANSACTIONS_FORMAT,
@@ -108,6 +109,15 @@ from zelda_suite.extract.overworld_hidden_item_verification import (
 from zelda_suite.extract.overworld_payload_pairs import (
     OverworldPayloadPairError,
     validate_overworld_payload_pairs,
+)
+from zelda_suite.extract.paid_overworld_interactions import (
+    PaidOverworldInteractionsParseError,
+    parse_paid_overworld_interactions,
+)
+from zelda_suite.extract.paid_overworld_interactions_audit import (
+    PAID_OVERWORLD_INTERACTIONS_AUDIT_FORMAT,
+    PaidOverworldInteractionsAuditError,
+    audit_paid_overworld_interactions,
 )
 from zelda_suite.extract.potion_shop_transactions import (
     PotionShopTransactionEntry,
@@ -223,6 +233,8 @@ __all__ = [
     "MUSIC_ASSET_AUDIT_FORMAT",
     "MUSIC_TRACK_INDEX_FORMAT",
     "OAM_ALLOCATION_AUDIT_FORMAT",
+    "PAID_OVERWORLD_INTERACTIONS_AUDIT_FORMAT",
+    "PAID_OVERWORLD_INTERACTIONS_FORMAT",
     "PINNED_SOURCE_REVISION",
     "PINNED_TEXT_SOURCE_REVISION",
     "POINTER_DIRECTIVE_WIDTHS",
@@ -271,6 +283,8 @@ __all__ = [
     "OAMAllocationAuditError",
     "OverworldHiddenItemVerificationError",
     "OverworldPayloadPairError",
+    "PaidOverworldInteractionsAuditError",
+    "PaidOverworldInteractionsParseError",
     "PointerTableEntry",
     "PotionShopTransactionEntry",
     "PotionShopTransactionsAuditError",
@@ -309,6 +323,7 @@ __all__ = [
     "audit_item_receipt_annotations",
     "audit_music_assets",
     "audit_oam_allocation",
+    "audit_paid_overworld_interactions",
     "audit_potion_shop_transactions",
     "audit_shop_item_handlers",
     "audit_special_shop_transactions",
@@ -333,6 +348,7 @@ __all__ = [
     "parse_mixed_data_table",
     "parse_music_track_index",
     "parse_overworld_hidden_item_source",
+    "parse_paid_overworld_interactions",
     "parse_potion_shop_transactions",
     "parse_shop_item_handlers",
     "parse_source_pointer_table",

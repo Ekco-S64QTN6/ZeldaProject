@@ -210,6 +210,10 @@ def test_every_registered_asset_round_trips_through_project_storage(
         assert stored["source_file"] == metadata["source_file"]
         if metadata["key"] == "text-message-index":
             assert metadata["source_file"] == "Bank0E.asm;Bank1C.asm"
+        elif metadata["key"] == "paid-overworld-interactions":
+            assert metadata["source_file"] == ";".join(
+                sorted(committed["source_files"])
+            )
 
     assert validate_project(database) == []
 

@@ -280,6 +280,15 @@
       "subsystem": "overworld"
     },
     {
+      "description": "Seven source-derived fee-bearing overworld interactions. Preserves fixed/table-based fees and source-commented Digging Game rewards; runtime behavior and reward probability are unverified.",
+      "file": "paid-overworld-interactions.json",
+      "format": "zelda-suite-paid-overworld-interactions",
+      "name": "paid-overworld-interactions",
+      "record_count": 7,
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "subsystem": "overworld"
+    },
+    {
       "description": "Three priced potion-shop transactions parsed from Sprite_GreenPotionItem, Sprite_BluePotionItem, and Sprite_RedPotionItem. Preserves source rupee comparison/deduction literals, receipt selectors, and handler range annotations without runtime/ROM verification.",
       "file": "potion-shop-transactions.json",
       "format": "zelda-suite-potion-shop-transactions",

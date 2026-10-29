@@ -16,6 +16,7 @@ DATA_TABLE_FORMAT = "zelda-suite-data-table"
 SHOP_ITEM_HANDLERS_FORMAT = "zelda-suite-shop-item-handlers"
 POTION_SHOP_TRANSACTIONS_FORMAT = "zelda-suite-potion-shop-transactions"
 SPECIAL_SHOP_TRANSACTIONS_FORMAT = "zelda-suite-special-shop-transactions"
+PAID_OVERWORLD_INTERACTIONS_FORMAT = "zelda-suite-paid-overworld-interactions"
 DUNGEON_CHEST_DATA_FORMAT = "zelda-suite-dungeon-chest-data"
 MIXED_DATA_TABLE_FORMAT = "zelda-suite-mixed-data-table"
 DICTIONARY_INVENTORY_FORMAT = "zelda-suite-dictionary-inventory"
@@ -265,6 +266,93 @@ _SPECIAL_SHOP_RANGE_RE = re.compile(
 _SPECIAL_SHOP_BYTE_RE = re.compile(r"\$[0-9A-Fa-f]{2}\Z")
 _SPECIAL_SHOP_WORD_RE = re.compile(r"\$[0-9A-Fa-f]{4}\Z")
 _SPECIAL_SHOP_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{6}\Z")
+
+
+_PAID_OVERWORLD_TOP_KEYS = {
+    "format",
+    "format_version",
+    "source_revision",
+    "source_files",
+    "interaction_count",
+    "interactions",
+    "reward_tables",
+    "reward_gates",
+    "evidence",
+}
+_PAID_OVERWORLD_INTERACTION_KEYS = {
+    "interaction_id",
+    "actor_label",
+    "interaction_kind",
+    "source_file",
+    "source_label",
+    "source_range_annotation",
+    "source_annotation_line",
+    "fee_model",
+    "fee_values",
+    "fee_expressions",
+    "fee_table_label",
+    "fee_source_lines",
+    "payment_source_lines",
+    "outcome_label",
+    "outcome_source_lines",
+    "source_revision",
+}
+_PAID_OVERWORLD_DISPATCH_TABLE_KEYS = {
+    "table_id",
+    "table_kind",
+    "source_file",
+    "source_label",
+    "source_range_annotation",
+    "source_annotation_line",
+    "entry_count",
+    "entries",
+    "source_revision",
+}
+_PAID_OVERWORLD_DISPATCH_ENTRY_KEYS = {
+    "table_index",
+    "handler_label",
+    "source_address_annotation",
+    "source_comment",
+    "source_line",
+}
+_PAID_OVERWORLD_POOL_ENTRY_KEYS = {
+    "table_index",
+    "expression",
+    "source_comment",
+    "source_line",
+}
+_PAID_OVERWORLD_GATE_KEYS = {
+    "gate_id",
+    "source_file",
+    "source_label",
+    "source_range_annotation",
+    "source_annotation_line",
+    "condition_source_lines",
+    "condition_expressions",
+    "minimum_hole_count",
+    "required_state_expression",
+    "random_mask_expression",
+    "successful_random_value",
+    "reward_flag_write_expression",
+    "source_revision",
+}
+_PAID_OVERWORLD_EVIDENCE_KEYS = {
+    "source_only",
+    "rom_bytes_read",
+    "source_range_annotations_verified",
+    "fee_behavior_runtime_verified",
+    "reward_probability_runtime_verified",
+    "item_value_names_resolved",
+    "payment_semantics_runtime_verified",
+}
+_PAID_OVERWORLD_RANGE_RE = re.compile(
+    r"\$[0-9A-Fa-f]+-\$[0-9A-Fa-f]+ "
+    r"(?:DATA|JUMP LOCATION|LOCAL JUMP LOCATION|BRANCH LOCATION)\Z",
+    re.IGNORECASE,
+)
+_PAID_OVERWORLD_FEE_EXPRESSION_RE = re.compile(r"(?:\d+|\$[0-9A-Fa-f]{2,4})\Z")
+_PAID_OVERWORLD_BYTE_RE = re.compile(r"\$[0-9A-Fa-f]{2}\Z")
+_PAID_OVERWORLD_ADDRESS_RE = re.compile(r"\$[0-9A-Fa-f]{4}\Z")
 
 
 _MIXED_DATA_TABLE_TOP_KEYS = {
@@ -1177,6 +1265,204 @@ def _validate_special_shop_transactions_export(payload: dict[str, Any]) -> None:
         "rom_bytes_read", "source_range_annotations_verified", "price_behavior_runtime_verified",
         "receipt_item_names_resolved", "room_specific_shop_stock_resolved",
         "canonical_item_ids_resolved", "special_bomb_reward_runtime_verified",
+    ):
+        if _boolean(evidence[field], f"evidence.{field}") is not False:
+            raise AssetLoadError(f"evidence.{field} must be false")
+
+
+
+def _validate_paid_overworld_interactions_export(payload: dict[str, Any]) -> None:
+    _exact_keys(payload, _PAID_OVERWORLD_TOP_KEYS, "paid-overworld interactions export")
+    if payload["format"] != PAID_OVERWORLD_INTERACTIONS_FORMAT:
+        raise AssetLoadError("paid-overworld interactions export has an invalid format identifier")
+    version = _integer(payload["format_version"], "format_version", minimum=1)
+    if version != SOURCE_EXPORT_FORMAT_VERSION:
+        raise AssetLoadError(
+            f"unsupported paid-overworld interactions format version {version}; "
+            f"this loader supports {SOURCE_EXPORT_FORMAT_VERSION}"
+        )
+    revision = _string(payload["source_revision"], "source_revision")
+    expected_sources = [
+        "sprite_archery_game_guy.asm",
+        "sprite_digging_game_guy.asm",
+        "sprite_fortune_teller.asm",
+        "sprite_kiki.asm",
+        "sprite_ponds.asm",
+        "sprite_zora_king.asm",
+    ]
+    source_files = payload["source_files"]
+    if source_files != expected_sources:
+        raise AssetLoadError("source_files must list the six pinned paid-interaction source files")
+    count = _integer(payload["interaction_count"], "interaction_count", minimum=1)
+    if count != 7:
+        raise AssetLoadError("interaction_count must be 7")
+    interactions = payload["interactions"]
+    if not isinstance(interactions, list) or len(interactions) != count:
+        raise AssetLoadError("interaction_count does not match interactions")
+
+    expected_ids = (
+        "fortune-teller-reading",
+        "digging-game-entry",
+        "zora-king-flippers",
+        "kiki-follow-fee",
+        "kiki-palace-access-fee",
+        "archery-game-entry",
+        "lake-hylia-fairy-donation",
+    )
+    seen_ids: set[str] = set()
+    for index, raw_entry in enumerate(interactions):
+        context = f"interactions[{index}]"
+        entry = _object(raw_entry, context)
+        _exact_keys(entry, _PAID_OVERWORLD_INTERACTION_KEYS, context)
+        interaction_id = _string(entry["interaction_id"], f"{context}.interaction_id")
+        if interaction_id != expected_ids[index] or interaction_id in seen_ids:
+            raise AssetLoadError(f"{context}.interaction_id must be {expected_ids[index]!r}")
+        seen_ids.add(interaction_id)
+        _string(entry["actor_label"], f"{context}.actor_label")
+        _string(entry["interaction_kind"], f"{context}.interaction_kind")
+        source_file = _string(entry["source_file"], f"{context}.source_file")
+        if source_file not in expected_sources:
+            raise AssetLoadError(f"{context}.source_file is not a registered paid-interaction source")
+        _source_label(entry["source_label"], f"{context}.source_label")
+        annotation = _string(entry["source_range_annotation"], f"{context}.source_range_annotation")
+        if _PAID_OVERWORLD_RANGE_RE.fullmatch(annotation) is None:
+            raise AssetLoadError(f"{context}.source_range_annotation is malformed")
+        _integer(entry["source_annotation_line"], f"{context}.source_annotation_line", minimum=1)
+        fee_model = _string(entry["fee_model"], f"{context}.fee_model")
+        if fee_model not in {"fixed", "selected-price-table"}:
+            raise AssetLoadError(f"{context}.fee_model is unsupported")
+        values = entry["fee_values"]
+        expressions = entry["fee_expressions"]
+        if not isinstance(values, list) or not values or not isinstance(expressions, list):
+            raise AssetLoadError(f"{context} fee values and expressions must be non-empty arrays")
+        if len(values) != len(expressions):
+            raise AssetLoadError(f"{context} fee expression count does not match fee value count")
+        parsed_values: list[int] = []
+        for fee_index, (raw_value, raw_expression) in enumerate(zip(values, expressions, strict=True)):
+            fee_context = f"{context}.fee_values[{fee_index}]"
+            fee_value = _integer(raw_value, fee_context, minimum=1)
+            expression = _string(raw_expression, f"{context}.fee_expressions[{fee_index}]")
+            if _PAID_OVERWORLD_FEE_EXPRESSION_RE.fullmatch(expression) is None:
+                raise AssetLoadError(f"{context}.fee_expressions[{fee_index}] is malformed")
+            parsed_expression = int(expression[1:], 16) if expression.startswith("$") else int(expression)
+            if parsed_expression != fee_value:
+                raise AssetLoadError(f"{fee_context} does not match its source expression")
+            parsed_values.append(fee_value)
+        fee_table = entry["fee_table_label"]
+        if fee_model == "fixed":
+            if len(values) != 1 or fee_table is not None:
+                raise AssetLoadError(f"{context} fixed fee must have one value and no fee table")
+        else:
+            if len(values) < 2 or not isinstance(fee_table, str) or not fee_table:
+                raise AssetLoadError(f"{context} selected-price-table fee requires multiple values and a table label")
+        for field in ("fee_source_lines", "payment_source_lines", "outcome_source_lines"):
+            raw_lines = entry[field]
+            if not isinstance(raw_lines, list) or not raw_lines:
+                raise AssetLoadError(f"{context}.{field} must be a non-empty array")
+            for line_index, line in enumerate(raw_lines):
+                _integer(line, f"{context}.{field}[{line_index}]", minimum=1)
+        _string(entry["outcome_label"], f"{context}.outcome_label")
+        if _string(entry["source_revision"], f"{context}.source_revision") != revision:
+            raise AssetLoadError(f"{context}.source_revision does not match top-level source_revision")
+
+    reward_tables = payload["reward_tables"]
+    if not isinstance(reward_tables, list) or len(reward_tables) != 2:
+        raise AssetLoadError("reward_tables must contain the digging dispatch and basic-item pool")
+    expected_table_ids = (
+        ("digging-game-random-reward-dispatch", "jump-table", 8),
+        ("digging-game-basic-reward-pool", "item-pool", 4),
+    )
+    for table_index, raw_table in enumerate(reward_tables):
+        context = f"reward_tables[{table_index}]"
+        table = _object(raw_table, context)
+        _exact_keys(table, _PAID_OVERWORLD_DISPATCH_TABLE_KEYS, context)
+        expected_id, expected_kind, expected_count = expected_table_ids[table_index]
+        if table["table_id"] != expected_id or table["table_kind"] != expected_kind:
+            raise AssetLoadError(f"{context} must describe {expected_id!r}")
+        if _string(table["source_file"], f"{context}.source_file") != "sprite_digging_game_guy.asm":
+            raise AssetLoadError(f"{context}.source_file must be the Digging Game source")
+        table_source_label = _string(table["source_label"], f"{context}.source_label")
+        if table_index == 0:
+            _source_label(table_source_label, f"{context}.source_label")
+        elif table_source_label != "Pool_DiggingGameGuy_GiveItem.basic_types":
+            raise AssetLoadError(
+                f"{context}.source_label must be the known .basic_types local label"
+            )
+        annotation = _string(table["source_range_annotation"], f"{context}.source_range_annotation")
+        if _PAID_OVERWORLD_RANGE_RE.fullmatch(annotation) is None:
+            raise AssetLoadError(f"{context}.source_range_annotation is malformed")
+        _integer(table["source_annotation_line"], f"{context}.source_annotation_line", minimum=1)
+        entry_count = _integer(table["entry_count"], f"{context}.entry_count", minimum=1)
+        entries = table["entries"]
+        if entry_count != expected_count or not isinstance(entries, list) or len(entries) != entry_count:
+            raise AssetLoadError(f"{context}.entry_count must be {expected_count}")
+        for entry_index, raw_entry in enumerate(entries):
+            entry_context = f"{context}.entries[{entry_index}]"
+            item = _object(raw_entry, entry_context)
+            if table_index == 0:
+                _exact_keys(item, _PAID_OVERWORLD_DISPATCH_ENTRY_KEYS, entry_context)
+                address = _string(item["source_address_annotation"], f"{entry_context}.source_address_annotation")
+                if _PAID_OVERWORLD_ADDRESS_RE.fullmatch(address) is None:
+                    raise AssetLoadError(f"{entry_context}.source_address_annotation is malformed")
+                _string(item["handler_label"], f"{entry_context}.handler_label")
+                _string(item["source_comment"], f"{entry_context}.source_comment")
+            else:
+                _exact_keys(item, _PAID_OVERWORLD_POOL_ENTRY_KEYS, entry_context)
+                expression = _string(item["expression"], f"{entry_context}.expression")
+                if _PAID_OVERWORLD_BYTE_RE.fullmatch(expression) is None:
+                    raise AssetLoadError(f"{entry_context}.expression must be a two-digit hex byte")
+                _string(item["source_comment"], f"{entry_context}.source_comment")
+            slot = _integer(item["table_index"], f"{entry_context}.table_index", minimum=0)
+            if slot != entry_index:
+                raise AssetLoadError(f"{entry_context}.table_index must be {entry_index}")
+            _integer(item["source_line"], f"{entry_context}.source_line", minimum=1)
+        if _string(table["source_revision"], f"{context}.source_revision") != revision:
+            raise AssetLoadError(f"{context}.source_revision does not match top-level source_revision")
+
+    reward_gates = payload["reward_gates"]
+    if not isinstance(reward_gates, list) or len(reward_gates) != 1:
+        raise AssetLoadError("reward_gates must contain the Digging Game heart-piece gate")
+    gate = _object(reward_gates[0], "reward_gates[0]")
+    _exact_keys(gate, _PAID_OVERWORLD_GATE_KEYS, "reward_gates[0]")
+    if gate["gate_id"] != "digging-game-heart-piece":
+        raise AssetLoadError("reward_gates[0].gate_id must be 'digging-game-heart-piece'")
+    if _string(gate["source_file"], "reward_gates[0].source_file") != "sprite_digging_game_guy.asm":
+        raise AssetLoadError("heart-piece gate source_file must be the Digging Game source")
+    _source_label(gate["source_label"], "reward_gates[0].source_label")
+    annotation = _string(gate["source_range_annotation"], "reward_gates[0].source_range_annotation")
+    if _PAID_OVERWORLD_RANGE_RE.fullmatch(annotation) is None:
+        raise AssetLoadError("heart-piece gate source_range_annotation is malformed")
+    _integer(gate["source_annotation_line"], "reward_gates[0].source_annotation_line", minimum=1)
+    gate_lines = gate["condition_source_lines"]
+    gate_expressions = gate["condition_expressions"]
+    if not isinstance(gate_lines, list) or len(gate_lines) != 4 or not isinstance(gate_expressions, list) or len(gate_expressions) != 4:
+        raise AssetLoadError("heart-piece gate must preserve four source condition/effect lines")
+    for index, line in enumerate(gate_lines):
+        _integer(line, f"reward_gates[0].condition_source_lines[{index}]", minimum=1)
+        _string(gate_expressions[index], f"reward_gates[0].condition_expressions[{index}]")
+    if _integer(gate["minimum_hole_count"], "reward_gates[0].minimum_hole_count", minimum=1) != 25:
+        raise AssetLoadError("Digging Game heart-piece threshold must remain 25 holes")
+    if gate["required_state_expression"] != "$7FFE00 == 0":
+        raise AssetLoadError("heart-piece gate required_state_expression is unexpected")
+    if gate["random_mask_expression"] != "#$03":
+        raise AssetLoadError("heart-piece gate random_mask_expression is unexpected")
+    if _integer(gate["successful_random_value"], "reward_gates[0].successful_random_value", minimum=0) != 0:
+        raise AssetLoadError("heart-piece gate successful_random_value must be zero")
+    _string(gate["reward_flag_write_expression"], "reward_gates[0].reward_flag_write_expression")
+    if _string(gate["source_revision"], "reward_gates[0].source_revision") != revision:
+        raise AssetLoadError("heart-piece gate source_revision does not match top-level source_revision")
+
+    evidence = _object(payload["evidence"], "evidence")
+    _exact_keys(evidence, _PAID_OVERWORLD_EVIDENCE_KEYS, "evidence")
+    if _boolean(evidence["source_only"], "evidence.source_only") is not True:
+        raise AssetLoadError("evidence.source_only must be true")
+    for field in (
+        "rom_bytes_read",
+        "source_range_annotations_verified",
+        "fee_behavior_runtime_verified",
+        "reward_probability_runtime_verified",
+        "item_value_names_resolved",
+        "payment_semantics_runtime_verified",
     ):
         if _boolean(evidence[field], f"evidence.{field}") is not False:
             raise AssetLoadError(f"evidence.{field} must be false")
@@ -2337,6 +2623,8 @@ def validate_source_export(payload: Any) -> dict[str, Any]:
         _validate_potion_shop_transactions_export(export)
     elif format_name == SPECIAL_SHOP_TRANSACTIONS_FORMAT:
         _validate_special_shop_transactions_export(export)
+    elif format_name == PAID_OVERWORLD_INTERACTIONS_FORMAT:
+        _validate_paid_overworld_interactions_export(export)
     elif format_name == MIXED_DATA_TABLE_FORMAT:
         _validate_mixed_data_table_export(export)
     elif format_name == ITEM_RECEIPT_LAYOUT_FORMAT:
@@ -2378,6 +2666,7 @@ _SUPPORTED_SOURCE_FORMATS = {
     SHOP_ITEM_HANDLERS_FORMAT,
     POTION_SHOP_TRANSACTIONS_FORMAT,
     SPECIAL_SHOP_TRANSACTIONS_FORMAT,
+    PAID_OVERWORLD_INTERACTIONS_FORMAT,
     MIXED_DATA_TABLE_FORMAT,
     ITEM_RECEIPT_LAYOUT_FORMAT,
     DICTIONARY_INVENTORY_FORMAT,
@@ -2509,6 +2798,7 @@ def load_extracted_asset(
         SHOP_ITEM_HANDLERS_FORMAT: "entry_count",
         POTION_SHOP_TRANSACTIONS_FORMAT: "entry_count",
         SPECIAL_SHOP_TRANSACTIONS_FORMAT: "entry_count",
+        PAID_OVERWORLD_INTERACTIONS_FORMAT: "interaction_count",
         MIXED_DATA_TABLE_FORMAT: "record_count",
         ITEM_RECEIPT_LAYOUT_FORMAT: "entry_count",
         DICTIONARY_INVENTORY_FORMAT: "fragment_count",

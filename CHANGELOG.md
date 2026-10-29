@@ -17,6 +17,7 @@ does not imply that any release has been published.
 
 - Add `potion-shop-transactions`, a three-entry source catalog for green, blue, and red potion purchases. `inspect-potion-shop-transactions` preserves source compare/deduction literals, empty-bottle check lines, and receipt indexes `$2F/$30/$2E`; `audit-potion-shop-transactions` joins these to raw receive-item slots and graphics-comment annotations. Runtime prices and canonical item IDs are not verified.
 - Add `special-shop-transactions` for Bomb Shop Bomb, Bomb Shop Super Bomb, and the Bottle Vendor bottle sale. The strict parser preserves the 100-rupee purchase paths, the two receipt selectors (`$28` and `$16`), and the Super Bomb's direct flag/tagalong reward; the audit joins only actual receipt selectors to raw receipt slots and graphics-comment annotations.
+- Add `paid-overworld-interactions` for seven source-coded fee interactions and variable price tables across Fortune Teller, Digging Game, Zora King, Kiki, Archery Game, and Lake Hylia Fairy. Preserve the Digging Game reward dispatch, raw basic-item pool, and separate heart-piece gate; runtime fees and reward probabilities remain unverified.
 
 - Add `audit-item-receipt-annotations`, which audits the 76 dense `.item_graphics_indices` slots against source-comment IDs and labels, reports missing comment ID `$40` and 12 positional/comment-ID mismatches, and exposes raw annotations in shop handler audit rows without promoting them to canonical IDs.
 

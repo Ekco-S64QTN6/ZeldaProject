@@ -94,6 +94,14 @@ def _source_file_metadata(payload: dict[str, Any]) -> str:
     if isinstance(source_file, str) and source_file:
         return source_file
 
+    source_files = payload.get("source_files")
+    if isinstance(source_files, list):
+        normalized_source_files = sorted(
+            {source for source in source_files if isinstance(source, str) and source}
+        )
+        if normalized_source_files:
+            return ";".join(normalized_source_files)
+
     source_blocks = payload.get("source_blocks")
     if isinstance(source_blocks, list):
         source_files = sorted(
@@ -109,7 +117,7 @@ def _source_file_metadata(payload: dict[str, Any]) -> str:
             return ";".join(source_files)
 
     raise ValueError(
-        "source export must include source_file or source_blocks with source_file values"
+        "source export must include source_file, source_files, or source_blocks with source_file values"
     )
 
 

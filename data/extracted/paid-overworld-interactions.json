@@ -1,0 +1,374 @@
+{
+  "evidence": {
+    "fee_behavior_runtime_verified": false,
+    "item_value_names_resolved": false,
+    "payment_semantics_runtime_verified": false,
+    "reward_probability_runtime_verified": false,
+    "rom_bytes_read": false,
+    "source_only": true,
+    "source_range_annotations_verified": false
+  },
+  "format": "zelda-suite-paid-overworld-interactions",
+  "format_version": 1,
+  "interaction_count": 7,
+  "interactions": [
+    {
+      "actor_label": "FortuneTeller",
+      "fee_expressions": [
+        "10",
+        "15",
+        "20",
+        "30"
+      ],
+      "fee_model": "selected-price-table",
+      "fee_source_lines": [
+        89
+      ],
+      "fee_table_label": "FortuneTeller_Prices",
+      "fee_values": [
+        10,
+        15,
+        20,
+        30
+      ],
+      "interaction_id": "fortune-teller-reading",
+      "interaction_kind": "fortune-reading",
+      "outcome_label": "FortuneTeller_GiveReading",
+      "outcome_source_lines": [
+        193
+      ],
+      "payment_source_lines": [
+        102,
+        366,
+        414,
+        574
+      ],
+      "source_annotation_line": 86,
+      "source_file": "sprite_fortune_teller.asm",
+      "source_label": "FortuneTeller_Prices",
+      "source_range_annotation": "$06C7B1-$06C7B8 DATA",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "actor_label": "DiggingGameGuy",
+      "fee_expressions": [
+        "$0050"
+      ],
+      "fee_model": "fixed",
+      "fee_source_lines": [
+        67,
+        69
+      ],
+      "fee_table_label": null,
+      "fee_values": [
+        80
+      ],
+      "interaction_id": "digging-game-entry",
+      "interaction_kind": "minigame-entry",
+      "outcome_label": "Sprite_InitializeSecondaryItemMinigame",
+      "outcome_source_lines": [
+        91
+      ],
+      "payment_source_lines": [
+        69
+      ],
+      "source_annotation_line": 60,
+      "source_file": "sprite_digging_game_guy.asm",
+      "source_label": "DiggingGameGuy_DoYouWantToPlay",
+      "source_range_annotation": "$0EFC89-$0EFCDF JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "actor_label": "ZoraKing",
+      "fee_expressions": [
+        "$01F4"
+      ],
+      "fee_model": "fixed",
+      "fee_source_lines": [
+        214
+      ],
+      "fee_table_label": null,
+      "fee_values": [
+        500
+      ],
+      "interaction_id": "zora-king-flippers",
+      "interaction_kind": "item-sale",
+      "outcome_label": "Sprite_SpawnFlippersItem",
+      "outcome_source_lines": [
+        255
+      ],
+      "payment_source_lines": [
+        214
+      ],
+      "source_annotation_line": 165,
+      "source_file": "sprite_zora_king.asm",
+      "source_label": "ZoraKing_Dialogue",
+      "source_range_annotation": "$029A46-$029ACE JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "actor_label": "Kiki",
+      "fee_expressions": [
+        "$0A"
+      ],
+      "fee_model": "fixed",
+      "fee_source_lines": [
+        156
+      ],
+      "fee_table_label": null,
+      "fee_values": [
+        10
+      ],
+      "interaction_id": "kiki-follow-fee",
+      "interaction_kind": "escort-fee",
+      "outcome_label": "sets follow-related state bits before Kiki despawns",
+      "outcome_source_lines": [
+        164
+      ],
+      "payment_source_lines": [
+        158
+      ],
+      "source_annotation_line": 152,
+      "source_file": "sprite_kiki.asm",
+      "source_label": "Kiki_OfferToFollowTransaction",
+      "source_range_annotation": "$0F63F4-$0F6432 JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "actor_label": "Kiki",
+      "fee_expressions": [
+        "$64"
+      ],
+      "fee_model": "fixed",
+      "fee_source_lines": [
+        339
+      ],
+      "fee_table_label": null,
+      "fee_values": [
+        100
+      ],
+      "interaction_id": "kiki-palace-access-fee",
+      "interaction_kind": "progression-fee",
+      "outcome_label": "advances Kiki's post-payment state",
+      "outcome_source_lines": [
+        347,
+        349,
+        351
+      ],
+      "payment_source_lines": [
+        342
+      ],
+      "source_annotation_line": 323,
+      "source_file": "sprite_kiki.asm",
+      "source_label": "Kiki_VerifyPurchase",
+      "source_range_annotation": "$0F6509-$0F6536 JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "actor_label": "ArcheryGameGuy",
+      "fee_expressions": [
+        "$0014"
+      ],
+      "fee_model": "fixed",
+      "fee_source_lines": [
+        240
+      ],
+      "fee_table_label": null,
+      "fee_values": [
+        20
+      ],
+      "interaction_id": "archery-game-entry",
+      "interaction_kind": "minigame-entry",
+      "outcome_label": "Sprite_InitializeSecondaryItemMinigame",
+      "outcome_source_lines": [
+        232,
+        240
+      ],
+      "payment_source_lines": [
+        240
+      ],
+      "source_annotation_line": 225,
+      "source_file": "sprite_archery_game_guy.asm",
+      "source_label": "ArcheryGameGuy_RunGame",
+      "source_range_annotation": "$0282D4-$0283CE BRANCH LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    },
+    {
+      "actor_label": "LakeHyliaFairy",
+      "fee_expressions": [
+        "5",
+        "20",
+        "25",
+        "50"
+      ],
+      "fee_model": "selected-price-table",
+      "fee_source_lines": [
+        399
+      ],
+      "fee_table_label": "FairyPond.prices",
+      "fee_values": [
+        5,
+        20,
+        25,
+        50
+      ],
+      "interaction_id": "lake-hylia-fairy-donation",
+      "interaction_kind": "donation",
+      "outcome_label": "adds the selected amount to the happiness-pond total",
+      "outcome_source_lines": [
+        489,
+        494
+      ],
+      "payment_source_lines": [
+        485
+      ],
+      "source_annotation_line": 475,
+      "source_file": "sprite_ponds.asm",
+      "source_label": "LakeHyliaFairy_AcceptDonation",
+      "source_range_annotation": "$03459F-$034602 JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+    }
+  ],
+  "reward_gates": [
+    {
+      "condition_expressions": [
+        "LDA.l $7FFE01 : CMP.b #$19 : BCC DiggingGameGuy_GiveItem_nothing",
+        "LDA.l $7FFE00 : BNE DiggingGameGuy_GiveItem_nothing",
+        "JSL.l GetRandomInt : AND.b #$03 : BNE DiggingGameGuy_GiveItem_nothing",
+        "LDA.b #$EB : STA.l $7FFE00"
+      ],
+      "condition_source_lines": [
+        287,
+        288,
+        289,
+        290
+      ],
+      "gate_id": "digging-game-heart-piece",
+      "minimum_hole_count": 25,
+      "random_mask_expression": "#$03",
+      "required_state_expression": "$7FFE00 == 0",
+      "reward_flag_write_expression": "LDA.b #$EB : STA.l $7FFE00",
+      "source_annotation_line": 275,
+      "source_file": "sprite_digging_game_guy.asm",
+      "source_label": "DiggingGameGuy_GiveItem_heart_piece",
+      "source_range_annotation": "$0EFD90-$0EFDAB JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "successful_random_value": 0
+    }
+  ],
+  "reward_tables": [
+    {
+      "entries": [
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_basic",
+          "source_address_annotation": "$FD8A",
+          "source_comment": "0x00 - $FD8A",
+          "source_line": 226,
+          "table_index": 0
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_basic",
+          "source_address_annotation": "$FD8A",
+          "source_comment": "0x01 - $FD8A",
+          "source_line": 227,
+          "table_index": 1
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_basic",
+          "source_address_annotation": "$FD8A",
+          "source_comment": "0x02 - $FD8A",
+          "source_line": 228,
+          "table_index": 2
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_basic",
+          "source_address_annotation": "$FD8A",
+          "source_comment": "0x03 - $FD8A",
+          "source_line": 229,
+          "table_index": 3
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_heart_piece",
+          "source_address_annotation": "$FDAC",
+          "source_comment": "0x04 - $FDAC",
+          "source_line": 230,
+          "table_index": 4
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_nothing",
+          "source_address_annotation": "$FD8F",
+          "source_comment": "0x05 - $FD8F",
+          "source_line": 231,
+          "table_index": 5
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_nothing",
+          "source_address_annotation": "$FD8F",
+          "source_comment": "0x06 - $FD8F",
+          "source_line": 232,
+          "table_index": 6
+        },
+        {
+          "handler_label": "DiggingGameGuy_GiveItem_nothing",
+          "source_address_annotation": "$FD8F",
+          "source_comment": "0x07 - $FD8F",
+          "source_line": 233,
+          "table_index": 7
+        }
+      ],
+      "entry_count": 8,
+      "source_annotation_line": 218,
+      "source_file": "sprite_digging_game_guy.asm",
+      "source_label": "DiggingGameGuy_AttemptPrizeSpawn",
+      "source_range_annotation": "$0EFD5C-$0EFD81 LOCAL JUMP LOCATION",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_id": "digging-game-random-reward-dispatch",
+      "table_kind": "jump-table"
+    },
+    {
+      "entries": [
+        {
+          "expression": "$DB",
+          "source_comment": "Red Rupee",
+          "source_line": 253,
+          "table_index": 0
+        },
+        {
+          "expression": "$DA",
+          "source_comment": "Blue Rupee",
+          "source_line": 254,
+          "table_index": 1
+        },
+        {
+          "expression": "$D9",
+          "source_comment": "Green Rupee",
+          "source_line": 255,
+          "table_index": 2
+        },
+        {
+          "expression": "$DF",
+          "source_comment": "Small magic refill",
+          "source_line": 256,
+          "table_index": 3
+        }
+      ],
+      "entry_count": 4,
+      "source_annotation_line": 238,
+      "source_file": "sprite_digging_game_guy.asm",
+      "source_label": "Pool_DiggingGameGuy_GiveItem.basic_types",
+      "source_range_annotation": "$0EFD82-$0EFD89 DATA",
+      "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d",
+      "table_id": "digging-game-basic-reward-pool",
+      "table_kind": "item-pool"
+    }
+  ],
+  "source_files": [
+    "sprite_archery_game_guy.asm",
+    "sprite_digging_game_guy.asm",
+    "sprite_fortune_teller.asm",
+    "sprite_kiki.asm",
+    "sprite_ponds.asm",
+    "sprite_zora_king.asm"
+  ],
+  "source_revision": "347c23f9fc019c72d32da537c9cb235f468d021d"
+}

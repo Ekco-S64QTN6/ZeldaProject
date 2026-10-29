@@ -93,6 +93,33 @@ uv run zelda-suite audit-special-shop-transactions
 
 The audit cross-references only receipt selectors `$28` and `$16` against raw `item-receipt-layout` entries and their graphics comment annotations. It reports no canonical semantic item IDs, room-specific shop stock, runtime price validation, or verified ROM offsets. The Super Bomb reward remains a separate state-flag/tagalong action. See the [export schema](./special-shop-transactions-export.schema.json) and [audit schema](./special-shop-transactions-audit.schema.json).
 
+## Paid overworld interactions
+
+The registered [`paid-overworld-interactions`](../../data/extracted/paid-overworld-interactions.json)
+export records seven fee-bearing interactions from six pinned source files.
+Fixed fees are 80 rupees for Digging Game entry, 500 for Zora King’s Flippers,
+10 and 100 for Kiki’s two transactions, and 20 for Archery. Two source tables
+provide variable fees: Fortune Teller readings (10/15/20/30) and Lake Hylia
+Fairy donations (5/20/25/50).
+
+The audit also preserves the Digging Game’s eight-choice reward table, the
+four-item raw reward pool (`$DB/$DA/$D9/$DF` with source comments), and a
+separate heart-piece flag/random gate beginning at 25 holes. It does not
+convert these comments into a runtime probability or canonical item ID.
+
+Run:
+
+```bash
+uv run zelda-suite audit-paid-overworld-interactions
+uv run zelda-suite audit-paid-overworld-interactions --output /tmp/paid-overworld-audit.json
+```
+
+See [the export schema](./paid-overworld-interactions-export.schema.json) and
+[the audit schema](./paid-overworld-interactions-audit.schema.json). Runtime fee
+behavior, reward probabilities, source offsets, and complete editable commerce
+semantics remain open.
+
+
 ## Receive-item graphics comment annotations
 
 The registered `item-receipt-graphics-indices` table has 76 dense entries, indexed
