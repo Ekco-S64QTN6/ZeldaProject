@@ -1,9 +1,9 @@
 """Smoke tests for the bundled read-only ROM verification script."""
 from __future__ import annotations
 
+from pathlib import Path
 import shutil
 import subprocess
-from pathlib import Path
 
 import pytest
 
