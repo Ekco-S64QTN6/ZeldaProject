@@ -81,7 +81,7 @@ user-facing room set only after corroborating with runtime/tool behavior.
 
 ## Committed source-only pointer inventory
 
-The source declarations are now committed as [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) and registered under the name `dungeon-room-object-pointers`. This version-1 `zelda-suite-pointer-table` export contains 320 entries and retains the original index, source expression, parsed target label/addend, source line, and pinned revision. The separate `verify-dungeon-room-pointers` command derives candidate file offsets from registered payload source comments and compares the corresponding three-byte pointer values with a local ROM. The comments remain candidates until the user runs that check on their local image; no playable-room set is inferred.
+The source declarations are now committed as [`data/extracted/dungeon-room-object-pointers.json`](../../data/extracted/dungeon-room-object-pointers.json) and registered under the name `dungeon-room-object-pointers`. This version-1 `zelda-suite-pointer-table` export contains 320 entries and retains the original index, source expression, parsed target label/addend, source line, and pinned revision. The separate `verify-dungeon-room-pointers` command compares three-byte pointer values against target offsets computed from the first annotated start in each payload inventory plus sequential declared payload sizes. It preserves conflicting raw offset comments as findings in report v2 rather than rewriting them; no playable-room set is inferred.
 
 The export preserves these audit fields:
 
@@ -126,10 +126,11 @@ verification.
 1. Add fixtures from a locally supplied clean US ROM or approved local test
    setup. Never commit ROMs or partial ROM slices.
 2. Run `zelda-suite verify-dungeon-room-pointers "$ROM"` to compare all 320
-   three-byte pointer entries with the candidate CPU addresses computed from the
-   payload inventory's source-commented start offsets.
-3. Investigate any mismatches before changing annotations; this check does not
-   verify the payload contents or the correctness of the candidate offsets.
+   three-byte pointer entries with candidate CPU addresses computed from
+   sequential source-order payload layout.
+3. Review any pointer mismatches and the separate source-offset findings before
+   changing annotations. This check does not verify payload bytes, ROM
+   provenance, or the canonical correctness of the first offset in each bank.
 4. Establish which indices are actually playable and how empty/shared targets
    behave before exposing a room-editing API. Preserve source indices as-is.
 
@@ -199,7 +200,7 @@ It is strictly read-only and deliberately reports
 `provenance_verified: false`, `payload_bytes_verified: false`, and
 `playable_room_set_resolved: false`. Run it against a local image and review
 mismatches; a successful comparison does not independently prove that the
-source-commented target offsets are canonical.
+sequential payload-layout candidates are canonical.
 
 
 ## Cross-reference committed pointer and payload inventories
