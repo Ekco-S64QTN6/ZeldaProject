@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 PAID_OVERWORLD_INTERACTIONS_FORMAT = "zelda-suite-paid-overworld-interactions"
 PAID_OVERWORLD_SOURCE_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
@@ -452,7 +453,6 @@ def parse_paid_overworld_interactions(
     ponds_file = "sprite_ponds.asm"
     ponds_lines = lines_by_file[ponds_file]
     pond_label, pond_open, pond_close = _find_block(ponds_lines, "FairyPond")
-    pond_range, pond_range_line = _range_annotation(ponds_lines, pond_label, "FairyPond")
     prices_local = [
         index for index in range(pond_open + 1, pond_close)
         if _source_code(ponds_lines[index]) == ".prices"
