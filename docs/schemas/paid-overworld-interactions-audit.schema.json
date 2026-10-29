@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Zelda Suite paid overworld interactions audit",
+  "description": "Summary of source-coded fee-bearing overworld interactions and the Digging Game's source-commented reward paths. This audit does not verify ROM offsets, runtime prices, or reward probability.",
+  "type": "object",
+  "required": [
+    "format", "format_version", "registry", "asset_name", "source_revision",
+    "source_files", "transactions", "digging_game_rewards", "summary", "evidence"
+  ],
+  "properties": {
+    "format": { "const": "zelda-suite-paid-overworld-interactions-audit" },
+    "format_version": { "const": 1 },
+    "registry": { "type": "string", "minLength": 1 },
+    "asset_name": { "type": "string", "minLength": 1 },
+    "source_revision": { "type": "string", "minLength": 1 },
+    "source_files": { "type": "array", "minItems": 6, "maxItems": 6, "items": { "type": "string" } },
+    "transactions": {
+      "type": "array", "minItems": 7, "maxItems": 7,
+      "items": { "$ref": "#/$defs/transaction" }
+    },
+    "digging_game_rewards": { "$ref": "#/$defs/digging_rewards" },
+    "summary": { "$ref": "#/$defs/summary" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "transaction": {
+      "type": "object",
+      "required": [
+        "interaction_id", "actor_label", "interaction_kind", "fee_model",
+        "fee_values", "fee_expressions", "source_file", "source_label",
+        "source_range_annotation", "outcome_label"
+      ],
+      "properties": {
+        "interaction_id": { "type": "string", "minLength": 1 },
+        "actor_label": { "type": "string", "minLength": 1 },
+        "interaction_kind": { "type": "string", "minLength": 1 },
+        "fee_model": { "enum": ["fixed", "selected-price-table"] },
+        "fee_values": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 1 } },
+        "fee_expressions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "source_file": { "type": "string", "minLength": 1 },
+        "source_label": { "type": "string", "minLength": 1 },
+        "source_range_annotation": { "type": "string", "minLength": 1 },
+        "outcome_label": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "digging_rewards": {
+      "type": "object",
+      "required": ["dispatch_table_id", "dispatch_entries", "basic_reward_pool_id", "basic_reward_pool", "heart_piece_gate"],
+      "properties": {
+        "dispatch_table_id": { "const": "digging-game-random-reward-dispatch" },
+        "dispatch_entries": { "type": "array", "minItems": 8, "maxItems": 8, "items": { "$ref": "#/$defs/dispatch_entry" } },
+        "basic_reward_pool_id": { "const": "digging-game-basic-reward-pool" },
+        "basic_reward_pool": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/pool_entry" } },
+        "heart_piece_gate": { "$ref": "#/$defs/reward_gate" }
+      },
+      "additionalProperties": false
+    },
+    "dispatch_entry": {
+      "type": "object",
+      "required": ["table_index", "handler_label", "source_address_annotation", "source_comment", "source_line"],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "handler_label": { "type": "string", "minLength": 1 },
+        "source_address_annotation": { "type": "string", "minLength": 1 },
+        "source_comment": { "type": "string", "minLength": 1 },
+        "source_line": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "pool_entry": {
+      "type": "object",
+      "required": ["table_index", "expression", "source_comment", "source_line"],
+      "properties": {
+        "table_index": { "type": "integer", "minimum": 0 },
+        "expression": { "type": "string", "minLength": 1 },
+        "source_comment": { "type": "string", "minLength": 1 },
+        "source_line": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "reward_gate": {
+      "type": "object",
+      "required": [
+        "gate_id", "source_file", "source_label", "source_range_annotation",
+        "source_annotation_line", "condition_source_lines", "condition_expressions",
+        "minimum_hole_count", "required_state_expression", "random_mask_expression",
+        "successful_random_value", "reward_flag_write_expression", "source_revision"
+      ],
+      "properties": {
+        "gate_id": { "const": "digging-game-heart-piece" },
+        "source_file": { "type": "string", "minLength": 1 },
+        "source_label": { "type": "string", "minLength": 1 },
+        "source_range_annotation": { "type": "string", "minLength": 1 },
+        "source_annotation_line": { "type": "integer", "minimum": 1 },
+        "condition_source_lines": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "integer", "minimum": 1 } },
+        "condition_expressions": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "string", "minLength": 1 } },
+        "minimum_hole_count": { "const": 25 },
+        "required_state_expression": { "const": "$7FFE00 == 0" },
+        "random_mask_expression": { "const": "#$03" },
+        "successful_random_value": { "const": 0 },
+        "reward_flag_write_expression": { "type": "string", "minLength": 1 },
+        "source_revision": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "interaction_count", "fixed_fee_interaction_count",
+        "selected_price_table_interaction_count", "unique_fee_value_count",
+        "minimum_fee_value", "maximum_fee_value",
+        "digging_game_dispatch_entry_count", "digging_game_basic_reward_count",
+        "digging_game_minimum_hole_count_for_heart_piece_gate"
+      ],
+      "properties": {
+        "interaction_count": { "const": 7 },
+        "fixed_fee_interaction_count": { "const": 5 },
+        "selected_price_table_interaction_count": { "const": 2 },
+        "unique_fee_value_count": { "const": 10 },
+        "minimum_fee_value": { "const": 5 },
+        "maximum_fee_value": { "const": 500 },
+        "digging_game_dispatch_entry_count": { "const": 8 },
+        "digging_game_basic_reward_count": { "const": 4 },
+        "digging_game_minimum_hole_count_for_heart_piece_gate": { "const": 25 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "source_only", "rom_bytes_read", "source_range_annotations_verified",
+        "fee_behavior_runtime_verified", "reward_probability_runtime_verified",
+        "item_value_names_resolved", "payment_semantics_runtime_verified"
+      ],
+      "properties": {
+        "source_only": { "const": true },
+        "rom_bytes_read": { "const": false },
+        "source_range_annotations_verified": { "const": false },
+        "fee_behavior_runtime_verified": { "const": false },
+        "reward_probability_runtime_verified": { "const": false },
+        "item_value_names_resolved": { "const": false },
+        "payment_semantics_runtime_verified": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

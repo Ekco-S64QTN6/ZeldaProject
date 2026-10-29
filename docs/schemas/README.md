@@ -31,6 +31,8 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Potion-shop transaction audit](./potion-shop-transactions-audit.schema.json) — version 1 cross-reference from potion receipt selectors to raw receive-item slots and comment annotations.
 - [Special-shop transaction export](./special-shop-transactions-export.schema.json) — version 1 source inventory for Bomb Shop Bomb/Super Bomb and Bottle Vendor Bottle Sale, with the non-receipt Super Bomb reward represented separately.
 - [Special-shop transaction audit](./special-shop-transactions-audit.schema.json) — version 1 cross-reference from the two actual receipt selectors to raw receive-item slots and comment annotations.
+- [Paid overworld interactions export](./paid-overworld-interactions-export.schema.json) — version 1 source inventory for seven fixed/table-based rupee interactions, including the Digging Game reward dispatch and separate heart-piece gate.
+- [Paid overworld interactions audit](./paid-overworld-interactions-audit.schema.json) — version 1 source-only fee summary and Digging Game reward evidence.
 - [Raw data-table JSON export](./data-table-export.schema.json) — version 1 schema for the `db`/`dw`/`dl` expressions emitted by `zelda-suite inspect-data-table`.
 - [Raw data-table JSON export with comments](./data-table-export-v2.schema.json) — version 2 schema for `zelda-suite inspect-data-table --include-comments`; adds the original inline comment to each entry.
 - [Dictionary fragment inventory](./dictionary-inventory-export.schema.json) — version 1 metadata schema for `zelda-suite inspect-text-dictionary`.
@@ -49,7 +51,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 
 ## Committed source-derived data
 
-- [`manifest.json`](../../data/extracted/manifest.json) — registry of the thirty-nine named source exports and their expected formats, counts, and pinned revision.
+- [`manifest.json`](../../data/extracted/manifest.json) — registry of the forty named source exports and their expected formats, counts, and pinned revision.
 - [`data/extracted/crystal-maiden-message-ids.json`](../../data/extracted/crystal-maiden-message-ids.json) — nine source-declared `dw` message IDs cross-referenced to the text-message index; linkage to the routine's local `.message_ids` remains unresolved.
 - [`data/extracted/crystal-maiden-palette-words.json`](../../data/extracted/crystal-maiden-palette-words.json) — eight raw 16-bit words, with linkage to the routine's local `.palette` reference unresolved.
 - [`data/extracted/crystal-switch-palette-selectors.json`](../../data/extracted/crystal-switch-palette-selectors.json) — two source-derived selector bytes, not decoded color values or ROM-verified bytes.
@@ -74,6 +76,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [`data/extracted/dungeon-chest-data.json`](../../data/extracted/dungeon-chest-data.json) — 168 packed chest records with raw item/room fields and source-commented big-chest flags; range offsets remain unverified.
 - [`data/extracted/shop-item-handlers.json`](../../data/extracted/shop-item-handlers.json) — seven standard shop purchase handlers, with source-coded price bytes and positional receipt indexes; address annotations remain unverified.
 - [`data/extracted/special-shop-transactions.json`](../../data/extracted/special-shop-transactions.json) — three Bomb Shop/Bottle Vendor purchase records, including a Super Bomb flag/tagalong reward without a receipt selector.
+- [`data/extracted/paid-overworld-interactions.json`](../../data/extracted/paid-overworld-interactions.json) — seven paid interactions across six source files, with the Digging Game’s eight-choice reward dispatch, four-item reward pool, and heart-piece gate.
 - [`data/extracted/oam-buffer-position-table.json`](../../data/extracted/oam-buffer-position-table.json) — 54 OAM allocator words: six limits and 48 fallback entries grouped into six source-derived regions; not runtime- or ROM-verified.
 - [`data/extracted/dungeon-room-payloads-bank03.json`](../../data/extracted/dungeon-room-payloads-bank03.json) — 34 Bank03 room `incbin` declarations with source start offsets and size annotations.
 - [`data/extracted/dungeon-room-payload-inventory.json`](../../data/extracted/dungeon-room-payload-inventory.json) — 75 Bank0A room `incbin` declarations with start-offset and size annotations.
@@ -111,7 +114,7 @@ All exports retain pinned source provenance; see [reproduction instructions](../
 
 - `overworld.md` — full editable map schema (tiles, layers, palettes, warps); the current file is discovery-only.
 - `dungeons.md` — rooms, headers, objects, doors, chests.
-- [`items.md`](./items.md) — source-only packed chest, standard/potion/special-shop purchase transactions, receive-item comment-ID discrepancy, and remaining gaps before a complete editable item/chest/shop schema.
+- [`items.md`](./items.md) — source-only packed chest, standard/potion/special-shop purchase transactions, paid overworld interactions, receive-item comment-ID discrepancy, and remaining gaps before a complete editable item/chest/shop schema.
 - `text.md` — message table, encoding, compression.
 - `sprites.md` — sprite types, placements, gfx banks.
 - `audio.md` — source discovery for music pointer and payload inventories; semantic audio schema and payload decoding remain future work.

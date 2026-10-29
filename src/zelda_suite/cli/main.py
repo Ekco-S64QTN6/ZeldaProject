@@ -24,6 +24,7 @@ from zelda_suite.extract import (
     MusicAssetAuditError,
     OAMAllocationAuditError,
     OverworldPayloadPairError,
+    PaidOverworldInteractionsAuditError,
     PotionShopTransactionsAuditError,
     ROMImageInspectionError,
     ROMTableVerificationError,
@@ -41,6 +42,7 @@ from zelda_suite.extract import (
     audit_item_receipt_annotations,
     audit_music_assets,
     audit_oam_allocation,
+    audit_paid_overworld_interactions,
     audit_potion_shop_transactions,
     audit_shop_item_handlers,
     audit_special_shop_transactions,
@@ -58,6 +60,7 @@ from zelda_suite.extract import (
     parse_mixed_data_table,
     parse_music_track_index,
     parse_overworld_hidden_item_source,
+    parse_paid_overworld_interactions,
     parse_potion_shop_transactions,
     parse_shop_item_handlers,
     parse_source_pointer_table,
@@ -2372,6 +2375,163 @@ def audit_special_shop_transactions_command(
         f"transactions={summary['transaction_count']}, "
         f"receipt_slots={summary['distinct_receipt_item_index_count']}, "
         f"non_receipt_rewards={summary['non_receipt_reward_count']}"
+    )
+
+
+
+@cli.command(name="inspect-paid-overworld-interactions")
+@click.argument(
+    "archery_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "digging_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "fortune_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "kiki_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "ponds_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument(
+    "zora_source",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--source-revision",
+    required=True,
+    help="Pinned disassembly revision to record in the export.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write JSON to a new file instead of stdout; existing files are preserved.",
+)
+def inspect_paid_overworld_interactions(
+    archery_source: Path,
+    digging_source: Path,
+    fortune_source: Path,
+    kiki_source: Path,
+    ponds_source: Path,
+    zora_source: Path,
+    source_revision: str,
+    output: Path | None,
+) -> None:
+    """Export source-coded rupee fees and Digging Game reward paths."""
+    source_paths = {
+        "sprite_archery_game_guy.asm": archery_source,
+        "sprite_digging_game_guy.asm": digging_source,
+        "sprite_fortune_teller.asm": fortune_source,
+        "sprite_kiki.asm": kiki_source,
+        "sprite_ponds.asm": ponds_source,
+        "sprite_zora_king.asm": zora_source,
+    }
+    try:
+        sources = {
+            name: path.read_text(encoding="utf-8")
+            for name, path in source_paths.items()
+        }
+        payload = parse_paid_overworld_interactions(
+            sources,
+            source_revision=source_revision,
+        )
+        validate_source_export(payload)
+    except (OSError, UnicodeError, ValueError, AssetLoadError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        payload,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    click.echo(
+        f"Wrote {payload['interaction_count']} paid overworld interactions to {output}; "
+        "fees and source reward paths remain unverified against ROM execution"
+    )
+
+
+@cli.command(name="audit-paid-overworld-interactions")
+@click.option(
+    "--registry",
+    "registry_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Asset manifest (defaults to data/extracted/manifest.json).",
+)
+@click.option(
+    "--asset",
+    "asset_name",
+    default="paid-overworld-interactions",
+    show_default=True,
+    help="Registered paid-overworld interaction asset.",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, exists=False, file_okay=True, dir_okay=False),
+    default=None,
+    help="Write the audit JSON to a new file instead of stdout.",
+)
+def audit_paid_overworld_interactions_command(
+    registry_path: Path | None,
+    asset_name: str,
+    output: Path | None,
+) -> None:
+    """Summarize source-coded paid interactions and the Digging Game reward table."""
+    try:
+        report = audit_paid_overworld_interactions(
+            registry_path or "data/extracted/manifest.json",
+            asset_name=asset_name,
+        )
+    except (PaidOverworldInteractionsAuditError, AssetLoadError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    rendered = json.dumps(
+        report,
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+        allow_nan=False,
+    ) + "\n"
+    if output is None:
+        click.echo(rendered, nl=False)
+        return
+    try:
+        with output.open("x", encoding="utf-8", newline="\n") as output_file:
+            output_file.write(rendered)
+    except FileExistsError as exc:
+        raise click.ClickException(
+            f"refusing to overwrite existing output: {output}"
+        ) from exc
+    except OSError as exc:
+        raise click.ClickException(f"could not write {output}: {exc}") from exc
+    summary = report["summary"]
+    click.echo(
+        f"Wrote paid-overworld audit to {output}; "
+        f"interactions={summary['interaction_count']}, "
+        f"fee_range={summary['minimum_fee_value']}-{summary['maximum_fee_value']}, "
+        f"digging_reward_slots={summary['digging_game_dispatch_entry_count']}"
     )
 
 
