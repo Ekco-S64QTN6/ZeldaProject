@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Zelda Suite dungeon-room pointer verification",
-  "description": "Read-only byte comparisons for the 320-entry long-pointer table using source-commented room payload offsets as candidate targets.",
+  "description": "Read-only byte comparisons for the 320-entry long-pointer table using sequential source-order payload-layout candidates. Original source-comment offsets are retained and conflicting comments are reported separately.",
   "type": "object",
   "required": [
     "format",
@@ -12,6 +12,9 @@
     "entries",
     "targets",
     "mismatches",
+    "source_offset_findings",
+    "source_layout_method",
+    "source_comment_offsets_rewritten",
     "rom_modified",
     "payload_bytes_verified",
     "playable_room_set_resolved"
@@ -21,7 +24,7 @@
       "const": "zelda-suite-dungeon-room-pointer-verification"
     },
     "format_version": {
-      "const": 1
+      "const": 2
     },
     "rom": {
       "type": "object",
@@ -33,11 +36,23 @@
         "provenance_verified"
       ],
       "properties": {
-        "filename": {"type": "string", "minLength": 1},
-        "size_bytes": {"const": 1048576},
-        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "header_assessment": {"const": "headerless-by-expected-size"},
-        "provenance_verified": {"const": false}
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "size_bytes": {
+          "const": 1048576
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "header_assessment": {
+          "const": "headerless-by-expected-size"
+        },
+        "provenance_verified": {
+          "const": false
+        }
       },
       "additionalProperties": false
     },
@@ -55,18 +70,44 @@
         "empty_target_entry_count",
         "source_payload_label_count",
         "checked_comparisons",
-        "mismatch_count"
+        "mismatch_count",
+        "source_comment_offset_mismatch_count"
       ],
       "properties": {
-        "label": {"const": "RoomData_ObjectDataPointers"},
-        "file_offset": {"const": 1015808},
-        "entry_width_bytes": {"const": 3},
-        "entry_count": {"const": 320},
-        "unique_target_label_count": {"const": 263},
-        "empty_target_entry_count": {"const": 39},
-        "source_payload_label_count": {"const": 266},
-        "checked_comparisons": {"const": 320},
-        "mismatch_count": {"type": "integer", "minimum": 0, "maximum": 320}
+        "label": {
+          "const": "RoomData_ObjectDataPointers"
+        },
+        "file_offset": {
+          "const": 1015808
+        },
+        "entry_width_bytes": {
+          "const": 3
+        },
+        "entry_count": {
+          "const": 320
+        },
+        "unique_target_label_count": {
+          "const": 263
+        },
+        "empty_target_entry_count": {
+          "const": 39
+        },
+        "source_payload_label_count": {
+          "const": 266
+        },
+        "checked_comparisons": {
+          "const": 320
+        },
+        "mismatch_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 320
+        },
+        "source_comment_offset_mismatch_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 266
+        }
       },
       "additionalProperties": false
     },
@@ -89,15 +130,37 @@
           "expected_cpu_address",
           "expected_hex",
           "actual_hex",
-          "status"
+          "status",
+          "target_source_comment_offset"
         ],
         "properties": {
-          "table_index": {"type": "integer", "minimum": 0, "maximum": 319},
-          "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
-          "pointer_expression": {"type": "string", "minLength": 1},
-          "target_label": {"type": "string", "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"},
-          "is_empty_target": {"type": "boolean"},
-          "target_source_file": {"enum": ["Bank03.asm", "Bank0A.asm", "Bank1F.asm"]},
+          "table_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 319
+          },
+          "pointer_entry_file_offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pointer_expression": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_label": {
+            "type": "string",
+            "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"
+          },
+          "is_empty_target": {
+            "type": "boolean"
+          },
+          "target_source_file": {
+            "enum": [
+              "Bank03.asm",
+              "Bank0A.asm",
+              "Bank1F.asm"
+            ]
+          },
           "target_source_asset": {
             "enum": [
               "dungeon-room-payloads-bank03",
@@ -105,12 +168,39 @@
               "dungeon-room-payloads-bank1f"
             ]
           },
-          "target_source_file_offset": {"type": "integer", "minimum": 0},
-          "target_declared_size_bytes": {"type": "integer", "minimum": 1},
-          "expected_cpu_address": {"type": "string", "pattern": "^\\$[0-9A-F]{6}$"},
-          "expected_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
-          "actual_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
-          "status": {"enum": ["pass", "fail"]}
+          "target_source_file_offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "target_declared_size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expected_cpu_address": {
+            "type": "string",
+            "pattern": "^\\$[0-9A-F]{6}$"
+          },
+          "expected_hex": {
+            "type": "string",
+            "pattern": "^[0-9A-F]{6}$"
+          },
+          "actual_hex": {
+            "type": "string",
+            "pattern": "^[0-9A-F]{6}$"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail"
+            ]
+          },
+          "target_source_comment_offset": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
         },
         "additionalProperties": false
       }
@@ -125,13 +215,23 @@
           "label",
           "source_file",
           "source_asset",
-          "source_file_offset_start",
           "declared_size_bytes",
-          "pointer_indices"
+          "pointer_indices",
+          "source_comment_file_offset",
+          "computed_layout_file_offset_start"
         ],
         "properties": {
-          "label": {"type": "string", "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"},
-          "source_file": {"enum": ["Bank03.asm", "Bank0A.asm", "Bank1F.asm"]},
+          "label": {
+            "type": "string",
+            "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"
+          },
+          "source_file": {
+            "enum": [
+              "Bank03.asm",
+              "Bank0A.asm",
+              "Bank1F.asm"
+            ]
+          },
           "source_asset": {
             "enum": [
               "dungeon-room-payloads-bank03",
@@ -139,11 +239,28 @@
               "dungeon-room-payloads-bank1f"
             ]
           },
-          "source_file_offset_start": {"type": "integer", "minimum": 0},
-          "declared_size_bytes": {"type": "integer", "minimum": 1},
+          "declared_size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
           "pointer_indices": {
             "type": "array",
-            "items": {"type": "integer", "minimum": 0, "maximum": 319}
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 319
+            }
+          },
+          "source_comment_file_offset": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "computed_layout_file_offset_start": {
+            "type": "integer",
+            "minimum": 0
           }
         },
         "additionalProperties": false
@@ -162,25 +279,156 @@
           "expected_cpu_address",
           "expected_hex",
           "actual_hex",
-          "reason"
+          "reason",
+          "target_source_comment_offset"
         ],
         "properties": {
-          "table_index": {"type": "integer", "minimum": 0, "maximum": 319},
-          "pointer_entry_file_offset": {"type": "integer", "minimum": 0},
-          "pointer_expression": {"type": "string", "minLength": 1},
-          "target_label": {"type": "string", "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"},
-          "target_source_file_offset": {"type": "integer", "minimum": 0},
-          "expected_cpu_address": {"type": "string", "pattern": "^\\$[0-9A-F]{6}$"},
-          "expected_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
-          "actual_hex": {"type": "string", "pattern": "^[0-9A-F]{6}$"},
-          "reason": {"type": "string", "minLength": 1}
+          "table_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 319
+          },
+          "pointer_entry_file_offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "pointer_expression": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_label": {
+            "type": "string",
+            "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"
+          },
+          "target_source_file_offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_cpu_address": {
+            "type": "string",
+            "pattern": "^\\$[0-9A-F]{6}$"
+          },
+          "expected_hex": {
+            "type": "string",
+            "pattern": "^[0-9A-F]{6}$"
+          },
+          "actual_hex": {
+            "type": "string",
+            "pattern": "^[0-9A-F]{6}$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_source_comment_offset": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
         },
         "additionalProperties": false
       }
     },
-    "rom_modified": {"const": false},
-    "payload_bytes_verified": {"const": false},
-    "playable_room_set_resolved": {"const": false}
+    "rom_modified": {
+      "const": false
+    },
+    "payload_bytes_verified": {
+      "const": false
+    },
+    "playable_room_set_resolved": {
+      "const": false
+    },
+    "source_offset_findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source_offset_finding"
+      }
+    },
+    "source_layout_method": {
+      "const": "first source-commented offset per inventory plus sequential declared payload sizes"
+    },
+    "source_comment_offsets_rewritten": {
+      "const": false
+    }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "source_offset_finding": {
+      "type": "object",
+      "required": [
+        "code",
+        "severity",
+        "source_file",
+        "source_asset",
+        "source_line",
+        "label",
+        "incbin_path",
+        "source_comment_file_offset",
+        "computed_layout_file_offset_start",
+        "declared_size_bytes",
+        "offset_delta_bytes"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "source_comment_offset_missing",
+            "source_comment_offset_disagrees_with_sequential_layout"
+          ]
+        },
+        "severity": {
+          "const": "warning"
+        },
+        "source_file": {
+          "enum": [
+            "Bank03.asm",
+            "Bank0A.asm",
+            "Bank1F.asm"
+          ]
+        },
+        "source_asset": {
+          "enum": [
+            "dungeon-room-payloads-bank03",
+            "dungeon-room-payload-inventory",
+            "dungeon-room-payloads-bank1f"
+          ]
+        },
+        "source_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "label": {
+          "type": "string",
+          "pattern": "^RoomDataTiles_[A-Za-z0-9_]+$"
+        },
+        "incbin_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_comment_file_offset": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "computed_layout_file_offset_start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "declared_size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "offset_delta_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
 }

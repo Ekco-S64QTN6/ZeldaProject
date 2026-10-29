@@ -271,8 +271,12 @@ coordinates.
 The read-only `verify-dungeon-room-pointers` command compares the 320
 three-byte entries at source-commented file offset `$0F8000` with candidate
 target addresses derived from the three registered room-payload inventories.
-Each source-commented target offset is mapped to its canonical low-bank LoROM
-CPU address and encoded as a three-byte little-endian value for comparison.
+Within each inventory, it anchors the source-order layout at the first
+source-commented start offset and advances by each declaration's positive
+source-declared payload size. It reports any later source-commented offsets that
+disagree with that computed layout; comments are preserved and never rewritten.
+The format-version-2 report schema is
+[`dungeon-room-pointer-verification.schema.json`](./schemas/dungeon-room-pointer-verification.schema.json).
 
 ```bash
 TEST_DIR="${TEST_DIR:-$(mktemp -d)}"
@@ -287,12 +291,19 @@ source-offset candidate and pointer indices for each of the 266 payload labels.
 The three labels not referenced by the pointer table are included with an empty
 index list.
 
-A nonzero exit status means pointer bytes mismatch the candidate address
-calculated from source-commented offsets; the JSON report is still written.
-This operation does not check any room payload bytes, prove the comments give
-canonical offsets, identify playable rooms, or resolve the 296-versus-320 room
-count discrepancy. Review mismatches rather than editing offsets to force a
-pass. The command never writes ROM bytes.
+A nonzero exit status means pointer bytes mismatch the sequential
+payload-layout candidate; the JSON report is still written. The report keeps
+both the source-commented and computed offsets for each target and includes
+`source_offset_findings` for missing or conflicting comments. For the pinned
+source snapshot, six comments currently disagree with the sequential layout:
+`RoomDataTiles_00E1`, `RoomDataTiles_0011`, `RoomDataTiles_0050`,
+`RoomDataTiles_00F9`, `RoomDataTiles_011C`, and `RoomDataTiles_0015`.
+This is source-annotation evidence, not proof of ROM provenance. Re-run the
+command against your authorized local image after updating the repository and
+inspect both the byte-mismatch and source-offset-finding lists. This operation
+does not check room payload bytes, identify playable rooms, or resolve the
+296-versus-320 room count discrepancy. Do not rewrite comments to force a pass.
+The command never writes ROM bytes.
 
 ## 8. Run the ROM-independent regression suite
 

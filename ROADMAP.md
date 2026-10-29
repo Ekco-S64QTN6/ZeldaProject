@@ -197,27 +197,35 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Complete ROM provenance validation and external-tool smoke tests. A
-   user-run report bundle on 2026-10-29 reported 662 scalar-table values checked
-   with zero mismatches and 98 unresolved entries; all 550 overworld hidden-item
-   spans matched; all 36,363 checked text-message bytes matched (seven source
-   warnings); six of 320 dungeon-room pointer candidates mismatched; and one of
-   98 text-dictionary pointer candidates mismatched, alongside the known
-   `.You` source-extent warning. The local image was 1 MiB, but no trusted
-   canonical hash/provenance was established. Inspect the saved mismatch details
-   before changing offsets or source declarations. On Arch Linux, use the
-   verified generic YAZE release archive, inspect `z3ed --help`, then perform
-   only a confirmed read-only ROM operation. Keep ROM provenance and the
-   z3cli/model-endpoint gates open until independently resolved.
-2. Resolve the six dungeon-room pointer discrepancies and the single
-   text-dictionary pointer discrepancy from the 2026-10-29 report bundle.
-   Compare each report's table index, pointer entry offset, expected/actual
-   bytes, target label, and source-commented target offset. First distinguish a
-   wrong candidate source offset, an unusual target/addend, and a different ROM
-   revision; do not adjust offsets to force a pass. The dictionary `.You`
-   source-extent warning (2-byte annotated extent versus 6 payload bytes) is
-   a separate source finding from the pointer-byte mismatch. Re-run the two
-   verifiers after any evidence-backed fix, preserving the old reports for
-   comparison.
+1. Complete ROM provenance validation and external-tool smoke tests. The
+   initial user-run report bundle on 2026-10-29 reported 662 scalar-table
+   values checked with zero mismatches and 98 unresolved entries; all 550
+   overworld hidden-item spans matched; all 36,363 checked text-message bytes
+   matched (seven source warnings); six of 320 dungeon-room pointers disagreed
+   with source-comment offset candidates; and one of 98 text-dictionary pointer
+   candidates mismatched, alongside the `.You` source-extent warning. The
+   pinned source review found six room-payload offset comments that conflict
+   with source order plus declared payload sizes. The updated dungeon verifier
+   reports these separately and compares pointers against that sequential
+   layout without rewriting comments; re-run it against the local image to
+   confirm its result. The image was 1 MiB, but no trusted canonical
+   hash/provenance was established. On Arch Linux, use the verified generic
+   YAZE release archive, inspect `z3ed --help`, then perform only a confirmed
+   read-only ROM operation. Keep ROM provenance and the z3cli/model-endpoint
+   gates open until independently resolved.
+2. Re-run the updated dungeon-room pointer verifier against the 2026-10-29
+   local image and preserve both its byte-mismatch list and source-offset
+   findings. The six comment conflicts are `RoomDataTiles_00E1` (comment
+   `$0509A9`, sequential `$05016E`), `RoomDataTiles_0011` (`$050F19`,
+   `$050B9F`), `RoomDataTiles_0050` (`$0516A1`, `$05102F`),
+   `RoomDataTiles_00F9` (`$053FF5`, `$052FF5`), `RoomDataTiles_011C`
+   (`$01FF53`, `$01F456`), and `RoomDataTiles_0015` (`$0FE171`,
+   `$0FE474`). These conclusions come from the pinned source declaration
+   order and size annotations; they are not canonical-ROM or payload-byte
+   verification. Separately investigate the `DictionaryEntries_endOfTable`
+   pointer mismatch (`D9 C8` actual versus `D8 C8` candidate) and the `.You`
+   source-extent warning (2-byte comment extent versus a six-byte `dw`
+   directive). Do not alter the dictionary target/extent without additional
+   consumer or ROM-layout evidence.
 3. Compare one hidden-item area's pointer, record bytes, sentinel grouping, and consumer-derived third-byte behavior against a trusted local ROM. The source-level value-byte consumer trace is now documented and tested, but it does not establish byte agreement or canonical item identity. Keep the editable schema gate open until the trusted-ROM comparison is complete.
 4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
