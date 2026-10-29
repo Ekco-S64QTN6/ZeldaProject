@@ -2795,7 +2795,8 @@ def verify_dungeon_room_pointers_command(
             f"Wrote dungeon-room pointer verification report to {output}; "
             f"checked={report['pointer_table']['checked_comparisons']}, "
             f"mismatches={report['pointer_table']['mismatch_count']}, "
-            f"source_offset_findings={report['pointer_table']['source_comment_offset_mismatch_count']}"
+            f"source_offset_findings="
+            f"{report['pointer_table']['source_comment_offset_mismatch_count']}"
         )
 
     if report["pointer_table"]["mismatch_count"]:
