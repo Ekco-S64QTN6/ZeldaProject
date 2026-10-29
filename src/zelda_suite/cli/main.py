@@ -2604,7 +2604,6 @@ def audit_dungeon_room_assets_command(
         raise click.exceptions.Exit(1)
 
 
-
 @cli.command(name="audit-dungeon-room-door-pointers")
 @click.option(
     "--registry",

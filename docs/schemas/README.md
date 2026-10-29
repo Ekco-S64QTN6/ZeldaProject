@@ -20,7 +20,6 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [Dungeon-room pointer verification report](./dungeon-room-pointer-verification.schema.json) — version 1 read-only report emitted by `zelda-suite verify-dungeon-room-pointers`; checks long pointer bytes against source-commented candidate targets.
 - [Dungeon-room asset cross-reference audit](./dungeon-room-asset-audit.schema.json) — version 1 source-only join between the 320-slot pointer export and the three registered payload inventories.
 - [Dungeon-room door-pointer addend audit](./dungeon-room-door-pointer-audit.schema.json) — version 1 source-only check of all 320 door-pointer addends against source-declared payload sizes and object-pointer slot alignment.
-- [Dungeon-room door-pointer addend audit](./dungeon-room-door-pointer-audit.schema.json) — version 1 source-only check of all 320 door-pointer addends against source-declared payload sizes and object-pointer slot alignment.
 - [Joined receive-item layout](./item-receipt-layout.schema.json) — version 1 positional join of six raw receive-item tables, with the 14 dungeon masks retained separately and canonical item IDs explicitly unresolved.
 - [Mixed-width data-table export](./mixed-data-table-export.schema.json) — version 1 schema for colon-separated `db`/`dw`/`dl` source fields, emitted by `zelda-suite inspect-mixed-data-table`.
 - [OAM allocation audit](./oam-allocation-audit.schema.json) — version 1 source-only report grouping six OAM limits and 48 fallback points into six regions.

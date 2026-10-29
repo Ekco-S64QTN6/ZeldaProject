@@ -209,8 +209,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`docs/decisions/`** — Architecture Decision Records. Read `0001` before touching the data model.
 - **`docs/glossary.md`** — terminology (IPS, ASM, MSU‑1, rooms vs. maps, etc.).
 - **`docs/schemas/overworld.md`** — overworld source discovery and High/Low pair validator.
-- **`docs/schemas/dungeons.md`** — source-only 320-entry room pointer inventory and 266-entry room payload inventories across Bank03, Bank0A, and Bank1F; neither resolves target offsets or confirms playable-room count.
-- **`docs/schemas/dungeons.md`** — includes the source-only door-pointer addend audit and its known bounds, alignment, and ROM-verification limits.
+- **`docs/schemas/dungeons.md`** — source-only 320-entry room-pointer inventory, 266-entry room-payload inventories, and the door-pointer addend audit; source offsets/declared sizes remain unverified and playable-room count is unresolved.
 - **`docs/extracted-data.md`** — committed source inventory catalog and reproduction commands.
 - **`docs/asset-loader.md`** and **`docs/incbin-inventory.md`** — source-export loader and inventory contracts. Use `zelda-suite audit-incbin-inventory` to summarize metadata gaps, range/size mismatches, and candidate span overlaps without opening payloads or a ROM.
 - **`docs/project-assets.md`** — importing, querying, and validating source-export snapshots in SQLite projects. Use `import-extracted-asset` for committed registry assets so manifest provenance checks run before storage.
