@@ -27,6 +27,12 @@ TEXT_DICTIONARY_POINTER_ENTRY_WIDTH = 2
 TEXT_DICTIONARY_POINTER_ENTRY_COUNT = 98
 TEXT_DICTIONARY_DATA_LABEL = "DictionaryEntries"
 TEXT_DICTIONARY_DATA_OFFSET = 0x0747C7
+# Bank0E.asm's inclusive DATA range ends at $0748D8; the following code
+# section starts at $0748D9. The terminal dictionary pointer is that exclusive
+# end boundary, not a pointer to the final byte of the inclusive range.
+TEXT_DICTIONARY_DATA_END_INCLUSIVE_OFFSET = 0x0748D8
+TEXT_DICTIONARY_END_EXCLUSIVE_OFFSET = TEXT_DICTIONARY_DATA_END_INCLUSIVE_OFFSET + 1
+TEXT_DICTIONARY_NEXT_SECTION_START_OFFSET = 0x0748D9
 
 
 class TextDictionaryPointerVerificationError(ValueError):
@@ -37,13 +43,14 @@ def verify_text_dictionary_pointers(
     rom_path: str | Path,
     registry_path: str | Path = "data/extracted/manifest.json",
 ) -> dict[str, Any]:
-    """Compare registered dictionary pointer words with source-offset candidates.
+    """Compare dictionary pointers using fragment starts and an exclusive end sentinel.
 
-    The expected 16-bit pointer values are derived from source-commented fragment
-    file offsets using the canonical low-bank LoROM mapping. This is a candidate
-    comparison only: source offsets and ROM provenance are not independently
-    trusted here, fragment payload bytes are not read, and the source's
-    Text_DictionaryPointers/DictionaryPointers name discrepancy remains unresolved.
+    Ordinary targets use source-commented fragment starts. The final end-of-table
+    pointer uses the first byte after the pinned inclusive DATA range because the
+    runtime copies token bytes up to the next pointer (exclusive end). The raw
+    terminal comment is preserved separately. The .You directive extent warning
+    remains visible; this check does not validate fragment bytes, decode semantic
+    text, or establish ROM provenance.
     """
     image_path = Path(rom_path)
     if not image_path.is_file():
@@ -117,6 +124,14 @@ def verify_text_dictionary_pointers(
             "registered text dictionary fragment expressions are not unique"
         )
 
+    if (
+        TEXT_DICTIONARY_END_EXCLUSIVE_OFFSET
+        != TEXT_DICTIONARY_NEXT_SECTION_START_OFFSET
+    ):
+        raise TextDictionaryPointerVerificationError(
+            "pinned terminal dictionary boundary does not meet the next source section"
+        )
+
     pointer_bank = TEXT_DICTIONARY_POINTER_TABLE_OFFSET // 0x8000
     entries_report: list[dict[str, Any]] = []
     mismatches: list[dict[str, Any]] = []
@@ -128,7 +143,21 @@ def verify_text_dictionary_pointers(
             raise TextDictionaryPointerVerificationError(
                 f"pointer expression {expression!r} has no unique fragment metadata"
             )
-        target_offset = fragment["fragment_file_offset"]
+        source_comment_offset = fragment["fragment_file_offset"]
+        target_offset = source_comment_offset
+        target_offset_basis = "source_comment_start"
+        if fragment["is_end_of_table"]:
+            if (
+                pointer["table_index"] != TEXT_DICTIONARY_POINTER_ENTRY_COUNT - 1
+                or expression != "DictionaryEntries_endOfTable"
+                or source_comment_offset != TEXT_DICTIONARY_DATA_END_INCLUSIVE_OFFSET
+            ):
+                raise TextDictionaryPointerVerificationError(
+                    "terminal dictionary sentinel does not match the pinned inclusive "
+                    "data-range endpoint"
+                )
+            target_offset = TEXT_DICTIONARY_END_EXCLUSIVE_OFFSET
+            target_offset_basis = "exclusive_end_after_inclusive_data_range"
         if target_offset // 0x8000 != pointer_bank:
             raise TextDictionaryPointerVerificationError(
                 f"target {fragment['fragment_label']!r} at file offset "
@@ -156,6 +185,8 @@ def verify_text_dictionary_pointers(
             "pointer_expression": expression,
             "target_fragment_label": fragment["fragment_label"],
             "target_fragment_file_offset": target_offset,
+            "target_fragment_source_comment_offset": source_comment_offset,
+            "target_offset_basis": target_offset_basis,
             "candidate_pointer_word": "$" + format(candidate_address, "04X"),
             "expected_hex": expected.hex().upper(),
             "actual_hex": actual.hex().upper(),
@@ -169,6 +200,8 @@ def verify_text_dictionary_pointers(
                 "pointer_expression": expression,
                 "target_fragment_label": fragment["fragment_label"],
                 "target_fragment_file_offset": target_offset,
+                "target_fragment_source_comment_offset": source_comment_offset,
+                "target_offset_basis": target_offset_basis,
                 "candidate_pointer_word": "$" + format(candidate_address, "04X"),
                 "expected_hex": expected.hex().upper(),
                 "actual_hex": actual.hex().upper(),
@@ -190,7 +223,7 @@ def verify_text_dictionary_pointers(
 
     return {
         "format": TEXT_DICTIONARY_POINTER_VERIFICATION_FORMAT,
-        "format_version": 1,
+        "format_version": 2,
         "rom": {
             "filename": image_path.name,
             "size_bytes": len(rom),
@@ -212,6 +245,9 @@ def verify_text_dictionary_pointers(
         "entries": entries_report,
         "mismatches": mismatches,
         "source_findings": source_extent_findings,
+        "terminal_pointer_rule": (
+            "exclusive end of the inclusive source-commented dictionary data range"
+        ),
         "source_symbol_name_mapping_verified": False,
         "source_offsets_verified": False,
         "fragment_payload_bytes_verified": False,
