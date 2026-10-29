@@ -109,9 +109,9 @@ def classify_overworld_hidden_item_value_byte(
             "uses the low nibble as a byte offset into Overworld_SecretTileType"
         ),
         "selector_byte_offset": selector_byte_offset,
-        "replacement_table_index": replacement["table_index"] if mapped else None,
-        "replacement_word_value": replacement["value"] if mapped else None,
-        "replacement_word_comment": replacement["comment"] if mapped else None,
+        "replacement_table_index": replacement["table_index"] if replacement is not None and mapped else None,
+        "replacement_word_value": replacement["value"] if replacement is not None and mapped else None,
+        "replacement_word_comment": replacement["comment"] if replacement is not None and mapped else None,
         "special_case": (
             "$84 branches to .notBurrow and skips the generic overlay-activation block"
             if value_byte == 0x84 else None
