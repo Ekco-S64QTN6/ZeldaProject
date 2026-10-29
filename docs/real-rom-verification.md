@@ -454,6 +454,61 @@ bootability, or correctness of untested semantics. Review each JSON report,
 especially any source-commented offset mismatches, rather than shifting offsets
 to force a pass.
 
+## Diagnosing pointer mismatches from a report bundle
+
+If either pointer verifier reports mismatches, print just the relevant fields
+from its saved report before changing source annotations. Set `REPORT_DIR` to
+the directory printed by `verify-rom-readonly.sh`:
+
+```bash
+REPORT_DIR="/tmp/zelda-rom-checks.41ihIf"
+python - "$REPORT_DIR" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+
+dungeon = json.loads(
+    (root / "dungeon-room-pointer-verification.json").read_text(encoding="utf-8")
+)
+print("Dungeon pointer mismatches:", dungeon["pointer_table"]["mismatch_count"])
+for item in dungeon["mismatches"]:
+    print({
+        key: item.get(key)
+        for key in (
+            "table_index", "pointer_entry_file_offset", "pointer_expression",
+            "target_label", "target_source_file_offset", "expected_cpu_address",
+            "expected_hex", "actual_hex", "reason",
+        )
+    })
+
+dictionary = json.loads(
+    (root / "text-dictionary-pointer-verification.json").read_text(encoding="utf-8")
+)
+print("Dictionary pointer mismatches:", dictionary["pointer_table"]["mismatch_count"])
+for item in dictionary["mismatches"]:
+    print({
+        key: item.get(key)
+        for key in (
+            "table_index", "pointer_entry_file_offset", "pointer_expression",
+            "target_fragment_label", "target_fragment_file_offset",
+            "candidate_pointer_word", "expected_hex", "actual_hex", "reason",
+        )
+    })
+print("Dictionary source findings:")
+for item in dictionary["source_findings"]:
+    print(item)
+PY
+```
+
+These summaries expose the candidate address and actual bytes without printing
+the ROM or creating a ROM slice. Keep the report's local SHA-256 alongside
+any notes so results from different input files are not conflated. A mismatch
+by itself does not tell you whether the source-commented offset is wrong or
+whether the file is a different revision; verify the relationship from source
+and trusted reference evidence before changing a candidate.
+
 ## What is and is not implemented
 
 Currently available: ROM metadata inspection, file-backed byte-diffing,
