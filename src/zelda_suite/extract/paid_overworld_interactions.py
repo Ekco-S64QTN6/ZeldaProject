@@ -452,7 +452,7 @@ def parse_paid_overworld_interactions(
     # Lake Hylia Fairy: donation values come from FairyPond.prices.
     ponds_file = "sprite_ponds.asm"
     ponds_lines = lines_by_file[ponds_file]
-    pond_label, pond_open, pond_close = _find_block(ponds_lines, "FairyPond")
+    _pond_label, pond_open, pond_close = _find_block(ponds_lines, "FairyPond")
     prices_local = [
         index for index in range(pond_open + 1, pond_close)
         if _source_code(ponds_lines[index]) == ".prices"
