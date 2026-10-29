@@ -1,14 +1,14 @@
 """Smoke tests for the bundled read-only ROM verification script."""
 from __future__ import annotations
 
-from pathlib import Path
+import pathlib
 import shutil
 import subprocess
 
 import pytest
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "verify-rom-readonly.sh"
 
 
