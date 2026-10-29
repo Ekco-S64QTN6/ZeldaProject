@@ -17,6 +17,7 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add `scripts/verify-rom-readonly.sh` to run the local image inspection, self-diff, scalar-table, hidden-item, dungeon-pointer, dictionary-pointer, and text-message checks in one report-preserving pass. It requires a headerless 1 MiB image before byte comparisons, writes no ROM data, and records every check's exit status.
 - Add `zelda-suite audit-overworld-hidden-item-value-semantics` and a version-1 schema. The source-only audit checks the pinned `Overworld_RevealSecret` consumer, distinguishes ordinary secret-state-mask bytes from extended low-nibble selectors, and retains the four raw `Overworld_SecretTileType` words/comments without resolving canonical item IDs or claiming ROM verification.
 - Add `zelda-suite audit-dungeon-chest-room-references` and a version-1 schema to join all 168 packed chest room values with the corresponding object/door pointer slots. The pinned `Bank01.asm` consumer explicitly compares the chest room field with `$A0` and indexes the pointer tables using `$A0 * 3`; ROM offsets, payload bytes, item names, and playable-room status remain unverified.
 - Add `zelda-suite audit-dungeon-room-door-pointers`, a deterministic source-only report for all 320 door-pointer addends, corresponding object-pointer slot labels, and source-declared room-payload bounds. It preserves unreferenced target findings and explicitly does not verify offsets or bytes against a ROM.
