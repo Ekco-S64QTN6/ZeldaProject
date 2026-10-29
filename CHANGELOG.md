@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Changed
 
+- Make the overworld payload layout audit fail closed unless both inventories match the pinned disassembly revision `347c23f9fc019c72d32da537c9cb235f468d021d` and the expected 82/42 Bank0B/Bank0C pair counts. This keeps the source-log/consumer line references and fixed version-1 report schema honest; generic pair validation remains revision-agnostic.
+
 - Make pointer-table extraction reject duplicate requested labels with source line diagnostics instead of silently parsing the first matching table.
 
 - Mark ADR 0001 as Accepted to match the adopted SQLite canonical project format with JSON export documented in the roadmap and project-format guide.

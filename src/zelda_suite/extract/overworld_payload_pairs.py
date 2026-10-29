@@ -10,6 +10,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 INCBIN_INVENTORY_FORMAT = "zelda-suite-incbin-inventory"
+_PINNED_OVERWORLD_PAYLOAD_SOURCE_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 _SCREEN_LABEL = re.compile(r"^OverworldMap32_Screen([0-9A-Fa-f]{2})_(High|Low)$")
 
 
@@ -189,6 +190,25 @@ def audit_overworld_payload_layout(
     files or ROM bytes are opened.
     """
     paired_report = validate_overworld_payload_pairs(inventories)
+    revision = paired_report["source_revision"]
+    if revision != _PINNED_OVERWORLD_PAYLOAD_SOURCE_REVISION:
+        raise OverworldPayloadPairError(
+            "overworld payload layout audit requires source revision "
+            f"{_PINNED_OVERWORLD_PAYLOAD_SOURCE_REVISION!r} because its source "
+            f"line references are pinned to that revision; got {revision!r}"
+        )
+
+    expected_screen_counts = {"Bank0B.asm": 82, "Bank0C.asm": 42}
+    actual_screen_counts = {
+        source["source_file"]: source["screen_count"]
+        for source in paired_report["sources"]
+    }
+    if actual_screen_counts != expected_screen_counts:
+        raise OverworldPayloadPairError(
+            "overworld payload layout audit requires the pinned Bank0B.asm and "
+            "Bank0C.asm inventories with 82 and 42 screen pairs respectively"
+        )
+
     declaration_by_key: dict[tuple[str, str], dict[str, Mapping[str, Any]]] = {}
     declarations: list[Mapping[str, Any]] = []
 
@@ -261,8 +281,6 @@ def audit_overworld_payload_layout(
         pair for pair in adjacency_known
         if pair["candidate_source_ranges_adjacent"] is False
     ]
-    revision = paired_report["source_revision"]
-
     return {
         "format": OVERWORLD_PAYLOAD_LAYOUT_AUDIT_FORMAT,
         "format_version": 1,

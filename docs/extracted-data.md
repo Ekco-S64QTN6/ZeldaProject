@@ -633,6 +633,12 @@ uv run zelda-suite audit-overworld-payload-layout \
   --output /tmp/overworld-payload-layout-audit.json
 ```
 
+The audit is intentionally tied to source revision
+`347c23f9fc019c72d32da537c9cb235f468d021d` because its source-log and consumer
+line references are specific to that pinned revision. It rejects an inventory
+with another revision or unexpected per-bank screen counts rather than emitting
+a report whose source claims/schema contract would be inconsistent.
+
 For the pinned inventories, the audit reports 124 pairs / 248 declarations,
 244 range-size matches, three mismatches, and one declaration with an unknown
 range length. The mismatches are Bank0B Screen42 Low, Bank0B Screen61 Low, and
