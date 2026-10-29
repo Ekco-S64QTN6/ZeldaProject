@@ -1381,7 +1381,13 @@ def _validate_paid_overworld_interactions_export(payload: dict[str, Any]) -> Non
             raise AssetLoadError(f"{context} must describe {expected_id!r}")
         if _string(table["source_file"], f"{context}.source_file") != "sprite_digging_game_guy.asm":
             raise AssetLoadError(f"{context}.source_file must be the Digging Game source")
-        _source_label(table["source_label"], f"{context}.source_label")
+        table_source_label = _string(table["source_label"], f"{context}.source_label")
+        if table_index == 0:
+            _source_label(table_source_label, f"{context}.source_label")
+        elif table_source_label != "Pool_DiggingGameGuy_GiveItem.basic_types":
+            raise AssetLoadError(
+                f"{context}.source_label must be the known .basic_types local label"
+            )
         annotation = _string(table["source_range_annotation"], f"{context}.source_range_annotation")
         if _PAID_OVERWORLD_RANGE_RE.fullmatch(annotation) is None:
             raise AssetLoadError(f"{context}.source_range_annotation is malformed")
