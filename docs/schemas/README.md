@@ -25,6 +25,7 @@ The versioned source exports can be loaded and validated with the [asset loader]
 - [OAM allocation audit](./oam-allocation-audit.schema.json) — version 1 source-only report grouping six OAM limits and 48 fallback points into six regions.
 - [Dungeon chest data export](./dungeon-chest-data-export.schema.json) — version 1 packed three-byte `Dungeon_ChestData` records with raw item/room values and the big-chest flag.
 - [Dungeon chest data audit](./dungeon-chest-data-audit.schema.json) — version 1 source-only repeated-room, raw item-value frequency, and big-chest summary.
+- [Dungeon chest room-reference audit](./dungeon-chest-room-reference-audit.schema.json) — version 1 source-only cross-reference of chest room values to object/door pointer slots, backed by the pinned Bank01 consumer.
 - [Shop-item handlers export](./shop-item-handlers-export.schema.json) — version 1 source export for seven `Sprite_ShopKeeper` purchase handlers, including source-coded prices and receipt selectors.
 - [Shop-item handlers audit](./shop-item-handlers-audit.schema.json) — version 1 cross-reference from receipt indexes to raw `item-receipt-layout` slots; now includes raw graphics-table comment annotations without treating them as canonical IDs.
 - [Item-receipt annotation audit](./item-receipt-annotation-audit.schema.json) — version 1 source-only report of the missing `0x40` comment ID and the 12 source-comment IDs that differ from dense table indexes.

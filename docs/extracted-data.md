@@ -892,6 +892,32 @@ consumer iterates among multiple chest records for one room. See the
 [export schema](./schemas/dungeon-chest-data-export.schema.json), and the
 [audit schema](./schemas/dungeon-chest-data-audit.schema.json).
 
+## Cross-reference chest room values to room pointer slots
+
+The chest-table consumer in pinned \`Bank01.asm\` compares the packed low-15-bit
+room field with the current room variable (\`$A0\`) and calculates the door and
+object pointer-table byte offset as \`$A0 * 3\` (see
+[\`docs/schemas/dungeons.md\`](./schemas/dungeons.md) for the source-line references).
+
+Run:
+
+\`\`\`bash
+uv run zelda-suite audit-dungeon-chest-room-references \\
+  --output /tmp/dungeon-chest-room-reference-audit.json
+\`\`\`
+
+The committed source-only baseline cross-references all 168 chest records:
+106 distinct room values, 32 room values with multiple chest records, zero
+room values outside the 320-entry pointer tables, zero object/door target-label
+mismatches, and three chest entries whose object-pointer slot is labelled
+\`RoomDataTiles_Empty\`. Those three entries are preserved as source metadata,
+not treated as proof that a room is invalid or non-playable.
+
+The audit pins the source revision because the room-index relationship is
+supported by specific consumer lines. It does not read ROM or room payload
+bytes, verify pointer offsets, resolve item names, or determine the playable
+room set. See the [chest room-reference audit schema](./schemas/dungeon-chest-room-reference-audit.schema.json).
+
 ## Dungeon room object-pointer table
 
 `data/extracted/dungeon-room-object-pointers.json` records the 320
