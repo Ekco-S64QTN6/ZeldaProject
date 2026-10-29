@@ -176,18 +176,20 @@ range. The audit preserves these discrepancies. See the
 With a local 1 MiB headerless ROM file available, run
 `uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM`. The
 verifier compares the 98 two-byte words at file offset `$074703` against
-16-bit LoROM pointer candidates calculated from the registered
-`text-dictionary-fragments` source offsets. It reports mismatched bytes and
-retains the existing `.You` 2-byte-versus-6-byte source-extent warning
-separately from pointer-byte results.
+16-bit LoROM candidates. Ordinary targets use the registered fragment's
+source-commented start offset. The terminal `DictionaryEntries_endOfTable`
+target uses the exclusive end after the pinned inclusive data range
+`$0747C7-$0748D8 DATA` (file offset `$0748D9`), because the runtime consumes
+each token until the next pointer. Report v2 preserves the original terminal
+comment offset and labels which offset rule produced each candidate.
 
-This is not a claim that the source-commented offsets are canonical: ROM
-provenance and those candidate offsets remain unverified, fragment payload
-bytes are not read, and no message text is decoded. The source also uses
-`Text_DictionaryPointers` in the consumer while its visible declaration is
-`DictionaryPointers`; this symbol-name mapping is still unresolved. A clean
-comparison only shows that the bytes in the supplied file agree with the
-source-derived candidates. See the
+The `.You` 2-byte-versus-6-byte source-extent warning remains separate from
+pointer-byte results. This is not a claim that the source annotations are
+canonical: ROM provenance and fragment bytes remain unverified, and no text
+is decoded. The consumer uses `Text_DictionaryPointers` while the visible
+declaration is `DictionaryPointers`; this symbol-name mapping remains
+unresolved. A clean comparison only shows that bytes in the supplied file
+agree with the candidate rules. See the
 [text dictionary pointer verification schema](./text-dictionary-pointer-verification.schema.json)
 and [real-ROM runbook](../real-rom-verification.md).
 
