@@ -197,18 +197,27 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Complete ROM provenance validation and external-tool smoke tests. User-run
-   local checks on 2026-10-28 matched the five falling-prize arrays and compared
-   428 direct numeric scalar-table literals with zero mismatches; 175
-   records were skipped by the original snippet, including the 76 signed
-   decimal receive-item Y offsets. These checks do not prove canonical ROM
-   identity. Rerun `zelda-suite verify-rom-tables`,
-   `zelda-suite verify-overworld-hidden-items`, and
-   `zelda-suite verify-dungeon-room-pointers` using
-   [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
-   On Arch Linux, use the verified generic YAZE release archive, inspect
-   `z3ed --help`, then perform only a confirmed read-only ROM operation.
-   Keep ROM provenance and the z3cli/model-endpoint gates open until independently
-   resolved.
-2. Compare one hidden-item area's pointer, record bytes, sentinel grouping, and consumer-derived third-byte behavior against a trusted local ROM. The source-level value-byte consumer trace is now documented and tested, but it does not establish byte agreement or canonical item identity. Keep the editable schema gate open until the trusted-ROM comparison is complete.
-3. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
+1. Complete ROM provenance validation and external-tool smoke tests. A
+   user-run report bundle on 2026-10-29 reported 662 scalar-table values checked
+   with zero mismatches and 98 unresolved entries; all 550 overworld hidden-item
+   spans matched; all 36,363 checked text-message bytes matched (seven source
+   warnings); six of 320 dungeon-room pointer candidates mismatched; and one of
+   98 text-dictionary pointer candidates mismatched, alongside the known
+   `.You` source-extent warning. The local image was 1 MiB, but no trusted
+   canonical hash/provenance was established. Inspect the saved mismatch details
+   before changing offsets or source declarations. On Arch Linux, use the
+   verified generic YAZE release archive, inspect `z3ed --help`, then perform
+   only a confirmed read-only ROM operation. Keep ROM provenance and the
+   z3cli/model-endpoint gates open until independently resolved.
+2. Resolve the six dungeon-room pointer discrepancies and the single
+   text-dictionary pointer discrepancy from the 2026-10-29 report bundle.
+   Compare each report's table index, pointer entry offset, expected/actual
+   bytes, target label, and source-commented target offset. First distinguish a
+   wrong candidate source offset, an unusual target/addend, and a different ROM
+   revision; do not adjust offsets to force a pass. The dictionary `.You`
+   source-extent warning (2-byte annotated extent versus 6 payload bytes) is
+   a separate source finding from the pointer-byte mismatch. Re-run the two
+   verifiers after any evidence-backed fix, preserving the old reports for
+   comparison.
+3. Compare one hidden-item area's pointer, record bytes, sentinel grouping, and consumer-derived third-byte behavior against a trusted local ROM. The source-level value-byte consumer trace is now documented and tested, but it does not establish byte agreement or canonical item identity. Keep the editable schema gate open until the trusted-ROM comparison is complete.
+4. Keep Phase 0 local-tool checks visible as blockers; do not treat read-only inspectors as proof that the complete editor pipeline works.
