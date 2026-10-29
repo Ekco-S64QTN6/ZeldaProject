@@ -26,7 +26,7 @@ def _write_registry(
     extracted = tmp_path / "extracted"
     extracted.mkdir()
     revision = "synthetic-revision"
-    targets = ["RoomDataTiles_A", "RoomDataTiles_Empty", "RoomDataTiles_A"]
+    targets = ["RoomDataTiles_A", "RoomDataTiles_Empty", "RoomDataTiles_B"]
     if missing_target:
         targets[2] = "RoomDataTiles_Missing"
     addends = [1, 0, 4 if out_of_bounds else 2]
@@ -123,7 +123,7 @@ def _write_registry(
                 None if missing_size else 1, 0x4000,
             )],
         ),
-        ("dungeon-room-payloads-bank1f", "Bank1F.asm", []),
+        ("dungeon-room-payloads-bank1f", "Bank1F.asm", [declaration("RoomDataTiles_B", "Bank1F.asm", 30, 3, 0x5000)]),
     ]
     exports: list[tuple[str, str, dict[str, Any], str, int]] = [
         (name, filename, payload, "zelda-suite-pointer-table", payload["entry_count"])
@@ -174,10 +174,10 @@ def test_synthetic_door_pointer_addends_fit_source_sizes(tmp_path: Path) -> None
     assert report["summary"] == {
         "pointer_entry_count": 3,
         "empty_pointer_count": 1,
-        "unique_pointer_target_label_count": 2,
-        "payload_declaration_count": 2,
-        "unique_payload_label_count": 2,
-        "matched_target_label_count": 2,
+        "unique_pointer_target_label_count": 3,
+        "payload_declaration_count": 3,
+        "unique_payload_label_count": 3,
+        "matched_target_label_count": 3,
         "missing_payload_target_count": 0,
         "missing_payload_reference_count": 0,
         "unreferenced_payload_count": 0,
@@ -227,10 +227,11 @@ def test_audit_reports_missing_target_and_unknown_size(tmp_path: Path) -> None:
     assert report["summary"]["payload_without_size_count"] == 1
     assert report["summary"]["addend_bounds_unknown_count"] == 2
     assert report["summary"]["error_count"] == 1
-    assert report["summary"]["warning_count"] == 1
+    assert report["summary"]["warning_count"] == 2
     assert {finding["code"] for finding in report["findings"]} == {
         "missing_payload_declaration",
         "payload_size_missing",
+        "unreferenced_payload_declaration",
     }
 
 
