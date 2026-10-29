@@ -390,8 +390,12 @@ arguments before attempting an actual read.
 
 After checking ROM size/provenance diagnostics, the read-only command below
 compares the 98 two-byte dictionary pointer words in a local image with
-candidate pointer words derived from the registered source-commented fragment
-offsets:
+source-derived candidates. Ordinary fragments use their source-commented
+starts. The final `DictionaryEntries_endOfTable` pointer is the exclusive end
+of the inclusive data range (`$0747C7-$0748D8 DATA`), which is file offset
+`$0748D9`; the runtime reads a token until the next pointer, so this is the
+end boundary rather than a pointer to the final byte. The raw source comment
+at `$0748D8` is retained in the report.
 
 ```bash
 uv run zelda-suite verify-text-dictionary-pointers \
@@ -399,17 +403,17 @@ uv run zelda-suite verify-text-dictionary-pointers \
   --output /tmp/text-dictionary-pointer-verification.json
 ```
 
-Review `pointer_table.mismatch_count`, every entry's expected/actual bytes,
-and `source_findings`. The current source metadata includes the `.You`
-extent discrepancy (2-byte source extent versus 6 declared payload bytes);
-that source warning is distinct from ROM pointer mismatches. A result with
-zero mismatches establishes byte agreement only for this supplied image and
-the source-offset candidates used by the tool. It does not establish ROM
-provenance, prove the candidate offsets are correct, read fragment payload
-bytes, decode text, or resolve the consumer's `Text_DictionaryPointers`
-versus the visible `DictionaryPointers` declaration name. Do not change source
-annotations or treat the report as a clean-ROM certification based only on a
-matching result.
+Review `pointer_table.mismatch_count`, each entry's expected/actual bytes,
+`target_offset_basis`, and `source_findings`. The `.You` extent discrepancy
+(2-byte comment-derived source extent versus 6 declared payload bytes) remains
+a separate warning. The terminal-pointer rule is based on the pinned source's
+inclusive data-range comment and its next-code boundary; it does not resolve
+the `.You` directive mismatch or prove this local image is canonical. Zero
+pointer mismatches establish byte agreement only for this supplied image and
+the candidate rules the tool applies. The verifier still does not read fragment
+payload bytes, decode text, establish ROM provenance, or resolve the consumer's
+`Text_DictionaryPointers` versus the visible `DictionaryPointers` declaration
+name. Do not treat a matching result as clean-ROM certification.
 
 ## Encoded text-message byte comparison
 
