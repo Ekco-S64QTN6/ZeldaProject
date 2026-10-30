@@ -160,7 +160,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, a read-only chest-to-room-pointer audit, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest/imported-overworld updates through the optional stdio MCP server. Strict schemas pin record/field ranges; edits preserve immutable source baselines and area aliases. The room audit uses the startup-bound asset registry and reports source-only findings; source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
+- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, a read-only chest-to-room-pointer audit, full or single-entry chest reads, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest/imported-overworld updates through the optional stdio MCP server. Strict schemas pin record/field ranges; edits preserve immutable source baselines and area aliases. The room audit uses the startup-bound asset registry and reports source-only findings; source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
 - [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.

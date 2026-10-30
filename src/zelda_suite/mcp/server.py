@@ -164,14 +164,42 @@ def create_server(
         return _render_json(report)
 
     @server.tool()
-    def dungeon_list_chest_records() -> str:
-        """Read the imported 168-entry packed dungeon-chest model and its source baselines."""
+    def dungeon_list_chest_records(
+        table_index: Annotated[int, Field(strict=True, ge=0, le=167)] | None = None,
+    ) -> str:
+        """Read the imported chest model, optionally selecting one source table index.
+
+        Omitting table_index returns the complete 168-entry model. Supplying an
+        index returns that entry with the model's source provenance and evidence.
+        """
         model = get_dungeon_chest_model(db_path)
         if model is None:
             raise ValueError(
                 "no dungeon chest model has been imported into this project"
             )
-        return _render_json(model)
+        if table_index is None:
+            return _render_json(model)
+
+        entry = next(
+            (
+                record for record in model["entries"]
+                if record["table_index"] == table_index
+            ),
+            None,
+        )
+        if entry is None:
+            raise KeyError(f"dungeon chest record not found: {table_index}")
+        return _render_json(
+            {
+                "format": model["format"],
+                "format_version": model["format_version"],
+                "source_file": model["source_file"],
+                "source_revision": model["source_revision"],
+                "source_sha256": model["source_sha256"],
+                "entry": entry,
+                "evidence": model["evidence"],
+            }
+        )
 
     @server.tool()
     def dungeon_update_chest_record(

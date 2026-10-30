@@ -50,7 +50,7 @@ open a ROM.
 | `project_get_source_asset` | Read one project source-asset snapshot by key. |
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
 | `overworld_update_hidden_item_record` | Preview coordinate/value edits to one imported source record; persist only with `apply=true`. |
-| `dungeon_list_chest_records` | Read the imported packed dungeon-chest model. |
+| `dungeon_list_chest_records` | Read all 168 chest records or select one record by bounded table index 0–167. |
 | `dungeon_audit_chest_room_references` | Read-only join of current chest room values to the registered object/door pointer tables, retaining source baselines and findings. |
 | `dungeon_update_chest_record` | Preview a bounded item-byte, room-value, and/or big-chest-flag edit; persist only with `apply=true`. |
 | `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true`. |
@@ -87,6 +87,10 @@ source-metadata arithmetic only: candidate offsets, room payload bytes, item
 names, and the playable-room set remain unverified; it never reads or writes a
 ROM. The tool needs the asset registry fixed at server startup.
 
+`dungeon_list_chest_records` returns the full model when `table_index` is
+omitted. Supplying an index from 0–167 returns only that entry, with its source
+revision, source hash, and evidence flags.
+
 `dungeon_update_chest_record` accepts a table index from 0–167 and at least
 one of `item_value` (0–255), `room_value` (0–32767), or `is_big_chest` (boolean).
 It recomposes the packed 24-bit value while preserving the original source
@@ -117,7 +121,8 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 ## Tests and limitations
 
 `tests/test_mcp_server.py` checks the tool schema, database and registry binding,
-read-only project inspection and chest/room audit, default preview behavior,
+read-only project inspection, full and single-entry chest reads, and chest/room
+audit; default preview behavior,
 explicit imported-row, custom-record, and chest edit commits, area alias
 visibility/replacement, immutable source baselines, source-row count preservation,
 and absence of ROM/import tools. CI runs these contract tests with the other

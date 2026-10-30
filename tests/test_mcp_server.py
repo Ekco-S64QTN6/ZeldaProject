@@ -183,6 +183,10 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     assert overworld_schema["properties"]["coordinate_word"]["anyOf"][0]["maximum"] == 65534
     assert overworld_schema["properties"]["value_byte"]["anyOf"][0]["maximum"] == 255
 
+    chest_list_schema = schemas["dungeon_list_chest_records"]
+    assert chest_list_schema["properties"]["table_index"]["minimum"] == 0
+    assert chest_list_schema["properties"]["table_index"]["maximum"] == 167
+
     chest_schema = schemas["dungeon_update_chest_record"]
     assert chest_schema["properties"]["apply"]["default"] is False
     assert chest_schema["properties"]["table_index"]["minimum"] == 0
@@ -278,6 +282,38 @@ def test_mcp_overworld_row_update_previews_then_applies_explicitly(
     assert model["areas"][1]["record_indices"] == [0]
     exported = json.loads(json_export.read_text(encoding="utf-8"))
     assert exported["overworld_hidden_items"] == model
+
+
+def test_mcp_dungeon_chest_list_can_select_one_source_entry(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_single_chest_read", tmp_path)
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    assert imported["summary"]["entry_count"] == 168
+    server = create_server(database, REGISTRY_PATH)
+    database_before = database.read_bytes()
+    export_before = json_export.read_bytes()
+
+    selected = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_list_chest_records", {"table_index": 5}))
+        )
+    )
+    assert selected["format"] == "zelda-suite-dungeon-chest-model"
+    assert selected["source_revision"] == PINNED_REVISION
+    assert selected["source_sha256"] == imported["source_sha256"]
+    assert selected["entry"]["table_index"] == 5
+    assert selected["entry"]["source_literal_value"] == imported["entries"][5]["source_literal_value"]
+    assert selected["entry"]["source_room_value"] == imported["entries"][5]["source_room_value"]
+    assert selected["evidence"]["rom_modified"] is False
+
+    full = json.loads(
+        _tool_text(asyncio.run(server.call_tool("dungeon_list_chest_records", {})))
+    )
+    assert len(full["entries"]) == 168
+    assert full["summary"]["entry_count"] == 168
+    assert database.read_bytes() == database_before
+    assert json_export.read_bytes() == export_before
 
 
 def test_mcp_chest_room_reference_audit_is_read_only_and_tracks_project_edits(
