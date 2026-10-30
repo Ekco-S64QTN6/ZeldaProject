@@ -1062,6 +1062,21 @@ them through the named registry. It does not open the referenced binary payload
 files or verify offsets against a local ROM.
 
 
+### Six source-comment offsets reconciled against adjacent declarations
+
+The six offset findings are not unexplained gaps in the source-order listing.
+Each candidate position is bounded on both sides: the previous declaration's
+commented start plus its declared size equals the candidate, and the current
+declaration's size reaches the next declaration's commented start. The six
+source contexts and equations are recorded in the
+[local-ROM verification runbook](./real-rom-verification.md). A regression test
+pins these predecessor/current/successor relationships.
+
+This explains why the six comments disagree with the source-order candidate;
+it does not verify the included binary payloads. The source comments are
+preserved verbatim, the verifier continues to report all six findings, and no
+candidate is promoted to a canonical ROM offset.
+
 ### Dungeon pointer/payload source-label coverage
 
 The 320-entry `dungeon-room-object-pointers` inventory has 263 distinct
