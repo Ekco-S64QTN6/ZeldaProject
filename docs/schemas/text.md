@@ -48,13 +48,17 @@ then copies bytes up to that upper bound into the dialogue processing buffer.
 Thus adjacent pointer values delimit variable-length dictionary fragments;
 they should not be treated as fixed-size strings.
 
-**Source-name caveat:** the consumer refers to
-`Text_DictionaryPointers`, while the visible data declaration is labelled
-`DictionaryPointers`. The pinned source search shows these names in different
-places but does not show an explicit alias declaration. Since the disassembly
-README marks this source as work in progress and not buildable by itself, record
-this mismatch and verify the intended symbol mapping before relying on it for
-an automated extraction.
+**Source-name caveat:** the consumer's two loads at
+[`Bank0E.asm:6018–6019`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6018-L6019)
+refer to `Text_DictionaryPointers+2` and `Text_DictionaryPointers+0`, while
+the sole global table declaration in the pinned file is
+[`DictionaryPointers:` at line 6039](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6039).
+The two prefixed-name occurrences are the consumer accesses; no explicit
+`Text_DictionaryPointers:` declaration or alias appears in the pinned file.
+The disassembly README marks the source as work in progress and not buildable
+by itself. Record the unresolved mapping; do not silently rename the table or
+invent an alias. A separate test pins this source fact without claiming how an
+external assembly/build process might resolve it.
 
 ## Runtime message-pointer workspace
 
@@ -150,8 +154,12 @@ source offsets against ROM bytes or resolve symbolic pointers.
 
 The existing `.You` source extent discrepancy remains a warning: the next
 source offset implies a 2-byte extent, while the directive declares 6 bytes.
-The audit preserves both values and does not inspect fragment payload bytes.
-See the [text dictionary audit schema](./text-dictionary-audit.schema.json).
+The runtime consumer uses the next pointer as an exclusive bound, so those
+source comments imply a two-byte read interval even though `dw $18, $28, $2E`
+declares six bytes. This source-only audit preserves both values, does not
+inspect fragment payload bytes, and does not decide which source annotation or
+directive should change. See the
+[text dictionary audit schema](./text-dictionary-audit.schema.json).
 
 
 ## Audit known message-index discrepancies
@@ -184,12 +192,17 @@ each token until the next pointer. Report v2 preserves the original terminal
 comment offset and labels which offset rule produced each candidate.
 
 The `.You` 2-byte-versus-6-byte source-extent warning remains separate from
-pointer-byte results. This is not a claim that the source annotations are
-canonical: ROM provenance and fragment bytes remain unverified, and no text
-is decoded. The consumer uses `Text_DictionaryPointers` while the visible
-declaration is `DictionaryPointers`; this symbol-name mapping remains
-unresolved. A clean comparison only shows that bytes in the supplied file
-agree with the candidate rules. See the
+pointer-byte results. The consumer reads its start and exclusive end from
+adjacent pointer entries, but the pinned `.You` directive declares six bytes
+inside a two-byte comment-derived interval. The terminal candidate at
+`$C8D9` follows the inclusive DATA-range endpoint, not a rewrite of the raw
+`.endOfTable` comment at `$0748D8`. This is not a claim that the source
+annotations are canonical: ROM provenance and fragment bytes remain
+unverified, and no text is decoded. The consumer uses
+`Text_DictionaryPointers` while the visible declaration is
+`DictionaryPointers`; the pinned file has no explicit alias, so this
+symbol-name mapping remains unresolved. A clean comparison only shows that
+bytes in the supplied file agree with the candidate rules. See the
 [text dictionary pointer verification schema](./text-dictionary-pointer-verification.schema.json)
 and [real-ROM runbook](../real-rom-verification.md).
 
