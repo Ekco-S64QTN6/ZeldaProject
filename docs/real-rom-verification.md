@@ -347,17 +347,40 @@ index list.
 
 A nonzero exit status means pointer bytes mismatch the sequential
 payload-layout candidate; the JSON report is still written. The report keeps
-both the source-commented and computed offsets for each target and includes
-`source_offset_findings` for missing or conflicting comments. For the pinned
-source snapshot, six comments currently disagree with the sequential layout:
-`RoomDataTiles_00E1`, `RoomDataTiles_0011`, `RoomDataTiles_0050`,
-`RoomDataTiles_00F9`, `RoomDataTiles_011C`, and `RoomDataTiles_0015`.
+both the source-commented and computed offsets for each target. It includes
+`source_offset_findings` for missing or conflicting comments. Six such findings
+remain in this pinned snapshot; their source-order boundary evidence follows.
 This is source-annotation evidence, not proof of ROM provenance. Re-run the
 command against your authorized local image after updating the repository and
 inspect both the byte-mismatch and source-offset-finding lists. This operation
 does not check room payload bytes, identify playable rooms, or resolve the
 296-versus-320 room count discrepancy. Do not rewrite comments to force a pass.
 The command never writes ROM bytes.
+
+The six conflicting comments are each bracketed by the previous and next
+payload declarations in the pinned assembler source. In every case,
+`previous_start + previous_size` equals the sequential candidate, and
+`candidate + current_size` equals the next declaration's source comment:
+
+| Pinned source | Payload label | Existing comment | Previous start + size = candidate | Next declaration comment |
+| --- | --- | ---: | --- | --- |
+| [`Bank0A.asm:27–39`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0A.asm#L27-L39) | `RoomDataTiles_00E1` | `$0509A9` | `$050047 + $000127 = $05016E` | `RoomDataTiles_00E3` `$050242` |
+| [`Bank0A.asm:95–103`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0A.asm#L95-L103) | `RoomDataTiles_0011` | `$050F19` | `$050AA5 + $0000FA = $050B9F` | `RoomDataTiles_0021` `$050C5A` |
+| [`Bank0A.asm:127–135`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0A.asm#L127-L135) | `RoomDataTiles_0050` | `$0516A1` | `$050F19 + $000116 = $05102F` | `RoomDataTiles_0001` `$0510E2` |
+| [`Bank0A.asm:307–315`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0A.asm#L307-L315) | `RoomDataTiles_00F9` | `$053FF5` | `$052F7A + $00007B = $052FF5` | `RoomDataTiles_00FA` `$05305E` |
+| [`Bank03.asm:4713–4721`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank03.asm#L4713-L4721) | `RoomDataTiles_011C` | `$01FF53` | `$01F371 + $0000E5 = $01F456` | `RoomDataTiles_0120` `$01F4FB` |
+| [`Bank1F.asm:1210–1218`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank1F.asm#L1210-L1218) | `RoomDataTiles_0015` | `$0FE171` | `$0FE2A3 + $0001D1 = $0FE474` | `RoomDataTiles_0024` `$0FE644` |
+
+This brackets each sequential candidate with two neighboring source-order
+boundaries and identifies the six original comments as inconsistent with the
+adjacent declarations and their `Size:` values. The original comments remain
+unchanged in the committed inventory and in the verifier's six
+`source_offset_findings`. This is source-layout reconciliation only: the
+referenced `bin/rooms/*.bin` files are absent from the pinned submodule, and
+no payload bytes or canonical ROM offsets have been independently verified.
+Do not rewrite the source comments or treat the candidates as canonical ROM
+facts on this evidence alone.
+
 
 ## 8. Run the ROM-independent regression suite
 
