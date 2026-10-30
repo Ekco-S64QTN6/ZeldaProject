@@ -63,6 +63,33 @@ def test_import_preserves_source_fields_and_publishes_canonical_model(
     assert validate_project(database) == []
 
 
+def test_update_defaults_to_read_only_preview(tmp_path: Path) -> None:
+    database, json_path = _populated_project(tmp_path)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    preview = update_dungeon_chest_record(
+        database, 0, item_value=0xAA, room_value=0x1234, is_big_chest=True
+    )
+
+    assert preview["action"] == "update_dungeon_chest_record"
+    assert preview["dry_run"] is True
+    assert preview["table_index"] == 0
+    assert preview["before"]["literal_value"] == 0x240032
+    assert preview["proposed"]["item_value"] == 0xAA
+    assert preview["proposed"]["room_value"] == 0x1234
+    assert preview["proposed"]["is_big_chest"] is True
+    assert preview["proposed"]["literal_value"] == 0xAA9234
+    assert preview["proposed"]["room_pointer_table_byte_displacement"] == 0x1234 * 3
+    assert preview["changed_fields"] == ["item_value", "room_value", "is_big_chest"]
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    unchanged = get_dungeon_chest_model(database)
+    assert unchanged is not None
+    assert unchanged["entries"][0]["literal_value"] == 0x240032
+
+
 def test_edit_recomposes_packed_literal_and_retains_source_baseline(
     tmp_path: Path,
 ) -> None:
@@ -74,6 +101,7 @@ def test_edit_recomposes_packed_literal_and_retains_source_baseline(
         item_value=0xAA,
         room_value=0x1234,
         is_big_chest=True,
+        dry_run=False,
     )
 
     assert updated["source_literal_value"] == 0x240032
@@ -122,7 +150,7 @@ def test_reimport_requires_explicit_replace_and_resets_local_edits(
     tmp_path: Path,
 ) -> None:
     database, _json_path = _populated_project(tmp_path)
-    update_dungeon_chest_record(database, 5, item_value=0xEE)
+    update_dungeon_chest_record(database, 5, item_value=0xEE, dry_run=False)
 
     with pytest.raises(ValueError, match="already exists"):
         import_dungeon_chest_data(database, REGISTRY_PATH)
@@ -136,7 +164,7 @@ def test_reimport_requires_explicit_replace_and_resets_local_edits(
 
 
 def test_cli_lists_and_updates_chest_records(tmp_path: Path) -> None:
-    database, _json_path = _populated_project(tmp_path)
+    database, json_path = _populated_project(tmp_path)
     runner = CliRunner()
 
     listed = runner.invoke(
@@ -148,19 +176,24 @@ def test_cli_lists_and_updates_chest_records(tmp_path: Path) -> None:
     assert payload["entries"][0]["table_index"] == 5
     assert payload["entries"][0]["is_big_chest"] is True
 
-    updated = runner.invoke(
-        cli,
-        [
-            "update-dungeon-chest-record",
-            str(database),
-            "0",
-            "--item-value",
-            "$AA",
-            "--room-value",
-            "$1234",
-            "--big-chest",
-        ],
-    )
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+    update_args = [
+        "update-dungeon-chest-record", str(database), "0",
+        "--item-value", "$AA", "--room-value", "$1234", "--big-chest",
+    ]
+    preview = runner.invoke(cli, update_args)
+    assert preview.exit_code == 0, preview.output
+    preview_payload = json.loads(preview.output)
+    assert preview_payload["dry_run"] is True
+    assert preview_payload["before"]["literal_value"] == 0x240032
+    assert preview_payload["proposed"]["literal_value"] == 0xAA9234
+    assert preview_payload["changed_fields"] == ["item_value", "room_value", "is_big_chest"]
+    assert preview_payload["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+
+    updated = runner.invoke(cli, [*update_args, "--apply"])
     assert updated.exit_code == 0, updated.output
     record = json.loads(updated.output)
     assert record["literal_hex"] == "$AA9234"

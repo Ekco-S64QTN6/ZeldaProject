@@ -1603,8 +1603,14 @@ def update_overworld_hidden_item(
     *,
     coordinate_word: int | None = None,
     value_byte: int | None = None,
+    dry_run: bool = True,
 ) -> dict[str, Any]:
-    """Update one semantic hidden-item record without touching source baselines or ROM bytes."""
+    """Preview or update one imported hidden-item row without touching its source baseline.
+
+    The default is read-only. Applying an edit updates the current project values
+    and derived consumer classification, while source fields and area aliases
+    remain unchanged. No ROM bytes are read or written.
+    """
     if isinstance(record_index, bool) or not isinstance(record_index, int) or not 0 <= record_index <= 350:
         raise ValueError("record_index must be an integer in 0..350")
     if coordinate_word is None and value_byte is None:
@@ -1621,25 +1627,50 @@ def update_overworld_hidden_item(
         or not 0 <= value_byte <= 0xFF
     ):
         raise ValueError("value_byte must be an integer in 0..255")
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
 
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
-    connection = sqlite3.connect(db_path)
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = (
+        sqlite3.connect(read_only_uri, uri=True)
+        if dry_run
+        else sqlite3.connect(db_path)
+    )
     connection.row_factory = sqlite3.Row
+    changed_fields: list[str] = []
+    before: dict[str, Any]
     try:
-        connection.execute("PRAGMA foreign_keys = ON")
+        if not dry_run:
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
-        existing = connection.execute(
-            """SELECT coordinate_word, value_byte
-               FROM overworld_hidden_item_record WHERE record_index = ?""",
-            (record_index,),
-        ).fetchone()
-        if existing is None:
+        model = _export_overworld_hidden_items(connection)
+        if model is None:
+            raise ValueError("no overworld hidden-item model has been imported")
+        before_record = next(
+            (
+                record for record in model["records"]
+                if record["record_index"] == record_index
+            ),
+            None,
+        )
+        if before_record is None:
             raise KeyError(f"overworld hidden-item record not found: {record_index}")
+        before = dict(before_record)
 
-        new_coordinate = int(existing["coordinate_word"]) if coordinate_word is None else coordinate_word
-        new_value = int(existing["value_byte"]) if value_byte is None else value_byte
+        new_coordinate = (
+            int(before_record["coordinate_word"])
+            if coordinate_word is None
+            else coordinate_word
+        )
+        new_value = (
+            int(before_record["value_byte"])
+            if value_byte is None
+            else value_byte
+        )
         replacements = [
             {
                 "table_index": int(row["table_index"]),
@@ -1653,42 +1684,74 @@ def update_overworld_hidden_item(
             ).fetchall()
         ]
         semantics = classify_overworld_hidden_item_value_byte(new_value, replacements)
-        with connection:
-            connection.execute(
-                """UPDATE overworld_hidden_item_record
-                   SET coordinate_word = ?, value_byte = ?, consumer_class = ?,
-                       consumer_operation = ?, selector_byte_offset = ?,
-                       replacement_table_index = ?, replacement_word_value = ?,
-                       replacement_word_comment = ?, special_case = ?
-                   WHERE record_index = ?""",
-                (
-                    new_coordinate,
-                    new_value,
-                    semantics["consumer_class"],
-                    semantics["consumer_operation"],
-                    semantics["selector_byte_offset"],
-                    semantics["replacement_table_index"],
-                    semantics["replacement_word_value"],
-                    semantics["replacement_word_comment"],
-                    semantics["special_case"],
-                    record_index,
-                ),
-            )
-        export_project(db_path)
+        proposed = dict(before)
+        proposed.update({
+            "coordinate_word": new_coordinate,
+            "value_byte": new_value,
+            "consumer_class": semantics["consumer_class"],
+            "consumer_operation": semantics["consumer_operation"],
+            "selector_byte_offset": semantics["selector_byte_offset"],
+            "replacement_table_index": semantics["replacement_table_index"],
+            "replacement_word_value": semantics["replacement_word_value"],
+            "replacement_word_comment": semantics["replacement_word_comment"],
+            "special_case": semantics["special_case"],
+            "is_modified": (
+                new_coordinate != before["source_coordinate_word"]
+                or new_value != before["source_value_byte"]
+            ),
+        })
+        if new_coordinate != before["coordinate_word"]:
+            changed_fields.append("coordinate_word")
+        if new_value != before["value_byte"]:
+            changed_fields.append("value_byte")
+
+        if dry_run:
+            return {
+                "action": "update_overworld_hidden_item",
+                "dry_run": True,
+                "record_index": record_index,
+                "before": before,
+                "proposed": proposed,
+                "changed_fields": changed_fields,
+                "rom_modified": False,
+            }
+
+        if changed_fields:
+            with connection:
+                connection.execute(
+                    """UPDATE overworld_hidden_item_record
+                       SET coordinate_word = ?, value_byte = ?, consumer_class = ?,
+                           consumer_operation = ?, selector_byte_offset = ?,
+                           replacement_table_index = ?, replacement_word_value = ?,
+                           replacement_word_comment = ?, special_case = ?
+                       WHERE record_index = ?""",
+                    (
+                        new_coordinate,
+                        new_value,
+                        semantics["consumer_class"],
+                        semantics["consumer_operation"],
+                        semantics["selector_byte_offset"],
+                        semantics["replacement_table_index"],
+                        semantics["replacement_word_value"],
+                        semantics["replacement_word_comment"],
+                        semantics["special_case"],
+                        record_index,
+                    ),
+                )
     except sqlite3.Error as exc:
         raise ValueError(f"could not update overworld hidden-item record: {exc}") from exc
     finally:
         connection.close()
 
-    model = get_overworld_hidden_item_model(db_path)
-    if model is None:
+    if changed_fields:
+        export_project(db_path)
+    updated_model = get_overworld_hidden_item_model(db_path)
+    if updated_model is None:
         raise ValueError("no overworld hidden-item model has been imported")
-    for record in model["records"]:
+    for record in updated_model["records"]:
         if record["record_index"] == record_index:
             return cast(dict[str, Any], record)
     raise KeyError(f"overworld hidden-item record not found: {record_index}")
-
-
 
 
 def _validated_custom_hidden_item_fields(
@@ -2274,8 +2337,15 @@ def update_dungeon_chest_record(
     item_value: int | None = None,
     room_value: int | None = None,
     is_big_chest: bool | None = None,
+    dry_run: bool = True,
 ) -> dict[str, Any]:
-    """Edit packed chest fields in the project store without writing ROM bytes."""
+    """Preview or edit packed chest fields while preserving immutable source values.
+
+    The default is read-only. An applied edit recomposes the packed 24-bit
+    literal and updates only current project fields; source expression, source
+    literal, and source field values remain unchanged. No ROM bytes are read or
+    written.
+    """
     if isinstance(table_index, bool) or not isinstance(table_index, int) or not 0 <= table_index <= 167:
         raise ValueError("table_index must be an integer in 0..167")
     if item_value is None and room_value is None and is_big_chest is None:
@@ -2290,43 +2360,97 @@ def update_dungeon_chest_record(
         raise ValueError("room_value must be an integer in 0..32767")
     if is_big_chest is not None and not isinstance(is_big_chest, bool):
         raise ValueError("is_big_chest must be a boolean")
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
 
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
-    connection = sqlite3.connect(db_path)
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = (
+        sqlite3.connect(read_only_uri, uri=True)
+        if dry_run
+        else sqlite3.connect(db_path)
+    )
     connection.row_factory = sqlite3.Row
+    changed_fields: list[str] = []
+    before: dict[str, Any]
     try:
+        if not dry_run:
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
-        existing = connection.execute(
-            """SELECT item_value, room_value, is_big_chest
-               FROM dungeon_chest_record WHERE table_index = ?""",
-            (table_index,),
-        ).fetchone()
-        if existing is None:
+        model = _export_dungeon_chests(connection)
+        if model is None:
+            raise ValueError("no dungeon chest model has been imported")
+        before_record = next(
+            (
+                record for record in model["entries"]
+                if record["table_index"] == table_index
+            ),
+            None,
+        )
+        if before_record is None:
             raise KeyError(f"dungeon chest record not found: {table_index}")
+        before = dict(before_record)
 
-        new_item = int(existing["item_value"]) if item_value is None else item_value
-        new_room = int(existing["room_value"]) if room_value is None else room_value
-        new_big = bool(existing["is_big_chest"]) if is_big_chest is None else is_big_chest
+        new_item = int(before["item_value"]) if item_value is None else item_value
+        new_room = int(before["room_value"]) if room_value is None else room_value
+        new_big = bool(before["is_big_chest"]) if is_big_chest is None else is_big_chest
         packed = (new_item << 16) | new_room | (int(new_big) << 15)
-        with connection:
-            connection.execute(
-                """UPDATE dungeon_chest_record
-                   SET item_value = ?, room_value = ?, is_big_chest = ?, literal_value = ?
-                   WHERE table_index = ?""",
-                (new_item, new_room, int(new_big), packed, table_index),
-            )
-        export_project(db_path)
+        proposed = dict(before)
+        proposed.update({
+            "item_value": new_item,
+            "room_value": new_room,
+            "is_big_chest": new_big,
+            "literal_value": packed,
+            "literal_hex": "$" + format(packed, "06X"),
+            "expression": "$" + format(packed, "06X"),
+            "room_pointer_index": new_room,
+            "room_pointer_table_byte_displacement": new_room * 3,
+            "is_modified": (
+                new_item != before["source_item_value"]
+                or new_room != before["source_room_value"]
+                or new_big != before["source_is_big_chest"]
+            ),
+        })
+        if new_item != before["item_value"]:
+            changed_fields.append("item_value")
+        if new_room != before["room_value"]:
+            changed_fields.append("room_value")
+        if new_big != before["is_big_chest"]:
+            changed_fields.append("is_big_chest")
+
+        if dry_run:
+            return {
+                "action": "update_dungeon_chest_record",
+                "dry_run": True,
+                "table_index": table_index,
+                "before": before,
+                "proposed": proposed,
+                "changed_fields": changed_fields,
+                "rom_modified": False,
+            }
+
+        if changed_fields:
+            with connection:
+                connection.execute(
+                    """UPDATE dungeon_chest_record
+                       SET item_value = ?, room_value = ?, is_big_chest = ?, literal_value = ?
+                       WHERE table_index = ?""",
+                    (new_item, new_room, int(new_big), packed, table_index),
+                )
     except sqlite3.Error as exc:
         raise ValueError(f"could not update dungeon chest record: {exc}") from exc
     finally:
         connection.close()
 
-    model = get_dungeon_chest_model(db_path)
-    if model is None:
+    if changed_fields:
+        export_project(db_path)
+    updated_model = get_dungeon_chest_model(db_path)
+    if updated_model is None:
         raise ValueError("no dungeon chest model has been imported")
-    for record in model["entries"]:
+    for record in updated_model["entries"]:
         if record["table_index"] == table_index:
             return cast(dict[str, Any], record)
     raise KeyError(f"dungeon chest record not found: {table_index}")
