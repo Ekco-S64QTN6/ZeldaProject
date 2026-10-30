@@ -134,6 +134,78 @@ def test_verifier_matches_sequential_layout_and_reports_conflicting_comments(
     assert rom_path.read_bytes() == original
 
 
+def test_six_source_offset_findings_are_bracketed_by_neighbor_declarations() -> None:
+    """Pin the six disputed comments against both adjacent source declarations."""
+    expected = {
+        "RoomDataTiles_00E1": (
+            "Bank0A.asm", 330153, 328046, 35,
+            "RoomDataTiles_0055", "RoomDataTiles_00E3",
+        ),
+        "RoomDataTiles_0011": (
+            "Bank0A.asm", 331545, 330655, 99,
+            "RoomDataTiles_0002", "RoomDataTiles_0021",
+        ),
+        "RoomDataTiles_0050": (
+            "Bank0A.asm", 333473, 331823, 131,
+            "RoomDataTiles_0051", "RoomDataTiles_0001",
+        ),
+        "RoomDataTiles_00F9": (
+            "Bank0A.asm", 344053, 339957, 311,
+            "RoomDataTiles_00FE", "RoomDataTiles_00FA",
+        ),
+        "RoomDataTiles_011C": (
+            "Bank03.asm", 130899, 128086, 4717,
+            "RoomDataTiles_011B", "RoomDataTiles_0120",
+        ),
+        "RoomDataTiles_0015": (
+            "Bank1F.asm", 1040753, 1041524, 1214,
+            "RoomDataTiles_0014", "RoomDataTiles_0024",
+        ),
+    }
+    declarations_by_source = {
+        json.loads(path.read_text(encoding="utf-8"))["source_file"]: json.loads(
+            path.read_text(encoding="utf-8")
+        )["declarations"]
+        for path in PAYLOAD_ASSET_PATHS
+    }
+
+    for label, (
+        expected_source,
+        expected_comment_offset,
+        expected_sequential_offset,
+        expected_line,
+        expected_previous_label,
+        expected_next_label,
+    ) in expected.items():
+        declarations = declarations_by_source[expected_source]
+        index = next(
+            i for i, declaration in enumerate(declarations)
+            if declaration["label"] == label
+        )
+        assert 0 < index < len(declarations) - 1
+        previous = declarations[index - 1]
+        current = declarations[index]
+        following = declarations[index + 1]
+
+        assert current["source_line"] == expected_line
+        assert current["source_file_offset_start"] == expected_comment_offset
+        assert previous["label"] == expected_previous_label
+        assert following["label"] == expected_next_label
+
+        sequential_offset = _target_offsets()[label]["offset"]
+        assert sequential_offset == expected_sequential_offset
+        assert (
+            previous["source_file_offset_start"] + previous["declared_size_bytes"]
+            == sequential_offset
+        )
+        assert (
+            sequential_offset + current["declared_size_bytes"]
+            == following["source_file_offset_start"]
+        )
+        # The original disagreeing source comment remains retained verbatim.
+        assert current["source_file_offset_start"] != sequential_offset
+
+
 def test_verifier_reports_pointer_byte_mismatches(tmp_path: Path) -> None:
     rom_path = _write_synthetic_rom(tmp_path)
     rom = bytearray(rom_path.read_bytes())
