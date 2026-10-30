@@ -37,7 +37,7 @@ A current project has twelve tables:
 
 - `project`: singleton project metadata, JSON format version, creation time,
   expected base-ROM filename, and nullable base-ROM SHA-256.
-- `schema_version`: migration history. Fresh projects record v1, v2, and v3.
+- `schema_version`: migration history. Fresh projects record v1 through v5.
 - `source_asset`: named source-export snapshots with format/version,
   source filename(s)/revision, import timestamp, canonical JSON, and SHA-256.
 - `overworld_hidden_item_model`: source file/revision/hash and the pinned
