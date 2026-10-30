@@ -7,9 +7,14 @@ does not imply that any release has been published.
 
 ## [Unreleased]
 
+### Added
+
+- Add schema-v5 project-authored overworld hidden-item records and many-to-many area links. `create-custom-overworld-hidden-item` and `delete-custom-overworld-hidden-item` default to dry-run and require `--apply` to persist; coordinate/value bounds, the `$FFFF` sentinel, area indexes, and alias links are validated. The 351 imported source rows, their source baselines, and source area relationships remain unchanged, including when the pinned source model is explicitly re-imported.
+- Add a project-facing custom hidden-item create/delete API and CLI, a schema-v4-to-v5 migration with rollback coverage, and deterministic project JSON export for project-authored entries. Advance the project JSON/SQLite schema contracts to v5 and the pre-release Python package to 0.3.0.
+
 ### Fixed
 
-- Start an explicit SQLite `BEGIN IMMEDIATE` transaction before each schema-v1-to-v4 migration step's DDL. A failed step now rolls back its partially created tables together with its version metadata; a failure-injection regression test covers a mid-DDL error. Earlier successfully committed steps in a multi-version upgrade remain valid and retryable.
+- Start an explicit SQLite `BEGIN IMMEDIATE` transaction before each schema-v1-to-v5 migration step's DDL. A failed step now rolls back its partially created tables together with its version metadata; a failure-injection regression test covers a mid-DDL error. Earlier successfully committed steps in a multi-version upgrade remain valid and retryable.
 
 ### Changed
 
