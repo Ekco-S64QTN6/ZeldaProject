@@ -294,7 +294,7 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
         )
     )
     assert delete_preview["dry_run"] is True
-    assert delete_preview["record"]["area_indices"] == [4, 5]
+    assert delete_preview["record"]["area_indices"] == [6, 7]
 
     deleted = json.loads(
         _tool_text(
