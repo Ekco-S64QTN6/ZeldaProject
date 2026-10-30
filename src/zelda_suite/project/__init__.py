@@ -7,7 +7,6 @@ from zelda_suite.project.store import (
     CURRENT_SCHEMA_VERSION,
     PROJECT_FORMAT,
     PROJECT_FORMAT_VERSION,
-    audit_project_dungeon_chest_room_references,
     create_custom_overworld_hidden_item,
     delete_custom_overworld_hidden_item,
     export_project,
