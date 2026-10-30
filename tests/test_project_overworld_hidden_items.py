@@ -438,7 +438,6 @@ def test_cli_custom_hidden_item_create_and_delete_require_apply(tmp_path: Path) 
     assert validate_project(database) == []
 
 
-
 @pytest.mark.skipif(
     not SOURCE_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",
@@ -506,7 +505,7 @@ def test_import_pinned_source_preserves_shared_area_aliases_and_source_hash(
     tmp_path: Path,
 ) -> None:
     source_bytes = SOURCE_PATH.read_bytes()
-    database, _ = initialize_project("overworld_import", tmp_path)
+    database, json_path = initialize_project("overworld_import", tmp_path)
 
     model = import_overworld_hidden_item_model(database, SOURCE_PATH, dry_run=False)
 
@@ -531,6 +530,17 @@ def test_import_pinned_source_preserves_shared_area_aliases_and_source_hash(
     current = get_overworld_hidden_item_model(database)
     assert current is not None
     assert current["summary"]["modified_record_count"] == 1
+
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+    replacement_preview = import_overworld_hidden_item_model(
+        database, SOURCE_PATH, replace_existing=True
+    )
+    assert replacement_preview["dry_run"] is True
+    assert replacement_preview["before"]["summary"]["modified_record_count"] == 1
+    assert replacement_preview["proposed"]["summary"]["record_count"] == 351
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
 
     replaced = import_overworld_hidden_item_model(
         database, SOURCE_PATH, replace_existing=True, dry_run=False
