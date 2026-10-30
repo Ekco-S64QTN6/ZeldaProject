@@ -23,7 +23,7 @@ REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 
 def _populated_project(tmp_path: Path) -> Path:
     database, _json_path = initialize_project("project_chest_audit", tmp_path)
-    import_dungeon_chest_data(database, REGISTRY_PATH)
+    import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
     return database
 
 

@@ -3585,28 +3585,37 @@ def get_source_asset_command(database: Path, asset_key: str) -> None:
     "--replace",
     "replace_existing",
     is_flag=True,
-    help="Replace the existing model and discard its project-local edits.",
+    help="Preview a replacement that resets imported edits; custom records and links are preserved.",
+)
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Persist the import; without this option, only a read-only preview is returned.",
 )
 def import_overworld_hidden_items_command(
-    database: Path, source: Path, replace_existing: bool
+    database: Path, source: Path, replace_existing: bool, apply: bool
 ) -> None:
-    """Import pinned source metadata as the first editable overworld domain model."""
+    """Preview or explicitly import pinned overworld hidden-item source metadata."""
     try:
-        model = import_overworld_hidden_item_model(
-            database, source, replace_existing=replace_existing
+        result = import_overworld_hidden_item_model(
+            database, source, replace_existing=replace_existing, dry_run=not apply
         )
     except (KeyError, ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
-    click.echo(json.dumps({
-        "format": model["format"],
-        "format_version": model["format_version"],
-        "source_file": model["source_file"],
-        "source_revision": model["source_revision"],
-        "source_sha256": model["source_sha256"],
-        "area_count": model["summary"]["area_count"],
-        "record_count": model["summary"]["record_count"],
-        "modified_record_count": model["summary"]["modified_record_count"],
-    }, ensure_ascii=False, indent=2, sort_keys=True))
+    if apply:
+        payload = {
+            "format": result["format"],
+            "format_version": result["format_version"],
+            "source_file": result["source_file"],
+            "source_revision": result["source_revision"],
+            "source_sha256": result["source_sha256"],
+            "area_count": result["summary"]["area_count"],
+            "record_count": result["summary"]["record_count"],
+            "modified_record_count": result["summary"]["modified_record_count"],
+        }
+    else:
+        payload = result
+    click.echo(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 @cli.command(name="list-overworld-hidden-items")
@@ -3852,26 +3861,35 @@ def update_custom_overworld_hidden_item_command(
     "--replace",
     "replace_existing",
     is_flag=True,
-    help="Replace the existing chest model and discard its project-local edits.",
+    help="Preview a replacement that resets project-local chest edits.",
+)
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Persist the import; without this option, only a read-only preview is returned.",
 )
 def import_dungeon_chest_data_command(
-    database: Path, registry: Path, replace_existing: bool
+    database: Path, registry: Path, replace_existing: bool, apply: bool
 ) -> None:
-    """Import the registered 168-entry Dungeon_ChestData table for authoring."""
+    """Preview or explicitly import the registered 168-entry chest table."""
     try:
-        model = import_dungeon_chest_data(
-            database, registry, replace_existing=replace_existing
+        result = import_dungeon_chest_data(
+            database, registry, replace_existing=replace_existing, dry_run=not apply
         )
     except (KeyError, ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
-    click.echo(json.dumps({
-        "format": model["format"],
-        "format_version": model["format_version"],
-        "source_file": model["source_file"],
-        "source_revision": model["source_revision"],
-        "source_sha256": model["source_sha256"],
-        "summary": model["summary"],
-    }, ensure_ascii=False, indent=2, sort_keys=True))
+    if apply:
+        payload = {
+            "format": result["format"],
+            "format_version": result["format_version"],
+            "source_file": result["source_file"],
+            "source_revision": result["source_revision"],
+            "source_sha256": result["source_sha256"],
+            "summary": result["summary"],
+        }
+    else:
+        payload = result
+    click.echo(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 @cli.command(name="list-dungeon-chest-records")
