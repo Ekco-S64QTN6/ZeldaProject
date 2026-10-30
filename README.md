@@ -102,3 +102,24 @@ For a source-only cross-check of all 320 dungeon door-pointer addends against ta
 For a read-only check of the 98 text-dictionary pointer words, run `uv run zelda-suite verify-text-dictionary-pointers PATH_TO_ROM`. Ordinary entries use source-commented fragment starts; the final pointer uses the exclusive end after the inclusive data-range annotation. Report v2 preserves that raw end comment and the separate `.You` extent warning. The command does not verify ROM provenance or fragment payload bytes, decode text, or resolve the `Text_DictionaryPointers`/`DictionaryPointers` symbol-name mapping; see [the text documentation](./docs/schemas/text.md) and [the real-ROM runbook](./docs/real-rom-verification.md).
 
 For a read-only byte comparison of the 397 pinned text messages against a local image, use `uv run zelda-suite verify-text-message-bytes PATH_TO_ROM` with two `--block` options. It compares literal source bytes but does not decode messages or independently verify the source offsets; see [the text schema guide](./docs/schemas/text.md).
+
+
+## Optional project MCP server
+
+The optional stdio server exposes a small, project-bound subset of the validated
+authoring API to an MCP-compatible host. It opens one existing SQLite database
+at startup; tool arguments cannot select a different database or filesystem
+path. Install the optional SDK dependency and run:
+
+```bash
+uv sync --extra agent
+uv run zelda-suite-mcp --database project/my-hack.db
+```
+
+Alternatively, set `ZELDA_SUITE_PROJECT_DB` and omit `--database`. The initial
+tool surface includes project validation/source-asset reads, overworld hidden
+item reads, dungeon chest reads, and project-authored hidden-item create/delete.
+Create and delete tools default to previews; `apply=true` explicitly persists
+the project-local SQLite/JSON change. Imported source-row updates, chest edits,
+source imports, ROM access, and ROM writes are not exposed. See
+[`docs/mcp-server.md`](./docs/mcp-server.md) for the tool contract and limits.

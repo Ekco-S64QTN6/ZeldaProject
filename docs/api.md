@@ -3,8 +3,10 @@
 Status: **partially implemented**. The current public Python surface supports
 bounded source-preserving edits for overworld hidden-item records and packed
 dungeon chest fields, plus dry-run-first create/delete for project-authored
-overworld hidden-item additions. General room/map editing, ROM writes, and MCP
-exposure remain future work.
+overworld hidden-item additions. An optional, project-bound stdio MCP server
+exposes selected read/validation tools and dry-run-first custom hidden-item
+create/delete; broader editing, ROM writes, and external model-host workflows
+remain future work.
 
 ## Current project functions
 
@@ -61,3 +63,26 @@ in `docs/schemas/project-dungeon-chest-room-reference-audit.schema.json`.
 4. New fields and operations require bounded validation, deterministic
    serialization, source baselines, regression tests, and explicit migration
    policy where the persisted format changes.
+
+
+## Optional MCP transport
+
+Install the `agent` extra and run `zelda-suite-mcp --database PATH` to
+serve one existing project database over stdio. The process binds its database
+path once at startup; no tool accepts a database or arbitrary filesystem path.
+The initial tool set is:
+
+- `project_validate`, `project_list_source_assets`, and
+  `project_get_source_asset` for project validation and source metadata.
+- `overworld_list_hidden_items` and `dungeon_list_chest_records` for
+  bounded model reads.
+- `overworld_create_custom_hidden_item` and
+  `overworld_delete_custom_hidden_item` for project-authored hidden-item
+  records. Both default to `apply=false`; an explicit `apply=true` commits
+  to SQLite and refreshes canonical JSON.
+
+The MCP surface deliberately does not expose source-row updates, dungeon chest
+edits, source-asset imports, arbitrary file access, ROM reads, or ROM writes.
+The Python API and CLI remain available independently of the optional MCP
+dependency. See [`mcp-server.md`](./mcp-server.md) for installation, startup,
+host setup, and the complete security/verification boundary.

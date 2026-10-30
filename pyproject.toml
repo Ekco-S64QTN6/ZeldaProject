@@ -1,6 +1,6 @@
 [project]
 name = "zelda-suite"
-version = "0.3.0"
+version = "0.4.0"
 description = "Claude-driven RPG Maker-style authoring suite for ALttP"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -11,7 +11,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+agent = [
+    "mcp>=1.28.1,<2",
+]
 dev = [
+    "mcp>=1.28.1,<2",
     "pytest>=8.0",
     "ruff>=0.4",
     "mypy>=1.10",
@@ -19,6 +23,7 @@ dev = [
 
 [project.scripts]
 zelda-suite = "zelda_suite.cli.main:cli"
+zelda-suite-mcp = "zelda_suite.mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]

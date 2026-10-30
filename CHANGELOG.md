@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add an opt-in project-bound stdio MCP server and `zelda-suite-mcp` entry point. The optional `agent` extra pins MCP SDK v1 (`mcp>=1.28.1,<2`); seven bounded tools expose validation/source metadata reads, overworld/dungeon model reads, and dry-run-first project-authored hidden-item create/delete. The server binds one database at startup and does not expose arbitrary paths, imports, source-row updates, chest edits, or ROM access.
+
 - Add schema-v5 project-authored overworld hidden-item records and many-to-many area links. `create-custom-overworld-hidden-item` and `delete-custom-overworld-hidden-item` default to dry-run and require `--apply` to persist; coordinate/value bounds, the `$FFFF` sentinel, area indexes, and alias links are validated. The 351 imported source rows, their source baselines, and source area relationships remain unchanged, including when the pinned source model is explicitly re-imported.
 - Add a project-facing custom hidden-item create/delete API and CLI, a schema-v4-to-v5 migration with rollback coverage, and deterministic project JSON export for project-authored entries. Advance the project JSON/SQLite schema contracts to v5 and the pre-release Python package to 0.3.0.
 
