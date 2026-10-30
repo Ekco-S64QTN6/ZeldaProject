@@ -315,7 +315,7 @@ def test_migration_is_idempotent_and_refreshes_export(tmp_path: Path) -> None:
     assert validate_project(database) == []
 
 
-def test_migrate_schema_v3_project_adds_v4_and_v5_tables(
+def test_migrate_schema_v3_project_adds_dungeon_chest_and_custom_tables(
     tmp_path: Path,
 ) -> None:
     database, json_path = initialize_project("legacy_v3", tmp_path)
@@ -342,13 +342,11 @@ def test_migrate_schema_v3_project_adds_v4_and_v5_tables(
             "SELECT format_version FROM project WHERE singleton = 1"
         ).fetchone()
 
-    assert versions == [(1,), (2,), (3,), (4,), (5,)]
+    assert versions == [(1,), (2,), (3,), (4,), (CURRENT_SCHEMA_VERSION,)]
     assert format_version == (PROJECT_FORMAT_VERSION,)
     assert {
-        "dungeon_chest_model",
-        "dungeon_chest_record",
-        "overworld_hidden_item_custom_record",
-        "overworld_hidden_item_custom_area_record",
+        "dungeon_chest_model", "dungeon_chest_record",
+        "overworld_hidden_item_custom_record", "overworld_hidden_item_custom_area_record",
     }.issubset(tables)
     exported = json.loads(json_path.read_text(encoding="utf-8"))
     assert exported["format_version"] == PROJECT_FORMAT_VERSION
@@ -356,7 +354,7 @@ def test_migrate_schema_v3_project_adds_v4_and_v5_tables(
     assert validate_project(database) == []
 
 
-def test_migrate_schema_v4_project_adds_custom_hidden_item_tables(
+def test_migrate_schema_v4_project_adds_project_authored_hidden_item_tables(
     tmp_path: Path,
 ) -> None:
     database, _ = initialize_project("legacy_v4", tmp_path)
@@ -367,6 +365,7 @@ def test_migrate_schema_v4_project_adds_custom_hidden_item_tables(
         connection.execute("UPDATE project SET format_version = 4 WHERE singleton = 1")
 
     assert migrate_project(database) is True
+
     with sqlite3.connect(database) as connection:
         tables = {
             row[0] for row in connection.execute(
@@ -383,7 +382,8 @@ def test_migrate_schema_v4_project_adds_custom_hidden_item_tables(
     assert versions == [(1,), (2,), (3,), (4,), (5,)]
     assert validate_project(database) == []
 
-def test_migration_rolls_back_partial_custom_schema_ddl(
+
+def test_migration_rolls_back_partial_ddl_when_schema_creation_fails(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     database, json_path = initialize_project("migration_rollback", tmp_path)
@@ -398,7 +398,7 @@ def test_migration_rolls_back_partial_custom_schema_ddl(
         project_store,
         "_OVERWORLD_CUSTOM_SCHEMA_SQL",
         "CREATE TABLE migration_partial_marker (id INTEGER PRIMARY KEY);"
-        "\\nINVALID MIGRATION STATEMENT;",
+        "\nINVALID MIGRATION STATEMENT;",
     )
 
     with pytest.raises(ValueError, match="could not migrate project database"):
@@ -406,7 +406,8 @@ def test_migration_rolls_back_partial_custom_schema_ddl(
 
     with sqlite3.connect(database) as connection:
         tables = {
-            row[0] for row in connection.execute(
+            row[0]
+            for row in connection.execute(
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             ).fetchall()
         }
@@ -423,6 +424,7 @@ def test_migration_rolls_back_partial_custom_schema_ddl(
     assert versions == [(1,), (2,), (3,), (4,)]
     assert format_version == (4,)
     assert json_path.read_bytes() == original_export
+
 
 def test_import_does_not_implicitly_migrate_v1_project(tmp_path: Path) -> None:
     database, json_path = _create_schema_v1_project(tmp_path / "legacy_no_auto")
