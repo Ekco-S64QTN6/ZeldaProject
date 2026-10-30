@@ -1,6 +1,6 @@
-"""Opt-in stdio MCP server for a single ZeldaProject SQLite database.
+"""Opt-in stdio MCP server bound to one ZeldaProject database and asset registry.
 
-The server deliberately binds one database at startup; model-provided tool
+The server deliberately binds both paths at startup; model-provided tool
 arguments cannot select arbitrary filesystem paths. ROM bytes are never read
 or written by these tools.
 """

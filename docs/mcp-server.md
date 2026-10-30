@@ -59,8 +59,8 @@ open a ROM.
 
 The server is bound to one resolved database path and one resolved asset
 registry path at startup. No tool accepts a database path, registry path, or
-arbitrary filesystem path, and tool inputs are validated with strict Pydantic fields. The custom hidden-item tools retain the underlying API's
-bounds: area indexes 0–127, coordinate words 0–65534 (with `$FFFF` reserved as
+arbitrary filesystem path, and tool inputs are validated with strict Pydantic
+fields. The custom hidden-item tools retain the underlying API's bounds: area indexes 0–127, coordinate words 0–65534 (with `$FFFF` reserved as
 the list sentinel), and value bytes 0–255. A custom record remains separate from
 the 351 imported source records and can link to several area slots.
 
@@ -120,7 +120,8 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 read-only project inspection and chest/room audit, default preview behavior,
 explicit imported-row, custom-record, and chest edit commits, area alias
 visibility/replacement, immutable source baselines, source-row count preservation,
-and absence of ROM/import tools. CI runs these contract tests with the other Python checks.
+and absence of ROM/import tools. CI runs these contract tests with the other
+Python checks.
 
 This does not establish compatibility with a specific model host, a live
 session, a particular model endpoint, or `z3cli`. Those integrations remain

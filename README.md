@@ -109,21 +109,24 @@ For a read-only byte comparison of the 397 pinned text messages against a local 
 ## Optional project MCP server
 
 The optional stdio server exposes a small, project-bound subset of the validated
-authoring API to an MCP-compatible host. It opens one existing SQLite database
-at startup; tool arguments cannot select a different database or filesystem
-path. Install the optional SDK dependency and run:
+authoring API to an MCP-compatible host. It binds one existing SQLite database
+and the registered source-asset manifest at startup; tool arguments cannot
+select a different database, manifest, or filesystem path. Install the optional
+SDK dependency and run:
 
 ```bash
 uv sync --extra agent
-uv run zelda-suite-mcp --database project/my-hack.db --registry data/extracted/manifest.json
+uv run zelda-suite-mcp \
+  --database project/my-hack.db \
+  --registry data/extracted/manifest.json
 ```
 
 Alternatively, set `ZELDA_SUITE_PROJECT_DB` and omit `--database`. The tool
 surface includes project validation/source-asset reads, overworld hidden-item
 reads and preview-first imported hidden-item record updates, dungeon chest
 reads and bounded packed-chest field edits, a read-only chest-to-room-pointer
-audit, plus project-authored hidden-item create/update/delete. Set `--registry`
-(or `ZELDA_SUITE_ASSET_REGISTRY`) to the registered asset manifest. All mutation tools default to previews; `apply=true`
+audit, plus project-authored hidden-item create/update/delete. Set `--registry` (or `ZELDA_SUITE_ASSET_REGISTRY`) to the
+registered asset manifest. All mutation tools default to previews; `apply=true`
 explicitly persists the project-local SQLite/JSON change while preserving
 source baselines and area aliases. Source imports, ROM access, and ROM writes
 are not exposed. See

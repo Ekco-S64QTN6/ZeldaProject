@@ -152,7 +152,11 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "overworld_update_custom_hidden_item",
         "overworld_delete_custom_hidden_item",
     }
-    assert all("database" not in schema.get("properties", {}) for schema in schemas.values())
+    assert all(
+        "database" not in schema.get("properties", {})
+        and "registry" not in schema.get("properties", {})
+        for schema in schemas.values()
+    )
 
     create_schema = schemas["overworld_create_custom_hidden_item"]
     assert create_schema["properties"]["apply"]["default"] is False
