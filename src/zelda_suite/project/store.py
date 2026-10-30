@@ -1234,10 +1234,12 @@ def migrate_project(
     except sqlite3.Error as exc:
         raise ValueError(f"could not migrate project database: {exc}") from exc
     finally:
-        if connection is not None:
-            connection.close()
-        if temporary_directory is not None:
-            temporary_directory.cleanup()
+        try:
+            if connection is not None:
+                connection.close()
+        finally:
+            if temporary_directory is not None:
+                temporary_directory.cleanup()
 
     # A dry run validates every transition on the disposable copy and never
     # refreshes or otherwise touches the caller's JSON sidecar.

@@ -91,8 +91,6 @@ remains available.
 Schema-v1, schema-v2, schema-v3, and schema-v4 projects must be upgraded explicitly:
 
 ```bash
-uv run zelda-suite migrate-project project/my-hack.db --dry-run
-# Apply only after reviewing the preview:
 uv run zelda-suite migrate-project project/my-hack.db
 ```
 
@@ -111,15 +109,11 @@ migration commits each version separately; if a later step fails, the database
 remains at the last successfully committed schema version and the migration
 can be retried from there. The JSON sidecar is refreshed only after all
 database transitions commit. A sidecar-write failure does not undo the database
-migration; rerun `migrate-project` to regenerate the export. Add `--dry-run` to
-run the same complete sequence against a temporary SQLite backup; this checks
-migration DDL, version invariants, and all intermediate schema transitions
-without changing the original database or JSON sidecar. The temporary copy is
-removed even when validation fails. Run without `--dry-run` to apply the
-migration. Migration is not automatic during validation or asset import. Use
-`--json PATH` to write the export to a non-default location. Running the
-command on a current project does not change the database; it refreshes the
-JSON sidecar from SQLite unless `--dry-run` is supplied.
+migration; rerun `migrate-project` to regenerate the export. Migration is not
+automatic
+during validation or asset import. Use `--json PATH` to write the export to
+a non-default location. Running the command on a current project does not
+change the database; it refreshes the JSON sidecar from SQLite.
 
 
 ## Create and delete project-authored hidden items

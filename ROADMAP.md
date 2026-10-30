@@ -148,7 +148,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Store semantic game-system records in SQLite schema v5 with migrations, field bounds, packed-value checks, and foreign-key area/record relationships. Other domains remain source_asset snapshots until their schemas are implemented.
 - [x] Add a project-facing read-only audit that joins the editable chest model's current room values to the pinned object/door pointer inventories, retaining source room baselines and edit status. Regression coverage verifies clean joins, edited in-range and out-of-range room values, mismatched object/door target labels, missing models, CLI failure behavior, and no-overwrite report output. Candidate offsets and ROM bytes remain unverified; the command does not read or write ROM bytes.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
-- [~] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit. Imported hidden-item/chest updates and project-authored hidden-item CRUD are preview-first; `migrate-project --dry-run` now simulates all schema transitions on a disposable SQLite backup without touching the project database or JSON sidecar. Remaining import/replace and future semantic-edit surfaces still need an explicit inventory against this contract.
+- [ ] Implement dry-run output, bounds checks, reference checks, and deterministic serialization for every edit.
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
 - [ ] Integrate SpriteSomething ZSPR support and zcompress only after asset round-trip tests exist.
 

@@ -3419,7 +3419,10 @@ def validate_overworld_payload_pairs_command(inventories: tuple[Path, ...]) -> N
 @click.option(
     "--dry-run",
     is_flag=True,
-    help="Validate the complete migration on a temporary database copy without changing either project file.",
+    help=(
+        "Validate the complete migration on a temporary database copy without "
+        "changing either project file."
+    ),
 )
 def migrate_project_command(
     database: Path, json_path: Path | None, dry_run: bool

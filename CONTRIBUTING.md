@@ -131,9 +131,7 @@ Before requesting review, confirm that the change:
 A green CI run is required before merging. Project-local semantic updates must
 remain preview-only by default: test that preview calls leave SQLite and JSON
 unchanged, and use explicit `--apply` (CLI) or `dry_run=False` (Python) in tests
-that exercise persistence. Migration changes must also test `migrate-project
---dry-run` against an older-schema fixture and verify the database and sidecar
-are byte-for-byte unchanged before testing the explicit apply path. If a check cannot run because a local ROM or external
+that exercise persistence. If a check cannot run because a local ROM or external
 tool is unavailable, leave the Roadmap gate open and say so explicitly rather
 than replacing it with a source-only approximation.
 
