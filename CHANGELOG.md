@@ -7,6 +7,10 @@ does not imply that any release has been published.
 
 ## [Unreleased]
 
+### Fixed
+
+- Start an explicit SQLite `BEGIN IMMEDIATE` transaction before each schema-v1-to-v4 migration step's DDL. A failed step now rolls back its partially created tables together with its version metadata; a failure-injection regression test covers a mid-DDL error. Earlier successfully committed steps in a multi-version upgrade remain valid and retryable.
+
 ### Changed
 
 - Record the 2026-10-29 user-run YAZE v0.7.2 read-only smoke test against the local ROM: ROM info, raw ROM bytes, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. The screen-80 overworld map read failed with an out-of-range offset; `dungeon-get-palette` was not a supported command, while `palette-get-colors --group=dungeon_main` worked. The ROM SHA-256 remained `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`. Partial read capability only; no ROM writes or full integration are claimed.

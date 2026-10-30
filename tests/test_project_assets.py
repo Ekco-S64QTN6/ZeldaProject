@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 from click.testing import CliRunner
 
+import zelda_suite.project.store as project_store
 from zelda_suite.cli.main import cli
 from zelda_suite.extract.asset_loader import (
     list_extracted_assets,
@@ -350,6 +351,55 @@ def test_migrate_schema_v3_project_adds_dungeon_chest_tables(
     assert exported["format_version"] == PROJECT_FORMAT_VERSION
     assert exported["dungeon_chests"] is None
     assert validate_project(database) == []
+
+
+def test_migration_rolls_back_partial_ddl_when_schema_creation_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    database, json_path = initialize_project("migration_rollback", tmp_path)
+    with sqlite3.connect(database) as connection, connection:
+        connection.execute("DROP TABLE dungeon_chest_record")
+        connection.execute("DROP TABLE dungeon_chest_model")
+        connection.execute(
+            "DELETE FROM schema_version WHERE version = ?",
+            (CURRENT_SCHEMA_VERSION,),
+        )
+        connection.execute(
+            "UPDATE project SET format_version = ? WHERE singleton = 1",
+            (CURRENT_SCHEMA_VERSION - 1,),
+        )
+
+    original_export = json_path.read_bytes()
+    monkeypatch.setattr(
+        project_store,
+        "_DUNGEON_CHEST_SCHEMA_SQL",
+        "CREATE TABLE migration_partial_marker (id INTEGER PRIMARY KEY);"
+        "\nINVALID MIGRATION STATEMENT;",
+    )
+
+    with pytest.raises(ValueError, match="could not migrate project database"):
+        migrate_project(database)
+
+    with sqlite3.connect(database) as connection:
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        versions = connection.execute(
+            "SELECT version FROM schema_version ORDER BY version"
+        ).fetchall()
+        format_version = connection.execute(
+            "SELECT format_version FROM project WHERE singleton = 1"
+        ).fetchone()
+
+    assert "migration_partial_marker" not in tables
+    assert "dungeon_chest_model" not in tables
+    assert "dungeon_chest_record" not in tables
+    assert versions == [(1,), (2,), (3,)]
+    assert format_version == (CURRENT_SCHEMA_VERSION - 1,)
+    assert json_path.read_bytes() == original_export
 
 
 def test_import_does_not_implicitly_migrate_v1_project(tmp_path: Path) -> None:

@@ -27,7 +27,7 @@ uv run zelda-suite update-overworld-hidden-item project/my-hack.db 0 --coordinat
 uv run zelda-suite validate project/my-hack.db
 ```
 
-Schema-v4 projects are created by `init`. Existing schema-v1/v2/v3 projects must run `zelda-suite migrate-project project/my-hack.db` before importing the model; the same command safely refreshes a current project's JSON sidecar. Record indexes are source-order indexes, not canonical item IDs. `update-overworld-hidden-item` edits the project database and JSON export only; it does not patch the ROM. See [`docs/project-format.md`](./docs/project-format.md).
+Schema-v4 projects are created by `init`. Existing schema-v1/v2/v3 projects must run `zelda-suite migrate-project project/my-hack.db` before importing the model; the same command safely refreshes a current project's JSON sidecar. Each schema-version transition uses an explicit SQLite `BEGIN IMMEDIATE` transaction so its DDL and version metadata commit or roll back together. A multi-step upgrade may remain at its last successfully committed intermediate version if a later step fails; rerun the migration after correcting the cause. Record indexes are source-order indexes, not canonical item IDs. `update-overworld-hidden-item` edits the project database and JSON export only; it does not patch the ROM. See [`docs/project-format.md`](./docs/project-format.md).
 ## Quickstart
 
 Prepare dependencies and initialize a project without a game ROM:
