@@ -66,14 +66,23 @@ def _find_parent_block(
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", parent_label):
         raise ValueError("parent_label must be a global assembly identifier")
 
-    parent_line: int | None = None
-    for index, line in enumerate(lines):
-        match = _GLOBAL_LABEL_RE.fullmatch(_code(line))
-        if match is not None and match.group("label") == parent_label:
-            parent_line = index
-            break
-    if parent_line is None:
+    parent_hits = [
+        index
+        for index, line in enumerate(lines)
+        if (
+            (match := _GLOBAL_LABEL_RE.fullmatch(_code(line))) is not None
+            and match.group("label") == parent_label
+        )
+    ]
+    if not parent_hits:
         raise DataTableParseError(f"parent label not found: {parent_label}")
+    if len(parent_hits) != 1:
+        source_lines = ", ".join(str(index + 1) for index in parent_hits)
+        raise DataTableParseError(
+            f"parent label {parent_label!r} is ambiguous; "
+            f"found {len(parent_hits)} declarations on lines {source_lines}"
+        )
+    parent_line = parent_hits[0]
 
     opening_line: int | None = None
     for index in range(parent_line + 1, len(lines)):

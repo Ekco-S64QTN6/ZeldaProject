@@ -1223,3 +1223,13 @@ parser rejects non-literal expressions and does not execute Asar expressions.
 Source offsets and ROM provenance remain unverified; the real-ROM run is a
 separate evidence gate. See [text schemas and verification](./schemas/text.md)
 and the [text-message byte report schema](./schemas/text-message-byte-verification.schema.json).
+
+
+## Scoped parser ambiguity
+
+When `inspect-data-table` uses `--parent-label` to scope a local table label,
+the parent global label must itself be unique in the source file. If the same
+parent label is declared more than once, parsing fails with all matching
+source line numbers; the parser never silently chooses the first block. This
+is a structural source check only and does not evaluate assembler expressions
+or establish ROM offsets.
