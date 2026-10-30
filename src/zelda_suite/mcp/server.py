@@ -22,6 +22,7 @@ from zelda_suite.project import (
     get_overworld_hidden_item_model,
     get_source_asset,
     list_source_assets,
+    update_custom_overworld_hidden_item,
     validate_project,
 )
 
@@ -143,6 +144,34 @@ def create_server(database_path: str | Path) -> FastMCP:
         """
         result = create_custom_overworld_hidden_item(
             db_path,
+            area_indices=area_indices,
+            coordinate_word=coordinate_word,
+            value_byte=value_byte,
+            dry_run=not apply,
+        )
+        return _render_json(result)
+
+    @server.tool()
+    def overworld_update_custom_hidden_item(
+        custom_record_id: Annotated[int, Field(strict=True, ge=1)],
+        area_indices: Annotated[
+            list[Annotated[int, Field(strict=True, ge=0, le=127)]],
+            Field(min_length=1, max_length=128),
+        ] | None = None,
+        coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
+        value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
+        apply: Annotated[bool, Field(strict=True)] = False,
+    ) -> str:
+        """Preview an edit to a project-authored hidden item; set apply=true to persist it.
+
+        Omitted fields retain their current value. When area_indices is supplied,
+        it replaces the complete many-to-many area-link set. Imported source
+        records cannot be edited through this tool. The default is a read-only
+        preview.
+        """
+        result = update_custom_overworld_hidden_item(
+            db_path,
+            custom_record_id,
             area_indices=area_indices,
             coordinate_word=coordinate_word,
             value_byte=value_byte,
