@@ -49,7 +49,7 @@ def create_server(database_path: str | Path) -> FastMCP:
         instructions=(
             "You are connected to one explicitly configured ZeldaProject SQLite "
             "database. Read tools inspect the project and source metadata only. "
-            "Project-authored custom hidden-item create/delete tools preview by "
+            "Project-authored custom hidden-item create/update/delete tools preview by "
             "default; set apply=true only when the user has approved persisting "
             "that project-local change. These tools never read, patch, rebuild, "
             "or write a ROM. Imported source rows and their source baselines are "
