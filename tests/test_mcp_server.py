@@ -22,10 +22,12 @@ REPLACEMENTS = [
 
 
 def _tool_text(result: Any) -> str:
-    assert isinstance(result, list)
-    assert result
-    assert hasattr(result[0], "text")
-    return str(result[0].text)
+    # FastMCP v1.28+ returns (content_blocks, structured_content).
+    content = result[0] if isinstance(result, tuple) else result
+    assert isinstance(content, list)
+    assert content
+    assert hasattr(content[0], "text")
+    return str(content[0].text)
 
 
 def _seed_semantic_model(database: Path) -> None:
