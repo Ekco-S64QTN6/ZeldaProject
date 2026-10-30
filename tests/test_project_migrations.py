@@ -28,7 +28,7 @@ def _make_schema_v1_project(tmp_path: Path, name: str) -> tuple[Path, Path]:
             ).fetchall()
         ]
         for table_name in table_names:
-            if table_name not in {"project", "schema_version"}:
+            if table_name not in {"project", "schema_version", "sqlite_sequence"}:
                 escaped = table_name.replace('"', '""')
                 connection.execute(f'DROP TABLE "{escaped}"')
         connection.execute("DELETE FROM schema_version WHERE version > 1")
@@ -52,7 +52,7 @@ def _assert_schema_v1(database: Path) -> None:
         project_version = connection.execute(
             "SELECT format_version FROM project WHERE singleton = 1"
         ).fetchone()
-    assert tables == {"project", "schema_version"}
+    assert tables == {"project", "schema_version", "sqlite_sequence"}
     assert version_rows == [(1,)]
     assert project_version == (1,)
 
