@@ -1757,7 +1757,7 @@ def create_custom_overworld_hidden_item(
     changed. A committed custom record is project-local and never writes a ROM.
     """
     if not isinstance(dry_run, bool):
-        raise ValueError("dry_run must be a boolean")
+        raise TypeError("dry_run must be a boolean")
     validated_areas = _validated_custom_hidden_item_fields(
         coordinate_word, value_byte, area_indices
     )
@@ -1868,7 +1868,7 @@ def delete_custom_overworld_hidden_item(
     ):
         raise ValueError("custom_record_id must be a positive integer")
     if not isinstance(dry_run, bool):
-        raise ValueError("dry_run must be a boolean")
+        raise TypeError("dry_run must be a boolean")
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
