@@ -13,7 +13,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Confirm local US-ROM identity and bootability. On 2026-10-29 the user-run file matched the documented No-Intro USA size, CRC-32, SHA-1, and MD5 fingerprints and the user confirmed it boots. This supports byte identity with that catalog entry plus a manual boot check; it does not independently establish chain of custody or provide an automated emulator test. ROMs remain untracked and are excluded from CI; see [the local-ROM verification runbook](./docs/real-rom-verification.md).
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
 - [~] Smoke-test YAZE v0.7.2 `z3ed` against the locally supplied US ROM. ROM identification, raw reads, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. `overworld-describe-map --screen=80` fails with `Offset 1311049 out of range (size: 1048576)`; a source audit traced this to v0.7.2's unconditional `LoadDiggableTiles()` read of ZSCustomOverworld v3 settings address `0x140149`, not to a screen-80 pointer. The malformed staircase label is also source-diagnosed: v0.7.2 stores `absl::StrCat(...).data()` from a temporary string into a `const char*` field; its pointer lifetime ends before CLI serialization. Upstream corrected these issues in commits [`566d7c6`](https://github.com/scawful/yaze/commit/566d7c6ea08b0df2addbb67940aa56794ef052fb) (2026-09-29) and [`8d4f1ad`](https://github.com/scawful/yaze/commit/8d4f1ad59f539f378ca63faa84545b59e3aa3c5b) (2026-10-13). The user's v0.7.2 binary has not been retested with an updated build. See [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
-- [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
+- [~] Provide an opt-in project-bound stdio MCP server for bounded project reads/validation and dry-run-first custom hidden-item create/delete. The z3cli/model endpoint and a real external host session remain unverified.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
 - [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v5 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v5 stores source-preserving overworld hidden-item areas/records, separate project-authored hidden-item additions with many-to-many area links, and packed dungeon chest records with constrained field edits; it is not yet a general game-system data model.
 
@@ -158,13 +158,13 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [ ] Expose validated authoring API functions as MCP tools with strict input/output schemas.
+- [~] Expose initial project validation/source metadata reads, bounded overworld/dungeon reads, and dry-run-first project-authored hidden-item create/delete as an optional stdio MCP server with strict input schemas. Source-row updates, chest edits, source imports, and ROM operations are not exposed yet.
 - [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
 - [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
 
-**Exit criteria:** Not met. The MCP authoring tools and edit-to-build verification loop are future work.
+**Exit criteria:** Not met. The initial bounded MCP server is implemented, but external host interoperability, human approval workflow, broader authoring operations, deterministic ROM diffs, and emulator-backed edit-to-build verification remain future work.
 
 ## Phase 4 — Maker-Style Expansion
 
