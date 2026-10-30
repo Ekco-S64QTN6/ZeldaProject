@@ -176,3 +176,68 @@ def test_committed_dictionary_inventory_export_matches_pinned_source() -> None:
     )
     assert payload["fragments"] == [fragment.to_dict() for fragment in fragments]
     assert payload["fragment_count"] == len(fragments)
+
+
+@pytest.mark.skipif(
+    not SOURCE_PATH.is_file(),
+    reason="AsarUSALTTPDisassembly submodule is not checked out",
+)
+def test_pinned_dictionary_source_preserves_symbol_and_you_extent_discrepancies() -> None:
+    """Pin the two unresolved Bank0E source inconsistencies without repairing them."""
+    source = SOURCE_PATH.read_text(encoding="utf-8")
+    lines = source.splitlines()
+
+    consumer_references = [
+        (line_number, line.strip())
+        for line_number, line in enumerate(lines, start=1)
+        if "Text_DictionaryPointers" in line
+    ]
+    assert consumer_references == [
+        (
+            6018,
+            "LDA.w Text_DictionaryPointers+2, Y : STA.b $00",
+        ),
+        (
+            6019,
+            "LDA.w Text_DictionaryPointers+0, Y : TAY",
+        ),
+    ]
+    # There is one visible table declaration, but no source-level declaration
+    # or alias with the consumer's Text_ prefix in the pinned Bank0E.asm.
+    assert [line.strip() for line in lines if line.strip() == "DictionaryPointers:"] == [
+        "DictionaryPointers:"
+    ]
+    assert not any(
+        line.strip() == "Text_DictionaryPointers:" for line in lines
+    )
+
+    entries = parse_dictionary_fragment_inventory(
+        source,
+        pointer_table_file_offset=0x074703,
+        data_file_offset=0x0747C7,
+        source_revision=PINNED_REVISION,
+    )
+    you = entries[96]
+    end = entries[97]
+    assert you.pointer_expression == "DictionaryEntries_You"
+    assert you.fragment_file_offset == 0x0748D6
+    assert you.data_directive == "dw"
+    assert you.directive_value_count == 3
+    assert you.declared_payload_bytes == 6
+    assert you.next_fragment_file_offset == 0x0748D8
+    assert you.source_extent_bytes == 2
+    assert you.source_extent_matches_directive is False
+    assert end.pointer_expression == "DictionaryEntries_endOfTable"
+    assert end.fragment_file_offset == 0x0748D8
+
+    # The runtime reads the current pointer as the start and the following
+    # pointer as the exclusive end. Do not "fix" the source annotations here.
+    assert (
+        "LDA.w Text_DictionaryPointers+2, Y : STA.b $00"
+        in source
+    )
+    assert (
+        "LDA.w Text_DictionaryPointers+0, Y : TAY"
+        in source
+    )
+    assert "INY : CPY.b $00 : BCC .nextCharacter" in source

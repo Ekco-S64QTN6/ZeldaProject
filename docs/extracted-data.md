@@ -108,8 +108,13 @@ diff -u data/extracted/text-dictionary-fragments.json /tmp/text-dictionary-fragm
 The `.You` fragment is annotated at `$0748D6`, with `.endOfTable` at
 `$0748D8`, so its source-comment extent is two bytes. The same source declares
 `dw $18, $28, $2E`, which implies six bytes. The inventory preserves both facts
-and sets `source_extent_matches_directive=false`; it does not choose which
-annotation is wrong or claim that binary offsets have been validated.
+and sets `source_extent_matches_directive=false`. The pinned runtime consumer
+in `Text_DictionarySequence` uses the next pointer as an exclusive end, so the
+comment-derived interval is two bytes while the `dw` directive declares six.
+The later local-ROM pointer-word match does not read the fragment payload or
+decide which source fact is stale. Preserve both values; do not choose a
+replacement directive, offset, or binary interpretation from this metadata
+alone.
 
 
 ## Text dictionary fragment inventory
@@ -140,8 +145,23 @@ The current source declares 98 pointer targets, including `.endOfTable` at
 `$0748D6` and is followed by `.endOfTable` two bytes later, but its source
 directive is `dw` with three values (six declared bytes). This is reported as
 `source_extent_matches_directive: false`; no attempt is made to repair or
-reinterpret that source declaration. Validate this region against a clean local
-US ROM and the actual message decoder before using it as a writable schema.
+reinterpret that source declaration. The runtime consumer uses the next
+pointer as an exclusive bound, so the annotated two-byte interval and the
+six-byte `dw` declaration are also inconsistent with one another. The
+pointer-word comparison does not validate the fragment bytes. Validate this
+region against a clean local US ROM and the actual message decoder before using
+it as a writable schema.
+
+The pinned `Text_DictionarySequence` consumer reads
+`Text_DictionaryPointers+0` and `Text_DictionaryPointers+2` at
+[`Bank0E.asm:6018–6019`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6018-L6019),
+but the only global declaration in that file is
+[`DictionaryPointers:` at line 6039](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6039).
+The pinned file contains no `Text_DictionaryPointers:` declaration or explicit
+alias. A source-parity regression pins these two references and the missing
+alias without asserting why the disassembly contains the mismatch or how an
+external build might resolve it. Keep the report's
+`source_symbol_name_mapping_verified: false` status.
 
 The JSON shape is described by
 [the dictionary fragment inventory schema](./schemas/dictionary-inventory-export.schema.json).
@@ -1180,9 +1200,13 @@ compare the 98 pointer words at file offset `$074703` against candidate
 requires an expected-size 1 MiB headerless image and never writes it. It
 reports the known `.You` source-extent discrepancy separately from pointer
 mismatches. Candidate offsets and ROM provenance remain unverified; the
-fragment payload bytes and text decoder are outside this check, and the
-`Text_DictionaryPointers`/ `DictionaryPointers` source symbol-name caveat
-remains unresolved. See
+fragment payload bytes and text decoder are outside this check. In the
+pinned `Bank0E.asm`, `Text_DictionarySequence` references
+`Text_DictionaryPointers` at lines 6018–6019, while the only global table
+declaration is `DictionaryPointers:` at line 6039; no explicit alias appears
+in that file. The `.You` directive declares six bytes inside a two-byte
+comment-derived interval, while the runtime uses the next pointer as an
+exclusive bound. Both source inconsistencies remain unresolved. See
 [`docs/schemas/text.md`](./schemas/text.md) and the
 [text dictionary pointer verification schema](./schemas/text-dictionary-pointer-verification.schema.json).
 
