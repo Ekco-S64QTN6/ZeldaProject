@@ -475,5 +475,5 @@ def test_cli_migration_and_source_asset_commands(tmp_path: Path) -> None:
     migrated_db, _ = _create_schema_v1_project(tmp_path / "cli_legacy")
     migrated = runner.invoke(cli, ["migrate-project", str(migrated_db)])
     assert migrated.exit_code == 0, migrated.output
-    assert "Migrated project to schema v4" in migrated.output
+    assert "Migrated project to schema v5" in migrated.output
     assert validate_project(migrated_db) == []
