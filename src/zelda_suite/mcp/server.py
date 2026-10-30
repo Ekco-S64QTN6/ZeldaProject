@@ -24,6 +24,7 @@ from zelda_suite.project import (
     list_source_assets,
     update_custom_overworld_hidden_item,
     update_dungeon_chest_record,
+    update_overworld_hidden_item,
     validate_project,
 )
 
@@ -52,10 +53,10 @@ def create_server(database_path: str | Path) -> FastMCP:
             "database. Read tools inspect the project and source metadata only. "
             "Project-authored custom hidden-item changes and packed dungeon-chest "
             "field edits preview by default; set apply=true only when the user has "
-            "approved persisting that project-local change. Chest edits preserve "
-            "the imported source baseline. These tools never read, patch, rebuild, "
-            "or write a ROM. Imported overworld source rows are not editable "
-            "through this MCP surface."
+            "approved persisting that project-local change. Imported overworld "
+            "record edits preserve source fields and area aliases; chest edits "
+            "preserve their source baseline. These tools never read, patch, "
+            "rebuild, or write a ROM."
         ),
     )
 
@@ -117,6 +118,29 @@ def create_server(database_path: str | Path) -> FastMCP:
             "evidence": model["evidence"],
         }
         return _render_json(payload)
+
+    @server.tool()
+    def overworld_update_hidden_item_record(
+        record_index: Annotated[int, Field(strict=True, ge=0, le=350)],
+        coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
+        value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
+        apply: Annotated[bool, Field(strict=True)] = False,
+    ) -> str:
+        """Preview an edit to an imported overworld row; set apply=true to persist it.
+
+        The source coordinate/value fields and existing area aliases remain
+        immutable. Consumer classification is recalculated for the proposed
+        value byte. $FFFF is reserved as the list sentinel; the byte is raw
+        source data, not a canonical item ID. This tool changes SQLite/JSON only.
+        """
+        result = update_overworld_hidden_item(
+            db_path,
+            record_index,
+            coordinate_word=coordinate_word,
+            value_byte=value_byte,
+            dry_run=not apply,
+        )
+        return _render_json(result)
 
     @server.tool()
     def dungeon_list_chest_records() -> str:
