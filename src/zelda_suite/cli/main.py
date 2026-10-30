@@ -3669,7 +3669,6 @@ def update_overworld_hidden_item_command(
 
 
 
-
 @cli.command(name="create-custom-overworld-hidden-item")
 @click.argument(
     "database",
@@ -3680,12 +3679,12 @@ def update_overworld_hidden_item_command(
     type=click.IntRange(min=0, max=127),
     multiple=True,
     required=True,
-    help="Area to associate with the custom record; repeat to assign multiple aliases.",
+    help="Area index to associate with this project-authored record; repeat to preserve aliases.",
 )
 @click.option(
     "--coordinate-word",
     required=True,
-    help="Raw 16-bit coordinate word (decimal, 0x-prefixed, or Asar $-prefixed); $FFFF is reserved.",
+    help="Raw 16-bit coordinate word (decimal, 0x-prefixed, or Asar $-prefixed). $FFFF is reserved.",
 )
 @click.option(
     "--value-byte",
@@ -3695,7 +3694,7 @@ def update_overworld_hidden_item_command(
 @click.option(
     "--apply",
     is_flag=True,
-    help="Persist the record; without this option, return a dry-run preview.",
+    help="Persist the record; without this option, only a dry-run preview is returned.",
 )
 def create_custom_overworld_hidden_item_command(
     database: Path,
@@ -3713,7 +3712,7 @@ def create_custom_overworld_hidden_item_command(
             value_byte=_parse_offset_text(value_byte),
             dry_run=not apply,
         )
-    except (KeyError, ValueError, OSError, click.BadParameter) as exc:
+    except (KeyError, ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
 
@@ -3727,12 +3726,12 @@ def create_custom_overworld_hidden_item_command(
 @click.option(
     "--apply",
     is_flag=True,
-    help="Delete the custom record; without this option, return a dry-run preview.",
+    help="Delete the project-authored record; without this option, only preview the deletion.",
 )
 def delete_custom_overworld_hidden_item_command(
     database: Path, custom_record_id: int, apply: bool
 ) -> None:
-    """Preview or delete a project-authored hidden item; source rows are immutable."""
+    """Preview or delete a project-authored hidden item; source records are immutable."""
     try:
         result = delete_custom_overworld_hidden_item(
             database, custom_record_id, dry_run=not apply
@@ -3740,7 +3739,6 @@ def delete_custom_overworld_hidden_item_command(
     except (KeyError, ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
-
 
 @cli.command(name="import-dungeon-chest-data")
 @click.argument(
