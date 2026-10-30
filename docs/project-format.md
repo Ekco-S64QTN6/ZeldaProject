@@ -31,9 +31,9 @@ canonical US ROM filename, but leaves its SHA-256 unset until a later extraction
 workflow explicitly verifies the base ROM. ROM files are never copied into a
 project or added to Git.
 
-## Schema version 4
+## Schema version 5
 
-A current project has ten tables:
+A current project has twelve tables:
 
 - `project`: singleton project metadata, JSON format version, creation time,
   expected base-ROM filename, and nullable base-ROM SHA-256.
@@ -58,38 +58,53 @@ A current project has ten tables:
   expression, literal, item byte, room value, and big-chest flag preserved beside
   editable fields. Database checks require both source and edited fields to
   recompose to their corresponding packed 24-bit values.
+- `overworld_hidden_item_custom_record`: project-authored additions with
+  database-generated IDs, bounded coordinate/value bytes, and creation time.
+  They are not source rows and have no source label or source offset.
+- `overworld_hidden_item_custom_area_record`: project-authored many-to-many
+  assignments to existing area indexes. These relationships are separate from
+  the imported source `record_indices` and never rewrite source alias rows.
 
 The first semantic model deliberately does not name canonical item IDs: the
 third byte is classified from the pinned `Overworld_RevealSecret` consumer
 as a zero value, ordinary secret-state mask, or extended selector. Coordinates
 and bytes can be edited in the project; ROM bytes cannot be written. Project
-JSON format v4 adds `overworld_hidden_items` and `dungeon_chests` members (null
+JSON format v5 adds `overworld_hidden_items` and `dungeon_chests` members (null
 until imported, otherwise structured snapshots of the semantic model and source
-baselines). Dungeon chest edits recompose the three-byte literal from the top-byte
-item value, low-15-bit room value, and bit-15 big-chest flag. Values remain raw:
-item names are not resolved, room/pointer relationships remain source metadata,
-and candidate source offsets are not asserted as verified ROM offsets. Both
-semantic models modify SQLite plus the JSON sidecar only; no ROM-writing path is
-implemented. The existing `source_assets` metadata API remains available.
+baselines). The embedded hidden-item model is format v2 and keeps imported
+`records` separate from project-authored `custom_records`. Each custom record
+has no source record index and can be assigned to multiple areas through its
+own relationship table. Create and delete operations default to dry-run; use
+`dry_run=False` in Python or CLI `--apply` to persist. Deleting a custom record
+cascades only its custom area links. The 351 source records, their baselines,
+and their source alias relationships remain unchanged, including after an
+explicit source-model re-import. Dungeon chest edits recompose the three-byte
+literal from the top-byte item value, low-15-bit room value, and bit-15 big-chest
+flag. Values remain raw: item names are not resolved, room/pointer relationships
+remain source metadata, and candidate source offsets are not asserted as verified
+ROM offsets. Both semantic models modify SQLite plus the JSON sidecar only; no
+ROM-writing path is implemented. The existing `source_assets` metadata API
+remains available.
 
 ## Migrate older projects
 
-Schema-v1, schema-v2, and schema-v3 projects must be upgraded explicitly:
+Schema-v1, schema-v2, schema-v3, and schema-v4 projects must be upgraded explicitly:
 
 ```bash
 uv run zelda-suite migrate-project project/my-hack.db
 ```
 
 A v1 project migrates sequentially through schema v2 (adds `source_asset`),
-schema v3 (adds overworld hidden-item tables), and schema v4 (adds dungeon
-chest tables). A v2 project migrates through v3 and v4; a v3 project gets v4
-directly. The migrations preserve project metadata, record every schema version,
-and rewrite the JSON sidecar as format v4. Each individual schema-version
+schema v3 (adds overworld hidden-item tables), schema v4 (adds dungeon chest
+tables), and schema v5 (adds project-authored hidden-item records and area
+links). A v2 project migrates through v3–v5, a v3 project through v4–v5, and a
+v4 project gets v5 directly. The migrations preserve project metadata, record
+every schema version, and rewrite the JSON sidecar as format v5. Each individual schema-version
 transition starts an explicit SQLite
 `BEGIN IMMEDIATE` transaction before its DDL, then commits the new tables and
 matching `project.format_version` and `schema_version` metadata together. If
 any statement in a transition fails, SQLite rolls back that transition,
-including tables created earlier in the same step. A multi-step v1-to-v4
+including tables created earlier in the same step. A multi-step v1-to-v5
 migration commits each version separately; if a later step fails, the database
 remains at the last successfully committed schema version and the migration
 can be retried from there. The JSON sidecar is refreshed only after all
@@ -100,6 +115,43 @@ during validation or asset import. Use `--json PATH` to write the export to
 a non-default location. Running the command on a current project does not
 change the database; it refreshes the JSON sidecar from SQLite.
 
+
+## Create and delete project-authored hidden items
+
+The 351 imported records and their source-area memberships are source evidence
+and remain immutable as a collection. To experiment with extra hidden items,
+create a separate project-authored record and assign it to one or more existing
+area indexes:
+
+```bash
+# Preview only; this is the default.
+uv run zelda-suite create-custom-overworld-hidden-item project/my-hack.db \
+  --area-index 12 --area-index 13 \
+  --coordinate-word '$1234' --value-byte '$05'
+
+# Commit the record and both area links.
+uv run zelda-suite create-custom-overworld-hidden-item project/my-hack.db \
+  --area-index 12 --area-index 13 \
+  --coordinate-word '$1234' --value-byte '$05' --apply
+
+# Preview deletion, then explicitly apply it.
+uv run zelda-suite delete-custom-overworld-hidden-item project/my-hack.db 1
+uv run zelda-suite delete-custom-overworld-hidden-item project/my-hack.db 1 --apply
+```
+
+Creation validates area indexes (0–127), rejects duplicate assignments, rejects
+coordinate word `$FFFF` (the source consumer's list sentinel), and bounds the
+value to one byte. The consumer classification is derived from the same pinned
+replacement-word table as source records. Custom record IDs are database-
+generated and distinct from source record indexes. Area exports keep source
+`record_indices` and project `custom_record_ids` separate; custom assignments
+are many-to-many and serialized in deterministic ID order.
+
+Deletion is restricted to custom record IDs. Source record indexes cannot be
+deleted through this API. Explicit source-model replacement resets edits to the
+imported source rows but preserves project-authored records and their area
+assignments. All operations update SQLite and the JSON sidecar only; they do not
+calculate ROM offsets, patch, or write ROM bytes.
 ## Import and query source assets
 
 ```bash
