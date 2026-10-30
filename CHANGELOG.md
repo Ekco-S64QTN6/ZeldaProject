@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Allow `dungeon_list_chest_records` to select one bounded table index (0–167) through MCP while preserving the full-model response when omitted. Focused reads carry source provenance and evidence flags, avoiding a 168-entry response when an agent needs one chest.
+
 - Expose `dungeon_audit_chest_room_references` through the project-bound MCP server. The read-only tool is bound to the registered asset manifest at startup, joins current edited chest room values to both source pointer tables, preserves original room baselines, and reports out-of-range/mismatched targets without reading or writing ROM bytes.
 
 - Expose `overworld_update_hidden_item_record` through the optional project-bound MCP server. The tool accepts bounded imported record indexes and coordinate/value fields, previews by default, recalculates consumer classification, preserves source baselines and area aliases, and requires `apply=true` for project-local SQLite/JSON edits; ROM access and writes remain excluded.
