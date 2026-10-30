@@ -559,6 +559,32 @@ payload bytes, decode text, establish ROM provenance, or resolve the consumer's
 `Text_DictionaryPointers` versus the visible `DictionaryPointers` declaration
 name. Do not treat a matching result as clean-ROM certification.
 
+The pinned source makes both caveats concrete. In
+[`Bank0E.asm:6018–6019`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6018-L6019),
+`Text_DictionarySequence` reads `Text_DictionaryPointers+0` as the fragment
+start and `Text_DictionaryPointers+2` as the next-pointer bound; it copies
+bytes until the current pointer reaches that bound. The only corresponding
+global table declaration in the pinned file is
+[`DictionaryPointers:` at line 6039](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6039).
+The two `Text_DictionaryPointers` occurrences are the consumer reads; there
+is no declaration or explicit alias with that name in the pinned `Bank0E.asm`.
+The disassembly describes itself as work in progress, so this source mismatch
+does not prove whether another build-time mechanism supplies an alias or
+whether the reference/declaration is stale. No rename or alias is inferred.
+
+The final fragment has a related source-layout conflict:
+[`Bank0E.asm:6532–6536`](https://github.com/JaredBrian/AsarUSALTTPDisassembly/blob/347c23f9fc019c72d32da537c9cb235f468d021d/Bank0E.asm#L6532-L6536)
+annotates `.You` at `$0748D6`, then declares `dw $18, $28, $2E` (three
+words, six bytes), while `.endOfTable` is annotated at `$0748D8` (a
+two-byte comment-derived span). Because the consumer uses the following
+pointer as the exclusive end, those comments imply a two-byte read interval,
+not the six bytes declared by the directive. Separately, the pointer verifier's
+`$C8D9` terminal candidate uses the exclusive end of the inclusive
+`$0747C7–$0748D8` DATA range; it does not rewrite the raw `.endOfTable`
+comment at `$0748D8`. The committed inventory and verifier deliberately keep
+these source facts separate. Neither the directive nor the comments are
+promoted to verified payload bytes or canonical offsets.
+
 ## Encoded text-message byte comparison
 
 Use the pinned disassembly blocks with an authorized local 1 MiB headerless
