@@ -128,9 +128,12 @@ Before requesting review, confirm that the change:
 - [ ] Passes `python -m compileall -q src tests`, Ruff on the changed Python
       components, `python -m mypy src`, and `python -m pytest -q`.
 
-A green CI run is required before merging. If a check cannot run because a local
-ROM or external tool is unavailable, leave the Roadmap gate open and say so
-explicitly rather than replacing it with a source-only approximation.
+A green CI run is required before merging. Project-local semantic updates must
+remain preview-only by default: test that preview calls leave SQLite and JSON
+unchanged, and use explicit `--apply` (CLI) or `dry_run=False` (Python) in tests
+that exercise persistence. If a check cannot run because a local ROM or external
+tool is unavailable, leave the Roadmap gate open and say so explicitly rather
+than replacing it with a source-only approximation.
 
 
 For text dictionary changes, also run `uv run zelda-suite audit-text-dictionary` and review both pointer-to-fragment label coverage and source-extent warnings. The audit uses committed metadata only; do not resolve pointer values or rewrite the `.You` extent annotation without separate source/ROM evidence.

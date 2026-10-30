@@ -204,12 +204,16 @@ uv run zelda-suite import-overworld-hidden-items \
   project/my-hack.db reference/AsarUSALTTPDisassembly/Bank1B.asm
 uv run zelda-suite list-overworld-hidden-items project/my-hack.db --area-index 0
 uv run zelda-suite update-overworld-hidden-item project/my-hack.db 0 \
-  --coordinate-word '$1234' --value-byte '$84'
+  --coordinate-word '$1234' --value-byte '$84'  # preview only
+uv run zelda-suite update-overworld-hidden-item project/my-hack.db 0 \
+  --coordinate-word '$1234' --value-byte '$84' --apply
 uv run zelda-suite validate project/my-hack.db
 ```
 
 Record indexes refer to the stable source record order, not to canonical item
-IDs. The CLI validates coordinate words (`$FFFF` is reserved as the area's list
+IDs. Updates return a read-only before/proposed preview by default; pass
+`--apply` to persist the change, or use `dry_run=False` with the Python API. The
+CLI validates coordinate words (`$FFFF` is reserved as the area's list
 terminator), validates bytes, and reclassifies an edited byte using the pinned
 source consumer. Source values/coordinates remain alongside edits so the JSON
 export shows exactly which records differ from their baseline. Aliased areas
@@ -227,7 +231,9 @@ uv run zelda-suite import-dungeon-chest-data project/my-hack.db
 uv run zelda-suite list-dungeon-chest-records project/my-hack.db --table-index 5
 uv run zelda-suite list-dungeon-chest-records project/my-hack.db --room-value '$32'
 uv run zelda-suite update-dungeon-chest-record project/my-hack.db 0 \
-  --item-value '$AA' --room-value '$1234' --big-chest
+  --item-value '$AA' --room-value '$1234' --big-chest  # preview only
+uv run zelda-suite update-dungeon-chest-record project/my-hack.db 0 \
+  --item-value '$AA' --room-value '$1234' --big-chest --apply
 uv run zelda-suite validate project/my-hack.db
 ```
 
@@ -237,7 +243,9 @@ canonical item names have not been resolved. The low 15 bits remain a raw room
 value; the project also reports the consumer-derived `room_pointer_index` and
 three-byte table displacement, without asserting candidate ROM offsets as
 verified. The original packed literal, expression, and unpacked fields are never
-overwritten by edits. Re-import refuses to clobber edits unless `--replace` is
+overwritten by edits. Updates return a before/proposed preview by default; pass
+`--apply` in the CLI or `dry_run=False` in Python to persist SQLite and refresh
+the JSON sidecar. Re-import refuses to clobber edits unless `--replace` is
 supplied explicitly. This model is for project authoring only and never writes
 or patches ROM bytes.
 ## JSON export contract

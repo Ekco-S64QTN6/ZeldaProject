@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Make imported hidden-item and packed dungeon-chest update APIs preview-only by default. The CLI now requires explicit `--apply` to persist; Python callers must pass `dry_run=False`. Preview paths open SQLite read-only, return before/proposed values and changed fields, and leave the database and JSON sidecar unchanged. Applied edits use an explicit write transaction and preserve immutable source fields; no ROM bytes are touched.
+
 - Add a dry-run-first `update_custom_overworld_hidden_item()` API, `update-custom-overworld-hidden-item` CLI command, and `overworld_update_custom_hidden_item` MCP tool. Updates may change the raw coordinate word/value byte and/or replace the full area-link set; omitted fields remain unchanged. The operation validates bounds and aliases, refreshes canonical JSON only on apply, and cannot edit any of the 351 imported source rows. Advance the pre-release Python package to 0.5.0.
 
 - Add an opt-in project-bound stdio MCP server and `zelda-suite-mcp` entry point. The optional `agent` extra pins MCP SDK v1 (`mcp>=1.28.1,<2`); eight bounded tools expose validation/source metadata reads, overworld/dungeon model reads, and dry-run-first project-authored hidden-item create/update/delete. The server binds one database at startup and does not expose arbitrary paths, imports, imported source-row updates, chest edits, or ROM access.
