@@ -3464,16 +3464,26 @@ def migrate_project_command(
     is_flag=True,
     help="Replace an existing asset with this key instead of refusing the duplicate.",
 )
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Validate and preview the import without changing the database or JSON sidecar.",
+)
 def import_source_asset_command(
     database: Path,
     asset_key: str,
     source_export: Path,
     replace_existing: bool,
+    dry_run: bool,
 ) -> None:
-    """Import a validated source-export JSON file into the SQLite project."""
+    """Preview or import a validated source-export JSON file."""
     try:
         record = import_source_asset(
-            database, asset_key, source_export, replace_existing=replace_existing
+            database,
+            asset_key,
+            source_export,
+            replace_existing=replace_existing,
+            dry_run=dry_run,
         )
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
@@ -3502,14 +3512,20 @@ def import_source_asset_command(
     is_flag=True,
     help="Replace an existing project asset under the selected key.",
 )
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Validate and preview the import without changing the database or JSON sidecar.",
+)
 def import_extracted_asset_command(
     database: Path,
     asset_name: str,
     registry_path: Path | None,
     asset_key: str | None,
     replace_existing: bool,
+    dry_run: bool,
 ) -> None:
-    """Import a committed asset by its validated manifest name."""
+    """Preview or import a committed asset by its validated manifest name."""
     try:
         record = import_extracted_asset(
             database,
@@ -3517,6 +3533,7 @@ def import_extracted_asset_command(
             registry_path or "data/extracted/manifest.json",
             asset_key=asset_key,
             replace_existing=replace_existing,
+            dry_run=dry_run,
         )
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc

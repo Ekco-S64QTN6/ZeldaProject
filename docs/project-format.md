@@ -171,10 +171,18 @@ calculate ROM offsets, patch, or write ROM bytes.
 ## Import and query source assets
 
 ```bash
+# Preview the registered import without changing SQLite or JSON:
+uv run zelda-suite import-extracted-asset \
+  project/my-hack.db falling-prize-item-values --dry-run
+
+# Apply the validated import after reviewing the preview:
 uv run zelda-suite import-extracted-asset \
   project/my-hack.db falling-prize-item-values
 
 # Explicit-path import remains available for temporary validated exports:
+uv run zelda-suite import-source-asset \
+  project/my-hack.db receive-item-values \
+  data/extracted/item-receipt-values.json --dry-run
 uv run zelda-suite import-source-asset \
   project/my-hack.db receive-item-values \
   data/extracted/item-receipt-values.json
@@ -190,10 +198,15 @@ through the same versioned source-export validator used by the extractor tools.
 For committed assets, `import-extracted-asset` additionally resolves the asset
 through the manifest and checks the registered format, revision, and record
 count before storing it.
-The normalized payload is stored with its SHA-256 digest and source provenance;
-the JSON sidecar is refreshed after the database write. Duplicate keys are
-refused unless `--replace` is supplied deliberately. Replacing a key updates
-that asset snapshot rather than preserving multiple versions under one key.
+Pass `--dry-run` to either import command to validate the complete source
+payload and preview its key, format, source provenance, and proposed SHA-256
+without opening the database for writing or touching the JSON sidecar. When
+replacing an existing key, include both `--replace` and `--dry-run` to inspect
+the previous and proposed metadata before applying the replacement. Omit
+`--dry-run` to persist the import and refresh the JSON sidecar. Duplicate keys
+are refused unless `--replace` is supplied deliberately. Replacing a key
+updates that asset snapshot rather than preserving multiple versions under one
+key.
 
 The Python functions `import_source_asset()`, `list_source_assets()`, and
 `get_source_asset()` provide the same operations. Read operations validate

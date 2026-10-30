@@ -133,6 +133,156 @@ def test_import_source_asset_round_trips_and_updates_canonical_export(
     assert validate_project(database) == []
 
 
+def test_import_source_asset_dry_run_leaves_database_and_export_unchanged(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("preview_asset", tmp_path)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    preview = import_source_asset(
+        database,
+        "falling-prize-values",
+        ITEM_VALUES_EXPORT,
+        dry_run=True,
+    )
+
+    assert preview["action"] == "import_source_asset"
+    assert preview["dry_run"] is True
+    assert preview["key"] == "falling-prize-values"
+    assert preview["replacing"] is False
+    assert preview["before"] is None
+    assert preview["proposed"]["format"] == "zelda-suite-data-table"
+    assert preview["proposed"]["source_file"] == "ancilla_init.asm"
+    assert preview["database_modified"] is False
+    assert preview["json_modified"] is False
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert list_source_assets(database) == []
+
+
+def test_source_asset_replacement_dry_run_preserves_previous_snapshot(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("preview_replace_asset", tmp_path)
+    first = import_source_asset(database, "item-layout", ITEM_VALUES_EXPORT)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    with pytest.raises(ValueError, match="source asset key already exists"):
+        import_source_asset(
+            database,
+            "item-layout",
+            FALL_HEIGHTS_EXPORT,
+            dry_run=True,
+        )
+
+    preview = import_source_asset(
+        database,
+        "item-layout",
+        FALL_HEIGHTS_EXPORT,
+        replace_existing=True,
+        dry_run=True,
+    )
+
+    assert preview["dry_run"] is True
+    assert preview["replacing"] is True
+    assert preview["before"]["sha256"] == first["sha256"]
+    assert preview["proposed"]["sha256"] != first["sha256"]
+    assert preview["proposed"]["format"] == first["format"]
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert get_source_asset(database, "item-layout") == first
+
+
+def test_import_extracted_asset_dry_run_uses_registered_payload_without_writes(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("preview_registry_asset", tmp_path)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    preview = import_extracted_asset(
+        database,
+        "falling-prize-item-values",
+        REGISTRY_PATH,
+        dry_run=True,
+    )
+
+    assert preview["dry_run"] is True
+    assert preview["proposed"]["key"] == "falling-prize-item-values"
+    assert preview["proposed"]["source_revision"]
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert list_source_assets(database) == []
+
+
+def test_cli_source_asset_dry_run_does_not_import_or_refresh_export(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("cli_preview_asset", tmp_path)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "import-source-asset",
+            str(database),
+            "receipt-values",
+            str(ITEM_VALUES_EXPORT),
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    preview = json.loads(result.output)
+    assert preview["dry_run"] is True
+    assert preview["proposed"]["key"] == "receipt-values"
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert list_source_assets(database) == []
+
+
+def test_cli_extracted_asset_replacement_can_be_previewed_before_apply(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("cli_preview_replace", tmp_path)
+    first = import_extracted_asset(
+        database,
+        "falling-prize-item-values",
+        REGISTRY_PATH,
+    )
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    result = CliRunner().invoke(
+        cli,
+        [
+            "import-extracted-asset",
+            str(database),
+            "falling-prize-fall-heights",
+            "--registry",
+            str(REGISTRY_PATH),
+            "--asset-key",
+            "falling-prize-item-values",
+            "--replace",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    preview = json.loads(result.output)
+    assert preview["dry_run"] is True
+    assert preview["replacing"] is True
+    assert preview["before"]["sha256"] == first["sha256"]
+    assert preview["proposed"]["sha256"] != first["sha256"]
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert get_source_asset(database, "falling-prize-item-values") == first
+
+
 def test_import_extracted_asset_uses_registered_provenance(tmp_path: Path) -> None:
     database, _ = initialize_project("registry_import", tmp_path)
     expected = load_extracted_asset("falling-prize-item-values", REGISTRY_PATH)
