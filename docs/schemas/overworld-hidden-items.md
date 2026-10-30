@@ -177,3 +177,25 @@ list for each of the 128 area pointers. The JSON's `provenance_verified` field
 is deliberately false: matching known table declarations does not establish a
 canonical ROM dump. Test against a real local image before accepting the
 source-commented offsets as verified for that image.
+
+
+## Project-authored additions (separate from the source inventory)
+
+The project store's schema-v5 extension allows custom hidden-item entries to be
+created and assigned to one or more existing area indexes. These entries are
+not present in the pinned disassembly and must not be represented as source
+records or assigned source labels/offsets. The source-derived 351 rows and 128
+source area membership lists remain immutable baselines; project JSON exposes
+project-authored additions in a separate `custom_records` collection and each
+area exposes `custom_record_ids` separately from `record_indices`.
+
+Use `create-custom-overworld-hidden-item` to preview an addition; pass
+`--apply` to persist. Use `delete-custom-overworld-hidden-item` to preview
+and explicitly apply deletion of a custom ID. Creation rejects coordinate
+word `$FFFF`, bounds the coordinate to 0–65534 and the consumer value to a
+byte, and resolves the same mask/selector classification from the four imported
+replacement words. A custom record can be associated with multiple areas to
+preserve aliases. Deletion cascades only its custom area links and cannot target
+a source record index. Explicit source-model replacement preserves custom
+records and their area assignments. Both operations change SQLite and its
+canonical JSON sidecar only; they do not read or write ROM bytes.
