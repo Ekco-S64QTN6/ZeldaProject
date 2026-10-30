@@ -16,6 +16,7 @@ from zelda_suite.project.store import (
     get_overworld_hidden_item_model,
     import_overworld_hidden_item_model,
     initialize_project,
+    update_custom_overworld_hidden_item,
     update_overworld_hidden_item,
     validate_project,
 )
@@ -433,3 +434,146 @@ def test_import_pinned_source_preserves_shared_area_aliases_and_source_hash(
     assert replaced["custom_records"][0]["custom_record_id"] == custom_id
     assert replaced["custom_records"][0]["area_indices"] == [0, 1]
     assert validate_project(database) == []
+
+
+def test_custom_hidden_item_update_defaults_to_preview_and_preserves_source_rows(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("custom_item_update", tmp_path)
+    _seed_semantic_model(database)
+    created = create_custom_overworld_hidden_item(
+        database,
+        area_indices=[4, 5],
+        coordinate_word=0x1234,
+        value_byte=0x05,
+        dry_run=False,
+    )
+    custom_id = created["record"]["custom_record_id"]
+    original_database = database.read_bytes()
+    original_export = json_path.read_bytes()
+    with sqlite3.connect(database) as connection:
+        source_records_before = connection.execute(
+            """SELECT record_index, source_coordinate_word, source_value_byte,
+                      coordinate_word, value_byte
+               FROM overworld_hidden_item_record ORDER BY record_index"""
+        ).fetchall()
+        source_links_before = connection.execute(
+            """SELECT area_index, ordinal, record_index
+               FROM overworld_hidden_item_area_record ORDER BY area_index, ordinal"""
+        ).fetchall()
+
+    preview = update_custom_overworld_hidden_item(
+        database,
+        custom_id,
+        area_indices=[7, 6],
+        coordinate_word=0x4567,
+        value_byte=0x84,
+    )
+    assert preview["dry_run"] is True
+    assert preview["before"]["area_indices"] == [4, 5]
+    assert preview["before"]["coordinate_word"] == 0x1234
+    assert preview["proposed"]["area_indices"] == [6, 7]
+    assert preview["proposed"]["coordinate_word"] == 0x4567
+    assert preview["proposed"]["value_byte"] == 0x84
+    assert preview["proposed"]["consumer_class"] == "extended_secret_selector"
+    assert preview["proposed"]["replacement_table_index"] == 2
+    assert preview["changed_fields"] == [
+        "coordinate_word", "value_byte", "area_indices"
+    ]
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == original_database
+    assert json_path.read_bytes() == original_export
+
+    unchanged_model = get_overworld_hidden_item_model(database)
+    assert unchanged_model is not None
+    unchanged_record = unchanged_model["custom_records"][0]
+    assert unchanged_record["area_indices"] == [4, 5]
+    assert unchanged_record["coordinate_word"] == 0x1234
+    assert unchanged_record["value_byte"] == 0x05
+
+    updated = update_custom_overworld_hidden_item(
+        database,
+        custom_id,
+        area_indices=[7, 6],
+        coordinate_word=0x4567,
+        value_byte=0x84,
+        dry_run=False,
+    )
+    record = updated["record"]
+    assert updated["dry_run"] is False
+    assert updated["changed_fields"] == [
+        "coordinate_word", "value_byte", "area_indices"
+    ]
+    assert record["custom_record_id"] == custom_id
+    assert record["record_kind"] == "project_authored"
+    assert record["source_record_index"] is None
+    assert record["area_indices"] == [6, 7]
+    assert record["coordinate_word"] == 0x4567
+    assert record["value_byte"] == 0x84
+    assert record["consumer_class"] == "extended_secret_selector"
+    assert record["replacement_table_index"] == 2
+
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert model["areas"][4]["custom_record_ids"] == []
+    assert model["areas"][5]["custom_record_ids"] == []
+    assert model["areas"][6]["custom_record_ids"] == [custom_id]
+    assert model["areas"][7]["custom_record_ids"] == [custom_id]
+    assert model["summary"]["record_count"] == 351
+    assert model["summary"]["custom_record_count"] == 1
+    assert model["summary"]["custom_area_record_reference_count"] == 2
+
+    with sqlite3.connect(database) as connection:
+        source_records_after = connection.execute(
+            """SELECT record_index, source_coordinate_word, source_value_byte,
+                      coordinate_word, value_byte
+               FROM overworld_hidden_item_record ORDER BY record_index"""
+        ).fetchall()
+        source_links_after = connection.execute(
+            """SELECT area_index, ordinal, record_index
+               FROM overworld_hidden_item_area_record ORDER BY area_index, ordinal"""
+        ).fetchall()
+    assert source_records_after == source_records_before
+    assert source_links_after == source_links_before
+    assert validate_project(database) == []
+
+
+@pytest.mark.parametrize(
+    ("custom_id", "kwargs", "message"),
+    [
+        (True, {"value_byte": 1}, "custom_record_id"),
+        (1, {}, "supply area_indices"),
+        (1, {"area_indices": []}, "at least one area"),
+        (1, {"area_indices": [2, 2]}, "duplicate area"),
+        (1, {"area_indices": [128]}, "0..127"),
+        (1, {"coordinate_word": 0xFFFF}, "reserved as the list sentinel"),
+        (1, {"coordinate_word": True}, "coordinate_word"),
+        (1, {"value_byte": 256}, "value_byte"),
+        (1, {"value_byte": False}, "value_byte"),
+    ],
+)
+def test_custom_hidden_item_update_rejects_invalid_fields(
+    tmp_path: Path,
+    custom_id: int,
+    kwargs: dict[str, object],
+    message: str,
+) -> None:
+    database, _ = initialize_project("invalid_custom_item_update", tmp_path)
+    _seed_semantic_model(database)
+    with pytest.raises(ValueError, match=message):
+        update_custom_overworld_hidden_item(
+            database, custom_id, **kwargs  # type: ignore[arg-type]
+        )
+
+
+def test_custom_hidden_item_update_cannot_target_an_imported_source_record(
+    tmp_path: Path,
+) -> None:
+    database, _ = initialize_project("source_update_guard", tmp_path)
+    _seed_semantic_model(database)
+    with pytest.raises(KeyError, match="custom overworld hidden item not found"):
+        update_custom_overworld_hidden_item(database, 1, value_byte=0x84)
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert model["records"][0]["value_byte"] == model["records"][0]["source_value_byte"]
+    assert model["custom_records"] == []
