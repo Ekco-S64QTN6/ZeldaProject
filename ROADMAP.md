@@ -160,7 +160,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest field updates through the optional stdio MCP server. Strict input schemas pin record/field ranges; imported edits preserve immutable source baselines and area aliases, while chest edits preserve source fields. Source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
+- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, a read-only chest-to-room-pointer audit, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest/imported-overworld updates through the optional stdio MCP server. Strict schemas pin record/field ranges; edits preserve immutable source baselines and area aliases. The room audit uses the startup-bound asset registry and reports source-only findings; source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
 - [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
@@ -245,11 +245,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 3. Continue extending the project-facing authoring API: the MCP server now
    exposes preview-first packed dungeon-chest field edits and imported
    overworld hidden-item row updates in addition to project-authored additions.
-   Next, consider bounded room-object editing. Preserve source baselines,
-   explicit constraints, alias relationships, deterministic exports, and the
-   no-ROM-write boundary. The project-aware chest/room-reference audit continues
-   to report current edited room values alongside immutable source baselines but
-   does not resolve item names or playable room semantics.
+   Next, establish a verified room-payload fixture and reconcile the 320 pointer
+   slots with the unresolved playable-room set before attempting room-object
+   editing. Preserve source baselines, explicit constraints, alias relationships,
+   deterministic exports, and the no-ROM-write boundary. The MCP-exposed
+   chest/room-reference audit reports edited room values beside immutable source
+   baselines but does not resolve item names or playable-room semantics.
 4. Complete Phase 1 extraction and Phase 0 tool checks. The existing matching byte
    comparisons do not decode overworld map payloads, prove all source annotations,
    or establish that the whole editor pipeline works.

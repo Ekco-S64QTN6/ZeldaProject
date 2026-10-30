@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Expose `dungeon_audit_chest_room_references` through the project-bound MCP server. The read-only tool is bound to the registered asset manifest at startup, joins current edited chest room values to both source pointer tables, preserves original room baselines, and reports out-of-range/mismatched targets without reading or writing ROM bytes.
+
 - Expose `overworld_update_hidden_item_record` through the optional project-bound MCP server. The tool accepts bounded imported record indexes and coordinate/value fields, previews by default, recalculates consumer classification, preserves source baselines and area aliases, and requires `apply=true` for project-local SQLite/JSON edits; ROM access and writes remain excluded.
 
 - Expose `dungeon_update_chest_record` through the optional project-bound MCP server. The tool validates the 168-record index and packed field bounds, previews by default, preserves immutable source baselines, and requires `apply=true` for project-local SQLite/JSON edits; ROM access and writes remain excluded.

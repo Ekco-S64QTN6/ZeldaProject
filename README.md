@@ -115,14 +115,15 @@ path. Install the optional SDK dependency and run:
 
 ```bash
 uv sync --extra agent
-uv run zelda-suite-mcp --database project/my-hack.db
+uv run zelda-suite-mcp --database project/my-hack.db --registry data/extracted/manifest.json
 ```
 
 Alternatively, set `ZELDA_SUITE_PROJECT_DB` and omit `--database`. The tool
 surface includes project validation/source-asset reads, overworld hidden-item
 reads and preview-first imported hidden-item record updates, dungeon chest
-reads and bounded packed-chest field edits, plus project-authored hidden-item
-create/update/delete. All mutation tools default to previews; `apply=true`
+reads and bounded packed-chest field edits, a read-only chest-to-room-pointer
+audit, plus project-authored hidden-item create/update/delete. Set `--registry`
+(or `ZELDA_SUITE_ASSET_REGISTRY`) to the registered asset manifest. All mutation tools default to previews; `apply=true`
 explicitly persists the project-local SQLite/JSON change while preserving
 source baselines and area aliases. Source imports, ROM access, and ROM writes
 are not exposed. See
