@@ -123,6 +123,33 @@ def _seed_semantic_model(database: Path) -> None:
                 )
 
 
+def test_update_defaults_to_read_only_preview(tmp_path: Path) -> None:
+    database, json_path = initialize_project("overworld_preview", tmp_path)
+    _seed_semantic_model(database)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    preview = update_overworld_hidden_item(
+        database, 0, coordinate_word=0x1234, value_byte=0x84
+    )
+
+    assert preview["action"] == "update_overworld_hidden_item"
+    assert preview["dry_run"] is True
+    assert preview["record_index"] == 0
+    assert preview["before"]["coordinate_word"] == 1
+    assert preview["proposed"]["coordinate_word"] == 0x1234
+    assert preview["proposed"]["value_byte"] == 0x84
+    assert preview["proposed"]["consumer_class"] == "extended_secret_selector"
+    assert preview["changed_fields"] == ["coordinate_word", "value_byte"]
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    unchanged = get_overworld_hidden_item_model(database)
+    assert unchanged is not None
+    assert unchanged["records"][0]["coordinate_word"] == 1
+    assert unchanged["records"][0]["value_byte"] == 0x05
+
+
 def test_update_changes_project_value_and_recomputes_consumer_semantics(
     tmp_path: Path,
 ) -> None:
@@ -137,7 +164,7 @@ def test_update_changes_project_value_and_recomputes_consumer_semantics(
     assert original["summary"]["modified_record_count"] == 0
 
     updated = update_overworld_hidden_item(
-        database, 0, coordinate_word=0x1234, value_byte=0x84
+        database, 0, coordinate_word=0x1234, value_byte=0x84, dry_run=False
     )
 
     assert updated["source_coordinate_word"] == 1
@@ -179,7 +206,7 @@ def test_update_rejects_invalid_or_empty_edit(
 
 
 def test_cli_lists_area_and_updates_model(tmp_path: Path) -> None:
-    database, _ = initialize_project("overworld_cli", tmp_path)
+    database, json_path = initialize_project("overworld_cli", tmp_path)
     _seed_semantic_model(database)
     runner = CliRunner()
 
@@ -191,9 +218,28 @@ def test_cli_lists_area_and_updates_model(tmp_path: Path) -> None:
     assert area_payload["area"]["area_index"] == 1
     assert area_payload["records"][0]["record_index"] == 0
 
-    updated = runner.invoke(
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+    preview = runner.invoke(
         cli,
         ["update-overworld-hidden-item", str(database), "0", "--value-byte", "$82"],
+    )
+    assert preview.exit_code == 0, preview.output
+    preview_payload = json.loads(preview.output)
+    assert preview_payload["dry_run"] is True
+    assert preview_payload["before"]["value_byte"] == 0x05
+    assert preview_payload["proposed"]["value_byte"] == 0x82
+    assert preview_payload["changed_fields"] == ["value_byte"]
+    assert preview_payload["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    unchanged = get_overworld_hidden_item_model(database)
+    assert unchanged is not None
+    assert unchanged["records"][0]["value_byte"] == 0x05
+
+    updated = runner.invoke(
+        cli,
+        ["update-overworld-hidden-item", str(database), "0", "--value-byte", "$82", "--apply"],
     )
     assert updated.exit_code == 0, updated.output
     record = json.loads(updated.output)
@@ -421,7 +467,7 @@ def test_import_pinned_source_preserves_shared_area_aliases_and_source_hash(
     )
     custom_id = created_custom["record"]["custom_record_id"]
 
-    update_overworld_hidden_item(database, 0, value_byte=0x84)
+    update_overworld_hidden_item(database, 0, value_byte=0x84, dry_run=False)
     current = get_overworld_hidden_item_model(database)
     assert current is not None
     assert current["summary"]["modified_record_count"] == 1

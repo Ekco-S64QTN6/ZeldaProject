@@ -2377,6 +2377,7 @@ def update_dungeon_chest_record(
     before: dict[str, Any]
     try:
         if not dry_run:
+            connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
         model = _export_dungeon_chests(connection)

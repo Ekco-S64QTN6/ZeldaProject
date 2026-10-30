@@ -3644,13 +3644,19 @@ def list_overworld_hidden_items_command(database: Path, area_index: int | None) 
     default=None,
     help="New raw third byte (decimal, 0x-prefixed, or Asar $-prefixed).",
 )
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Persist the edit; without this option, only a read-only preview is returned.",
+)
 def update_overworld_hidden_item_command(
     database: Path,
     record_index: int,
     coordinate_word: str | None,
     value_byte: str | None,
+    apply: bool,
 ) -> None:
-    """Update one project-local record; this never writes or patches a ROM."""
+    """Preview or explicitly apply one project-local source-row edit; never edit a ROM."""
     if coordinate_word is None and value_byte is None:
         raise click.UsageError("supply at least one of --coordinate-word or --value-byte")
     try:
@@ -3663,6 +3669,7 @@ def update_overworld_hidden_item_command(
             record_index,
             coordinate_word=parsed_coordinate,
             value_byte=parsed_value,
+            dry_run=not apply,
         )
     except (KeyError, ValueError, OSError, click.BadParameter) as exc:
         raise click.ClickException(str(exc)) from exc
@@ -3908,14 +3915,20 @@ def list_dungeon_chest_records_command(
     default=None,
     help="Set or clear the packed big-chest flag.",
 )
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Persist the edit; without this option, only a read-only preview is returned.",
+)
 def update_dungeon_chest_record_command(
     database: Path,
     table_index: int,
     item_value: str | None,
     room_value: str | None,
     is_big_chest: bool | None,
+    apply: bool,
 ) -> None:
-    """Edit the raw packed fields of one chest record in the project, never the ROM."""
+    """Preview or explicitly apply one packed chest edit; never edit a ROM."""
     if item_value is None and room_value is None and is_big_chest is None:
         raise click.UsageError(
             "supply at least one of --item-value, --room-value, --big-chest, or --small-chest"
@@ -3929,6 +3942,7 @@ def update_dungeon_chest_record_command(
             item_value=parsed_item,
             room_value=parsed_room,
             is_big_chest=is_big_chest,
+            dry_run=not apply,
         )
     except (KeyError, ValueError, OSError, click.BadParameter) as exc:
         raise click.ClickException(str(exc)) from exc
