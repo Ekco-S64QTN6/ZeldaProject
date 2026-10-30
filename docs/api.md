@@ -2,9 +2,9 @@
 
 Status: **partially implemented**. The current public Python surface supports
 bounded source-preserving edits for overworld hidden-item records and packed
-dungeon chest fields. The complete game-system authoring API remains a Phase 2
-goal; room/map editing, create/delete operations, ROM writes, and MCP exposure
-are not implemented.
+dungeon chest fields, plus dry-run-first create/delete for project-authored
+overworld hidden-item additions. General room/map editing, ROM writes, and MCP
+exposure remain future work.
 
 ## Current project functions
 
@@ -12,7 +12,12 @@ are not implemented.
   `export_project()` manage the SQLite-canonical project and JSON sidecar.
 - `import_overworld_hidden_item_model()`,
   `get_overworld_hidden_item_model()`, and
-  `update_overworld_hidden_item()` operate on the bounded overworld model.
+  `update_overworld_hidden_item()` operate on the 351 source-preserving rows.
+- `create_custom_overworld_hidden_item()` and
+  `delete_custom_overworld_hidden_item()` manage project-authored additions.
+  They default to `dry_run=True`; a custom record can be associated with
+  multiple areas, while source row indexes, baselines, and source alias rows
+  remain unchanged.
 - `import_dungeon_chest_data()`, `get_dungeon_chest_model()`, and
   `update_dungeon_chest_record()` operate on the 168 source-indexed packed
   chest entries. Editable fields are raw item byte, low-15-bit room value, and
@@ -32,7 +37,11 @@ uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.d
   --fail-on-findings
 ```
 
-All existing semantic edit operations update SQLite and its JSON sidecar only;
+The CLI commands `create-custom-overworld-hidden-item` and
+`delete-custom-overworld-hidden-item` preview by default and require `--apply`
+to persist. The area-specific list command returns both imported source records
+and separately identified custom records. All semantic edit operations update
+SQLite and its JSON sidecar only;
 they do not write ROM bytes. The project-aware audit reads SQLite and registered
 source metadata but does not access the ROM. Source-commented pointer offsets
 are not verified binary locations, item names remain unresolved, and the

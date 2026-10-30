@@ -11,6 +11,8 @@ from click.testing import CliRunner
 
 from zelda_suite.cli.main import cli
 from zelda_suite.project.store import (
+    create_custom_overworld_hidden_item,
+    delete_custom_overworld_hidden_item,
     get_overworld_hidden_item_model,
     import_overworld_hidden_item_model,
     initialize_project,
@@ -198,6 +200,197 @@ def test_cli_lists_area_and_updates_model(tmp_path: Path) -> None:
     assert record["consumer_class"] == "extended_secret_selector"
 
 
+
+
+
+def test_custom_hidden_item_create_defaults_to_dry_run_and_preserves_source_rows(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("custom_item_preview", tmp_path)
+    _seed_semantic_model(database)
+    source_export = json_path.read_bytes()
+    with sqlite3.connect(database) as connection:
+        source_records_before = connection.execute(
+            """SELECT record_index, source_coordinate_word, source_value_byte,
+                      coordinate_word, value_byte
+               FROM overworld_hidden_item_record ORDER BY record_index"""
+        ).fetchall()
+        source_links_before = connection.execute(
+            """SELECT area_index, ordinal, record_index
+               FROM overworld_hidden_item_area_record ORDER BY area_index, ordinal"""
+        ).fetchall()
+
+    preview = create_custom_overworld_hidden_item(
+        database, area_indices=[3, 2], coordinate_word=0x3456, value_byte=0x84
+    )
+
+    assert preview["dry_run"] is True
+    assert preview["custom_record_id"] is None
+    assert preview["area_indices"] == [2, 3]
+    assert preview["consumer_class"] == "extended_secret_selector"
+    assert preview["replacement_table_index"] == 2
+    assert preview["source_record_index"] is None
+    assert preview["rom_modified"] is False
+    assert json_path.read_bytes() == source_export
+    preview_model = get_overworld_hidden_item_model(database)
+    assert preview_model is not None
+    assert preview_model["custom_records"] == []
+
+    created = create_custom_overworld_hidden_item(
+        database,
+        area_indices=[3, 2],
+        coordinate_word=0x3456,
+        value_byte=0x84,
+        dry_run=False,
+    )
+    record = created["record"]
+    custom_id = record["custom_record_id"]
+    assert created["dry_run"] is False
+    assert record["record_kind"] == "project_authored"
+    assert record["source_record_index"] is None
+    assert record["area_indices"] == [2, 3]
+    assert record["coordinate_word"] == 0x3456
+    assert record["value_byte"] == 0x84
+    assert record["consumer_class"] == "extended_secret_selector"
+
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert model["summary"]["record_count"] == 351
+    assert model["summary"]["custom_record_count"] == 1
+    assert model["summary"]["custom_area_record_reference_count"] == 2
+    assert model["records"][0]["area_indices"] == [0, 1]
+    assert model["areas"][2]["record_indices"] == [1]
+    assert model["areas"][2]["custom_record_ids"] == [custom_id]
+    assert model["areas"][3]["custom_record_ids"] == [custom_id]
+
+    with sqlite3.connect(database) as connection:
+        source_records_after = connection.execute(
+            """SELECT record_index, source_coordinate_word, source_value_byte,
+                      coordinate_word, value_byte
+               FROM overworld_hidden_item_record ORDER BY record_index"""
+        ).fetchall()
+        source_links_after = connection.execute(
+            """SELECT area_index, ordinal, record_index
+               FROM overworld_hidden_item_area_record ORDER BY area_index, ordinal"""
+        ).fetchall()
+    assert source_records_after == source_records_before
+    assert source_links_after == source_links_before
+    assert validate_project(database) == []
+
+
+def test_custom_hidden_item_delete_defaults_to_dry_run_and_cascades_alias_links(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("custom_item_delete", tmp_path)
+    _seed_semantic_model(database)
+    created = create_custom_overworld_hidden_item(
+        database,
+        area_indices=[4, 5],
+        coordinate_word=0x1234,
+        value_byte=0x05,
+        dry_run=False,
+    )
+    custom_id = created["record"]["custom_record_id"]
+    before_delete = json_path.read_bytes()
+
+    preview = delete_custom_overworld_hidden_item(database, custom_id)
+    assert preview["dry_run"] is True
+    assert preview["record"]["area_indices"] == [4, 5]
+    assert json_path.read_bytes() == before_delete
+
+    deleted = delete_custom_overworld_hidden_item(
+        database, custom_id, dry_run=False
+    )
+    assert deleted["dry_run"] is False
+    assert deleted["deleted"]["custom_record_id"] == custom_id
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert model["custom_records"] == []
+    assert model["areas"][4]["custom_record_ids"] == []
+    assert model["areas"][5]["custom_record_ids"] == []
+    assert model["records"][0]["area_indices"] == [0, 1]
+    assert model["summary"]["record_count"] == 351
+    assert model["summary"]["custom_record_count"] == 0
+    assert validate_project(database) == []
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"area_indices": [], "coordinate_word": 1, "value_byte": 1}, "at least one area"),
+        ({"area_indices": [128], "coordinate_word": 1, "value_byte": 1}, "0..127"),
+        ({"area_indices": [1, 1], "coordinate_word": 1, "value_byte": 1}, "duplicate area"),
+        ({"area_indices": [1], "coordinate_word": 0xFFFF, "value_byte": 1}, "reserved as the list sentinel"),
+        ({"area_indices": [1], "coordinate_word": 1, "value_byte": 256}, "value_byte"),
+        ({"area_indices": [1], "coordinate_word": True, "value_byte": 1}, "coordinate_word"),
+    ],
+)
+def test_custom_hidden_item_create_rejects_invalid_fields(
+    tmp_path: Path, kwargs: dict[str, object], message: str
+) -> None:
+    database, _ = initialize_project("invalid_custom_item", tmp_path)
+    _seed_semantic_model(database)
+    with pytest.raises(ValueError, match=message):
+        create_custom_overworld_hidden_item(database, **kwargs)  # type: ignore[arg-type]
+
+
+def test_custom_hidden_item_cannot_delete_a_source_record(tmp_path: Path) -> None:
+    database, _ = initialize_project("source_delete_guard", tmp_path)
+    _seed_semantic_model(database)
+    with pytest.raises(KeyError, match="custom overworld hidden item not found"):
+        delete_custom_overworld_hidden_item(database, 1, dry_run=False)
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert len(model["records"]) == 351
+    assert model["custom_records"] == []
+
+
+def test_cli_custom_hidden_item_create_and_delete_require_apply(tmp_path: Path) -> None:
+    database, json_path = initialize_project("custom_item_cli", tmp_path)
+    _seed_semantic_model(database)
+    runner = CliRunner()
+    original_export = json_path.read_bytes()
+
+    preview = runner.invoke(
+        cli,
+        [
+            "create-custom-overworld-hidden-item", str(database),
+            "--area-index", "2", "--area-index", "3",
+            "--coordinate-word", "$1234", "--value-byte", "$05",
+        ],
+    )
+    assert preview.exit_code == 0, preview.output
+    preview_payload = json.loads(preview.output)
+    assert preview_payload["dry_run"] is True
+    assert json_path.read_bytes() == original_export
+
+    applied = runner.invoke(
+        cli,
+        [
+            "create-custom-overworld-hidden-item", str(database),
+            "--area-index", "2", "--area-index", "3",
+            "--coordinate-word", "$1234", "--value-byte", "$05", "--apply",
+        ],
+    )
+    assert applied.exit_code == 0, applied.output
+    custom_id = json.loads(applied.output)["record"]["custom_record_id"]
+
+    deletion_preview = runner.invoke(
+        cli,
+        ["delete-custom-overworld-hidden-item", str(database), str(custom_id)],
+    )
+    assert deletion_preview.exit_code == 0, deletion_preview.output
+    assert json.loads(deletion_preview.output)["dry_run"] is True
+
+    deletion = runner.invoke(
+        cli,
+        ["delete-custom-overworld-hidden-item", str(database), str(custom_id), "--apply"],
+    )
+    assert deletion.exit_code == 0, deletion.output
+    assert json.loads(deletion.output)["deleted"]["custom_record_id"] == custom_id
+    assert validate_project(database) == []
+
+
 @pytest.mark.skipif(
     not SOURCE_PATH.is_file(),
     reason="AsarUSALTTPDisassembly submodule is not checked out",
@@ -221,6 +414,12 @@ def test_import_pinned_source_preserves_shared_area_aliases_and_source_hash(
     with pytest.raises(ValueError, match="already exists"):
         import_overworld_hidden_item_model(database, SOURCE_PATH)
 
+    created_custom = create_custom_overworld_hidden_item(
+        database, area_indices=[0, 1], coordinate_word=0x4567, value_byte=0x05,
+        dry_run=False,
+    )
+    custom_id = created_custom["record"]["custom_record_id"]
+
     update_overworld_hidden_item(database, 0, value_byte=0x84)
     current = get_overworld_hidden_item_model(database)
     assert current is not None
@@ -231,4 +430,6 @@ def test_import_pinned_source_preserves_shared_area_aliases_and_source_hash(
     )
     assert replaced["summary"]["modified_record_count"] == 0
     assert replaced["records"][0]["value_byte"] == replaced["records"][0]["source_value_byte"]
+    assert replaced["custom_records"][0]["custom_record_id"] == custom_id
+    assert replaced["custom_records"][0]["area_indices"] == [0, 1]
     assert validate_project(database) == []

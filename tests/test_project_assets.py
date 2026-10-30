@@ -270,7 +270,7 @@ def test_stored_source_asset_digest_and_json_are_checked(tmp_path: Path) -> None
     assert any("project metadata is invalid" in problem for problem in problems)
 
 
-def test_migrate_schema_v1_project_preserves_metadata_and_exports_v4(
+def test_migrate_schema_v1_project_preserves_metadata_and_exports_v5(
     tmp_path: Path,
 ) -> None:
     database, json_path = _create_schema_v1_project(tmp_path / "legacy")
@@ -288,7 +288,9 @@ def test_migrate_schema_v1_project_preserves_metadata_and_exports_v4(
         ).fetchone()
 
     assert project_version == (PROJECT_FORMAT_VERSION,)
-    assert versions == [(1,), (2,), (3,), (CURRENT_SCHEMA_VERSION,)]
+    assert versions == [
+        (version,) for version in range(1, CURRENT_SCHEMA_VERSION + 1)
+    ]
     assert table == ("source_asset",)
 
     payload = json.loads(json_path.read_text(encoding="utf-8"))
@@ -313,21 +315,17 @@ def test_migration_is_idempotent_and_refreshes_export(tmp_path: Path) -> None:
     assert validate_project(database) == []
 
 
-def test_migrate_schema_v3_project_adds_dungeon_chest_tables(
+def test_migrate_schema_v3_project_adds_dungeon_chest_and_custom_tables(
     tmp_path: Path,
 ) -> None:
     database, json_path = initialize_project("legacy_v3", tmp_path)
     with sqlite3.connect(database) as connection, connection:
+        connection.execute("DROP TABLE overworld_hidden_item_custom_area_record")
+        connection.execute("DROP TABLE overworld_hidden_item_custom_record")
         connection.execute("DROP TABLE dungeon_chest_record")
         connection.execute("DROP TABLE dungeon_chest_model")
-        connection.execute(
-            "DELETE FROM schema_version WHERE version = ?",
-            (CURRENT_SCHEMA_VERSION,),
-        )
-        connection.execute(
-            "UPDATE project SET format_version = ? WHERE singleton = 1",
-            (CURRENT_SCHEMA_VERSION - 1,),
-        )
+        connection.execute("DELETE FROM schema_version WHERE version IN (4, 5)")
+        connection.execute("UPDATE project SET format_version = 3 WHERE singleton = 1")
 
     assert migrate_project(database) is True
 
@@ -344,12 +342,44 @@ def test_migrate_schema_v3_project_adds_dungeon_chest_tables(
             "SELECT format_version FROM project WHERE singleton = 1"
         ).fetchone()
 
-    assert versions == [(1,), (2,), (3,), (CURRENT_SCHEMA_VERSION,)]
+    assert versions == [(1,), (2,), (3,), (4,), (CURRENT_SCHEMA_VERSION,)]
     assert format_version == (PROJECT_FORMAT_VERSION,)
-    assert {"dungeon_chest_model", "dungeon_chest_record"}.issubset(tables)
+    assert {
+        "dungeon_chest_model", "dungeon_chest_record",
+        "overworld_hidden_item_custom_record", "overworld_hidden_item_custom_area_record",
+    }.issubset(tables)
     exported = json.loads(json_path.read_text(encoding="utf-8"))
     assert exported["format_version"] == PROJECT_FORMAT_VERSION
     assert exported["dungeon_chests"] is None
+    assert validate_project(database) == []
+
+
+def test_migrate_schema_v4_project_adds_project_authored_hidden_item_tables(
+    tmp_path: Path,
+) -> None:
+    database, _ = initialize_project("legacy_v4", tmp_path)
+    with sqlite3.connect(database) as connection, connection:
+        connection.execute("DROP TABLE overworld_hidden_item_custom_area_record")
+        connection.execute("DROP TABLE overworld_hidden_item_custom_record")
+        connection.execute("DELETE FROM schema_version WHERE version = 5")
+        connection.execute("UPDATE project SET format_version = 4 WHERE singleton = 1")
+
+    assert migrate_project(database) is True
+
+    with sqlite3.connect(database) as connection:
+        tables = {
+            row[0] for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ).fetchall()
+        }
+        versions = connection.execute(
+            "SELECT version FROM schema_version ORDER BY version"
+        ).fetchall()
+    assert {
+        "overworld_hidden_item_custom_record",
+        "overworld_hidden_item_custom_area_record",
+    }.issubset(tables)
+    assert versions == [(1,), (2,), (3,), (4,), (5,)]
     assert validate_project(database) == []
 
 
@@ -358,21 +388,15 @@ def test_migration_rolls_back_partial_ddl_when_schema_creation_fails(
 ) -> None:
     database, json_path = initialize_project("migration_rollback", tmp_path)
     with sqlite3.connect(database) as connection, connection:
-        connection.execute("DROP TABLE dungeon_chest_record")
-        connection.execute("DROP TABLE dungeon_chest_model")
-        connection.execute(
-            "DELETE FROM schema_version WHERE version = ?",
-            (CURRENT_SCHEMA_VERSION,),
-        )
-        connection.execute(
-            "UPDATE project SET format_version = ? WHERE singleton = 1",
-            (CURRENT_SCHEMA_VERSION - 1,),
-        )
+        connection.execute("DROP TABLE overworld_hidden_item_custom_area_record")
+        connection.execute("DROP TABLE overworld_hidden_item_custom_record")
+        connection.execute("DELETE FROM schema_version WHERE version = 5")
+        connection.execute("UPDATE project SET format_version = 4 WHERE singleton = 1")
 
     original_export = json_path.read_bytes()
     monkeypatch.setattr(
         project_store,
-        "_DUNGEON_CHEST_SCHEMA_SQL",
+        "_OVERWORLD_CUSTOM_SCHEMA_SQL",
         "CREATE TABLE migration_partial_marker (id INTEGER PRIMARY KEY);"
         "\nINVALID MIGRATION STATEMENT;",
     )
@@ -395,10 +419,10 @@ def test_migration_rolls_back_partial_ddl_when_schema_creation_fails(
         ).fetchone()
 
     assert "migration_partial_marker" not in tables
-    assert "dungeon_chest_model" not in tables
-    assert "dungeon_chest_record" not in tables
-    assert versions == [(1,), (2,), (3,)]
-    assert format_version == (CURRENT_SCHEMA_VERSION - 1,)
+    assert "overworld_hidden_item_custom_record" not in tables
+    assert "overworld_hidden_item_custom_area_record" not in tables
+    assert versions == [(1,), (2,), (3,), (4,)]
+    assert format_version == (4,)
     assert json_path.read_bytes() == original_export
 
 
@@ -451,5 +475,5 @@ def test_cli_migration_and_source_asset_commands(tmp_path: Path) -> None:
     migrated_db, _ = _create_schema_v1_project(tmp_path / "cli_legacy")
     migrated = runner.invoke(cli, ["migrate-project", str(migrated_db)])
     assert migrated.exit_code == 0, migrated.output
-    assert "Migrated project to schema v4" in migrated.output
+    assert "Migrated project to schema v5" in migrated.output
     assert validate_project(migrated_db) == []

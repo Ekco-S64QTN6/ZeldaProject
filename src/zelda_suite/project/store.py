@@ -1,7 +1,8 @@
 """SQLite project metadata, semantic game records, migrations, and JSON export.
 
-Schema v4 stores source-preserving overworld hidden-item and dungeon-chest
-models. ROM writing and broad game-system coverage remain future work.
+Schema v5 stores source-preserving overworld hidden-item and dungeon-chest
+models plus project-authored hidden-item additions. ROM writing and broad
+game-system coverage remain future work.
 """
 from __future__ import annotations
 
@@ -32,8 +33,9 @@ from zelda_suite.extract.overworld_hidden_item_verification import (
 )
 
 PROJECT_FORMAT = "zelda-suite-project"
-PROJECT_FORMAT_VERSION = 4
-CURRENT_SCHEMA_VERSION = 4
+PROJECT_FORMAT_VERSION = 5
+CURRENT_SCHEMA_VERSION = 5
+DUNGEON_CHEST_SCHEMA_VERSION = 4
 BASE_ROM_FILENAME = "Legend of Zelda, The - A Link to the Past (U) [!].smc"
 _PROJECT_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
 _ASSET_KEY_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}")
@@ -189,6 +191,28 @@ _DUNGEON_CHEST_TABLE_NAMES = {
     "dungeon_chest_record",
 }
 
+_OVERWORLD_CUSTOM_SCHEMA_SQL = """
+CREATE TABLE overworld_hidden_item_custom_record (
+    custom_record_id INTEGER PRIMARY KEY AUTOINCREMENT CHECK (custom_record_id > 0),
+    coordinate_word INTEGER NOT NULL CHECK (coordinate_word BETWEEN 0 AND 65534),
+    value_byte INTEGER NOT NULL CHECK (value_byte BETWEEN 0 AND 255),
+    created_at TEXT NOT NULL CHECK (length(created_at) > 0)
+);
+
+CREATE TABLE overworld_hidden_item_custom_area_record (
+    area_index INTEGER NOT NULL REFERENCES overworld_hidden_item_area(area_index)
+        ON DELETE CASCADE,
+    custom_record_id INTEGER NOT NULL
+        REFERENCES overworld_hidden_item_custom_record(custom_record_id)
+        ON DELETE CASCADE,
+    PRIMARY KEY (area_index, custom_record_id)
+);
+"""
+_OVERWORLD_CUSTOM_TABLE_NAMES = {
+    "overworld_hidden_item_custom_record",
+    "overworld_hidden_item_custom_area_record",
+}
+
 _SCHEMA_SQL = """
 CREATE TABLE project (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
@@ -203,7 +227,7 @@ CREATE TABLE schema_version (
     version INTEGER PRIMARY KEY CHECK (version > 0),
     applied_at TEXT NOT NULL
 );
-""" + _SOURCE_ASSET_TABLE_SQL + _OVERWORLD_SCHEMA_SQL + _DUNGEON_CHEST_SCHEMA_SQL
+""" + _SOURCE_ASSET_TABLE_SQL + _OVERWORLD_SCHEMA_SQL + _DUNGEON_CHEST_SCHEMA_SQL + _OVERWORLD_CUSTOM_SCHEMA_SQL
 
 
 def _utc_timestamp() -> str:
@@ -333,11 +357,16 @@ def _require_current_schema(connection: sqlite3.Connection) -> None:
             "SELECT name FROM sqlite_master WHERE type = 'table'"
         ).fetchall()
     }
-    required_tables = {"schema_version", "source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
+    required_tables = (
+        {"schema_version", "source_asset"}
+        | _OVERWORLD_TABLE_NAMES
+        | _DUNGEON_CHEST_TABLE_NAMES
+        | _OVERWORLD_CUSTOM_TABLE_NAMES
+    )
     missing_tables = sorted(required_tables - tables)
     if missing_tables:
         raise ValueError(
-            "project schema v4 is required; run 'zelda-suite migrate-project' first "
+            "project schema v5 is required; run 'zelda-suite migrate-project' first "
             "(missing: " + ", ".join(missing_tables) + ")"
         )
     current_row = connection.execute("SELECT MAX(version) FROM schema_version").fetchone()
@@ -374,6 +403,8 @@ def _export_overworld_hidden_items(
             "overworld_hidden_item_record",
             "overworld_hidden_item_area_record",
             "overworld_hidden_item_replacement_word",
+            "overworld_hidden_item_custom_record",
+            "overworld_hidden_item_custom_area_record",
         )
     }
     if model is None:
@@ -436,6 +467,19 @@ def _export_overworld_hidden_items(
         indices.append(record_index)
         record_areas.setdefault(record_index, []).append(area_index)
 
+    custom_relations = connection.execute(
+        """SELECT area_index, custom_record_id
+           FROM overworld_hidden_item_custom_area_record
+           ORDER BY area_index, custom_record_id"""
+    ).fetchall()
+    custom_area_records: dict[int, list[int]] = {}
+    custom_record_areas: dict[int, list[int]] = {}
+    for relation in custom_relations:
+        area_index = int(relation["area_index"])
+        custom_record_id = int(relation["custom_record_id"])
+        custom_area_records.setdefault(area_index, []).append(custom_record_id)
+        custom_record_areas.setdefault(custom_record_id, []).append(area_index)
+
     areas: list[dict[str, Any]] = []
     for row in areas_rows:
         area_index = int(row["area_index"])
@@ -452,6 +496,7 @@ def _export_overworld_hidden_items(
             "target_file_offset": int(row["target_file_offset"]),
             "record_indices": indices,
             "record_count": record_count,
+            "custom_record_ids": custom_area_records.get(area_index, []),
             "sentinel_file_offset": int(row["sentinel_file_offset"]),
         })
 
@@ -539,9 +584,46 @@ def _export_overworld_hidden_items(
             "is_modified": is_modified,
         })
 
+    custom_records: list[dict[str, Any]] = []
+    custom_rows = connection.execute(
+        """SELECT custom_record_id, coordinate_word, value_byte, created_at
+           FROM overworld_hidden_item_custom_record ORDER BY custom_record_id"""
+    ).fetchall()
+    custom_class_counts = {
+        "zero_value": 0,
+        "ordinary_secret_mask": 0,
+        "extended_secret_selector": 0,
+    }
+    for row in custom_rows:
+        custom_record_id = int(row["custom_record_id"])
+        coordinate = int(row["coordinate_word"])
+        value = int(row["value_byte"])
+        semantics = classify_overworld_hidden_item_value_byte(value, replacement_words)
+        custom_class_counts[str(semantics["consumer_class"])] += 1
+        custom_records.append({
+            "custom_record_id": custom_record_id,
+            "record_kind": "project_authored",
+            "source_record_index": None,
+            "area_indices": custom_record_areas.get(custom_record_id, []),
+            "coordinate_word": coordinate,
+            "coordinate_word_hex": "$" + format(coordinate, "04X"),
+            "value_byte": value,
+            "value_hex": "$" + format(value, "02X"),
+            "consumer_class": semantics["consumer_class"],
+            "consumer_operation": semantics["consumer_operation"],
+            "selector_byte_offset": semantics["selector_byte_offset"],
+            "replacement_table_index": semantics["replacement_table_index"],
+            "replacement_word_value": semantics["replacement_word_value"],
+            "replacement_word_comment": semantics["replacement_word_comment"],
+            "special_case": semantics["special_case"],
+            "canonical_item_id": None,
+            "canonical_item_id_resolved": False,
+            "created_at": str(row["created_at"]),
+        })
+
     return {
         "format": "zelda-suite-overworld-hidden-item-model",
-        "format_version": 1,
+        "format_version": 2,
         "source_file": str(model["source_file"]),
         "source_revision": str(model["source_revision"]),
         "source_sha256": str(model["source_sha256"]),
@@ -550,6 +632,7 @@ def _export_overworld_hidden_items(
         "replacement_table_label": str(model["replacement_table_label"]),
         "areas": areas,
         "records": records,
+        "custom_records": custom_records,
         "replacement_words": replacement_words,
         "summary": {
             "area_count": len(areas),
@@ -561,6 +644,11 @@ def _export_overworld_hidden_items(
             "ordinary_secret_mask_count": class_counts["ordinary_secret_mask"],
             "extended_secret_selector_count": class_counts["extended_secret_selector"],
             "extended_selector_unmapped_count": unmapped_extended_count,
+            "custom_record_count": len(custom_records),
+            "custom_area_record_reference_count": len(custom_relations),
+            "custom_zero_value_count": custom_class_counts["zero_value"],
+            "custom_ordinary_secret_mask_count": custom_class_counts["ordinary_secret_mask"],
+            "custom_extended_secret_selector_count": custom_class_counts["extended_secret_selector"],
         },
         "evidence": {
             "source_layout_parsed": True,
@@ -753,11 +841,16 @@ def _export_payload(connection: sqlite3.Connection) -> dict[str, Any]:
             "SELECT name FROM sqlite_master WHERE type = 'table'"
         ).fetchall()
     }
-    required_tables = {"source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
+    required_tables = (
+        {"source_asset"}
+        | _OVERWORLD_TABLE_NAMES
+        | _DUNGEON_CHEST_TABLE_NAMES
+        | _OVERWORLD_CUSTOM_TABLE_NAMES
+    )
     missing_tables = sorted(required_tables - tables)
     if missing_tables:
         raise ValueError(
-            "project schema v4 is required; run 'zelda-suite migrate-project' first "
+            "project schema v5 is required; run 'zelda-suite migrate-project' first "
             "(missing: " + ", ".join(missing_tables) + ")"
         )
     assets = [
@@ -899,7 +992,7 @@ def initialize_project(
                 )
                 connection.executemany(
                     "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
-                    [(1, created_at), (2, created_at), (3, created_at), (CURRENT_SCHEMA_VERSION, created_at)],
+                    [(version, created_at) for version in range(1, CURRENT_SCHEMA_VERSION + 1)],
                 )
         finally:
             connection.close()
@@ -917,7 +1010,7 @@ def initialize_project(
 def migrate_project(
     database_path: str | Path, json_path: str | Path | None = None
 ) -> bool:
-    """Migrate a schema-v1, schema-v2, or schema-v3 project to current schema.
+    """Migrate a schema-v1 through schema-v4 project to current schema.
 
     Returns True when migration was applied, or False when already current.
     Validation and import never trigger an automatic migration.
@@ -964,7 +1057,11 @@ def migrate_project(
                     "schema-v1 project unexpectedly contains source_asset; "
                     "refusing an ambiguous partial migration"
                 )
-            if tables & (_OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES):
+            if tables & (
+                _OVERWORLD_TABLE_NAMES
+                | _DUNGEON_CHEST_TABLE_NAMES
+                | _OVERWORLD_CUSTOM_TABLE_NAMES
+            ):
                 raise ValueError(
                     "schema-v1 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
@@ -992,7 +1089,11 @@ def migrate_project(
             if "source_asset" not in tables:
                 raise ValueError("schema-v2 project is missing the source_asset table")
             existing_overworld_tables = tables & _OVERWORLD_TABLE_NAMES
-            if existing_overworld_tables or tables & _DUNGEON_CHEST_TABLE_NAMES:
+            if (
+                existing_overworld_tables
+                or tables & _DUNGEON_CHEST_TABLE_NAMES
+                or tables & _OVERWORLD_CUSTOM_TABLE_NAMES
+            ):
                 raise ValueError(
                     "schema-v2 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
@@ -1021,15 +1122,51 @@ def migrate_project(
                 raise ValueError("schema-v3 project metadata is inconsistent")
             if "source_asset" not in tables or not _OVERWORLD_TABLE_NAMES.issubset(tables):
                 raise ValueError("schema-v3 project is missing its source-asset or overworld tables")
-            existing_chest_tables = tables & _DUNGEON_CHEST_TABLE_NAMES
-            if existing_chest_tables:
+            existing_v4_or_custom_tables = tables & (
+                _DUNGEON_CHEST_TABLE_NAMES | _OVERWORLD_CUSTOM_TABLE_NAMES
+            )
+            if existing_v4_or_custom_tables:
                 raise ValueError(
-                    "schema-v3 project unexpectedly contains dungeon chest tables; "
+                    "schema-v3 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
                 )
             connection.execute("BEGIN IMMEDIATE")
             with connection:
                 for statement in _DUNGEON_CHEST_SCHEMA_SQL.split(";"):
+                    if statement.strip():
+                        connection.execute(statement)
+                connection.execute(
+                    "UPDATE project SET format_version = ? WHERE singleton = 1",
+                    (DUNGEON_CHEST_SCHEMA_VERSION,),
+                )
+                connection.execute(
+                    "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
+                    (DUNGEON_CHEST_SCHEMA_VERSION, _utc_timestamp()),
+                )
+            tables.update(_DUNGEON_CHEST_TABLE_NAMES)
+            current = DUNGEON_CHEST_SCHEMA_VERSION
+            migrated = True
+
+        if current == DUNGEON_CHEST_SCHEMA_VERSION:
+            project_row = connection.execute(
+                "SELECT format_version FROM project WHERE singleton = 1"
+            ).fetchone()
+            if project_row is None or project_row[0] != DUNGEON_CHEST_SCHEMA_VERSION:
+                raise ValueError("schema-v4 project metadata is inconsistent")
+            required_v4_tables = (
+                {"source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
+            )
+            if not required_v4_tables.issubset(tables):
+                raise ValueError("schema-v4 project is missing required source-asset or semantic-model tables")
+            existing_custom_tables = tables & _OVERWORLD_CUSTOM_TABLE_NAMES
+            if existing_custom_tables:
+                raise ValueError(
+                    "schema-v4 project unexpectedly contains custom hidden-item tables; "
+                    "refusing an ambiguous partial migration"
+                )
+            connection.execute("BEGIN IMMEDIATE")
+            with connection:
+                for statement in _OVERWORLD_CUSTOM_SCHEMA_SQL.split(";"):
                     if statement.strip():
                         connection.execute(statement)
                 connection.execute(
@@ -1040,6 +1177,7 @@ def migrate_project(
                     "INSERT INTO schema_version (version, applied_at) VALUES (?, ?)",
                     (CURRENT_SCHEMA_VERSION, _utc_timestamp()),
                 )
+            tables.update(_OVERWORLD_CUSTOM_TABLE_NAMES)
             current = CURRENT_SCHEMA_VERSION
             migrated = True
 
@@ -1050,18 +1188,23 @@ def migrate_project(
                     "SELECT name FROM sqlite_master WHERE type = 'table'"
                 ).fetchall()
             }
-            required_tables = {"source_asset"} | _OVERWORLD_TABLE_NAMES | _DUNGEON_CHEST_TABLE_NAMES
+            required_tables = (
+        {"source_asset"}
+        | _OVERWORLD_TABLE_NAMES
+        | _DUNGEON_CHEST_TABLE_NAMES
+        | _OVERWORLD_CUSTOM_TABLE_NAMES
+    )
             missing_tables = sorted(required_tables - tables)
             if missing_tables:
                 raise ValueError(
-                    "schema-v4 project is missing required table(s): "
+                    "schema-v5 project is missing required table(s): "
                     + ", ".join(missing_tables)
                 )
             project_row = connection.execute(
                 "SELECT format_version FROM project WHERE singleton = 1"
             ).fetchone()
             if project_row is None or project_row[0] != PROJECT_FORMAT_VERSION:
-                raise ValueError("schema-v4 project metadata is inconsistent")
+                raise ValueError("schema-v5 project metadata is inconsistent")
 
 
     except sqlite3.Error as exc:
@@ -1290,13 +1433,25 @@ def import_overworld_hidden_item_model(
         if existing is None:
             counts = [
                 int(connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
-                for table in sorted(_OVERWORLD_TABLE_NAMES - {"overworld_hidden_item_model"})
+                for table in sorted(
+                    (_OVERWORLD_TABLE_NAMES | _OVERWORLD_CUSTOM_TABLE_NAMES)
+                    - {"overworld_hidden_item_model"}
+                )
             ]
             if any(counts):
                 raise ValueError("overworld hidden-item tables contain partial data without model metadata")
 
         imported_at = _utc_timestamp()
         source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+        custom_memberships = (
+            connection.execute(
+                """SELECT area_index, custom_record_id
+                   FROM overworld_hidden_item_custom_area_record
+                   ORDER BY area_index, custom_record_id"""
+            ).fetchall()
+            if existing is not None
+            else []
+        )
         with connection:
             if existing is not None:
                 connection.execute("DELETE FROM overworld_hidden_item_area_record")
@@ -1384,6 +1539,16 @@ def import_overworld_hidden_item_model(
                    ) VALUES (?, ?, ?)""",
                 area_record_inserts,
             )
+            if custom_memberships:
+                connection.executemany(
+                    """INSERT INTO overworld_hidden_item_custom_area_record (
+                           area_index, custom_record_id
+                       ) VALUES (?, ?)""",
+                    [
+                        (int(row["area_index"]), int(row["custom_record_id"]))
+                        for row in custom_memberships
+                    ],
+                )
 
             connection.executemany(
                 """INSERT INTO overworld_hidden_item_replacement_word (
@@ -1525,6 +1690,251 @@ def update_overworld_hidden_item(
 
 
 
+
+def _validated_custom_hidden_item_fields(
+    coordinate_word: int,
+    value_byte: int,
+    area_indices: list[int] | tuple[int, ...],
+) -> list[int]:
+    if (
+        isinstance(coordinate_word, bool)
+        or not isinstance(coordinate_word, int)
+        or not 0 <= coordinate_word <= 0xFFFE
+    ):
+        raise ValueError(
+            "coordinate_word must be an integer in 0..65534; $FFFF is reserved as the list sentinel"
+        )
+    if (
+        isinstance(value_byte, bool)
+        or not isinstance(value_byte, int)
+        or not 0 <= value_byte <= 0xFF
+    ):
+        raise ValueError("value_byte must be an integer in 0..255")
+    if not isinstance(area_indices, (list, tuple)) or not area_indices:
+        raise ValueError("area_indices must contain at least one area index")
+    validated: list[int] = []
+    for area_index in area_indices:
+        if (
+            isinstance(area_index, bool)
+            or not isinstance(area_index, int)
+            or not 0 <= area_index <= 127
+        ):
+            raise ValueError("area indexes must be integers in 0..127")
+        if area_index in validated:
+            raise ValueError(f"duplicate area index: {area_index}")
+        validated.append(area_index)
+    return sorted(validated)
+
+
+def _custom_hidden_item_replacement_words(
+    connection: sqlite3.Connection,
+) -> list[dict[str, Any]]:
+    return [
+        {
+            "table_index": int(row["table_index"]),
+            "selector_byte_offset": int(row["selector_byte_offset"]),
+            "value": int(row["value"]),
+            "comment": str(row["comment"]),
+        }
+        for row in connection.execute(
+            """SELECT table_index, selector_byte_offset, value, comment
+               FROM overworld_hidden_item_replacement_word ORDER BY table_index"""
+        ).fetchall()
+    ]
+
+
+def create_custom_overworld_hidden_item(
+    database_path: str | Path,
+    *,
+    area_indices: list[int] | tuple[int, ...],
+    coordinate_word: int,
+    value_byte: int,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Preview or create a project-authored hidden item linked to one or more areas.
+
+    The 351 imported source records and their source-area relationships are never
+    changed. A committed custom record is project-local and never writes a ROM.
+    """
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
+    validated_areas = _validated_custom_hidden_item_fields(
+        coordinate_word, value_byte, area_indices
+    )
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = (
+        sqlite3.connect(read_only_uri, uri=True)
+        if dry_run
+        else sqlite3.connect(db_path)
+    )
+    connection.row_factory = sqlite3.Row
+    try:
+        if not dry_run:
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("BEGIN IMMEDIATE")
+        _require_current_schema(connection)
+        model_row = connection.execute(
+            "SELECT 1 FROM overworld_hidden_item_model WHERE singleton = 1"
+        ).fetchone()
+        if model_row is None:
+            raise ValueError("no overworld hidden-item model has been imported")
+        placeholders = ",".join("?" for _ in validated_areas)
+        existing_areas = {
+            int(row["area_index"])
+            for row in connection.execute(
+                f"SELECT area_index FROM overworld_hidden_item_area "
+                f"WHERE area_index IN ({placeholders})",
+                validated_areas,
+            ).fetchall()
+        }
+        missing = [area for area in validated_areas if area not in existing_areas]
+        if missing:
+            raise KeyError(f"overworld area not found: {missing[0]}")
+        semantics = classify_overworld_hidden_item_value_byte(
+            value_byte, _custom_hidden_item_replacement_words(connection)
+        )
+        if dry_run:
+            return {
+                "action": "create_custom_overworld_hidden_item",
+                "dry_run": True,
+                "custom_record_id": None,
+                "area_indices": validated_areas,
+                "coordinate_word": coordinate_word,
+                "value_byte": value_byte,
+                "consumer_class": semantics["consumer_class"],
+                "consumer_operation": semantics["consumer_operation"],
+                "selector_byte_offset": semantics["selector_byte_offset"],
+                "replacement_table_index": semantics["replacement_table_index"],
+                "replacement_word_value": semantics["replacement_word_value"],
+                "replacement_word_comment": semantics["replacement_word_comment"],
+                "source_record_index": None,
+                "rom_modified": False,
+            }
+        with connection:
+            cursor = connection.execute(
+                """INSERT INTO overworld_hidden_item_custom_record (
+                       coordinate_word, value_byte, created_at
+                   ) VALUES (?, ?, ?)""",
+                (coordinate_word, value_byte, _utc_timestamp()),
+            )
+            if cursor.lastrowid is None:
+                raise ValueError("SQLite did not return a custom hidden-item ID")
+            custom_record_id = cursor.lastrowid
+            connection.executemany(
+                """INSERT INTO overworld_hidden_item_custom_area_record (
+                       area_index, custom_record_id
+                   ) VALUES (?, ?)""",
+                [(area, custom_record_id) for area in validated_areas],
+            )
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not create custom overworld hidden item: {exc}") from exc
+    finally:
+        connection.close()
+
+    export_project(db_path)
+    model = get_overworld_hidden_item_model(db_path)
+    if model is None:
+        raise ValueError("custom overworld hidden item was not persisted")
+    result = next(
+        (
+            record for record in model["custom_records"]
+            if record["custom_record_id"] == custom_record_id
+        ),
+        None,
+    )
+    if result is None:
+        raise ValueError("custom overworld hidden item was not present in the project export")
+    return {
+        "action": "create_custom_overworld_hidden_item",
+        "dry_run": False,
+        "record": result,
+        "rom_modified": False,
+    }
+
+
+def delete_custom_overworld_hidden_item(
+    database_path: str | Path,
+    custom_record_id: int,
+    *,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Preview or delete only a project-authored record, never a source record."""
+    if (
+        isinstance(custom_record_id, bool)
+        or not isinstance(custom_record_id, int)
+        or custom_record_id < 1
+    ):
+        raise ValueError("custom_record_id must be a positive integer")
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = (
+        sqlite3.connect(read_only_uri, uri=True)
+        if dry_run
+        else sqlite3.connect(db_path)
+    )
+    connection.row_factory = sqlite3.Row
+    try:
+        if not dry_run:
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("BEGIN IMMEDIATE")
+        _require_current_schema(connection)
+        row = connection.execute(
+            """SELECT custom_record_id, coordinate_word, value_byte, created_at
+               FROM overworld_hidden_item_custom_record
+               WHERE custom_record_id = ?""",
+            (custom_record_id,),
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"custom overworld hidden item not found: {custom_record_id}")
+        area_indices = [
+            int(item["area_index"])
+            for item in connection.execute(
+                """SELECT area_index FROM overworld_hidden_item_custom_area_record
+                   WHERE custom_record_id = ? ORDER BY area_index""",
+                (custom_record_id,),
+            ).fetchall()
+        ]
+        result = {
+            "custom_record_id": int(row["custom_record_id"]),
+            "area_indices": area_indices,
+            "coordinate_word": int(row["coordinate_word"]),
+            "value_byte": int(row["value_byte"]),
+            "created_at": str(row["created_at"]),
+            "source_record_index": None,
+        }
+        if dry_run:
+            return {
+                "action": "delete_custom_overworld_hidden_item",
+                "dry_run": True,
+                "record": result,
+                "rom_modified": False,
+            }
+        with connection:
+            connection.execute(
+                "DELETE FROM overworld_hidden_item_custom_record WHERE custom_record_id = ?",
+                (custom_record_id,),
+            )
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not delete custom overworld hidden item: {exc}") from exc
+    finally:
+        connection.close()
+
+    export_project(db_path)
+    return {
+        "action": "delete_custom_overworld_hidden_item",
+        "dry_run": False,
+        "deleted": result,
+        "rom_modified": False,
+    }
 
 def import_dungeon_chest_data(
     database_path: str | Path,
@@ -1776,6 +2186,7 @@ def validate_project(
             "source_asset",
             *_OVERWORLD_TABLE_NAMES,
             *_DUNGEON_CHEST_TABLE_NAMES,
+            *_OVERWORLD_CUSTOM_TABLE_NAMES,
         }
         missing_tables = sorted(required_tables - tables)
         if missing_tables:
