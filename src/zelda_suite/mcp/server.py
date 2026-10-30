@@ -1,6 +1,6 @@
-"""Opt-in stdio MCP server for a single ZeldaProject SQLite database.
+"""Opt-in stdio MCP server bound to one ZeldaProject database and asset registry.
 
-The server deliberately binds one database at startup; model-provided tool
+The server deliberately binds both paths at startup; model-provided tool
 arguments cannot select arbitrary filesystem paths. ROM bytes are never read
 or written by these tools.
 """
@@ -16,6 +16,7 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from zelda_suite.project import (
+    audit_project_dungeon_chest_room_references,
     create_custom_overworld_hidden_item,
     delete_custom_overworld_hidden_item,
     get_dungeon_chest_model,
@@ -40,11 +41,17 @@ def _render_json(payload: Any) -> str:
     )
 
 
-def create_server(database_path: str | Path) -> FastMCP:
-    """Build an MCP server bound to one existing project database."""
+def create_server(
+    database_path: str | Path,
+    registry_path: str | Path = "data/extracted/manifest.json",
+) -> FastMCP:
+    """Build an MCP server bound to one project database and asset registry."""
     db_path = Path(database_path).expanduser().resolve()
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
+    asset_registry_path = Path(registry_path).expanduser().resolve()
+    if not asset_registry_path.is_file():
+        raise FileNotFoundError(f"asset registry not found: {asset_registry_path}")
 
     server = FastMCP(
         "zelda-suite-project",
@@ -141,6 +148,20 @@ def create_server(database_path: str | Path) -> FastMCP:
             dry_run=not apply,
         )
         return _render_json(result)
+
+    @server.tool()
+    def dungeon_audit_chest_room_references() -> str:
+        """Audit current project chest room values against registered source pointer tables.
+
+        The report preserves source room baselines and surfaces out-of-range or
+        mismatched object/door target labels. It reads only project metadata and
+        the asset registry fixed at server startup; candidate offsets and room
+        payload bytes are not verified, and no ROM is read or modified.
+        """
+        report = audit_project_dungeon_chest_room_references(
+            db_path, asset_registry_path
+        )
+        return _render_json(report)
 
     @server.tool()
     def dungeon_list_chest_records() -> str:
@@ -264,15 +285,29 @@ def main() -> None:
             "ZELDA_SUITE_PROJECT_DB."
         ),
     )
+    parser.add_argument(
+        "--registry",
+        type=Path,
+        default=None,
+        help=(
+            "Registered source-asset manifest used by the read-only chest/room "
+            "audit. May also be supplied through ZELDA_SUITE_ASSET_REGISTRY."
+        ),
+    )
     args = parser.parse_args()
     database_path = args.database or os.environ.get("ZELDA_SUITE_PROJECT_DB")
+    registry_path = (
+        args.registry
+        or os.environ.get("ZELDA_SUITE_ASSET_REGISTRY")
+        or Path("data/extracted/manifest.json")
+    )
     if database_path is None:
         parser.error(
             "provide --database PATH or set ZELDA_SUITE_PROJECT_DB; "
             "the server never guesses which project to open"
         )
     try:
-        server = create_server(database_path)
+        server = create_server(database_path, registry_path)
     except (FileNotFoundError, OSError, ValueError) as exc:
         parser.error(str(exc))
     server.run(transport="stdio")

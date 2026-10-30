@@ -38,16 +38,17 @@ base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 
 **Semantic-model imports:** `import-overworld-hidden-items` and `import-dungeon-chest-data` are read-only previews by default. Pass CLI `--apply` or Python `dry_run=False` to persist. An existing model still requires explicit `--replace`; use `--replace` without `--apply` to inspect the prior model and proposed source revision/hash/counts before resetting imported edits. The overworld replacement preserves project-authored custom records and their area links. Neither import reads or writes ROM bytes.
 
-**Optional agent transport:** `zelda-suite-mcp --database PATH` (or
-`ZELDA_SUITE_PROJECT_DB`) starts the stdio MCP server for exactly one existing
-project database. It exposes project validation/source metadata reads, bounded
-overworld/dungeon model reads, preview-first imported overworld hidden-item
-record updates, packed dungeon-chest field updates, and project-authored
+**Optional agent transport:** `zelda-suite-mcp --database PATH --registry PATH`
+(or `ZELDA_SUITE_PROJECT_DB` and `ZELDA_SUITE_ASSET_REGISTRY`) starts the stdio
+MCP server bound to one project database and one registered asset manifest. It
+exposes project validation/source metadata reads, bounded overworld/dungeon
+model reads, a read-only chest-to-room-pointer audit, preview-first imported
+overworld hidden-item and packed dungeon-chest edits, and project-authored
 hidden-item create/update/delete. All mutation tools default to previews and
 require explicit `apply=true` to persist SQLite/JSON changes; imported edits
-preserve their source baselines and area aliases. The server never accepts a
-database path from a tool argument and does not expose imports, ROM reads, or
-ROM writes. Install it with
+preserve their source baselines and area aliases. No tool accepts a database
+or registry path, and the server does not expose imports, ROM reads, or ROM
+writes. Install it with
 `uv sync --extra agent`; the core package
 does not require the optional SDK. The implementation uses the MCP Python SDK
 v1 `FastMCP` API and pins `mcp<2` until the v2 API migration is implemented.

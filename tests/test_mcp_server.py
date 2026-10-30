@@ -146,12 +146,17 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "overworld_list_hidden_items",
         "overworld_update_hidden_item_record",
         "dungeon_list_chest_records",
+        "dungeon_audit_chest_room_references",
         "dungeon_update_chest_record",
         "overworld_create_custom_hidden_item",
         "overworld_update_custom_hidden_item",
         "overworld_delete_custom_hidden_item",
     }
-    assert all("database" not in schema.get("properties", {}) for schema in schemas.values())
+    assert all(
+        "database" not in schema.get("properties", {})
+        and "registry" not in schema.get("properties", {})
+        for schema in schemas.values()
+    )
 
     create_schema = schemas["overworld_create_custom_hidden_item"]
     assert create_schema["properties"]["apply"]["default"] is False
@@ -273,6 +278,70 @@ def test_mcp_overworld_row_update_previews_then_applies_explicitly(
     assert model["areas"][1]["record_indices"] == [0]
     exported = json.loads(json_export.read_text(encoding="utf-8"))
     assert exported["overworld_hidden_items"] == model
+
+
+def test_mcp_chest_room_reference_audit_is_read_only_and_tracks_project_edits(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_chest_room_audit", tmp_path)
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    assert imported["summary"]["entry_count"] == 168
+    server = create_server(database, REGISTRY_PATH)
+
+    database_before_audit = database.read_bytes()
+    export_before_audit = json_export.read_bytes()
+    clean = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_audit_chest_room_references", {}))
+        )
+    )
+    assert clean["format"] == "zelda-suite-project-dungeon-chest-room-reference-audit"
+    assert clean["summary"]["chest_entry_count"] == 168
+    assert clean["summary"]["chest_entries_with_pointer_slots"] == 168
+    assert clean["summary"]["chest_entries_without_pointer_slots"] == 0
+    assert clean["summary"]["error_count"] == 0
+    assert clean["entries"][0]["source_room_value"] == 0x32
+    assert clean["entries"][0]["room_value"] == 0x32
+    assert clean["entries"][0]["room_value_in_pointer_tables"] is True
+    assert clean["evidence"]["rom_bytes_read"] is False
+    assert clean["evidence"]["rom_modified"] is False
+    assert database.read_bytes() == database_before_audit
+    assert json_export.read_bytes() == export_before_audit
+
+    edit = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "dungeon_update_chest_record",
+                    {"table_index": 0, "room_value": 0x1234, "apply": True},
+                )
+            )
+        )
+    )
+    assert edit["room_value"] == 0x1234
+    database_after_edit = database.read_bytes()
+    export_after_edit = json_export.read_bytes()
+
+    edited = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_audit_chest_room_references", {}))
+        )
+    )
+    first = edited["entries"][0]
+    assert first["source_room_value"] == 0x32
+    assert first["room_value"] == 0x1234
+    assert first["is_modified"] is True
+    assert first["room_pointer_table_index"] is None
+    assert first["room_value_in_pointer_tables"] is False
+    assert edited["summary"]["modified_record_count"] == 1
+    assert edited["summary"]["chest_entries_without_pointer_slots"] == 1
+    assert edited["findings"][0]["code"] == "room_value_out_of_pointer_range"
+    assert edited["evidence"]["candidate_pointer_offsets_verified"] is False
+    assert edited["evidence"]["room_payload_bytes_verified"] is False
+    assert edited["evidence"]["rom_bytes_read"] is False
+    assert edited["evidence"]["rom_modified"] is False
+    assert database.read_bytes() == database_after_edit
+    assert json_export.read_bytes() == export_after_edit
 
 
 def test_mcp_dungeon_chest_update_previews_then_applies_explicitly(
@@ -475,6 +544,12 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
 def test_mcp_server_rejects_missing_database(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError, match="project database not found"):
         create_server(tmp_path / "missing.db")
+
+
+def test_mcp_server_rejects_missing_asset_registry(tmp_path: Path) -> None:
+    database, _json_export = initialize_project("mcp_missing_registry", tmp_path)
+    with pytest.raises(FileNotFoundError, match="asset registry not found"):
+        create_server(database, tmp_path / "missing-manifest.json")
 
 
 def test_mcp_schema_does_not_offer_rom_or_import_tools(tmp_path: Path) -> None:

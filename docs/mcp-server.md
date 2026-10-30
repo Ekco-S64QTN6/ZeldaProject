@@ -17,13 +17,22 @@ The server requires an existing project database and never guesses which
 project to open:
 
 ```bash
-uv run zelda-suite-mcp --database project/my-hack.db
+uv run zelda-suite-mcp \
+  --database project/my-hack.db \
+  --registry data/extracted/manifest.json
 ```
+
+The asset registry can be selected at startup through `--registry` or
+`ZELDA_SUITE_ASSET_REGISTRY`. Use an absolute manifest path in an MCP host
+whose working directory is not the repository root. Both paths are fixed when
+the server starts; no tool accepts a database or registry path.
 
 The same database can be selected through `ZELDA_SUITE_PROJECT_DB`:
 
 ```bash
-ZELDA_SUITE_PROJECT_DB=project/my-hack.db uv run zelda-suite-mcp
+ZELDA_SUITE_PROJECT_DB=project/my-hack.db \
+ZELDA_SUITE_ASSET_REGISTRY=data/extracted/manifest.json \
+  uv run zelda-suite-mcp
 ```
 
 The process uses stdio transport. Configure the MCP host to launch this
@@ -42,15 +51,16 @@ open a ROM.
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
 | `overworld_update_hidden_item_record` | Preview coordinate/value edits to one imported source record; persist only with `apply=true`. |
 | `dungeon_list_chest_records` | Read the imported packed dungeon-chest model. |
+| `dungeon_audit_chest_room_references` | Read-only join of current chest room values to the registered object/door pointer tables, retaining source baselines and findings. |
 | `dungeon_update_chest_record` | Preview a bounded item-byte, room-value, and/or big-chest-flag edit; persist only with `apply=true`. |
 | `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true`. |
 | `overworld_update_custom_hidden_item` | Preview coordinate/value edits and/or replacement of the complete area-link set; persist only with `apply=true`. |
 | `overworld_delete_custom_hidden_item` | Preview deletion by custom-record ID; persist only with `apply=true`. |
 
-The server is bound to one resolved database path at startup. No tool accepts a
-database path or arbitrary filesystem path, and tool inputs are validated with
-strict Pydantic fields. The custom hidden-item tools retain the underlying API's
-bounds: area indexes 0–127, coordinate words 0–65534 (with `$FFFF` reserved as
+The server is bound to one resolved database path and one resolved asset
+registry path at startup. No tool accepts a database path, registry path, or
+arbitrary filesystem path, and tool inputs are validated with strict Pydantic
+fields. The custom hidden-item tools retain the underlying API's bounds: area indexes 0–127, coordinate words 0–65534 (with `$FFFF` reserved as
 the list sentinel), and value bytes 0–255. A custom record remains separate from
 the 351 imported source records and can link to several area slots.
 
@@ -68,6 +78,14 @@ and at least one of `coordinate_word` (0–65534) or `value_byte` (0–255).
 original source coordinate/value fields and all existing area aliases while
 recalculating consumer classification from the changed raw byte. A value byte
 is not a canonical item ID. The change updates SQLite/JSON only.
+
+`dungeon_audit_chest_room_references` reports every chest against both
+registered 320-entry pointer tables, grouping repeated room values and surfacing
+out-of-range values or object/door target-label mismatches. It includes the
+current edited room value and the immutable source room baseline. The report is
+source-metadata arithmetic only: candidate offsets, room payload bytes, item
+names, and the playable-room set remain unverified; it never reads or writes a
+ROM. The tool needs the asset registry fixed at server startup.
 
 `dungeon_update_chest_record` accepts a table index from 0–167 and at least
 one of `item_value` (0–255), `room_value` (0–32767), or `is_big_chest` (boolean).
@@ -98,11 +116,12 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 
 ## Tests and limitations
 
-`tests/test_mcp_server.py` checks the tool schema, database binding, read-only
-project inspection, default preview behavior, explicit imported-row, custom-record,
-and chest edit commits, area alias visibility/replacement, immutable source
-baselines, source-row count preservation, and absence of ROM/import tools. CI runs these
-contract tests with the other Python checks.
+`tests/test_mcp_server.py` checks the tool schema, database and registry binding,
+read-only project inspection and chest/room audit, default preview behavior,
+explicit imported-row, custom-record, and chest edit commits, area alias
+visibility/replacement, immutable source baselines, source-row count preservation,
+and absence of ROM/import tools. CI runs these contract tests with the other
+Python checks.
 
 This does not establish compatibility with a specific model host, a live
 session, a particular model endpoint, or `z3cli`. Those integrations remain
