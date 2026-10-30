@@ -633,3 +633,60 @@ def test_cli_custom_hidden_item_update_defaults_to_dry_run_and_requires_apply(
     assert model["areas"][4]["custom_record_ids"] == []
     assert model["areas"][6]["custom_record_ids"] == [custom_id]
     assert validate_project(database) == []
+
+
+def test_custom_hidden_item_update_rolls_back_all_fields_when_area_link_insert_fails(
+    tmp_path: Path,
+) -> None:
+    """A failed replacement of many-to-many links must not partially apply fields."""
+    database, json_path = initialize_project("custom_item_update_rollback", tmp_path)
+    _seed_semantic_model(database)
+    created = create_custom_overworld_hidden_item(
+        database,
+        area_indices=[4, 5],
+        coordinate_word=0x1234,
+        value_byte=0x05,
+        dry_run=False,
+    )
+    custom_id = created["record"]["custom_record_id"]
+    export_before = json_path.read_bytes()
+
+    # Force the second new relationship to fail after the first was inserted.
+    # The API's transaction must restore both the old links and packed fields.
+    with sqlite3.connect(database) as connection:
+        connection.execute(
+            """CREATE TRIGGER fail_custom_hidden_item_area_link
+               BEFORE INSERT ON overworld_hidden_item_custom_area_record
+               WHEN NEW.area_index = 7
+               BEGIN
+                   SELECT RAISE(ABORT, 'injected area-link failure');
+               END"""
+        )
+
+    with pytest.raises(ValueError, match="could not update custom overworld hidden item"):
+        update_custom_overworld_hidden_item(
+            database,
+            custom_id,
+            area_indices=[6, 7],
+            coordinate_word=0x4567,
+            value_byte=0x84,
+            dry_run=False,
+        )
+
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    record = next(
+        item for item in model["custom_records"]
+        if item["custom_record_id"] == custom_id
+    )
+    assert record["area_indices"] == [4, 5]
+    assert record["coordinate_word"] == 0x1234
+    assert record["value_byte"] == 0x05
+    assert model["areas"][4]["custom_record_ids"] == [custom_id]
+    assert model["areas"][5]["custom_record_ids"] == [custom_id]
+    assert model["areas"][6]["custom_record_ids"] == []
+    assert model["areas"][7]["custom_record_ids"] == []
+    assert json_path.read_bytes() == export_before
+    assert model["summary"]["record_count"] == 351
+    assert model["summary"]["custom_record_count"] == 1
+    assert validate_project(database) == []
