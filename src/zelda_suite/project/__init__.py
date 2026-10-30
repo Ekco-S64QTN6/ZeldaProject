@@ -6,9 +6,9 @@ from zelda_suite.project.dungeon_chest_room_references import (
 from zelda_suite.project.store import (
     CURRENT_SCHEMA_VERSION,
     PROJECT_FORMAT,
-    PROJECT_FORMAT_VERSION,
     create_custom_overworld_hidden_item,
     delete_custom_overworld_hidden_item,
+    PROJECT_FORMAT_VERSION,
     export_project,
     get_dungeon_chest_model,
     get_overworld_hidden_item_model,
@@ -28,9 +28,9 @@ from zelda_suite.project.store import (
 __all__ = [
     "CURRENT_SCHEMA_VERSION",
     "PROJECT_FORMAT",
-    "PROJECT_FORMAT_VERSION",
     "create_custom_overworld_hidden_item",
     "delete_custom_overworld_hidden_item",
+    "PROJECT_FORMAT_VERSION",
     "audit_project_dungeon_chest_room_references",
     "export_project",
     "get_dungeon_chest_model",
