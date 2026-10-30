@@ -1856,6 +1856,194 @@ def create_custom_overworld_hidden_item(
     }
 
 
+def update_custom_overworld_hidden_item(
+    database_path: str | Path,
+    custom_record_id: int,
+    *,
+    area_indices: list[int] | tuple[int, ...] | None = None,
+    coordinate_word: int | None = None,
+    value_byte: int | None = None,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Preview or update only a project-authored hidden item.
+
+    Omitted fields retain their current values. Supplying area_indices
+    replaces the complete area-link set; at least one valid area must remain.
+    Imported source records, their baselines, and their area links are never
+    updated. A committed change affects only SQLite and canonical JSON.
+    """
+    if (
+        isinstance(custom_record_id, bool)
+        or not isinstance(custom_record_id, int)
+        or custom_record_id < 1
+    ):
+        raise ValueError("custom_record_id must be a positive integer")
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
+    if area_indices is None and coordinate_word is None and value_byte is None:
+        raise ValueError("supply area_indices, coordinate_word, or value_byte")
+
+    db_path = Path(database_path)
+    if not db_path.is_file():
+        raise FileNotFoundError(f"project database not found: {db_path}")
+
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    connection = (
+        sqlite3.connect(read_only_uri, uri=True)
+        if dry_run
+        else sqlite3.connect(db_path)
+    )
+    connection.row_factory = sqlite3.Row
+    changed_fields: list[str] = []
+    before: dict[str, Any]
+    try:
+        if not dry_run:
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("BEGIN IMMEDIATE")
+        _require_current_schema(connection)
+        row = connection.execute(
+            """SELECT custom_record_id, coordinate_word, value_byte, created_at
+               FROM overworld_hidden_item_custom_record
+               WHERE custom_record_id = ?""",
+            (custom_record_id,),
+        ).fetchone()
+        if row is None:
+            raise KeyError(f"custom overworld hidden item not found: {custom_record_id}")
+
+        old_coordinate = int(row["coordinate_word"])
+        old_value = int(row["value_byte"])
+        created_at = str(row["created_at"])
+        old_areas = [
+            int(item["area_index"])
+            for item in connection.execute(
+                """SELECT area_index FROM overworld_hidden_item_custom_area_record
+                   WHERE custom_record_id = ? ORDER BY area_index""",
+                (custom_record_id,),
+            ).fetchall()
+        ]
+        new_coordinate = old_coordinate if coordinate_word is None else coordinate_word
+        new_value = old_value if value_byte is None else value_byte
+        requested_areas = old_areas if area_indices is None else area_indices
+        new_areas = _validated_custom_hidden_item_fields(
+            new_coordinate, new_value, requested_areas
+        )
+
+        placeholders = ",".join("?" for _ in new_areas)
+        existing_areas = {
+            int(item["area_index"])
+            for item in connection.execute(
+                f"SELECT area_index FROM overworld_hidden_item_area "
+                f"WHERE area_index IN ({placeholders})",
+                new_areas,
+            ).fetchall()
+        }
+        missing_areas = [area for area in new_areas if area not in existing_areas]
+        if missing_areas:
+            raise KeyError(f"overworld area not found: {missing_areas[0]}")
+
+        replacement_words = _custom_hidden_item_replacement_words(connection)
+        before_semantics = classify_overworld_hidden_item_value_byte(
+            old_value, replacement_words
+        )
+        proposed_semantics = classify_overworld_hidden_item_value_byte(
+            new_value, replacement_words
+        )
+
+        def snapshot(
+            coordinate: int,
+            value: int,
+            areas: list[int],
+            semantics: dict[str, Any],
+        ) -> dict[str, Any]:
+            return {
+                "custom_record_id": custom_record_id,
+                "record_kind": "project_authored",
+                "source_record_index": None,
+                "area_indices": areas,
+                "coordinate_word": coordinate,
+                "value_byte": value,
+                "consumer_class": semantics["consumer_class"],
+                "consumer_operation": semantics["consumer_operation"],
+                "selector_byte_offset": semantics["selector_byte_offset"],
+                "replacement_table_index": semantics["replacement_table_index"],
+                "replacement_word_value": semantics["replacement_word_value"],
+                "replacement_word_comment": semantics["replacement_word_comment"],
+                "special_case": semantics["special_case"],
+                "canonical_item_id": None,
+                "canonical_item_id_resolved": False,
+                "created_at": created_at,
+            }
+
+        before = snapshot(old_coordinate, old_value, old_areas, before_semantics)
+        proposed = snapshot(new_coordinate, new_value, new_areas, proposed_semantics)
+        if new_coordinate != old_coordinate:
+            changed_fields.append("coordinate_word")
+        if new_value != old_value:
+            changed_fields.append("value_byte")
+        if new_areas != old_areas:
+            changed_fields.append("area_indices")
+
+        if dry_run:
+            return {
+                "action": "update_custom_overworld_hidden_item",
+                "dry_run": True,
+                "custom_record_id": custom_record_id,
+                "before": before,
+                "proposed": proposed,
+                "changed_fields": changed_fields,
+                "rom_modified": False,
+            }
+
+        if changed_fields:
+            with connection:
+                if new_coordinate != old_coordinate or new_value != old_value:
+                    connection.execute(
+                        """UPDATE overworld_hidden_item_custom_record
+                           SET coordinate_word = ?, value_byte = ?
+                           WHERE custom_record_id = ?""",
+                        (new_coordinate, new_value, custom_record_id),
+                    )
+                if new_areas != old_areas:
+                    connection.execute(
+                        """DELETE FROM overworld_hidden_item_custom_area_record
+                           WHERE custom_record_id = ?""",
+                        (custom_record_id,),
+                    )
+                    connection.executemany(
+                        """INSERT INTO overworld_hidden_item_custom_area_record (
+                               area_index, custom_record_id
+                           ) VALUES (?, ?)""",
+                        [(area, custom_record_id) for area in new_areas],
+                    )
+    except sqlite3.Error as exc:
+        raise ValueError(f"could not update custom overworld hidden item: {exc}") from exc
+    finally:
+        connection.close()
+
+    if changed_fields:
+        export_project(db_path)
+    model = get_overworld_hidden_item_model(db_path)
+    if model is None:
+        raise ValueError("custom overworld hidden item model was not persisted")
+    record = next(
+        (
+            item for item in model["custom_records"]
+            if item["custom_record_id"] == custom_record_id
+        ),
+        None,
+    )
+    if record is None:
+        raise ValueError("custom overworld hidden item was not present in the project export")
+    return {
+        "action": "update_custom_overworld_hidden_item",
+        "dry_run": False,
+        "record": record,
+        "before": before,
+        "changed_fields": changed_fields,
+        "rom_modified": False,
+    }
+
+
 def delete_custom_overworld_hidden_item(
     database_path: str | Path,
     custom_record_id: int,
