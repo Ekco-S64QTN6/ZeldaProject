@@ -1255,9 +1255,12 @@ def _persist_source_asset_payload(
     payload: dict[str, Any],
     *,
     replace_existing: bool = False,
+    dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Validate and persist a loaded source-export payload."""
+    """Validate and optionally preview or persist a source-export payload."""
     _validate_asset_key(asset_key)
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a bool")
     try:
         payload = validate_source_export(payload)
     except AssetLoadError as exc:
@@ -1269,6 +1272,57 @@ def _persist_source_asset_payload(
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
+
+    if dry_run:
+        read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+        connection = sqlite3.connect(read_only_uri, uri=True)
+        connection.row_factory = sqlite3.Row
+        try:
+            _require_current_schema(connection)
+            existing = connection.execute(
+                "SELECT 1 FROM source_asset WHERE asset_key = ?", (asset_key,)
+            ).fetchone()
+            if existing is not None and not replace_existing:
+                raise ValueError(
+                    f"source asset key already exists: {asset_key}; use "
+                    "replace_existing=True or the CLI --replace option to replace it"
+                )
+            before = (
+                _select_source_asset(connection, asset_key)
+                if existing is not None
+                else None
+            )
+        except sqlite3.Error as exc:
+            raise ValueError(
+                f"could not inspect source asset {asset_key!r}: {exc}"
+            ) from exc
+        finally:
+            connection.close()
+
+        before_summary = (
+            None
+            if before is None
+            else {key: value for key, value in before.items() if key != "payload"}
+        )
+        proposed = {
+            "key": asset_key,
+            "format": payload["format"],
+            "format_version": payload["format_version"],
+            "source_file": _source_file_metadata(payload),
+            "source_revision": payload["source_revision"],
+            "sha256": payload_hash,
+        }
+        return {
+            "action": "import_source_asset",
+            "dry_run": True,
+            "key": asset_key,
+            "replacing": before is not None,
+            "before": before_summary,
+            "proposed": proposed,
+            "database_modified": False,
+            "json_modified": False,
+            "rom_modified": False,
+        }
 
     connection = sqlite3.connect(db_path)
     connection.row_factory = sqlite3.Row
@@ -1333,8 +1387,9 @@ def import_source_asset(
     source_export_path: str | Path,
     *,
     replace_existing: bool = False,
+    dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Import a validated source-export JSON file into a project database."""
+    """Import or preview a validated source-export JSON file."""
     try:
         payload = load_source_export(source_export_path)
     except AssetLoadError as exc:
@@ -1344,6 +1399,7 @@ def import_source_asset(
         asset_key,
         payload,
         replace_existing=replace_existing,
+        dry_run=dry_run,
     )
 
 
@@ -1354,8 +1410,9 @@ def import_extracted_asset(
     *,
     asset_key: str | None = None,
     replace_existing: bool = False,
+    dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Import a committed manifest asset after registry/provenance checks.
+    """Import or preview a committed manifest asset after registry/provenance checks.
 
     By default, the project's asset key matches the registry name. A separate
     asset_key may be supplied when multiple project-local snapshots are needed.
@@ -1369,6 +1426,7 @@ def import_extracted_asset(
         asset_name if asset_key is None else asset_key,
         payload,
         replace_existing=replace_existing,
+        dry_run=dry_run,
     )
 
 def list_source_assets(database_path: str | Path) -> list[dict[str, Any]]:

@@ -92,8 +92,11 @@ must use that revision rather than silently updating to a newer upstream tree.
   `zelda-suite import-extracted-asset PROJECT.db asset-name` for committed
   assets so registry format, revision, safe filename, and record count are
   validated. Use `import-source-asset` only for an unregistered but validated
-  source export. Replacing an existing project key requires the explicit
-  `--replace` flag.
+  source export. Preview both import routes with `--dry-run` before applying; when replacing,
+  combine `--replace --dry-run` to inspect the prior and proposed asset
+  metadata and hashes without changing project files. Omitting `--dry-run`
+  applies the import as before. Replacing an existing project key requires the
+  explicit `--replace` flag.
 
 ## Versioning and change notes
 
