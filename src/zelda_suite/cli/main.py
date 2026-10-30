@@ -88,6 +88,8 @@ from zelda_suite.extract import (
 from zelda_suite.project import (
     CURRENT_SCHEMA_VERSION,
     audit_project_dungeon_chest_room_references,
+    create_custom_overworld_hidden_item,
+    delete_custom_overworld_hidden_item,
     get_dungeon_chest_model,
     get_overworld_hidden_item_model,
     get_source_asset,
@@ -3605,6 +3607,9 @@ def list_overworld_hidden_items_command(database: Path, area_index: int | None) 
         records_by_index = {
             record["record_index"]: record for record in model["records"]
         }
+        custom_records_by_id = {
+            record["custom_record_id"]: record for record in model["custom_records"]
+        }
         payload = {
             "format": model["format"],
             "format_version": model["format_version"],
@@ -3613,6 +3618,9 @@ def list_overworld_hidden_items_command(database: Path, area_index: int | None) 
             "area": area,
             "records": [
                 records_by_index[index] for index in area["record_indices"]
+            ],
+            "custom_records": [
+                custom_records_by_id[index] for index in area["custom_record_ids"]
             ],
             "evidence": model["evidence"],
         }
@@ -3659,6 +3667,79 @@ def update_overworld_hidden_item_command(
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
 
+
+
+
+@cli.command(name="create-custom-overworld-hidden-item")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--area-index",
+    type=click.IntRange(min=0, max=127),
+    multiple=True,
+    required=True,
+    help="Area to associate with the custom record; repeat to assign multiple aliases.",
+)
+@click.option(
+    "--coordinate-word",
+    required=True,
+    help="Raw 16-bit coordinate word (decimal, 0x-prefixed, or Asar $-prefixed); $FFFF is reserved.",
+)
+@click.option(
+    "--value-byte",
+    required=True,
+    help="Raw consumer value byte (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Persist the record; without this option, return a dry-run preview.",
+)
+def create_custom_overworld_hidden_item_command(
+    database: Path,
+    area_index: tuple[int, ...],
+    coordinate_word: str,
+    value_byte: str,
+    apply: bool,
+) -> None:
+    """Preview or create a project-authored hidden item without writing a ROM."""
+    try:
+        result = create_custom_overworld_hidden_item(
+            database,
+            area_indices=area_index,
+            coordinate_word=_parse_offset_text(coordinate_word),
+            value_byte=_parse_offset_text(value_byte),
+            dry_run=not apply,
+        )
+    except (KeyError, ValueError, OSError, click.BadParameter) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+
+
+@cli.command(name="delete-custom-overworld-hidden-item")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("custom_record_id", type=click.IntRange(min=1))
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Delete the custom record; without this option, return a dry-run preview.",
+)
+def delete_custom_overworld_hidden_item_command(
+    database: Path, custom_record_id: int, apply: bool
+) -> None:
+    """Preview or delete a project-authored hidden item; source rows are immutable."""
+    try:
+        result = delete_custom_overworld_hidden_item(
+            database, custom_record_id, dry_run=not apply
+        )
+    except (KeyError, ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
 
 
 @cli.command(name="import-dungeon-chest-data")

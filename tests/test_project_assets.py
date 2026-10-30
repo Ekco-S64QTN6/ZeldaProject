@@ -288,7 +288,9 @@ def test_migrate_schema_v1_project_preserves_metadata_and_exports_v5(
         ).fetchone()
 
     assert project_version == (PROJECT_FORMAT_VERSION,)
-    assert versions == [(1,), (2,), (3,), (CURRENT_SCHEMA_VERSION,)]
+    assert versions == [
+        (version,) for version in range(1, CURRENT_SCHEMA_VERSION + 1)
+    ]
     assert table == ("source_asset",)
 
     payload = json.loads(json_path.read_text(encoding="utf-8"))
