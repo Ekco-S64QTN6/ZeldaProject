@@ -134,21 +134,31 @@ uv run zelda-suite create-custom-overworld-hidden-item project/my-hack.db \
   --area-index 12 --area-index 13 \
   --coordinate-word '$1234' --value-byte '$05' --apply
 
+# Preview an update, then explicitly apply it. Omitted fields are retained.
+uv run zelda-suite update-custom-overworld-hidden-item project/my-hack.db 1 \
+  --coordinate-word '$4567' --value-byte '$84'
+uv run zelda-suite update-custom-overworld-hidden-item project/my-hack.db 1 \
+  --area-index 14 --area-index 15 --apply
+
 # Preview deletion, then explicitly apply it.
 uv run zelda-suite delete-custom-overworld-hidden-item project/my-hack.db 1
 uv run zelda-suite delete-custom-overworld-hidden-item project/my-hack.db 1 --apply
 ```
 
-Creation validates area indexes (0–127), rejects duplicate assignments, rejects
-coordinate word `$FFFF` (the source consumer's list sentinel), and bounds the
-value to one byte. The consumer classification is derived from the same pinned
-replacement-word table as source records. Custom record IDs are database-
+Creation and update validate area indexes (0–127), reject duplicate assignments,
+reject coordinate word `$FFFF` (the source consumer's list sentinel), and bound
+the value to one byte. Updates omit coordinate/value arguments to retain their
+current values; when area indexes are supplied, they replace the complete,
+non-empty many-to-many link set. The consumer classification is derived from
+the same pinned replacement-word table as source records. Custom record IDs are database-
 generated and distinct from source record indexes. Area exports keep source
 `record_indices` and project `custom_record_ids` separate; custom assignments
 are many-to-many and serialized in deterministic ID order.
 
-Deletion is restricted to custom record IDs. Source record indexes cannot be
-deleted through this API. Explicit source-model replacement resets edits to the
+Updates and deletion are restricted to custom record IDs. Source record
+indexes cannot be updated or deleted through this API. Updating a custom record
+does not change its creation timestamp or its source-free identity. Explicit
+source-model replacement resets edits to the
 imported source rows but preserves project-authored records and their area
 assignments. All operations update SQLite and the JSON sidecar only; they do not
 calculate ROM offsets, patch, or write ROM bytes.
