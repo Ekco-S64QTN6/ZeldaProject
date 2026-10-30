@@ -464,6 +464,38 @@ The following commands returned exit status 0 (output quality limitations are ca
 
 The overworld map check remains **failed**, even after correcting the command syntax. `overworld-describe-map --map=80` was rejected because this build requires `--screen`; the corrected command `overworld-describe-map --screen=80 --format=json --rom="$ROM"` then returned `Offset 1311049 out of range (size: 1048576)`. Do not call this an overworld-read success or guess at a different offset. The underlying cause is not yet established.
 
+### Source diagnosis of the v0.7.2 out-of-range read (2026-10-30)
+
+A static audit of the exact [YAZE v0.7.2 tag](https://github.com/scawful/yaze/tree/v0.7.2)
+traced the reported offset to global overworld initialization, not to screen
+`$50`'s map pointer. In that tag, `Overworld::Load()` unconditionally calls
+`LoadDiggableTiles()`. The v0.7.2 implementation then calls
+`rom()->ReadByte(kOverworldCustomDiggableTilesEnabled)`; the constant is
+`0x140149` in
+[`diggable_tiles.h`](https://github.com/scawful/yaze/blob/v0.7.2/src/zelda3/overworld/diggable_tiles.h#L18-L24).
+That address is decimal **1,311,049**, exactly the reported error offset, and
+lies beyond the end of this 1,048,576-byte ROM. The later custom-table read,
+if reached, starts at `0x140980` and spans 64 bytes, also outside a 1 MiB
+image. Because the read occurs while the overworld object is loading, requesting
+screen `$50` merely triggers the global load; it does not establish a screen-80
+pointer or payload defect.
+
+The upstream collision was corrected after the v0.7.2 release tag. Commit
+[`566d7c6`](https://github.com/scawful/yaze/commit/566d7c6ea08b0df2addbb67940aa56794ef052fb)
+(2026-09-29) changed `LoadDiggableTiles()` to use vanilla defaults instead
+of treating ZSCustomOverworld v3 storage as a diggable-tile table, and made
+`SaveDiggableTiles()` stop writing into those reserved locations. The current
+upstream `master` source contains that change. The exact v0.7.2 tag predates
+it (tagged 2026-07-17).
+
+**Verification status:** this identifies the cause from source and matches the
+recorded offset exactly; it is not a runtime retest. The user's previously
+tested v0.7.2 executable still has the failure. Do not mark YAZE integration
+complete until an updated build is run against the same local ROM and the
+read-only map command succeeds. Keep the ROM hash before/after check, and do
+not issue save, patch, rebuild, or other write commands.
+
+
 `dungeon-get-palette` is not a command in this build (it returned `Unknown command`). Use the verified `palette-get-colors --group=dungeon_main --index=7` form for this tested palette read.
 
 The before-and-after SHA-256 values matched exactly, and `diff` produced no differences: the ROM remained unchanged during this smoke test. All tested calls were read-only; this does not validate any write, patch, save, rebuild, adapter, emulator, or end-to-end workflow. `z3ed` is not on `PATH` in the tested environment, so `zelda-suite doctor` can still warn about it even though the executable runs by absolute path. See `ROADMAP.md` for the remaining gates.

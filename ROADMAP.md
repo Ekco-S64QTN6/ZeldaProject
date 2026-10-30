@@ -12,12 +12,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 - [~] Confirm local US-ROM identity and bootability. On 2026-10-29 the user-run file matched the documented No-Intro USA size, CRC-32, SHA-1, and MD5 fingerprints and the user confirmed it boots. This supports byte identity with that catalog entry plus a manual boot check; it does not independently establish chain of custody or provide an automated emulator test. ROMs remain untracked and are excluded from CI; see [the local-ROM verification runbook](./docs/real-rom-verification.md).
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
-- [~] Smoke-test YAZE v0.7.2 `z3ed` against the locally supplied US ROM. ROM identification, raw reads, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. `overworld-describe-map --screen=80` fails with `Offset 1311049 out of range (size: 1048576)`; investigate before claiming overworld integration. One room response also contains a malformed staircase label. See [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
+- [~] Smoke-test YAZE v0.7.2 `z3ed` against the locally supplied US ROM. ROM identification, raw reads, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. `overworld-describe-map --screen=80` fails with `Offset 1311049 out of range (size: 1048576)`. A 2026-10-30 source audit traced that exact offset to v0.7.2's unconditional `LoadDiggableTiles()` read of ZSCustomOverworld v3 settings address `0x140149`, not to a screen-80 pointer; upstream commit [`566d7c6`](https://github.com/scawful/yaze/commit/566d7c6ea08b0df2addbb67940aa56794ef052fb) changed that code on 2026-09-29. The user's v0.7.2 binary has not been retested with an updated build, and one room response still contains a malformed staircase label. See [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
 - [ ] Test `z3cli` with the chosen model endpoint and a real tool call; decide whether to use it or a thin custom MCP server.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
 - [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v5 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v5 stores source-preserving overworld hidden-item areas/records, separate project-authored hidden-item additions with many-to-many area links, and packed dungeon chest records with constrained field edits; it is not yet a general game-system data model.
 
-**Exit criteria:** Not met. The local image matches the published reference fingerprint and the user reports a successful boot. Partial YAZE/`z3ed` read-only access is verified, but the overworld-map read fails and the malformed staircase label needs follow-up; z3cli/model-endpoint and automated emulator smoke tests remain outstanding.
+**Exit criteria:** Not met. The local image matches the published reference fingerprint and the user reports a successful boot. Partial YAZE/`z3ed` read-only access is verified. The v0.7.2 map-read failure is now source-diagnosed as an out-of-range ZSCustomOverworld v3 setting read during global initialization, and a post-tag upstream correction exists; an updated-binary runtime retest, the malformed staircase label, z3cli/model-endpoint, and automated emulator smoke tests remain outstanding.
 
 ## Phase 1 — Structured Extraction (current focus)
 
@@ -201,18 +201,22 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 ## Immediate next work
 
-1. Investigate the known YAZE v0.7.2 read-only map failure, then exercise the
-   separate z3cli/model-endpoint path. On 2026-10-29 the user verified the
-   official Linux archive checksum and successfully ran `z3ed` reads for
-   ROM info, raw bytes, dungeon room/sprite inspection, graphics bytes, both
-   overworld and dungeon palette groups, and message list/search. The call
-   `overworld-describe-map --screen=80` fails with
-   `Offset 1311049 out of range (size: 1048576)`; the room description
-   also emitted a malformed staircase label. The ROM SHA-256 was identical
-   before and after the checks (`66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`).
-   This verifies partial reads only, not a complete YAZE adapter or map access.
-   Do not issue write commands. `z3cli` is not installed/on PATH and has
-   not been tested with a model endpoint.
+1. Re-test the read-only YAZE map command with an updated upstream build,
+   then exercise the separate z3cli/model-endpoint path. The user's official
+   v0.7.2 Linux archive passed several reads, but
+   `overworld-describe-map --screen=80` failed with
+   `Offset 1311049 out of range (size: 1048576)`. The 2026-10-30 source audit
+   found that v0.7.2 unconditionally reads `0x140149` in
+   `Overworld::LoadDiggableTiles()`; the constant is ZSCustomOverworld v3
+   settings storage and lies outside this 1 MiB ROM. This is a global load
+   failure, not evidence of a screen-80 pointer defect. Upstream commit
+   [`566d7c6`](https://github.com/scawful/yaze/commit/566d7c6ea08b0df2addbb67940aa56794ef052fb)
+   (2026-09-29) removed that invalid read; retest a build containing the
+   correction before claiming map support. One dungeon staircase label also
+   remains malformed. Preserve the user's before/after ROM SHA-256
+   (`66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`)
+   when repeating read-only checks. Do not issue write commands.
+   `z3cli` remains untested with a model endpoint.
 2. Reconcile the six dungeon-room comments that disagree with source-order
    payload layout: `RoomDataTiles_00E1` (comment `$0509A9`, sequential
    `$05016E`), `RoomDataTiles_0011` (`$050F19`, `$050B9F`),
