@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Make scoped Asar data-table parsing fail closed when a requested global parent label is declared more than once. The parser reports all duplicate declaration lines instead of silently selecting the first block; a synthetic regression test pins this ambiguity diagnostic.
+
 - Make overworld hidden-item and dungeon chest semantic-model imports preview-only by default. Read-only previews report current and proposed source metadata/counts without changing SQLite or the JSON sidecar; persistence requires CLI `--apply` or Python `dry_run=False`. Re-import still requires explicit `--replace`, and preview tests assert byte-for-byte no-write behavior.
 
 - Add `--dry-run` previews to `import-source-asset` / `import_source_asset()` and manifest-backed `import-extracted-asset` / `import_extracted_asset()`. The shared import path validates the entire export, checks duplicate/replacement rules using a read-only database connection, and reports before/proposed metadata plus the proposed SHA-256 while leaving SQLite and JSON byte-for-byte unchanged. Existing apply behavior remains unchanged when `--dry-run` is omitted.

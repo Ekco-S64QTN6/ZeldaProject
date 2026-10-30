@@ -101,6 +101,32 @@ def test_rejects_numeric_literal_that_exceeds_directive_width() -> None:
         )
 
 
+
+def test_rejects_duplicate_parent_labels_instead_of_using_first_block() -> None:
+    source = """ParentTable:
+{
+    .values
+    db $01
+}
+ParentTable:
+{
+    .values
+    db $02
+}
+"""
+    with pytest.raises(
+        DataTableParseError,
+        match=r"parent label 'ParentTable' is ambiguous; found 2 declarations on lines 1, 6",
+    ):
+        parse_data_table(
+            source,
+            ".values",
+            0x100,
+            directive="db",
+            parent_label="ParentTable",
+        )
+
+
 def test_rejects_ambiguous_local_label_without_parent_scope() -> None:
     source = """First:
 {
