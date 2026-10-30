@@ -1008,20 +1008,44 @@ def initialize_project(
 
 
 def migrate_project(
-    database_path: str | Path, json_path: str | Path | None = None
+    database_path: str | Path,
+    json_path: str | Path | None = None,
+    *,
+    dry_run: bool = False,
 ) -> bool:
-    """Migrate a schema-v1 through schema-v4 project to current schema.
+    """Migrate a project, or validate the complete upgrade on a temporary copy.
 
-    Returns True when migration was applied, or False when already current.
-    Validation and import never trigger an automatic migration.
+    Returns True when an upgrade is needed and was applied (or would be applied
+    in dry-run mode), or False when the database is already current. A dry run
+    executes the same migration steps against a disposable SQLite backup and
+    never changes the original database or JSON sidecar.
     """
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
 
-    connection = sqlite3.connect(db_path)
+    temporary_directory: Any = None
+    connection: sqlite3.Connection | None = None
     migrated = False
     try:
+        if dry_run:
+            temporary_directory = tempfile.TemporaryDirectory(
+                prefix="zelda-suite-migration-preview-"
+            )
+            preview_path = Path(temporary_directory.name) / "project-preview.sqlite3"
+            source_connection = sqlite3.connect(
+                db_path.resolve().as_uri() + "?mode=ro", uri=True
+            )
+            try:
+                connection = sqlite3.connect(preview_path)
+                source_connection.backup(connection)
+            finally:
+                source_connection.close()
+        else:
+            connection = sqlite3.connect(db_path)
+        assert connection is not None
         connection.execute("PRAGMA foreign_keys = ON")
         tables = {
             str(row[0])
@@ -1210,10 +1234,18 @@ def migrate_project(
     except sqlite3.Error as exc:
         raise ValueError(f"could not migrate project database: {exc}") from exc
     finally:
-        connection.close()
+        try:
+            if connection is not None:
+                connection.close()
+        finally:
+            if temporary_directory is not None:
+                temporary_directory.cleanup()
 
-    # Refreshing the JSON sidecar is explicit, even when the database is current.
-    export_project(db_path, json_path)
+    # A dry run validates every transition on the disposable copy and never
+    # refreshes or otherwise touches the caller's JSON sidecar.
+    if not dry_run:
+        # Refreshing the JSON sidecar is explicit, even when the DB is current.
+        export_project(db_path, json_path)
     return migrated
 
 

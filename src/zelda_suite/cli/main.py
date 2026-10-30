@@ -3416,14 +3416,33 @@ def validate_overworld_payload_pairs_command(inventories: tuple[Path, ...]) -> N
     default=None,
     help="JSON export path (defaults to the database path with a .json suffix).",
 )
-def migrate_project_command(database: Path, json_path: Path | None) -> None:
-    """Migrate a project database to the current schema and refresh its JSON export."""
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help=(
+        "Validate the complete migration on a temporary database copy without "
+        "changing either project file."
+    ),
+)
+def migrate_project_command(
+    database: Path, json_path: Path | None, dry_run: bool
+) -> None:
+    """Migrate a project or preview the full schema upgrade without modifying it."""
     try:
-        migrated = migrate_project(database, json_path)
+        migrated = migrate_project(database, json_path, dry_run=dry_run)
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
 
-    if migrated:
+    if dry_run and migrated:
+        click.echo(
+            f"Would migrate project to schema v{CURRENT_SCHEMA_VERSION} "
+            f"(dry-run; no files changed): {database}"
+        )
+    elif dry_run:
+        click.echo(
+            f"Project already uses the current schema (dry-run; no files changed): {database}"
+        )
+    elif migrated:
         click.echo(f"Migrated project to schema v{CURRENT_SCHEMA_VERSION}: {database}")
     else:
         click.echo(f"Project already uses the current schema; refreshed export: {database}")
