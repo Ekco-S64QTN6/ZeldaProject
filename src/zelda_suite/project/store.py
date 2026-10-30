@@ -1821,7 +1821,9 @@ def create_custom_overworld_hidden_item(
                    ) VALUES (?, ?, ?)""",
                 (coordinate_word, value_byte, _utc_timestamp()),
             )
-            custom_record_id = int(cursor.lastrowid)
+            if cursor.lastrowid is None:
+                raise ValueError("SQLite did not return a custom hidden-item ID")
+            custom_record_id = cursor.lastrowid
             connection.executemany(
                 """INSERT INTO overworld_hidden_item_custom_area_record (
                        area_index, custom_record_id
