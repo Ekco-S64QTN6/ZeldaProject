@@ -222,14 +222,15 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    (`66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`)
    when repeating read-only checks. Do not issue write commands.
    `z3cli` remains untested with a model endpoint.
-2. Reconcile the six dungeon-room comments that disagree with source-order
-   payload layout: `RoomDataTiles_00E1` (comment `$0509A9`, sequential
-   `$05016E`), `RoomDataTiles_0011` (`$050F19`, `$050B9F`),
-   `RoomDataTiles_0050` (`$0516A1`, `$05102F`), `RoomDataTiles_00F9`
-   (`$053FF5`, `$052FF5`), `RoomDataTiles_011C` (`$01FF53`, `$01F456`),
-   and `RoomDataTiles_0015` (`$0FE171`, `$0FE474`). The ROM pointer bytes
-   agree with computed sequential-layout candidates; they do not prove those
-   candidates or room payload bytes are canonical. Keep the six findings visible.
+2. [~] Reconcile the six dungeon-room source-comment offsets. The pinned
+   source-order candidates are now bracketed by adjacent declaration arithmetic:
+   the previous declaration's commented start plus its `Size:` equals each
+   candidate, and the current payload size reaches the next declaration's
+   commented start. The six original comments remain preserved and visible as
+   findings; a regression test pins all six boundaries. This resolves the
+   source-order inconsistency but does not verify room payload bytes or prove
+   candidate ROM offsets canonical. See the boundary table in
+   [the ROM verification runbook](./docs/real-rom-verification.md).
    The dictionary terminal pointer matches exclusive-end candidate `$C8D9`.
    The `.You` extent discrepancy and symbol-name mapping remain unresolved.
 3. Extend the project-facing authoring API beyond project-authored overworld
