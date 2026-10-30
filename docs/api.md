@@ -2,11 +2,11 @@
 
 Status: **partially implemented**. The current public Python surface supports
 bounded source-preserving edits for overworld hidden-item records and packed
-dungeon chest fields, plus dry-run-first create/delete for project-authored
-overworld hidden-item additions. An optional, project-bound stdio MCP server
-exposes selected read/validation tools and dry-run-first custom hidden-item
-create/delete; broader editing, ROM writes, and external model-host workflows
-remain future work.
+dungeon chest fields, plus dry-run-first create/update/delete for project-authored
+overworld hidden-item additions. The optional, project-bound stdio MCP server
+also exposes custom hidden-item create/update/delete with previews by default;
+broader editing, ROM writes, and external model-host workflows remain future
+work.
 
 ## Current project functions
 
@@ -15,11 +15,13 @@ remain future work.
 - `import_overworld_hidden_item_model()`,
   `get_overworld_hidden_item_model()`, and
   `update_overworld_hidden_item()` operate on the 351 source-preserving rows.
-- `create_custom_overworld_hidden_item()` and
+- `create_custom_overworld_hidden_item()`,
+  `update_custom_overworld_hidden_item()`, and
   `delete_custom_overworld_hidden_item()` manage project-authored additions.
-  They default to `dry_run=True`; a custom record can be associated with
-  multiple areas, while source row indexes, baselines, and source alias rows
-  remain unchanged.
+  They default to `dry_run=True`. Updates can replace the complete set of
+  area links or retain it when omitted, and can independently edit the raw
+  coordinate word/value byte. Custom records remain separate from source row
+  indexes, baselines, and source alias rows.
 - `import_dungeon_chest_data()`, `get_dungeon_chest_model()`, and
   `update_dungeon_chest_record()` operate on the 168 source-indexed packed
   chest entries. Editable fields are raw item byte, low-15-bit room value, and
@@ -39,9 +41,11 @@ uv run zelda-suite audit-project-dungeon-chest-room-references project/my-hack.d
   --fail-on-findings
 ```
 
-The CLI commands `create-custom-overworld-hidden-item` and
+The CLI commands `create-custom-overworld-hidden-item`,
+`update-custom-overworld-hidden-item`, and
 `delete-custom-overworld-hidden-item` preview by default and require `--apply`
-to persist. The area-specific list command returns both imported source records
+to persist. An update omits any field it should retain; repeating
+`--area-index` replaces the complete many-to-many area-link set. The area-specific list command returns both imported source records
 and separately identified custom records. All semantic edit operations update
 SQLite and its JSON sidecar only;
 they do not write ROM bytes. The project-aware audit reads SQLite and registered
@@ -76,10 +80,12 @@ The initial tool set is:
   `project_get_source_asset` for project validation and source metadata.
 - `overworld_list_hidden_items` and `dungeon_list_chest_records` for
   bounded model reads.
-- `overworld_create_custom_hidden_item` and
+- `overworld_create_custom_hidden_item`,
+  `overworld_update_custom_hidden_item`, and
   `overworld_delete_custom_hidden_item` for project-authored hidden-item
-  records. Both default to `apply=false`; an explicit `apply=true` commits
-  to SQLite and refreshes canonical JSON.
+  records. All default to `apply=false`; an explicit `apply=true` commits
+  to SQLite and refreshes canonical JSON. Updates omit fields to retain their
+  values, and an explicit `area_indices` list replaces all area links.
 
 The MCP surface deliberately does not expose source-row updates, dungeon chest
 edits, source-asset imports, arbitrary file access, ROM reads, or ROM writes.

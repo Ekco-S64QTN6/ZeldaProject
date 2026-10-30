@@ -13,7 +13,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Confirm local US-ROM identity and bootability. On 2026-10-29 the user-run file matched the documented No-Intro USA size, CRC-32, SHA-1, and MD5 fingerprints and the user confirmed it boots. This supports byte identity with that catalog entry plus a manual boot check; it does not independently establish chain of custody or provide an automated emulator test. ROMs remain untracked and are excluded from CI; see [the local-ROM verification runbook](./docs/real-rom-verification.md).
 - [~] Verify header state and document offset mapping. `zelda-suite inspect-rom` reports file size, SHA-256, header-size assessment, and LoROM mapping; its size-based assessment is diagnostic, not proof of a canonical dump or hash.
 - [~] Smoke-test YAZE v0.7.2 `z3ed` against the locally supplied US ROM. ROM identification, raw reads, dungeon room/sprite inspection, hex reads, overworld/dungeon palette reads, and message list/search succeeded. `overworld-describe-map --screen=80` fails with `Offset 1311049 out of range (size: 1048576)`; a source audit traced this to v0.7.2's unconditional `LoadDiggableTiles()` read of ZSCustomOverworld v3 settings address `0x140149`, not to a screen-80 pointer. The malformed staircase label is also source-diagnosed: v0.7.2 stores `absl::StrCat(...).data()` from a temporary string into a `const char*` field; its pointer lifetime ends before CLI serialization. Upstream corrected these issues in commits [`566d7c6`](https://github.com/scawful/yaze/commit/566d7c6ea08b0df2addbb67940aa56794ef052fb) (2026-09-29) and [`8d4f1ad`](https://github.com/scawful/yaze/commit/8d4f1ad59f539f378ca63faa84545b59e3aa3c5b) (2026-10-13). The user's v0.7.2 binary has not been retested with an updated build. See [`docs/real-rom-verification.md`](./docs/real-rom-verification.md).
-- [~] Provide an opt-in project-bound stdio MCP server for bounded project reads/validation and dry-run-first custom hidden-item create/delete. The z3cli/model endpoint and a real external host session remain unverified.
+- [~] Provide an opt-in project-bound stdio MCP server for bounded project reads/validation and dry-run-first custom hidden-item create/update/delete. The z3cli/model endpoint and a real external host session remain unverified.
 - [x] Choose SQLite as the canonical project format with JSON export, recorded in the accepted [ADR 0001](./docs/decisions/0001-project-data-format.md).
 - [x] Provide `zelda-suite init`, `validate`, and explicit schema-v1-to-v5 `migrate-project` for a versioned SQLite project plus canonical JSON export. Schema v5 stores source-preserving overworld hidden-item areas/records, separate project-authored hidden-item additions with many-to-many area links, and packed dungeon chest records with constrained field edits; it is not yet a general game-system data model.
 
@@ -144,7 +144,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Add safe semantic edits to the structured project model.
 
-- [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads/updates and packed dungeon chest field edits in schema v5. Project-authored hidden-item additions now support dry-run-first create/delete operations with many-to-many area assignments, while the 351 imported source rows and source alias relationships remain unchanged. General room/map editing and all ROM writes remain future work.
+- [~] Begin semantic CRUD APIs with source-preserving overworld hidden-item reads/updates and packed dungeon chest field edits in schema v5. Project-authored hidden-item records now support dry-run-first create/update/delete with many-to-many area assignments and bounded coordinate/value edits; the 351 imported source rows, baselines, and source alias relationships remain unchanged. General room/map editing and all ROM writes remain future work.
 - [~] Store semantic game-system records in SQLite schema v5 with migrations, field bounds, packed-value checks, and foreign-key area/record relationships. Other domains remain source_asset snapshots until their schemas are implemented.
 - [x] Add a project-facing read-only audit that joins the editable chest model's current room values to the pinned object/door pointer inventories, retaining source room baselines and edit status. Regression coverage verifies clean joins, edited in-range and out-of-range room values, mismatched object/door target labels, missing models, CLI failure behavior, and no-overwrite report output. Candidate offsets and ROM bytes remain unverified; the command does not read or write ROM bytes.
 - [ ] Map each supported API operation to an explicitly documented ROM write using YAZE/`z3ed` or a direct writer proven against the disassembly.
@@ -152,19 +152,19 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [ ] Add a small UI only after the same validated authoring API can serve both human and agent edits.
 - [ ] Integrate SpriteSomething ZSPR support and zcompress only after asset round-trip tests exist.
 
-**Exit criteria:** Not met. Schema v5 supports bounded source-row edits plus dry-run-first project-authored hidden-item create/delete operations and packed dungeon chest field edits. General room/map editing, dry-run ROM writes, and a ROM writer remain future work.
+**Exit criteria:** Not met. Schema v5 supports bounded source-row edits, dry-run-first project-authored hidden-item create/update/delete, and packed dungeon chest field edits. General room/map editing, dry-run ROM writes, and a ROM writer remain future work.
 
 ## Phase 3 — Claude Integration and Agent Workflows
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [~] Expose initial project validation/source metadata reads, bounded overworld/dungeon reads, and dry-run-first project-authored hidden-item create/delete as an optional stdio MCP server with strict input schemas. Source-row updates, chest edits, source imports, and ROM operations are not exposed yet.
+- [~] Expose initial project validation/source metadata reads, bounded overworld/dungeon reads, and dry-run-first project-authored hidden-item create/update/delete as an optional stdio MCP server with strict input schemas. Imported source-row updates, chest edits, source imports, and ROM operations are not exposed yet.
 - [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
 - [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
 
-**Exit criteria:** Not met. The initial bounded MCP server is implemented, but external host interoperability, human approval workflow, broader authoring operations, deterministic ROM diffs, and emulator-backed edit-to-build verification remain future work.
+**Exit criteria:** Not met. The initial bounded MCP server now supports custom hidden-item create/update/delete, but external host interoperability, human approval workflow, broader authoring operations, deterministic ROM diffs, and emulator-backed edit-to-build verification remain future work.
 
 ## Phase 4 — Maker-Style Expansion
 

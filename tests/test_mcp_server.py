@@ -138,6 +138,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "overworld_list_hidden_items",
         "dungeon_list_chest_records",
         "overworld_create_custom_hidden_item",
+        "overworld_update_custom_hidden_item",
         "overworld_delete_custom_hidden_item",
     }
     assert all("database" not in schema.get("properties", {}) for schema in schemas.values())
@@ -149,6 +150,13 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     assert create_schema["properties"]["value_byte"]["maximum"] == 255
     assert create_schema["properties"]["area_indices"]["minItems"] == 1
     assert create_schema["properties"]["area_indices"]["maxItems"] == 128
+
+    update_schema = schemas["overworld_update_custom_hidden_item"]
+    assert update_schema["properties"]["apply"]["default"] is False
+    assert update_schema["properties"]["custom_record_id"]["minimum"] == 1
+    assert update_schema["properties"]["coordinate_word"]["anyOf"][0]["maximum"] == 65534
+    assert update_schema["properties"]["value_byte"]["anyOf"][0]["maximum"] == 255
+    assert update_schema["properties"]["area_indices"]["anyOf"][0]["items"]["maximum"] == 127
 
     delete_schema = schemas["overworld_delete_custom_hidden_item"]
     assert delete_schema["properties"]["apply"]["default"] is False
@@ -231,6 +239,52 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     assert area_result["custom_records"][0]["custom_record_id"] == custom_id
     assert area_result["area"]["custom_record_ids"] == [custom_id]
 
+    database_after_create = database.read_bytes()
+    export_after_create = json_export.read_bytes()
+    update_arguments = {
+        "custom_record_id": custom_id,
+        "area_indices": [6, 7],
+        "coordinate_word": 0x2345,
+        "value_byte": 0x84,
+    }
+    update_preview = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool("overworld_update_custom_hidden_item", update_arguments)
+            )
+        )
+    )
+    assert update_preview["dry_run"] is True
+    assert update_preview["before"]["area_indices"] == [4, 5]
+    assert update_preview["proposed"]["area_indices"] == [6, 7]
+    assert update_preview["proposed"]["coordinate_word"] == 0x2345
+    assert update_preview["proposed"]["value_byte"] == 0x84
+    assert database.read_bytes() == database_after_create
+    assert json_export.read_bytes() == export_after_create
+
+    updated = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "overworld_update_custom_hidden_item",
+                    {**update_arguments, "apply": True},
+                )
+            )
+        )
+    )
+    assert updated["dry_run"] is False
+    assert updated["record"]["area_indices"] == [6, 7]
+    assert updated["record"]["coordinate_word"] == 0x2345
+    assert updated["record"]["value_byte"] == 0x84
+
+    area_result = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("overworld_list_hidden_items", {"area_index": 6}))
+        )
+    )
+    assert area_result["area"]["custom_record_ids"] == [custom_id]
+    assert area_result["custom_records"][0]["consumer_class"] == "extended_secret_selector"
+
     delete_arguments = {"custom_record_id": custom_id}
     delete_preview = json.loads(
         _tool_text(
@@ -240,7 +294,7 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
         )
     )
     assert delete_preview["dry_run"] is True
-    assert delete_preview["record"]["area_indices"] == [4, 5]
+    assert delete_preview["record"]["area_indices"] == [6, 7]
 
     deleted = json.loads(
         _tool_text(

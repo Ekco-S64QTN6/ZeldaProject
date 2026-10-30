@@ -100,6 +100,7 @@ from zelda_suite.project import (
     initialize_project,
     list_source_assets,
     migrate_project,
+    update_custom_overworld_hidden_item,
     update_dungeon_chest_record,
     update_overworld_hidden_item,
     validate_project,
@@ -3739,6 +3740,58 @@ def delete_custom_overworld_hidden_item_command(
     except (KeyError, ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+
+@cli.command(name="update-custom-overworld-hidden-item")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.argument("custom_record_id", type=click.IntRange(min=1))
+@click.option(
+    "--area-index",
+    type=click.IntRange(min=0, max=127),
+    multiple=True,
+    help="Replace the complete area-link set; repeat to preserve aliases. Omit to keep current links.",
+)
+@click.option(
+    "--coordinate-word",
+    default=None,
+    help="New raw 16-bit coordinate word (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+@click.option(
+    "--value-byte",
+    default=None,
+    help="New raw consumer value byte (decimal, 0x-prefixed, or Asar $-prefixed).",
+)
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Persist the update; without this option, only a dry-run preview is returned.",
+)
+def update_custom_overworld_hidden_item_command(
+    database: Path,
+    custom_record_id: int,
+    area_index: tuple[int, ...],
+    coordinate_word: str | None,
+    value_byte: str | None,
+    apply: bool,
+) -> None:
+    """Preview or update only a project-authored hidden item; source rows are immutable."""
+    try:
+        result = update_custom_overworld_hidden_item(
+            database,
+            custom_record_id,
+            area_indices=area_index if area_index else None,
+            coordinate_word=(
+                None if coordinate_word is None else _parse_offset_text(coordinate_word)
+            ),
+            value_byte=None if value_byte is None else _parse_offset_text(value_byte),
+            dry_run=not apply,
+        )
+    except (KeyError, ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+
 
 @cli.command(name="import-dungeon-chest-data")
 @click.argument(
