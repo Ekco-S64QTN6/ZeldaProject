@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Expose `overworld_update_hidden_item_record` through the optional project-bound MCP server. The tool accepts bounded imported record indexes and coordinate/value fields, previews by default, recalculates consumer classification, preserves source baselines and area aliases, and requires `apply=true` for project-local SQLite/JSON edits; ROM access and writes remain excluded.
+
 - Expose `dungeon_update_chest_record` through the optional project-bound MCP server. The tool validates the 168-record index and packed field bounds, previews by default, preserves immutable source baselines, and requires `apply=true` for project-local SQLite/JSON edits; ROM access and writes remain excluded.
 
 - Make scoped Asar data-table parsing fail closed when a requested global parent label is declared more than once. The parser reports all duplicate declaration lines instead of silently selecting the first block; a synthetic regression test pins this ambiguity diagnostic.

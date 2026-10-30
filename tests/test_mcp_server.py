@@ -12,6 +12,7 @@ import pytest
 from zelda_suite.mcp.server import create_server
 from zelda_suite.project import (
     get_dungeon_chest_model,
+    get_overworld_hidden_item_model,
     import_dungeon_chest_data,
     initialize_project,
 )
@@ -143,6 +144,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "project_list_source_assets",
         "project_get_source_asset",
         "overworld_list_hidden_items",
+        "overworld_update_hidden_item_record",
         "dungeon_list_chest_records",
         "dungeon_update_chest_record",
         "overworld_create_custom_hidden_item",
@@ -168,6 +170,13 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
 
     delete_schema = schemas["overworld_delete_custom_hidden_item"]
     assert delete_schema["properties"]["apply"]["default"] is False
+
+    overworld_schema = schemas["overworld_update_hidden_item_record"]
+    assert overworld_schema["properties"]["apply"]["default"] is False
+    assert overworld_schema["properties"]["record_index"]["minimum"] == 0
+    assert overworld_schema["properties"]["record_index"]["maximum"] == 350
+    assert overworld_schema["properties"]["coordinate_word"]["anyOf"][0]["maximum"] == 65534
+    assert overworld_schema["properties"]["value_byte"]["anyOf"][0]["maximum"] == 255
 
     chest_schema = schemas["dungeon_update_chest_record"]
     assert chest_schema["properties"]["apply"]["default"] is False
@@ -196,6 +205,74 @@ def test_mcp_read_tools_validate_and_list_project_without_mutation(
     assert assets == []
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
+
+
+def test_mcp_overworld_row_update_previews_then_applies_explicitly(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_overworld_row_edit", tmp_path)
+    _seed_semantic_model(database)
+    server = create_server(database)
+    original_database = database.read_bytes()
+    original_export = json_export.read_bytes()
+
+    arguments = {
+        "record_index": 0,
+        "coordinate_word": 0x1234,
+        "value_byte": 0x84,
+    }
+    preview = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool("overworld_update_hidden_item_record", arguments)
+            )
+        )
+    )
+    assert preview["action"] == "update_overworld_hidden_item"
+    assert preview["dry_run"] is True
+    assert preview["record_index"] == 0
+    assert preview["before"]["coordinate_word"] == 1
+    assert preview["before"]["value_byte"] == 0x05
+    assert preview["proposed"]["coordinate_word"] == 0x1234
+    assert preview["proposed"]["value_byte"] == 0x84
+    assert preview["proposed"]["consumer_class"] == "extended_secret_selector"
+    assert preview["proposed"]["selector_byte_offset"] == 4
+    assert preview["proposed"]["replacement_table_index"] == 2
+    assert preview["changed_fields"] == ["coordinate_word", "value_byte"]
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == original_database
+    assert json_export.read_bytes() == original_export
+
+    applied = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "overworld_update_hidden_item_record",
+                    {**arguments, "apply": True},
+                )
+            )
+        )
+    )
+    assert applied["record_index"] == 0
+    assert applied["source_coordinate_word"] == 1
+    assert applied["source_value_byte"] == 0x05
+    assert applied["coordinate_word"] == 0x1234
+    assert applied["value_byte"] == 0x84
+    assert applied["consumer_class"] == "extended_secret_selector"
+    assert applied["replacement_table_index"] == 2
+    assert applied["replacement_word_value"] == 0xFFFF
+    assert applied["canonical_item_id_resolved"] is False
+    assert applied["is_modified"] is True
+
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert model["summary"]["record_count"] == 351
+    assert model["summary"]["modified_record_count"] == 1
+    assert model["records"][0]["area_indices"] == [0, 1]
+    assert model["areas"][0]["record_indices"] == [0]
+    assert model["areas"][1]["record_indices"] == [0]
+    exported = json.loads(json_export.read_text(encoding="utf-8"))
+    assert exported["overworld_hidden_items"] == model
 
 
 def test_mcp_dungeon_chest_update_previews_then_applies_explicitly(
