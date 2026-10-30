@@ -42,6 +42,7 @@ open a ROM.
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
 | `dungeon_list_chest_records` | Read the imported packed dungeon-chest model. |
 | `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true`. |
+| `overworld_update_custom_hidden_item` | Preview coordinate/value edits and/or replacement of the complete area-link set; persist only with `apply=true`. |
 | `overworld_delete_custom_hidden_item` | Preview deletion by custom-record ID; persist only with `apply=true`. |
 
 The server is bound to one resolved database path at startup. No tool accepts a
@@ -53,16 +54,18 @@ the 351 imported source records and can link to several area slots.
 
 ## Write and approval boundary
 
-All custom create/delete calls default to a read-only preview
+All custom create/update/delete calls default to a read-only preview
 (`apply=false`). Setting `apply=true` commits a project-local SQLite change and
-refreshes canonical JSON. Deletion accepts only a custom-record ID; it cannot
-delete an imported source record. The host/agent workflow must obtain human
+refreshes canonical JSON. Updates retain omitted fields; supplying
+`area_indices` replaces the complete non-empty area-link set. Update and
+delete accept only a custom-record ID; neither can edit or delete an imported
+source record. The host/agent workflow must obtain human
 approval before sending `apply=true`. The server's instructions describe this
 expectation, but the server does not implement a separate user-authentication,
 authorization, or approval service.
 
-The initial tool surface does not expose imported source-row updates, dungeon
-chest edits, source-asset imports, arbitrary file access, ROM reads, ROM writes,
+The tool surface does not expose imported source-row updates, dungeon chest
+edits, source-asset imports, arbitrary file access, ROM reads, ROM writes,
 patching, saving, or rebuilding. Continue using the Python API/CLI for supported
 operations that are not yet mapped to MCP. Do not infer broader capabilities
 from the presence of the server.
@@ -82,9 +85,9 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 ## Tests and limitations
 
 `tests/test_mcp_server.py` checks the tool schema, database binding, read-only
-project inspection, default preview behavior, explicit create/delete commits,
-area alias visibility, source-row count preservation, and absence of ROM/import
-tools. CI runs these contract tests with the other Python checks.
+project inspection, default preview behavior, explicit create/update/delete
+commits, area alias visibility/replacement, source-row count preservation, and
+absence of ROM/import tools. CI runs these contract tests with the other Python checks.
 
 This does not establish compatibility with a specific model host, a live
 session, a particular model endpoint, or `z3cli`. Those integrations remain
