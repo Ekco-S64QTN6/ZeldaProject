@@ -210,3 +210,18 @@ The audit reports this explicitly; actual decoding, an editable map-layer
 schema, and ROM-offset reconciliation remain open.
 
 See the [versioned report schema](./overworld-payload-layout-audit.schema.json).
+
+
+## Project-local hidden-item model import safety
+
+The project-local `import-overworld-hidden-items` command and
+`import_overworld_hidden_item_model()` API validate the pinned source layout
+and consumer classification, then return a read-only before/proposed preview
+by default. The preview reports the source revision and SHA-256, 128 area slots,
+351 source records, replacement-word count, and any existing model summary;
+it does not change SQLite or the JSON sidecar. Persist with CLI `--apply` or
+Python `dry_run=False`. Re-import requires explicit `--replace`; preview with
+`--replace` first, then combine `--replace --apply` to reset imported source-row
+edits. Project-authored custom hidden-item records and their many-to-many area
+links are preserved by replacement. These operations modify project metadata
+only and do not read or write ROM bytes.

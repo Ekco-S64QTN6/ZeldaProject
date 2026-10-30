@@ -22,8 +22,60 @@ REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 
 def _populated_project(tmp_path: Path) -> tuple[Path, Path]:
     database, json_path = initialize_project("dungeon_chests", tmp_path)
-    import_dungeon_chest_data(database, REGISTRY_PATH)
+    import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
     return database, json_path
+
+
+
+def test_import_defaults_to_read_only_preview(tmp_path: Path) -> None:
+    database, json_path = initialize_project("dungeon_chest_import_preview", tmp_path)
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    preview = import_dungeon_chest_data(database, REGISTRY_PATH)
+
+    assert preview["action"] == "import_dungeon_chest_data"
+    assert preview["dry_run"] is True
+    assert preview["before"] is None
+    assert preview["proposed"]["source_revision"] == "347c23f9fc019c72d32da537c9cb235f468d021d"
+    assert preview["proposed"]["summary"]["entry_count"] == 168
+    assert preview["proposed"]["summary"]["distinct_room_value_count"] == 106
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert get_dungeon_chest_model(database) is None
+
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    assert imported["summary"]["entry_count"] == 168
+    assert validate_project(database) == []
+
+
+def test_cli_import_dungeon_chest_data_previews_then_applies(tmp_path: Path) -> None:
+    database, json_path = initialize_project("dungeon_chest_import_cli", tmp_path)
+    runner = CliRunner()
+    args = [
+        "import-dungeon-chest-data",
+        str(database),
+        "--registry",
+        str(REGISTRY_PATH),
+    ]
+    database_before = database.read_bytes()
+    json_before = json_path.read_bytes()
+
+    preview = runner.invoke(cli, args)
+    assert preview.exit_code == 0, preview.output
+    preview_payload = json.loads(preview.output)
+    assert preview_payload["dry_run"] is True
+    assert preview_payload["proposed"]["summary"]["entry_count"] == 168
+    assert database.read_bytes() == database_before
+    assert json_path.read_bytes() == json_before
+    assert get_dungeon_chest_model(database) is None
+
+    applied = runner.invoke(cli, [*args, "--apply"])
+    assert applied.exit_code == 0, applied.output
+    imported = get_dungeon_chest_model(database)
+    assert imported is not None
+    assert imported["summary"]["entry_count"] == 168
 
 
 def test_import_preserves_source_fields_and_publishes_canonical_model(
@@ -155,8 +207,19 @@ def test_reimport_requires_explicit_replace_and_resets_local_edits(
     with pytest.raises(ValueError, match="already exists"):
         import_dungeon_chest_data(database, REGISTRY_PATH)
 
-    restored = import_dungeon_chest_data(
+    database_before = database.read_bytes()
+    json_before = _json_path.read_bytes()
+    preview = import_dungeon_chest_data(
         database, REGISTRY_PATH, replace_existing=True
+    )
+    assert preview["dry_run"] is True
+    assert preview["before"]["summary"]["modified_record_count"] == 1
+    assert preview["proposed"]["summary"]["entry_count"] == 168
+    assert database.read_bytes() == database_before
+    assert _json_path.read_bytes() == json_before
+
+    restored = import_dungeon_chest_data(
+        database, REGISTRY_PATH, replace_existing=True, dry_run=False
     )
     assert restored["summary"]["modified_record_count"] == 0
     assert restored["entries"][5]["item_value"] == restored["entries"][5]["source_item_value"]

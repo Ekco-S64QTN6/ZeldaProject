@@ -291,3 +291,16 @@ playable-room count discrepancy remains unresolved. Use `--fail-on-findings`
 to make out-of-range edited room values or object/door target-label mismatches
 return a failing exit code. The report contract is
 [`project-dungeon-chest-room-reference-audit.schema.json`](project-dungeon-chest-room-reference-audit.schema.json).
+
+
+## Project-local chest model import safety
+
+The project-local `import-dungeon-chest-data` command and
+`import_dungeon_chest_data()` API validate the registered 168-entry packed
+inventory and return a read-only before/proposed preview by default. The
+preview includes the pinned source revision/hash and summary counts and does
+not change SQLite or the JSON sidecar. Persist with CLI `--apply` or Python
+`dry_run=False`. Re-import requires explicit `--replace`; review the preview
+before combining `--replace --apply`, which resets project-local chest edits
+back to the registered source baselines. This import reads source metadata
+only and does not access ROM bytes.

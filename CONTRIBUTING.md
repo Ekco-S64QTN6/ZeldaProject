@@ -97,6 +97,12 @@ must use that revision rather than silently updating to a newer upstream tree.
   metadata and hashes without changing project files. Omitting `--dry-run`
   applies the import as before. Replacing an existing project key requires the
   explicit `--replace` flag.
+- The semantic-model imports `import-overworld-hidden-items` and
+  `import-dungeon-chest-data` also preview by default. Use CLI `--apply` or
+  Python `dry_run=False` to persist. For re-imports, keep `--replace` as a
+  separate explicit acknowledgement; inspect the preview before combining
+  `--replace --apply`. The overworld replacement preserves project-authored
+  custom records/area links, while imported source-row edits are reset.
 
 ## Versioning and change notes
 

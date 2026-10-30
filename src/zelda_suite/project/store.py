@@ -1476,13 +1476,17 @@ def import_overworld_hidden_item_model(
     source_path: str | Path,
     *,
     replace_existing: bool = False,
+    dry_run: bool = True,
 ) -> dict[str, Any]:
-    """Import the pinned hidden-item source model into the editable project tables.
+    """Preview or import the pinned hidden-item source model.
 
-    The import stores source values as an immutable baseline and initializes the
-    editable coordinate/value fields from those values. It never reads or writes
-    a ROM. Re-import with replace_existing=True explicitly resets project edits.
+    The default is a read-only preview. Applying an import stores source values
+    as immutable baselines and initializes editable fields from those values.
+    Re-import with replace_existing=True resets imported edits but preserves
+    project-authored custom records and their area links. No ROM is accessed.
     """
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
@@ -1507,7 +1511,10 @@ def import_overworld_hidden_item_model(
     if set(semantic_records) != {int(record["record_index"]) for record in layout["records"]}:
         raise ValueError("hidden-item source layout and semantic rows do not align by record index")
 
-    connection = sqlite3.connect(db_path)
+    connection_target = (
+        db_path.resolve().as_uri() + "?mode=ro" if dry_run else str(db_path)
+    )
+    connection = sqlite3.connect(connection_target, uri=dry_run)
     connection.row_factory = sqlite3.Row
     try:
         connection.execute("PRAGMA foreign_keys = ON")
@@ -1531,7 +1538,6 @@ def import_overworld_hidden_item_model(
             if any(counts):
                 raise ValueError("overworld hidden-item tables contain partial data without model metadata")
 
-        imported_at = _utc_timestamp()
         source_sha256 = hashlib.sha256(source_bytes).hexdigest()
         custom_memberships = (
             connection.execute(
@@ -1542,6 +1548,43 @@ def import_overworld_hidden_item_model(
             if existing is not None
             else []
         )
+        if dry_run:
+            before_model = (
+                _export_overworld_hidden_items(connection)
+                if existing is not None
+                else None
+            )
+            custom_record_count = int(
+                connection.execute(
+                    "SELECT COUNT(*) FROM overworld_hidden_item_custom_record"
+                ).fetchone()[0]
+            )
+            return {
+                "action": "import_overworld_hidden_item_model",
+                "dry_run": True,
+                "replace_existing": replace_existing,
+                "before": None if before_model is None else {
+                    "source_file": before_model["source_file"],
+                    "source_revision": before_model["source_revision"],
+                    "source_sha256": before_model["source_sha256"],
+                    "summary": before_model["summary"],
+                },
+                "proposed": {
+                    "source_file": str(semantics["source_file"]),
+                    "source_revision": str(semantics["source_revision"]),
+                    "source_sha256": source_sha256,
+                    "summary": {
+                        "area_count": len(layout["area_lists"]),
+                        "record_count": len(layout["records"]),
+                        "replacement_word_count": len(semantics["replacement_words"]),
+                        "modified_record_count": 0,
+                        "custom_record_count": custom_record_count,
+                        "custom_area_link_count": len(custom_memberships),
+                    },
+                },
+                "rom_modified": False,
+            }
+        imported_at = _utc_timestamp()
         with connection:
             if existing is not None:
                 connection.execute("DELETE FROM overworld_hidden_item_area_record")
@@ -2282,13 +2325,16 @@ def import_dungeon_chest_data(
     registry_path: str | Path = "data/extracted/manifest.json",
     *,
     replace_existing: bool = False,
+    dry_run: bool = True,
 ) -> dict[str, Any]:
-    """Import the registered packed chest inventory as editable raw-field records.
+    """Preview or import the registered packed chest inventory.
 
-    Original item byte, room word, flag, expression, source line, and candidate
-    offset are retained as baselines. Re-import requires explicit replacement,
-    which resets local edits. This operation reads source metadata, not a ROM.
+    The default is a read-only preview. Re-import requires explicit replacement,
+    and applying that replacement resets project-local chest edits. Original
+    source fields remain available as baselines; no ROM is accessed.
     """
+    if not isinstance(dry_run, bool):
+        raise TypeError("dry_run must be a boolean")
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
@@ -2306,9 +2352,37 @@ def import_dungeon_chest_data(
 
     canonical_payload = _render_json(payload)
     payload_hash = hashlib.sha256(canonical_payload.encode("utf-8")).hexdigest()
-    imported_at = _utc_timestamp()
+    records = []
+    for entry in payload["entries"]:
+        literal_value = int(entry["literal_value"])
+        item_value = int(entry["item_value"])
+        room_value = int(entry["room_value"])
+        big_chest = bool(entry["is_big_chest"])
+        packed = (item_value << 16) | room_value | (int(big_chest) << 15)
+        if packed != literal_value:
+            raise ValueError(
+                f"registered dungeon chest entry {entry['table_index']} has inconsistent fields"
+            )
+        records.append((
+            int(entry["table_index"]),
+            int(entry["candidate_entry_offset"]),
+            int(entry["source_line"]),
+            str(entry["expression"]),
+            literal_value,
+            literal_value,
+            item_value,
+            item_value,
+            room_value,
+            room_value,
+            int(big_chest),
+            int(big_chest),
+            str(entry["source_revision"]),
+        ))
 
-    connection = sqlite3.connect(db_path)
+    connection_target = (
+        db_path.resolve().as_uri() + "?mode=ro" if dry_run else str(db_path)
+    )
+    connection = sqlite3.connect(connection_target, uri=dry_run)
     connection.row_factory = sqlite3.Row
     try:
         _require_current_schema(connection)
@@ -2329,6 +2403,39 @@ def import_dungeon_chest_data(
                     "dungeon chest records exist without model metadata; refusing partial import"
                 )
 
+        if dry_run:
+            before_model = (
+                _export_dungeon_chests(connection) if existing is not None else None
+            )
+            room_values = {int(entry["room_value"]) for entry in payload["entries"]}
+            item_values = {int(entry["item_value"]) for entry in payload["entries"]}
+            big_chest_count = sum(bool(entry["is_big_chest"]) for entry in payload["entries"])
+            return {
+                "action": "import_dungeon_chest_data",
+                "dry_run": True,
+                "replace_existing": replace_existing,
+                "before": None if before_model is None else {
+                    "source_file": before_model["source_file"],
+                    "source_revision": before_model["source_revision"],
+                    "source_sha256": before_model["source_sha256"],
+                    "summary": before_model["summary"],
+                },
+                "proposed": {
+                    "source_file": str(payload["source_file"]),
+                    "source_revision": str(payload["source_revision"]),
+                    "source_sha256": payload_hash,
+                    "table_label": str(payload["table_label"]),
+                    "summary": {
+                        "entry_count": len(payload["entries"]),
+                        "distinct_room_value_count": len(room_values),
+                        "distinct_item_value_count": len(item_values),
+                        "big_chest_count": big_chest_count,
+                        "modified_record_count": 0,
+                    },
+                },
+                "rom_modified": False,
+            }
+        imported_at = _utc_timestamp()
         with connection:
             if existing is not None:
                 connection.execute("DELETE FROM dungeon_chest_record")
@@ -2356,32 +2463,6 @@ def import_dungeon_chest_data(
                 ),
             )
 
-            records = []
-            for entry in payload["entries"]:
-                literal_value = int(entry["literal_value"])
-                item_value = int(entry["item_value"])
-                room_value = int(entry["room_value"])
-                big_chest = bool(entry["is_big_chest"])
-                packed = (item_value << 16) | room_value | (int(big_chest) << 15)
-                if packed != literal_value:
-                    raise ValueError(
-                        f"registered dungeon chest entry {entry['table_index']} has inconsistent fields"
-                    )
-                records.append((
-                    int(entry["table_index"]),
-                    int(entry["candidate_entry_offset"]),
-                    int(entry["source_line"]),
-                    str(entry["expression"]),
-                    literal_value,
-                    literal_value,
-                    item_value,
-                    item_value,
-                    room_value,
-                    room_value,
-                    int(big_chest),
-                    int(big_chest),
-                    str(entry["source_revision"]),
-                ))
             connection.executemany(
                 """INSERT INTO dungeon_chest_record (
                        table_index, candidate_entry_offset, source_line, source_expression,
