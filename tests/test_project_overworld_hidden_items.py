@@ -539,27 +539,35 @@ def test_custom_hidden_item_update_defaults_to_preview_and_preserves_source_rows
 
 
 @pytest.mark.parametrize(
-    ("custom_id", "kwargs", "message"),
+    ("invalid_id", "kwargs", "message"),
     [
         (True, {"value_byte": 1}, "custom_record_id"),
-        (1, {}, "supply area_indices"),
-        (1, {"area_indices": []}, "at least one area"),
-        (1, {"area_indices": [2, 2]}, "duplicate area"),
-        (1, {"area_indices": [128]}, "0..127"),
-        (1, {"coordinate_word": 0xFFFF}, "reserved as the list sentinel"),
-        (1, {"coordinate_word": True}, "coordinate_word"),
-        (1, {"value_byte": 256}, "value_byte"),
-        (1, {"value_byte": False}, "value_byte"),
+        (False, {}, "supply area_indices"),
+        (False, {"area_indices": []}, "at least one area"),
+        (False, {"area_indices": [2, 2]}, "duplicate area"),
+        (False, {"area_indices": [128]}, "0..127"),
+        (False, {"coordinate_word": 0xFFFF}, "reserved as the list sentinel"),
+        (False, {"coordinate_word": True}, "coordinate_word"),
+        (False, {"value_byte": 256}, "value_byte"),
+        (False, {"value_byte": False}, "value_byte"),
     ],
 )
 def test_custom_hidden_item_update_rejects_invalid_fields(
     tmp_path: Path,
-    custom_id: int,
+    invalid_id: bool,
     kwargs: dict[str, object],
     message: str,
 ) -> None:
     database, _ = initialize_project("invalid_custom_item_update", tmp_path)
     _seed_semantic_model(database)
+    created = create_custom_overworld_hidden_item(
+        database,
+        area_indices=[0],
+        coordinate_word=1,
+        value_byte=1,
+        dry_run=False,
+    )
+    custom_id = True if invalid_id else created["record"]["custom_record_id"]
     with pytest.raises(ValueError, match=message):
         update_custom_overworld_hidden_item(
             database, custom_id, **kwargs  # type: ignore[arg-type]
