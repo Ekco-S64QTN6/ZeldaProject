@@ -160,7 +160,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [~] Expose initial project validation/source metadata reads, bounded overworld/dungeon reads, and dry-run-first project-authored hidden-item create/update/delete as an optional stdio MCP server with strict input schemas. Imported source-row updates, chest edits, source imports, and ROM operations are not exposed yet.
+- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest field updates through the optional stdio MCP server. Strict input schemas pin record/field ranges; chest edits preserve immutable source baselines. Imported overworld source-row updates, source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
 - [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
@@ -242,8 +242,10 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    while the only table declaration in the pinned file is
    `DictionaryPointers:`; no explicit alias is present. A source regression
    pins both findings, but the source/ROM interpretation remains unresolved.
-3. Extend the project-facing authoring API beyond project-authored overworld
-   hidden-item additions, or begin room-object editing. Preserve source baselines,
+3. Continue extending the project-facing authoring API: the MCP server now
+   exposes preview-first packed dungeon-chest field edits in addition to
+   project-authored hidden-item additions. Next, consider imported overworld
+   source-row updates or room-object editing. Preserve source baselines,
    explicit constraints, alias relationships, deterministic exports, and the
    no-ROM-write boundary. The project-aware chest/room-reference audit continues
    to report current edited room values alongside immutable source baselines but

@@ -41,11 +41,13 @@ base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 **Optional agent transport:** `zelda-suite-mcp --database PATH` (or
 `ZELDA_SUITE_PROJECT_DB`) starts the stdio MCP server for exactly one existing
 project database. It exposes project validation/source metadata reads, bounded
-overworld/dungeon model reads, and project-authored hidden-item create/update/delete.
-All mutation tools default to previews and require explicit `apply=true`
-to persist SQLite/JSON changes. The server never accepts a database path from a
-tool argument and does not expose source-row edits, chest edits, imports, ROM
-reads, or ROM writes. Install it with `uv sync --extra agent`; the core package
+overworld/dungeon model reads, packed dungeon-chest field updates, and
+project-authored hidden-item create/update/delete. All mutation tools default
+to previews and require explicit `apply=true` to persist SQLite/JSON changes;
+chest edits preserve their imported source-field baselines. The server never
+accepts a database path from a tool argument and does not expose imported
+source-row edits, imports, ROM reads, or ROM writes. Install it with
+`uv sync --extra agent`; the core package
 does not require the optional SDK. The implementation uses the MCP Python SDK
 v1 `FastMCP` API and pins `mcp<2` until the v2 API migration is implemented.
 Human review/approval of `apply=true` is a host/workflow responsibility, not

@@ -41,6 +41,7 @@ open a ROM.
 | `project_get_source_asset` | Read one project source-asset snapshot by key. |
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
 | `dungeon_list_chest_records` | Read the imported packed dungeon-chest model. |
+| `dungeon_update_chest_record` | Preview a bounded item-byte, room-value, and/or big-chest-flag edit; persist only with `apply=true`. |
 | `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true`. |
 | `overworld_update_custom_hidden_item` | Preview coordinate/value edits and/or replacement of the complete area-link set; persist only with `apply=true`. |
 | `overworld_delete_custom_hidden_item` | Preview deletion by custom-record ID; persist only with `apply=true`. |
@@ -54,21 +55,28 @@ the 351 imported source records and can link to several area slots.
 
 ## Write and approval boundary
 
-All custom create/update/delete calls default to a read-only preview
-(`apply=false`). Setting `apply=true` commits a project-local SQLite change and
-refreshes canonical JSON. Updates retain omitted fields; supplying
-`area_indices` replaces the complete non-empty area-link set. Update and
-delete accept only a custom-record ID; neither can edit or delete an imported
-source record. The host/agent workflow must obtain human
-approval before sending `apply=true`. The server's instructions describe this
-expectation, but the server does not implement a separate user-authentication,
-authorization, or approval service.
+All custom create/update/delete calls and dungeon chest updates default to a
+read-only preview (`apply=false`). Setting `apply=true` commits a project-local
+SQLite change and refreshes canonical JSON. Custom hidden-item updates retain
+omitted fields; supplying `area_indices` replaces the complete non-empty
+area-link set. Update and delete accept only a custom-record ID; neither can
+edit nor delete an imported source record.
 
-The tool surface does not expose imported source-row updates, dungeon chest
-edits, source-asset imports, arbitrary file access, ROM reads, ROM writes,
-patching, saving, or rebuilding. Continue using the Python API/CLI for supported
-operations that are not yet mapped to MCP. Do not infer broader capabilities
-from the presence of the server.
+`dungeon_update_chest_record` accepts a table index from 0–167 and at least
+one of `item_value` (0–255), `room_value` (0–32767), or `is_big_chest` (boolean).
+It recomposes the packed 24-bit value while preserving the original source
+literal and source field baselines. The room value remains a raw pointer-table
+index candidate, not a confirmed playable-room identifier, and the item byte
+is not a canonical item-name mapping. The update changes SQLite/JSON only.
+
+The host/agent workflow must obtain human approval before sending `apply=true`.
+The server's instructions describe this expectation, but the server does not
+implement a separate user-authentication, authorization, or approval service.
+Imported overworld source-row updates, source-asset imports, arbitrary file
+access, ROM reads, ROM writes, patching, saving, and rebuilding remain outside
+the tool surface. Continue using the Python API/CLI for supported operations
+that are not yet mapped to MCP. Do not infer broader capabilities from the
+presence of the server.
 
 ## SDK compatibility
 
@@ -85,9 +93,10 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 ## Tests and limitations
 
 `tests/test_mcp_server.py` checks the tool schema, database binding, read-only
-project inspection, default preview behavior, explicit create/update/delete
-commits, area alias visibility/replacement, source-row count preservation, and
-absence of ROM/import tools. CI runs these contract tests with the other Python checks.
+project inspection, default preview behavior, explicit custom-record and chest
+edit commits, area alias visibility/replacement, immutable source baselines,
+source-row count preservation, and absence of ROM/import tools. CI runs these
+contract tests with the other Python checks.
 
 This does not establish compatibility with a specific model host, a live
 session, a particular model endpoint, or `z3cli`. Those integrations remain

@@ -118,10 +118,11 @@ uv sync --extra agent
 uv run zelda-suite-mcp --database project/my-hack.db
 ```
 
-Alternatively, set `ZELDA_SUITE_PROJECT_DB` and omit `--database`. The initial
-tool surface includes project validation/source-asset reads, overworld hidden
-item reads, dungeon chest reads, and project-authored hidden-item create/update/delete.
-All three mutation tools default to previews; `apply=true` explicitly persists
-the project-local SQLite/JSON change. Imported source-row updates, chest edits,
+Alternatively, set `ZELDA_SUITE_PROJECT_DB` and omit `--database`. The tool
+surface includes project validation/source-asset reads, overworld hidden-item
+reads, dungeon chest reads and bounded packed-chest field edits, plus
+project-authored hidden-item create/update/delete. All mutation tools default
+to previews; `apply=true` explicitly persists the project-local SQLite/JSON
+change while preserving source baselines. Imported overworld source-row updates,
 source imports, ROM access, and ROM writes are not exposed. See
 [`docs/mcp-server.md`](./docs/mcp-server.md) for the tool contract and limits.

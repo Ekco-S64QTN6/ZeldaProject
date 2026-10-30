@@ -9,6 +9,8 @@ does not imply that any release has been published.
 
 ### Added
 
+- Expose `dungeon_update_chest_record` through the optional project-bound MCP server. The tool validates the 168-record index and packed field bounds, previews by default, preserves immutable source baselines, and requires `apply=true` for project-local SQLite/JSON edits; ROM access and writes remain excluded.
+
 - Make scoped Asar data-table parsing fail closed when a requested global parent label is declared more than once. The parser reports all duplicate declaration lines instead of silently selecting the first block; a synthetic regression test pins this ambiguity diagnostic.
 
 - Make overworld hidden-item and dungeon chest semantic-model imports preview-only by default. Read-only previews report current and proposed source metadata/counts without changing SQLite or the JSON sidecar; persistence requires CLI `--apply` or Python `dry_run=False`. Re-import still requires explicit `--replace`, and preview tests assert byte-for-byte no-write behavior.

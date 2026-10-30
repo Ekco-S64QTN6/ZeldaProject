@@ -10,7 +10,14 @@ from typing import Any
 import pytest
 
 from zelda_suite.mcp.server import create_server
-from zelda_suite.project import initialize_project
+from zelda_suite.project import (
+    get_dungeon_chest_model,
+    import_dungeon_chest_data,
+    initialize_project,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 
 PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
 REPLACEMENTS = [
@@ -137,6 +144,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "project_get_source_asset",
         "overworld_list_hidden_items",
         "dungeon_list_chest_records",
+        "dungeon_update_chest_record",
         "overworld_create_custom_hidden_item",
         "overworld_update_custom_hidden_item",
         "overworld_delete_custom_hidden_item",
@@ -161,6 +169,13 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     delete_schema = schemas["overworld_delete_custom_hidden_item"]
     assert delete_schema["properties"]["apply"]["default"] is False
 
+    chest_schema = schemas["dungeon_update_chest_record"]
+    assert chest_schema["properties"]["apply"]["default"] is False
+    assert chest_schema["properties"]["table_index"]["minimum"] == 0
+    assert chest_schema["properties"]["table_index"]["maximum"] == 167
+    assert chest_schema["properties"]["item_value"]["anyOf"][0]["maximum"] == 255
+    assert chest_schema["properties"]["room_value"]["anyOf"][0]["maximum"] == 32767
+
 
 def test_mcp_read_tools_validate_and_list_project_without_mutation(
     tmp_path: Path,
@@ -181,6 +196,63 @@ def test_mcp_read_tools_validate_and_list_project_without_mutation(
     assert assets == []
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
+
+
+def test_mcp_dungeon_chest_update_previews_then_applies_explicitly(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_dungeon_chest_edit", tmp_path)
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    assert imported["summary"]["entry_count"] == 168
+    server = create_server(database)
+    original_database = database.read_bytes()
+    original_export = json_export.read_bytes()
+
+    arguments = {
+        "table_index": 0,
+        "item_value": 0xAA,
+        "room_value": 0x1234,
+        "is_big_chest": True,
+    }
+    preview = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_update_chest_record", arguments))
+        )
+    )
+    assert preview["action"] == "update_dungeon_chest_record"
+    assert preview["dry_run"] is True
+    assert preview["before"]["literal_value"] == 0x240032
+    assert preview["proposed"]["literal_value"] == 0xAA9234
+    assert preview["proposed"]["room_pointer_table_byte_displacement"] == 0x1234 * 3
+    assert preview["changed_fields"] == ["item_value", "room_value", "is_big_chest"]
+    assert preview["rom_modified"] is False
+    assert database.read_bytes() == original_database
+    assert json_export.read_bytes() == original_export
+
+    applied = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "dungeon_update_chest_record",
+                    {**arguments, "apply": True},
+                )
+            )
+        )
+    )
+    assert applied["table_index"] == 0
+    assert applied["source_literal_value"] == 0x240032
+    assert applied["source_item_value"] == 0x24
+    assert applied["source_room_value"] == 0x32
+    assert applied["source_is_big_chest"] is False
+    assert applied["literal_value"] == 0xAA9234
+    assert applied["expression"] == "$AA9234"
+    assert applied["is_modified"] is True
+
+    model = get_dungeon_chest_model(database)
+    assert model is not None
+    assert model["summary"]["modified_record_count"] == 1
+    assert model["entries"][0]["literal_value"] == 0xAA9234
+    assert json.loads(json_export.read_text(encoding="utf-8"))["dungeon_chests"] == model
 
 
 def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
