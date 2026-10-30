@@ -158,6 +158,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 5. **Adapters, not dependencies.** Future YAZE, SpriteSomething, and zcompress integrations should be wrapped behind `src/zelda_suite/adapters/`. This adapter layer is a design rule, not a claim that those integrations already exist.
 6. **The data model is the source of truth.** The ROM is a future build artifact. Current raw ROM reads belong in `src/zelda_suite/extract/`; do not introduce raw reads elsewhere. A future writer must be isolated under `src/zelda_suite/write/`.
 7. **No legacy GUI tool assumptions.** Do not assume Hyrule Magic quirks are correct behavior. Trust the disassembly.
+8. **Transactional schema migrations.** Each schema-version step must start an explicit SQLite transaction before DDL and commit its schema changes and matching version metadata together. Add a synthetic failure-injection test proving partial DDL rolls back. A multi-step migration may remain at the last fully committed version if a later step fails.
 
 ---
 

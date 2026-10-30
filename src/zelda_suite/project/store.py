@@ -969,6 +969,7 @@ def migrate_project(
                     "schema-v1 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
                 )
+            connection.execute("BEGIN IMMEDIATE")
             with connection:
                 connection.execute(_SOURCE_ASSET_TABLE_SQL)
                 connection.execute(
@@ -996,6 +997,7 @@ def migrate_project(
                     "schema-v2 project unexpectedly contains newer semantic-model tables; "
                     "refusing an ambiguous partial migration"
                 )
+            connection.execute("BEGIN IMMEDIATE")
             with connection:
                 for statement in _OVERWORLD_SCHEMA_SQL.split(";"):
                     if statement.strip():
@@ -1025,6 +1027,7 @@ def migrate_project(
                     "schema-v3 project unexpectedly contains dungeon chest tables; "
                     "refusing an ambiguous partial migration"
                 )
+            connection.execute("BEGIN IMMEDIATE")
             with connection:
                 for statement in _DUNGEON_CHEST_SCHEMA_SQL.split(";"):
                     if statement.strip():

@@ -84,7 +84,18 @@ A v1 project migrates sequentially through schema v2 (adds `source_asset`),
 schema v3 (adds overworld hidden-item tables), and schema v4 (adds dungeon
 chest tables). A v2 project migrates through v3 and v4; a v3 project gets v4
 directly. The migrations preserve project metadata, record every schema version,
-and rewrite the JSON sidecar as format v4. Migration is not automatic
+and rewrite the JSON sidecar as format v4. Each individual schema-version
+transition starts an explicit SQLite
+`BEGIN IMMEDIATE` transaction before its DDL, then commits the new tables and
+matching `project.format_version` and `schema_version` metadata together. If
+any statement in a transition fails, SQLite rolls back that transition,
+including tables created earlier in the same step. A multi-step v1-to-v4
+migration commits each version separately; if a later step fails, the database
+remains at the last successfully committed schema version and the migration
+can be retried from there. The JSON sidecar is refreshed only after all
+database transitions commit. A sidecar-write failure does not undo the database
+migration; rerun `migrate-project` to regenerate the export. Migration is not
+automatic
 during validation or asset import. Use `--json PATH` to write the export to
 a non-default location. Running the command on a current project does not
 change the database; it refreshes the JSON sidecar from SQLite.
