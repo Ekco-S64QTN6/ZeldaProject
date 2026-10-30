@@ -184,8 +184,9 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     assert overworld_schema["properties"]["value_byte"]["anyOf"][0]["maximum"] == 255
 
     chest_list_schema = schemas["dungeon_list_chest_records"]
-    assert chest_list_schema["properties"]["table_index"]["minimum"] == 0
-    assert chest_list_schema["properties"]["table_index"]["maximum"] == 167
+    table_index_schema = chest_list_schema["properties"]["table_index"]["anyOf"][0]
+    assert table_index_schema["minimum"] == 0
+    assert table_index_schema["maximum"] == 167
 
     chest_schema = schemas["dungeon_update_chest_record"]
     assert chest_schema["properties"]["apply"]["default"] is False
