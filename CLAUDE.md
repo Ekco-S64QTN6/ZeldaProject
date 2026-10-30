@@ -34,6 +34,19 @@ base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 
 **Current semantic-model boundary:** SQLite schema/project format v5 provides two imported bounded editable domains plus a project-authored extension for overworld hidden items. For imported overworld records, use `import-overworld-hidden-items`, `list-overworld-hidden-items`, and `update-overworld-hidden-item`; source coordinates/value bytes and area aliases are preserved, and the third byte remains a consumer-derived mask/selector rather than a canonical item ID. For additional project-authored entries, use `create-custom-overworld-hidden-item` and `delete-custom-overworld-hidden-item`; both default to dry-run and require `--apply` in the CLI to persist. Custom records and their many-to-many area assignments live in separate tables and exports; the 351 imported source records, their source baselines, and source-area relationships remain unchanged even when the source model is explicitly re-imported. For dungeon chests, use `import-dungeon-chest-data`, `list-dungeon-chest-records`, and `update-dungeon-chest-record`; the original packed literal and source fields are preserved alongside editable raw item, room, and big-chest fields. Both models update SQLite and the JSON sidecar only, never ROM bytes. Use `zelda-suite audit-project-dungeon-chest-room-references DB` to join the current edited chest room values to the registered object/door-pointer metadata while preserving the imported source room values. This is a read-only project report: pointer offsets and payload bytes remain unverified and no ROM is accessed. Existing v1/v2/v3/v4 projects need an explicit `zelda-suite migrate-project` before schema-v5 commands.
 
+**Optional agent transport:** `zelda-suite-mcp --database PATH` (or
+`ZELDA_SUITE_PROJECT_DB`) starts the stdio MCP server for exactly one existing
+project database. It exposes project validation/source metadata reads, bounded
+overworld/dungeon model reads, and project-authored hidden-item create/delete.
+The create/delete tools default to previews and require explicit `apply=true`
+to persist SQLite/JSON changes. The server never accepts a database path from a
+tool argument and does not expose source-row edits, chest edits, imports, ROM
+reads, or ROM writes. Install it with `uv sync --extra agent`; the core package
+does not require the optional SDK. The implementation uses the MCP Python SDK
+v1 `FastMCP` API and pins `mcp<2` until the v2 API migration is implemented.
+Human review/approval of `apply=true` is a host/workflow responsibility, not
+a server-side authorization system.
+
 **Optional JP reference (local-only; not read by current tooling):**
 
 ```
@@ -66,7 +79,7 @@ Rules:
 | Tool | Role | Notes |
 |---|---|---|
 | **YAZE / `z3ed`** | Candidate low‑level ROM interface (CLI + GUI) | Partially smoke-tested with official v0.7.2 against the user-supplied fingerprint-matched ROM: ROM info/raw-byte, dungeon, hex, palette, and message reads passed. The map read for screen 80 fails out-of-range and one room label is malformed; no write commands were tested. Keep integration and adapter semantics open. |
-| **`z3cli`** | Candidate agent harness (MCP, session management, model routing) | Proposed for Phase 3 workflows. Endpoint compatibility and a real tool call remain unverified. |
+| **`z3cli`** | Candidate agent harness (MCP, session management, model routing) | Separate from the initial project-bound `zelda-suite-mcp` server; endpoint compatibility and a real tool call remain unverified. |
 | **Asar** | 65816 assembler | For any ASM patches we insert. |
 | **zcompress** | Graphics decompression/recompression | Reference for graphics round‑tripping. |
 | **SpriteSomething** | Sprite import/export (ZSPR, PNG) | Wrap its CLI for the sprite authoring API. |
@@ -199,7 +212,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - [~] Compare the user-supplied US ROM against the documented catalog fingerprint and record local SHA-256/header assessment. The comparison matched size/CRC-32/SHA-1/MD5; `inspect-rom` reported headerless-by-expected-size and SHA-256 `66871d66be19ad2c34c927d6b14cd8eb6fc3181965b6e517cb361f7316009cfb`. The user reports it boots. Independent chain of custody and automated emulator validation remain open.
 - [~] Smoke-test YAZE/`z3ed` against the local ROM: several read commands passed; `overworld-describe-map --screen=80` failed with an out-of-range offset, and one staircase label was malformed. See the detailed runbook; this is not complete integration.
 - [ ] Choose and implement the YAZE adapter strategy only after the supported read commands, error handling, and map-read failure are understood (candidate: subprocess adapter).
-- [ ] Test `z3cli` with the intended model endpoint or decide on a thin custom MCP server.
+- [~] Provide an opt-in project-bound stdio MCP server for project reads/validation and dry-run-first project-authored hidden-item create/delete. A live host session, approval workflow, z3cli endpoint, and broader authoring tool surface remain unverified.
 - [ ] Select and verify a headless emulator smoke-test path before any ROM writer is introduced.
 
 ---
