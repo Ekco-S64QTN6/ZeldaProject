@@ -296,15 +296,19 @@ def test_mcp_dungeon_chest_list_can_select_one_source_entry(
 
     selected = json.loads(
         _tool_text(
-            asyncio.run(server.call_tool("dungeon_list_chest_records", {"table_index": 5}))
+            asyncio.run(
+                server.call_tool("dungeon_list_chest_records", {"table_index": 5})
+            )
         )
     )
     assert selected["format"] == "zelda-suite-dungeon-chest-model"
     assert selected["source_revision"] == PINNED_REVISION
     assert selected["source_sha256"] == imported["source_sha256"]
-    assert selected["entry"]["table_index"] == 5
-    assert selected["entry"]["source_literal_value"] == imported["entries"][5]["source_literal_value"]
-    assert selected["entry"]["source_room_value"] == imported["entries"][5]["source_room_value"]
+    selected_entry = selected["entry"]
+    source_entry = imported["entries"][5]
+    assert selected_entry["table_index"] == 5
+    assert selected_entry["source_literal_value"] == source_entry["source_literal_value"]
+    assert selected_entry["source_room_value"] == source_entry["source_room_value"]
     assert selected["evidence"]["rom_modified"] is False
 
     full = json.loads(

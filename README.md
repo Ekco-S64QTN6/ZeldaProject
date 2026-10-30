@@ -126,8 +126,9 @@ surface includes project validation/source-asset reads, overworld hidden-item
 reads and preview-first imported hidden-item record updates, dungeon chest
 reads with optional single-entry chest selection, bounded packed-chest field
 edits, a read-only chest-to-room-pointer audit, plus project-authored
-hidden-item create/update/delete. Set `--registry` (or `ZELDA_SUITE_ASSET_REGISTRY`) to the
-registered asset manifest. All mutation tools default to previews; `apply=true`
+hidden-item create/update/delete. Set `--registry` or
+`ZELDA_SUITE_ASSET_REGISTRY` to the registered asset manifest. All mutation
+tools default to previews; `apply=true`
 explicitly persists the project-local SQLite/JSON change while preserving
 source baselines and area aliases. Source imports, ROM access, and ROM writes
 are not exposed. See

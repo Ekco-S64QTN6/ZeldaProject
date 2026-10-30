@@ -121,9 +121,9 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 ## Tests and limitations
 
 `tests/test_mcp_server.py` checks the tool schema, database and registry binding,
-read-only project inspection, full and single-entry chest reads, and chest/room
-audit; default preview behavior,
-explicit imported-row, custom-record, and chest edit commits, area alias
+read-only project inspection, full and single-entry chest reads, chest/room
+audit, default preview behavior, explicit imported-row, custom-record, and
+chest edit commits, area alias
 visibility/replacement, immutable source baselines, source-row count preservation,
 and absence of ROM/import tools. CI runs these contract tests with the other
 Python checks.
