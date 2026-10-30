@@ -162,12 +162,11 @@ def test_six_source_offset_findings_are_bracketed_by_neighbor_declarations() -> 
             "RoomDataTiles_0014", "RoomDataTiles_0024",
         ),
     }
-    declarations_by_source = {
-        json.loads(path.read_text(encoding="utf-8"))["source_file"]: json.loads(
-            path.read_text(encoding="utf-8")
-        )["declarations"]
-        for path in PAYLOAD_ASSET_PATHS
-    }
+    declarations_by_source = {}
+    for path in PAYLOAD_ASSET_PATHS:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        declarations_by_source[payload["source_file"]] = payload["declarations"]
+    sequential_offsets = _target_offsets()
 
     for label, (
         expected_source,
@@ -192,7 +191,7 @@ def test_six_source_offset_findings_are_bracketed_by_neighbor_declarations() -> 
         assert previous["label"] == expected_previous_label
         assert following["label"] == expected_next_label
 
-        sequential_offset = _target_offsets()[label]["offset"]
+        sequential_offset = int(sequential_offsets[label]["offset"])
         assert sequential_offset == expected_sequential_offset
         assert (
             previous["source_file_offset_start"] + previous["declared_size_bytes"]
