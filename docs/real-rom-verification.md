@@ -464,7 +464,7 @@ The following commands returned exit status 0 (output quality limitations are ca
 
 The overworld map check remains **failed**, even after correcting the command syntax. `overworld-describe-map --map=80` was rejected because this build requires `--screen`; the corrected command `overworld-describe-map --screen=80 --format=json --rom="$ROM"` then returned `Offset 1311049 out of range (size: 1048576)`. Do not call this an overworld-read success or guess at a different offset. The underlying cause is not yet established.
 
-### Source diagnosis of the v0.7.2 out-of-range read (2026-10-30)
+### Source diagnoses of the v0.7.2 read-only failures (2026-10-30)
 
 A static audit of the exact [YAZE v0.7.2 tag](https://github.com/scawful/yaze/tree/v0.7.2)
 traced the reported offset to global overworld initialization, not to screen
@@ -495,6 +495,13 @@ complete until an updated build is run against the same local ROM and the
 read-only map command succeeds. Keep the ROM hash before/after check, and do
 not issue save, patch, rebuild, or other write commands.
 
+### Source diagnosis of the malformed staircase label (2026-10-30)
+
+A second static audit traced the garbled label in the recorded `dungeon-describe-room --room=1` response to a dangling pointer in the exact v0.7.2 source. The public C `staircase` record declares `label` as `const char*` in [ `inc/zelda.h` ](https://github.com/scawful/yaze/blob/v0.7.2/inc/zelda.h#L414-L418). But `Room::HandleSpecialObjects()` populated it with `absl::StrCat("To ", staircase_rooms_[...]).data()` in [ `room.cc` ](https://github.com/scawful/yaze/blob/v0.7.2/src/zelda3/dungeon/room.cc#L2218-L2222). That pointer refers to a temporary string destroyed at the end of the expression; the `Room`'s staircase vector retains the pointer, and `dungeon-describe-room` later reads it when exporting `stair.label` ([ `dungeon_commands.cc` ](https://github.com/scawful/yaze/blob/v0.7.2/src/cli/handlers/game/dungeon_commands.cc#L175-L185)). This is undefined behavior and is consistent with the malformed/garbled staircase label observed in the user's output.
+
+Upstream corrected the lifetime bug in [ `8d4f1ad` ](https://github.com/scawful/yaze/commit/8d4f1ad59f539f378ca63faa84545b59e3aa3c5b) (2026-10-13): it retains destination labels in a static array of `std::string` values and stores stable `.c_str()` pointers. The same commit adds a regression test that retains staircase records after their source `Room` objects have been destroyed and verifies each label. The v0.7.2 tag predates this correction.
+
+**Verification status:** the source explains the lifetime error and the upstream correction includes a targeted regression test, but the user's previously tested v0.7.2 executable has not been runtime-retested with an updated build. Keep this separate from the overworld out-of-range read; both need a post-fix read-only smoke test before YAZE integration can be marked complete.
 
 `dungeon-get-palette` is not a command in this build (it returned `Unknown command`). Use the verified `palette-get-colors --group=dungeon_main --index=7` form for this tested palette read.
 
