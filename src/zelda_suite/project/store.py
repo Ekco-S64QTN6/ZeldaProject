@@ -1,7 +1,8 @@
 """SQLite project metadata, semantic game records, migrations, and JSON export.
 
-Schema v4 stores source-preserving overworld hidden-item and dungeon-chest
-models. ROM writing and broad game-system coverage remain future work.
+Schema v5 stores source-preserving overworld and dungeon-chest models plus
+project-authored overworld hidden-item additions. ROM writing and broad
+game-system coverage remain future work.
 """
 from __future__ import annotations
 
@@ -32,8 +33,9 @@ from zelda_suite.extract.overworld_hidden_item_verification import (
 )
 
 PROJECT_FORMAT = "zelda-suite-project"
-PROJECT_FORMAT_VERSION = 4
-CURRENT_SCHEMA_VERSION = 4
+PROJECT_FORMAT_VERSION = 5
+DUNGEON_CHEST_SCHEMA_VERSION = 4
+CURRENT_SCHEMA_VERSION = 5
 BASE_ROM_FILENAME = "Legend of Zelda, The - A Link to the Past (U) [!].smc"
 _PROJECT_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}")
 _ASSET_KEY_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}")
@@ -189,6 +191,28 @@ _DUNGEON_CHEST_TABLE_NAMES = {
     "dungeon_chest_record",
 }
 
+_OVERWORLD_CUSTOM_SCHEMA_SQL = """
+CREATE TABLE overworld_hidden_item_custom_record (
+    custom_record_id INTEGER PRIMARY KEY AUTOINCREMENT CHECK (custom_record_id > 0),
+    coordinate_word INTEGER NOT NULL CHECK (coordinate_word BETWEEN 0 AND 65534),
+    value_byte INTEGER NOT NULL CHECK (value_byte BETWEEN 0 AND 255),
+    created_at TEXT NOT NULL CHECK (length(created_at) > 0)
+);
+
+CREATE TABLE overworld_hidden_item_custom_area_record (
+    area_index INTEGER NOT NULL REFERENCES overworld_hidden_item_area(area_index)
+        ON DELETE CASCADE,
+    custom_record_id INTEGER NOT NULL
+        REFERENCES overworld_hidden_item_custom_record(custom_record_id)
+        ON DELETE CASCADE,
+    PRIMARY KEY (area_index, custom_record_id)
+);
+"""
+_OVERWORLD_CUSTOM_TABLE_NAMES = {
+    "overworld_hidden_item_custom_record",
+    "overworld_hidden_item_custom_area_record",
+}
+
 _SCHEMA_SQL = """
 CREATE TABLE project (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
@@ -203,7 +227,7 @@ CREATE TABLE schema_version (
     version INTEGER PRIMARY KEY CHECK (version > 0),
     applied_at TEXT NOT NULL
 );
-""" + _SOURCE_ASSET_TABLE_SQL + _OVERWORLD_SCHEMA_SQL + _DUNGEON_CHEST_SCHEMA_SQL
+""" + _SOURCE_ASSET_TABLE_SQL + _OVERWORLD_SCHEMA_SQL + _DUNGEON_CHEST_SCHEMA_SQL + _OVERWORLD_CUSTOM_SCHEMA_SQL
 
 
 def _utc_timestamp() -> str:
