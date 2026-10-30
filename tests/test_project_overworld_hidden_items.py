@@ -577,3 +577,51 @@ def test_custom_hidden_item_update_cannot_target_an_imported_source_record(
     assert model is not None
     assert model["records"][0]["value_byte"] == model["records"][0]["source_value_byte"]
     assert model["custom_records"] == []
+
+
+def test_cli_custom_hidden_item_update_defaults_to_dry_run_and_requires_apply(
+    tmp_path: Path,
+) -> None:
+    database, json_path = initialize_project("custom_item_update_cli", tmp_path)
+    _seed_semantic_model(database)
+    created = create_custom_overworld_hidden_item(
+        database,
+        area_indices=[4, 5],
+        coordinate_word=0x1234,
+        value_byte=0x05,
+        dry_run=False,
+    )
+    custom_id = created["record"]["custom_record_id"]
+    before_export = json_path.read_bytes()
+    runner = CliRunner()
+    arguments = [
+        "update-custom-overworld-hidden-item",
+        str(database),
+        str(custom_id),
+        "--area-index", "6",
+        "--area-index", "7",
+        "--coordinate-word", "$2345",
+        "--value-byte", "$84",
+    ]
+
+    preview = runner.invoke(cli, arguments)
+    assert preview.exit_code == 0, preview.output
+    preview_payload = json.loads(preview.output)
+    assert preview_payload["dry_run"] is True
+    assert preview_payload["proposed"]["area_indices"] == [6, 7]
+    assert preview_payload["proposed"]["coordinate_word"] == 0x2345
+    assert preview_payload["proposed"]["value_byte"] == 0x84
+    assert json_path.read_bytes() == before_export
+
+    applied = runner.invoke(cli, [*arguments, "--apply"])
+    assert applied.exit_code == 0, applied.output
+    applied_payload = json.loads(applied.output)
+    assert applied_payload["dry_run"] is False
+    assert applied_payload["record"]["area_indices"] == [6, 7]
+    assert applied_payload["record"]["coordinate_word"] == 0x2345
+    assert applied_payload["record"]["value_byte"] == 0x84
+    model = get_overworld_hidden_item_model(database)
+    assert model is not None
+    assert model["areas"][4]["custom_record_ids"] == []
+    assert model["areas"][6]["custom_record_ids"] == [custom_id]
+    assert validate_project(database) == []
