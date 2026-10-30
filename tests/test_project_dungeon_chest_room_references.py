@@ -87,7 +87,7 @@ def test_project_audit_joins_current_values_and_preserves_source_baselines(
     assert before["evidence"]["project_edits_included"] is True
     assert before["evidence"]["rom_bytes_read"] is False
 
-    update_dungeon_chest_record(database, 0, room_value=0x1234)
+    update_dungeon_chest_record(database, 0, room_value=0x1234, dry_run=False)
     after = audit_project_dungeon_chest_room_references(database, REGISTRY_PATH)
     first = after["entries"][0]
     assert first["source_room_value"] == 0x32
@@ -107,7 +107,7 @@ def test_project_audit_joins_current_values_and_preserves_source_baselines(
 
 def test_project_audit_joins_edited_in_range_room_value(tmp_path: Path) -> None:
     database = _populated_project(tmp_path)
-    update_dungeon_chest_record(database, 0, room_value=0x33)
+    update_dungeon_chest_record(database, 0, room_value=0x33, dry_run=False)
 
     report = audit_project_dungeon_chest_room_references(database, REGISTRY_PATH)
     first = report["entries"][0]
@@ -132,7 +132,7 @@ def test_project_audit_reports_object_door_target_mismatch(
 ) -> None:
     database = _populated_project(tmp_path)
     # Move another chest to the same edited room to exercise room-group behavior.
-    update_dungeon_chest_record(database, 2, room_value=0x32)
+    update_dungeon_chest_record(database, 2, room_value=0x32, dry_run=False)
     registry = _registry_with_door_target_mismatch(tmp_path, table_index=0x32)
 
     report = audit_project_dungeon_chest_room_references(database, registry)
@@ -215,7 +215,7 @@ def test_cli_emits_project_audit_and_fails_on_findings(tmp_path: Path) -> None:
     assert overwrite.exit_code != 0
     assert json.loads(report_path.read_text(encoding="utf-8")) == written_payload
 
-    update_dungeon_chest_record(database, 0, room_value=0x1234)
+    update_dungeon_chest_record(database, 0, room_value=0x1234, dry_run=False)
     failing = runner.invoke(
         cli,
         [
