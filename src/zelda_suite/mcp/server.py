@@ -23,6 +23,7 @@ from zelda_suite.project import (
     get_source_asset,
     list_source_assets,
     update_custom_overworld_hidden_item,
+    update_dungeon_chest_record,
     validate_project,
 )
 
@@ -49,11 +50,12 @@ def create_server(database_path: str | Path) -> FastMCP:
         instructions=(
             "You are connected to one explicitly configured ZeldaProject SQLite "
             "database. Read tools inspect the project and source metadata only. "
-            "Project-authored custom hidden-item create/update/delete tools preview by "
-            "default; set apply=true only when the user has approved persisting "
-            "that project-local change. These tools never read, patch, rebuild, "
-            "or write a ROM. Imported source rows and their source baselines are "
-            "not editable through this MCP surface."
+            "Project-authored custom hidden-item changes and packed dungeon-chest "
+            "field edits preview by default; set apply=true only when the user has "
+            "approved persisting that project-local change. Chest edits preserve "
+            "the imported source baseline. These tools never read, patch, rebuild, "
+            "or write a ROM. Imported overworld source rows are not editable "
+            "through this MCP surface."
         ),
     )
 
@@ -125,6 +127,31 @@ def create_server(database_path: str | Path) -> FastMCP:
                 "no dungeon chest model has been imported into this project"
             )
         return _render_json(model)
+
+    @server.tool()
+    def dungeon_update_chest_record(
+        table_index: Annotated[int, Field(strict=True, ge=0, le=167)],
+        item_value: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
+        room_value: Annotated[int, Field(strict=True, ge=0, le=32767)] | None = None,
+        is_big_chest: Annotated[bool, Field(strict=True)] | None = None,
+        apply: Annotated[bool, Field(strict=True)] = False,
+    ) -> str:
+        """Preview a packed chest-field edit; set apply=true to persist it.
+
+        The item byte, room value, and big-chest flag are bounded project fields.
+        The recomposed 24-bit value is stored only in SQLite/JSON; source literal
+        and source field baselines remain unchanged. This tool does not resolve
+        canonical item names or playable-room semantics and never writes a ROM.
+        """
+        result = update_dungeon_chest_record(
+            db_path,
+            table_index,
+            item_value=item_value,
+            room_value=room_value,
+            is_big_chest=is_big_chest,
+            dry_run=not apply,
+        )
+        return _render_json(result)
 
     @server.tool()
     def overworld_create_custom_hidden_item(
