@@ -160,11 +160,12 @@ async def _exercise_stdio_session(database_path: Path) -> None:
             reference["area_index"]
             for reference in create_preview["area_source_references"]
         ] == [0, 1]
-        assert create_preview["area_source_references"][0]["source_file"] == "Bank1B.asm"
-        assert create_preview["area_source_references"][0]["source_revision"]
-        assert create_preview["area_source_references"][0]["target_label"]
-        assert create_preview["area_source_references"][0]["rom_offsets_verified"] is False
-        assert create_preview["area_source_references"][0]["rom_bytes_read"] is False
+        first_area_reference = create_preview["area_source_references"][0]
+        assert first_area_reference["source_file"] == "Bank1B.asm"
+        assert first_area_reference["source_revision"]
+        assert first_area_reference["target_label"]
+        assert first_area_reference["rom_offsets_verified"] is False
+        assert first_area_reference["rom_bytes_read"] is False
         created = _tool_json(
             await session.call_tool(
                 "overworld_create_custom_hidden_item",
@@ -176,7 +177,10 @@ async def _exercise_stdio_session(database_path: Path) -> None:
             )
         )
         custom_id = created["record"]["custom_record_id"]
-        assert created["area_source_references"] == create_preview["area_source_references"]
+        assert (
+            created["area_source_references"]
+            == create_preview["area_source_references"]
+        )
 
         update_arguments = {
             "custom_record_id": custom_id,
@@ -234,7 +238,10 @@ async def _exercise_stdio_session(database_path: Path) -> None:
             )
         )
         assert deleted["deleted"]["custom_record_id"] == custom_id
-        assert deleted["area_source_references"] == delete_preview["area_source_references"]
+        assert (
+            deleted["area_source_references"]
+            == delete_preview["area_source_references"]
+        )
 
         final_overworld = _tool_json(
             await session.call_tool("overworld_list_hidden_items", {})
@@ -247,7 +254,7 @@ async def _exercise_stdio_session(database_path: Path) -> None:
         assert final_validation == {"problems": [], "valid": True}
 
 
-def test_mcp_stdio_client_session_lists_tools_and_applies_revision_bound_edit(
+def test_mcp_stdio_client_session_exercises_all_authoring_flows(
     tmp_path: Path,
 ) -> None:
     if not OVERWORLD_SOURCE_PATH.is_file():
