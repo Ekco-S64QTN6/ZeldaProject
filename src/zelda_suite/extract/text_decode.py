@@ -26,6 +26,7 @@ Markup (lossless: `encode_markup(decode_markup(b)) == b`):
 """
 from __future__ import annotations
 
+import itertools
 import re
 from dataclasses import dataclass
 from typing import Any
@@ -97,7 +98,7 @@ def rom_dictionary(rom: bytes) -> Dictionary:
     """The dictionary as the game reads it: each entry from its pointer to the next."""
     words = [int.from_bytes(rom[DICTIONARY_POINTER_TABLE_OFFSET + 2 * i:DICTIONARY_POINTER_TABLE_OFFSET + 2 * i + 2],
                             "little") for i in range(DICTIONARY_POINTER_COUNT)]
-    if any(not 0x8000 <= w <= 0xFFFF for w in words) or any(a >= b for a, b in zip(words, words[1:])):
+    if any(not 0x8000 <= w <= 0xFFFF for w in words) or any(a >= b for a, b in itertools.pairwise(words)):
         raise TextDecodeError("the dictionary pointer table is not 98 increasing bank-$0E addresses")
     offset = lambda w: 0x070000 + (w - 0x8000)          # LoROM bank $0E
     return Dictionary([rom[offset(words[i]):offset(words[i + 1])] for i in range(DICTIONARY_ENTRY_COUNT)])
@@ -254,7 +255,9 @@ def decode_text_messages(main_source: str, extra_source: str, rom: bytes | None 
     unresolved and messages using it show `{dict 60}`.
     """
     from zelda_suite.extract.text_message_byte_verification import (
-        default_text_message_source_blocks, parse_source_message_bytes)
+        default_text_message_source_blocks,
+        parse_source_message_bytes,
+    )
     messages = parse_source_message_bytes(default_text_message_source_blocks(main_source, extra_source))
     source_dict = source_dictionary(extra_source)
     dictionary = rom_dictionary(rom) if rom is not None else source_dict
