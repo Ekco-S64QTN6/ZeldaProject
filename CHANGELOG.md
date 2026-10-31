@@ -9,6 +9,15 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add compact MCP `project_get_context` and public Python
+  `get_project_context()`. It validates SQLite/JSON from one read-only database
+  snapshot and returns the same SHA-256 revision used by mutation previews,
+  project/source-asset metadata, and summary-only overworld/dungeon model
+  provenance and counts. Source-asset payloads and individual records are
+  omitted. The direct contract and stdio integration tests verify that the
+  context revision matches the next mutation preview and that ROM evidence
+  remains false.
+
 - Expand the real stdio subprocess integration test to exercise revision-bound
   chest edits, imported overworld row edits, and project-authored hidden-item
   create/update/delete through one MCP SDK `ClientSession`. The test checks

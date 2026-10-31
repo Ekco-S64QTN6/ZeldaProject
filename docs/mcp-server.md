@@ -50,6 +50,7 @@ python -m zelda_suite.mcp.server --database PATH --registry PATH
 
 | Tool | Behavior |
 | --- | --- |
+| `project_get_context` | Return validation, the canonical project revision, source-asset metadata, and compact overworld/dungeon model provenance and counts from one read-only snapshot; omit record arrays and asset payloads. |
 | `project_validate` | Validate SQLite and its canonical JSON sidecar; no writes. |
 | `project_list_source_assets` | List imported source-asset metadata. |
 | `project_get_source_asset` | Read one project source-asset snapshot by key. |
@@ -63,6 +64,16 @@ python -m zelda_suite.mcp.server --database PATH --registry PATH
 | `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true` and the preview's `expected_project_revision`. |
 | `overworld_update_custom_hidden_item` | Preview coordinate/value edits and/or replacement of the complete area-link set; persist only with `apply=true` and the preview's `expected_project_revision`. |
 | `overworld_delete_custom_hidden_item` | Preview deletion by custom-record ID; persist only with `apply=true` and the preview's `expected_project_revision`. |
+
+The `project_get_context` tool is the recommended first read for an agent
+session. It validates the SQLite project and canonical JSON sidecar, then
+returns project identity, the exact canonical `project_revision` used by
+revision-bound mutation previews, source-asset metadata, and summary-only
+semantic-model provenance/counts. The values are derived from one read-only
+SQLite transaction. Asset payloads and individual records are omitted; the
+source file names shown are registered source metadata, not local file paths.
+A semantic model that has not been imported is returned as `null`. No ROM
+bytes are read.
 
 The server is bound to one resolved database path and one resolved asset
 registry path at startup. No tool accepts a database path, registry path, or
@@ -197,8 +208,11 @@ and chest edit commits, structured source citations on every mutation class,
 area alias visibility/replacement, immutable source baselines, source-row count
 preservation, and absence of ROM/import tools.
 
-`tests/test_mcp_stdio.py` launches the module as a subprocess and connects with
-the MCP Python SDK `ClientSession` over the real stdio transport. It imports
+`tests/test_mcp_stdio.py` also checks `project_get_context` over stdio and
+asserts that its project revision matches the immediately following mutation
+preview. `tests/test_mcp_stdio.py` launches the module as a subprocess and
+connects with the MCP Python SDK `ClientSession` over the real stdio transport.
+It imports
 both semantic models into a temporary project, then runs revision-bound chest
 editing, imported overworld editing, and project-authored hidden-item
 create/update/delete in one session. It verifies the source citation envelopes,

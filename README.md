@@ -122,7 +122,8 @@ uv run zelda-suite-mcp \
 ```
 
 Alternatively, set `ZELDA_SUITE_PROJECT_DB` and omit `--database`. The tool
-surface includes project validation/source-asset reads, overworld hidden-item
+surface includes compact `project_get_context` snapshots, project
+validation/source-asset reads, overworld hidden-item
 reads, filtered searches across imported and project-authored hidden-item
 records, and preview-first imported hidden-item record updates, dungeon chest
 reads with optional single-entry chest selection, AND-combined chest searches

@@ -86,8 +86,12 @@ serve one existing project database over stdio. The process binds its database
 path once at startup; no tool accepts a database or arbitrary filesystem path.
 The currently exposed tool set is:
 
+- `project_get_context` for a compact validation/provenance/model-count
+  snapshot and canonical project revision from one read-only database view;
+  it omits source-asset payloads, local filesystem paths, and semantic record
+  arrays.
 - `project_validate`, `project_list_source_assets`, and
-  `project_get_source_asset` for project validation and source metadata.
+  `project_get_source_asset` for focused project validation and source metadata.
 - `overworld_list_hidden_items` and `dungeon_list_chest_records` for
   bounded model reads.
 - `overworld_create_custom_hidden_item`,

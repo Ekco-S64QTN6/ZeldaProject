@@ -2849,6 +2849,269 @@ def update_dungeon_chest_record(
     raise KeyError(f"dungeon chest record not found: {table_index}")
 
 
+def _project_validation_snapshot(
+    connection: sqlite3.Connection,
+    output_path: Path,
+) -> tuple[list[str], dict[str, Any] | None]:
+    """Validate one read-only SQLite snapshot and return its canonical payload."""
+    problems: list[str] = []
+    try:
+        integrity_rows = connection.execute("PRAGMA quick_check").fetchall()
+    except sqlite3.Error as exc:
+        return [f"SQLite integrity check failed to run: {exc}"], None
+
+    if integrity_rows != [("ok",)]:
+        detail = "; ".join(str(row[0]) for row in integrity_rows)
+        problems.append(f"SQLite integrity check failed: {detail}")
+
+    tables = {
+        str(row[0])
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        ).fetchall()
+    }
+    required_tables = {
+        "project",
+        "schema_version",
+        "source_asset",
+        *_OVERWORLD_TABLE_NAMES,
+        *_DUNGEON_CHEST_TABLE_NAMES,
+        *_OVERWORLD_CUSTOM_TABLE_NAMES,
+    }
+    missing_tables = sorted(required_tables - tables)
+    if missing_tables:
+        problems.append("missing required table(s): " + ", ".join(missing_tables))
+        return problems, None
+
+    try:
+        foreign_key_errors = connection.execute("PRAGMA foreign_key_check").fetchall()
+    except sqlite3.Error as exc:
+        problems.append(f"foreign-key check failed to run: {exc}")
+    else:
+        if foreign_key_errors:
+            problems.append(
+                f"foreign-key check found {len(foreign_key_errors)} violation(s)"
+            )
+
+    try:
+        payload = _export_payload(connection)
+    except (sqlite3.Error, ValueError, TypeError) as exc:
+        problems.append(f"project metadata is invalid: {exc}")
+        return problems, None
+
+    format_version = payload["format_version"]
+    if format_version != PROJECT_FORMAT_VERSION:
+        problems.append(
+            f"unsupported project format version {format_version}; "
+            f"this tool supports {PROJECT_FORMAT_VERSION}"
+        )
+
+    schema_version = payload["schema_version"]
+    if schema_version != CURRENT_SCHEMA_VERSION:
+        problems.append(
+            f"unsupported database schema version {schema_version}; "
+            f"this tool supports {CURRENT_SCHEMA_VERSION}"
+        )
+
+    try:
+        _validate_project_name(payload["project"]["name"])
+    except (ValueError, TypeError) as exc:
+        problems.append(f"invalid project name in metadata: {exc}")
+
+    if payload["project"]["base_rom"]["expected_filename"] != BASE_ROM_FILENAME:
+        problems.append("project metadata does not name the canonical US base ROM")
+
+    try:
+        expected_json = _render_json(payload).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        problems.append(f"project metadata cannot be exported as JSON: {exc}")
+    else:
+        if not output_path.is_file():
+            problems.append(f"JSON export file not found: {output_path}")
+        else:
+            try:
+                actual_json = output_path.read_bytes()
+            except OSError as exc:
+                problems.append(f"could not read JSON export: {exc}")
+            else:
+                if actual_json != expected_json:
+                    problems.append(
+                        f"JSON export is stale or non-canonical: {output_path}"
+                    )
+    return problems, payload
+
+
+def _compact_semantic_model_context(
+    model: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Keep semantic-model provenance and counters, never individual records."""
+    if model is None:
+        return None
+    return {
+        "format": model["format"],
+        "format_version": model["format_version"],
+        "source_file": model["source_file"],
+        "source_revision": model["source_revision"],
+        "source_sha256": model["source_sha256"],
+        "summary": model["summary"],
+        "evidence": model["evidence"],
+    }
+
+
+def _redact_project_context_problems(
+    problems: list[str],
+    database_path: Path,
+    json_path: Path,
+) -> list[str]:
+    """Remove machine-specific local paths from context summary diagnostics."""
+    redacted = list(problems)
+    for path, label in (
+        (database_path, "project database"),
+        (json_path, "canonical JSON sidecar"),
+    ):
+        candidates = {str(path), str(path.resolve())}
+        for candidate in candidates:
+            if candidate:
+                redacted = [message.replace(candidate, label) for message in redacted]
+    return redacted
+
+
+def get_project_context(
+    database_path: str | Path,
+    json_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Return validated project metadata, provenance, model counts, and revision.
+
+    All SQLite-backed values are derived from one read-only transaction so the
+    project summary and fingerprint describe the same canonical snapshot.
+    Individual source-asset payloads and semantic record arrays are omitted.
+    No ROM bytes are read or written.
+    """
+    db_path = Path(database_path)
+    output_path = Path(json_path) if json_path is not None else db_path.with_suffix(".json")
+    if not db_path.is_file():
+        return {
+            "valid": False,
+            "problems": ["project database file not found"],
+            "project_revision": None,
+            "format": None,
+            "format_version": None,
+            "schema_version": None,
+            "project": None,
+            "source_asset_count": 0,
+            "source_assets": [],
+            "semantic_models": {
+                "overworld_hidden_items": None,
+                "dungeon_chests": None,
+            },
+            "evidence": {
+                "sqlite_snapshot_read_only": False,
+                "full_payloads_omitted": True,
+                "rom_bytes_read": False,
+                "rom_modified": False,
+            },
+        }
+
+    read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
+    try:
+        connection = sqlite3.connect(read_only_uri, uri=True)
+    except sqlite3.Error:
+        return {
+            "valid": False,
+            "problems": ["could not open project database read-only"],
+            "project_revision": None,
+            "format": None,
+            "format_version": None,
+            "schema_version": None,
+            "project": None,
+            "source_asset_count": 0,
+            "source_assets": [],
+            "semantic_models": {
+                "overworld_hidden_items": None,
+                "dungeon_chests": None,
+            },
+            "evidence": {
+                "sqlite_snapshot_read_only": False,
+                "full_payloads_omitted": True,
+                "rom_bytes_read": False,
+                "rom_modified": False,
+            },
+        }
+
+    try:
+        connection.execute("BEGIN")
+        problems, payload = _project_validation_snapshot(connection, output_path)
+        context_problems = _redact_project_context_problems(
+            problems, db_path, output_path
+        )
+        if payload is None:
+            return {
+                "valid": False,
+                "problems": context_problems,
+                "project_revision": None,
+                "format": None,
+                "format_version": None,
+                "schema_version": None,
+                "project": None,
+                "source_asset_count": 0,
+                "source_assets": [],
+                "semantic_models": {
+                    "overworld_hidden_items": None,
+                    "dungeon_chests": None,
+                },
+                "evidence": {
+                    "sqlite_snapshot_read_only": True,
+                    "full_payloads_omitted": True,
+                    "rom_bytes_read": False,
+                    "rom_modified": False,
+                },
+            }
+
+        project_revision = hashlib.sha256(
+            _render_json(payload).encode("utf-8")
+        ).hexdigest()
+        source_asset_fields = (
+            "key",
+            "format",
+            "format_version",
+            "source_file",
+            "source_revision",
+            "sha256",
+            "imported_at",
+        )
+        source_assets = [
+            {field: asset[field] for field in source_asset_fields}
+            for asset in payload["source_assets"]
+        ]
+        return {
+            "valid": not problems,
+            "problems": context_problems,
+            "project_revision": project_revision,
+            "format": payload["format"],
+            "format_version": payload["format_version"],
+            "schema_version": payload["schema_version"],
+            "project": payload["project"],
+            "source_asset_count": len(source_assets),
+            "source_assets": source_assets,
+            "semantic_models": {
+                "overworld_hidden_items": _compact_semantic_model_context(
+                    payload["overworld_hidden_items"]
+                ),
+                "dungeon_chests": _compact_semantic_model_context(
+                    payload["dungeon_chests"]
+                ),
+            },
+            "evidence": {
+                "sqlite_snapshot_read_only": True,
+                "full_payloads_omitted": True,
+                "rom_bytes_read": False,
+                "rom_modified": False,
+            },
+        }
+    finally:
+        connection.close()
+
+
 def validate_project(
     database_path: str | Path, json_path: str | Path | None = None
 ) -> list[str]:
@@ -2868,98 +3131,8 @@ def validate_project(
     except sqlite3.Error as exc:
         return [f"could not open database read-only: {exc}"]
 
-    problems: list[str] = []
     try:
-        try:
-            integrity_rows = connection.execute("PRAGMA quick_check").fetchall()
-        except sqlite3.Error as exc:
-            return [f"SQLite integrity check failed to run: {exc}"]
-
-        if integrity_rows != [("ok",)]:
-            detail = "; ".join(str(row[0]) for row in integrity_rows)
-            problems.append(f"SQLite integrity check failed: {detail}")
-
-        tables = {
-            str(row[0])
-            for row in connection.execute(
-                "SELECT name FROM sqlite_master WHERE type = 'table'"
-            ).fetchall()
-        }
-        required_tables = {
-            "project",
-            "schema_version",
-            "source_asset",
-            *_OVERWORLD_TABLE_NAMES,
-            *_DUNGEON_CHEST_TABLE_NAMES,
-            *_OVERWORLD_CUSTOM_TABLE_NAMES,
-        }
-        missing_tables = sorted(required_tables - tables)
-        if missing_tables:
-            problems.append(
-                "missing required table(s): " + ", ".join(missing_tables)
-            )
-            return problems
-
-        try:
-            foreign_key_errors = connection.execute(
-                "PRAGMA foreign_key_check"
-            ).fetchall()
-        except sqlite3.Error as exc:
-            problems.append(f"foreign-key check failed to run: {exc}")
-        else:
-            if foreign_key_errors:
-                problems.append(
-                    f"foreign-key check found {len(foreign_key_errors)} violation(s)"
-                )
-
-        try:
-            payload = _export_payload(connection)
-        except (sqlite3.Error, ValueError, TypeError) as exc:
-            problems.append(f"project metadata is invalid: {exc}")
-            return problems
-
-        format_version = payload["format_version"]
-        if format_version != PROJECT_FORMAT_VERSION:
-            problems.append(
-                f"unsupported project format version {format_version}; "
-                f"this tool supports {PROJECT_FORMAT_VERSION}"
-            )
-
-        schema_version = payload["schema_version"]
-        if schema_version != CURRENT_SCHEMA_VERSION:
-            problems.append(
-                f"unsupported database schema version {schema_version}; "
-                f"this tool supports {CURRENT_SCHEMA_VERSION}"
-            )
-
-        try:
-            _validate_project_name(payload["project"]["name"])
-        except (ValueError, TypeError) as exc:
-            problems.append(f"invalid project name in metadata: {exc}")
-
-        if payload["project"]["base_rom"]["expected_filename"] != BASE_ROM_FILENAME:
-            problems.append(
-                "project metadata does not name the canonical US base ROM"
-            )
-
-        try:
-            expected_json = _render_json(payload).encode("utf-8")
-        except (TypeError, ValueError) as exc:
-            problems.append(f"project metadata cannot be exported as JSON: {exc}")
-        else:
-            if not output_path.is_file():
-                problems.append(f"JSON export file not found: {output_path}")
-            else:
-                try:
-                    actual_json = output_path.read_bytes()
-                except OSError as exc:
-                    problems.append(f"could not read JSON export: {exc}")
-                else:
-                    if actual_json != expected_json:
-                        problems.append(
-                            f"JSON export is stale or non-canonical: {output_path}"
-                        )
+        problems, _payload = _project_validation_snapshot(connection, output_path)
+        return problems
     finally:
         connection.close()
-
-    return problems
