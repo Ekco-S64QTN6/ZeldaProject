@@ -14,6 +14,7 @@ from zelda_suite.mcp.server import create_server
 from zelda_suite.project import (
     get_dungeon_chest_model,
     get_overworld_hidden_item_model,
+    get_project_context,
     import_dungeon_chest_data,
     initialize_project,
     update_overworld_hidden_item,
@@ -146,6 +147,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     assert "source_references" in descriptions["dungeon_update_chest_record"]
 
     assert set(schemas) == {
+        "project_get_context",
         "project_validate",
         "project_list_source_assets",
         "project_get_source_asset",
@@ -235,6 +237,91 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     assert chest_schema["properties"]["table_index"]["maximum"] == 167
     assert chest_schema["properties"]["item_value"]["anyOf"][0]["maximum"] == 255
     assert chest_schema["properties"]["room_value"]["anyOf"][0]["maximum"] == 32767
+
+
+def test_mcp_project_context_is_compact_consistent_and_read_only(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_project_context", tmp_path)
+    server = create_server(database)
+    original_database = database.read_bytes()
+    original_export = json_export.read_bytes()
+
+    empty_context = json.loads(
+        _tool_text(asyncio.run(server.call_tool("project_get_context", {})))
+    )
+    assert empty_context["valid"] is True
+    assert empty_context["problems"] == []
+    assert empty_context["format"] == "zelda-suite-project"
+    assert empty_context["format_version"] == 5
+    assert empty_context["schema_version"] == 5
+    assert empty_context["project"]["name"] == "mcp_project_context"
+    empty_revision = empty_context["project_revision"]
+    assert isinstance(empty_revision, str) and len(empty_revision) == 64
+    assert set(empty_revision) <= set("0123456789abcdef")
+    assert empty_context["source_asset_count"] == 0
+    assert empty_context["source_assets"] == []
+    assert empty_context["semantic_models"] == {
+        "overworld_hidden_items": None,
+        "dungeon_chests": None,
+    }
+    assert empty_context["evidence"] == {
+        "sqlite_snapshot_read_only": True,
+        "full_payloads_omitted": True,
+        "rom_bytes_read": False,
+        "rom_modified": False,
+    }
+    assert database.read_bytes() == original_database
+    assert json_export.read_bytes() == original_export
+
+    _seed_semantic_model(database)
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    assert imported["summary"]["entry_count"] == 168
+    populated_database = database.read_bytes()
+    populated_export = json_export.read_bytes()
+
+    populated_context = json.loads(
+        _tool_text(asyncio.run(server.call_tool("project_get_context", {})))
+    )
+    assert populated_context["valid"] is True
+    assert populated_context["problems"] == []
+    assert populated_context["project_revision"] != empty_revision
+    assert populated_context["source_asset_count"] == len(
+        populated_context["source_assets"]
+    )
+    assert all("payload" not in asset for asset in populated_context["source_assets"])
+    assert all(
+        "path" not in asset and "absolute_path" not in asset
+        for asset in populated_context["source_assets"]
+    )
+    overworld = populated_context["semantic_models"]["overworld_hidden_items"]
+    assert overworld["summary"]["record_count"] == 351
+    assert overworld["source_revision"] == PINNED_REVISION
+    assert overworld["source_sha256"] == "0" * 64
+    assert "records" not in overworld
+    assert "custom_records" not in overworld
+    chests = populated_context["semantic_models"]["dungeon_chests"]
+    assert chests["summary"]["entry_count"] == 168
+    assert chests["source_revision"] == imported["source_revision"]
+    assert chests["source_sha256"] == imported["source_sha256"]
+    assert "entries" not in chests
+    assert "source_entries" not in chests
+    assert populated_context["evidence"]["rom_bytes_read"] is False
+    assert populated_context["evidence"]["rom_modified"] is False
+
+    preview = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "dungeon_update_chest_record",
+                    {"table_index": 0, "item_value": 0xAA},
+                )
+            )
+        )
+    )
+    assert preview["project_revision"] == populated_context["project_revision"]
+    assert database.read_bytes() == populated_database
+    assert json_export.read_bytes() == populated_export
 
 
 def test_mcp_read_tools_validate_and_list_project_without_mutation(

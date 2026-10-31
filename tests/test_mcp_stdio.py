@@ -67,6 +67,7 @@ async def _exercise_stdio_session(
         }
         assert "source_references" in tool_descriptions["overworld_update_hidden_item_record"]
         assert "source_references" in tool_descriptions["dungeon_update_chest_record"]
+        assert "project_get_context" in tool_names
         assert "project_validate" in tool_names
         assert "dungeon_update_chest_record" in tool_names
         assert "dungeon_list_chest_records" in tool_names
@@ -75,6 +76,19 @@ async def _exercise_stdio_session(
         assert "overworld_update_custom_hidden_item" in tool_names
         assert "overworld_delete_custom_hidden_item" in tool_names
         assert "overworld_find_hidden_items" in tool_names
+
+        initial_context = _tool_json(
+            await session.call_tool("project_get_context", {})
+        )
+        assert initial_context["valid"] is True
+        assert initial_context["semantic_models"]["overworld_hidden_items"]["summary"][
+            "record_count"
+        ] == 351
+        assert initial_context["semantic_models"]["dungeon_chests"]["summary"][
+            "entry_count"
+        ] == 168
+        assert initial_context["evidence"]["rom_bytes_read"] is False
+        assert initial_context["evidence"]["rom_modified"] is False
 
         initial_validation = _tool_json(
             await session.call_tool("project_validate", {})
@@ -89,6 +103,7 @@ async def _exercise_stdio_session(
         assert preview["rom_modified"] is False
         revision = preview["project_revision"]
         assert isinstance(revision, str) and len(revision) == 64
+        assert initial_context["project_revision"] == revision
 
         missing_revision = await session.call_tool(
             "dungeon_update_chest_record",
