@@ -160,6 +160,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 │   ├── cli/main.py
 │   ├── extract/                    ← read-only source/ROM inspection and export validation
 │   ├── project/store.py            ← SQLite project metadata + source-export snapshots
+│   ├── write/rom_build.py          ← the ROM writer (build-rom): in-place patches, dry run first
 │   └── diff/rom_diff.py            ← file-backed ROM byte diff
 ├── tests/                          ← parser, export, CLI, project, and diff regression tests
 └── docs/
@@ -182,7 +183,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 
 ## 7. Non‑Negotiable Rules
 
-1. **No ROM writer exists yet.** Before adding ROM writes, implement an isolated `src/zelda_suite/write/` layer with bounds/reference checks, deterministic dry-run and byte-diff output, and a passing emulator smoke test (YAZE headless or equivalent). Never write a ROM until all gates pass.
+1. **ROM writes go through `src/zelda_suite/write/` only** ([docs/rom-writer.md](./docs/rom-writer.md)). It writes a new file, never the base image; it is dry-run by default; it patches only records whose offsets are verified against the US image, refuses a base whose bytes differ from the source baselines, and reports every patch with its citation and the byte diff. A new domain may be added to it only with its offsets verified against the local ROM and its refusal cases tested. In-game playtesting of built ROMs is done by the user; hand them the built file and what to check.
 2. **Cite your source.** Any proposed change must reference (a) the project data file/row and (b) the disassembly label / byte range in `AsarUSALTTPDisassembly`.
 3. **Dry‑run first.** The authoring API must support a `dry_run=True` mode that reports intended changes without applying them. Default to dry‑run.
 4. **Referential integrity.** A chest cannot point to a nonexistent item. An entrance cannot point to a nonexistent room. Enforce at the SQLite schema and the API layer, not the byte layer.

@@ -4003,6 +4003,41 @@ def update_dungeon_chest_record_command(
     click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
 
 
+@cli.command(name="build-rom")
+@click.argument(
+    "database",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--base-rom",
+    required=True,
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    help="The clean headerless US image the project's offsets were verified on (read only).",
+)
+@click.option(
+    "--output",
+    required=True,
+    type=click.Path(path_type=Path, dir_okay=False),
+    help="Where the built ROM goes; never the base image.",
+)
+@click.option("--apply", is_flag=True, help="Write the ROM; without this, only the dry-run report is printed.")
+@click.option("--overwrite", is_flag=True, help="Replace an existing output file.")
+def build_rom_command(database: Path, base_rom: Path, output: Path, apply: bool, overwrite: bool) -> None:
+    """Build a ROM from the project's chest and hidden-item edits (dry run by default).
+
+    Each edited record becomes an in-place patch at its verified offset; the base
+    image's bytes must equal every record's source baseline. The report lists each
+    patch with its source citation, the byte diff and both SHA-256s.
+    """
+    from zelda_suite.write import BuildError, build_rom
+
+    try:
+        report = build_rom(database, base_rom, output, dry_run=not apply, overwrite=overwrite)
+    except (BuildError, KeyError, ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+
+
 @cli.command(name="init")
 @click.argument("name")
 @click.option(

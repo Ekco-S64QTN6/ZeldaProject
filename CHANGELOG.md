@@ -9,6 +9,16 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add the ROM writer: `zelda-suite build-rom DB --base-rom PATH --output PATH [--apply]`
+  and `zelda_suite.write.build_rom()`. Dungeon-chest and imported overworld hidden-item
+  edits become same-size in-place patches at offsets verified against the US image
+  (all 168 chest literals matched the local ROM; hidden items per the existing 550-check
+  verification). Dry run by default; refuses a base whose bytes differ from the source
+  baselines, non-1 MiB images, overlapping or out-of-table patches, project-authored
+  hidden items, writing over the base or an existing file; recomputes the LoROM header
+  checksum (reproduces the US image's `$AF0D`). The report carries per-patch citations
+  and the byte diff. See `docs/rom-writer.md`.
+
 - Add compact MCP `project_get_context` and public Python
   `get_project_context()`. It validates SQLite/JSON from one read-only database
   snapshot and returns the same SHA-256 revision used by mutation previews,

@@ -58,11 +58,23 @@ to persist. An update omits any field it should retain; repeating
 `--area-index` replaces the complete many-to-many area-link set. The area-specific list command returns both imported source records
 and separately identified custom records. All semantic edit operations update
 SQLite and its JSON sidecar only;
-they do not write ROM bytes. The project-aware audit reads SQLite and registered
+they do not write ROM bytes. ROM bytes come only from `build-rom` (below). The project-aware audit reads SQLite and registered
 source metadata but does not access the ROM. Source-commented pointer offsets
 are not verified binary locations, item names remain unresolved, and the
 playable-room count discrepancy remains open. The report schema is documented
 in `docs/schemas/project-dungeon-chest-room-reference-audit.schema.json`.
+
+### Building a ROM
+
+```bash
+uv run zelda-suite build-rom project/my-hack.db --base-rom BASE.smc --output project/my-hack.sfc          # dry run
+uv run zelda-suite build-rom project/my-hack.db --base-rom BASE.smc --output project/my-hack.sfc --apply  # write
+```
+
+`zelda_suite.write.build_rom(database, base_rom, output, *, dry_run=True, overwrite=False)` returns the
+`zelda-suite-rom-build` report (patches with citations, byte diff, SHA-256s, header checksum).
+`plan_project_patches(database)` lists the patches without reading a ROM. Supported domains, refusals
+and evidence: [rom-writer.md](./rom-writer.md).
 
 ## Design constraints for future operations
 
