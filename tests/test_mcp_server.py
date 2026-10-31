@@ -703,8 +703,10 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     assert create_refs[0]["source_sha256"] == "0" * 64
     assert create_refs[0]["pointer_entry_file_offset_annotation"] == 0x0DC301
     assert create_refs[0]["target_file_offset_annotation"] == 0x0DC402
-    assert create_refs[0]["rom_offsets_verified"] is False
-    assert create_refs[0]["rom_bytes_read"] is False
+    assert create_refs[0]["sentinel_file_offset_annotation"] == 0x0DC454
+    assert create_refs[0]["source_record_count"] == 1
+    assert all(reference["rom_offsets_verified"] is False for reference in create_refs)
+    assert all(reference["rom_bytes_read"] is False for reference in create_refs)
     assert preview["rom_modified"] is False
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
@@ -773,6 +775,14 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
         "OverworldData_HiddenItems_Screen_05",
         "OverworldData_HiddenItems_Screen_06",
     ]
+    assert all(
+        reference["rom_offsets_verified"] is False
+        and reference["rom_bytes_read"] is False
+        for reference in (
+            update_preview["before_area_source_references"]
+            + update_preview["proposed_area_source_references"]
+        )
+    )
     assert update_preview["proposed"]["coordinate_word"] == 0x2345
     assert update_preview["proposed"]["value_byte"] == 0x84
     assert database.read_bytes() == database_after_create
