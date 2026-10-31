@@ -15,6 +15,9 @@ work.
 - `import_overworld_hidden_item_model()`,
   `get_overworld_hidden_item_model()`, and
   `update_overworld_hidden_item()` operate on the 351 source-preserving rows.
+  Update previews and returned applied records include structured citations to
+  the imported source row and every linked area's source pointer metadata;
+  source file offsets remain annotations, not ROM-verified locations.
 - `create_custom_overworld_hidden_item()`,
   `update_custom_overworld_hidden_item()`, and
   `delete_custom_overworld_hidden_item()` manage project-authored additions.
@@ -30,6 +33,9 @@ work.
   `update_dungeon_chest_record()` operate on the 168 source-indexed packed
   chest entries. Editable fields are raw item byte, low-15-bit room value, and
   big-chest flag; the packed 24-bit literal is recomposed with storage checks.
+  Update previews and returned applied records include structured citations
+  for the source table declaration/range and selected source entry, including
+  its candidate entry-offset annotation. This remains source-only metadata.
 - `audit_project_dungeon_chest_room_references()` joins the current project
   room values to the validated source object/door-pointer exports. It preserves
   each original source room value and edit status and reports out-of-range room

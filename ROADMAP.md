@@ -182,12 +182,13 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   reference procedure and SDK stdio round trip are tested, but selection/
   configuration of a concrete desktop/IDE MCP host and live interoperability
   are not verified.
-- [~] Include project-record and source citations in mutation previews: imported
-  overworld rows expose their source label/line/offset, chest rows expose their
-  source line and annotated entry offset, and custom hidden-item CRUD exposes
-  each linked area's target label plus pointer/target/sentinel annotations.
-  These are source references; a host must present them with every proposal,
-  and the offsets remain unverified against ROM bytes.
+- [~] Include project-record and source citations in every mutation preview
+  and applied result: imported overworld rows return their source label/line/
+  expression/offset and linked-area pointer citations; chest edits return the
+  source table declaration/range and selected entry's line/expression/candidate
+  offset; custom hidden-item CRUD cites each linked area's target label and
+  pointer/target/sentinel annotations. A host must present these references
+  with every proposal. They remain source annotations, not ROM verification.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
 - [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
 

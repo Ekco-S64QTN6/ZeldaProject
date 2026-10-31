@@ -116,8 +116,12 @@ ROM locations.
 and at least one of `coordinate_word` (0–65534) or `value_byte` (0–255).
 `$FFFF` remains reserved as a list sentinel. Applied edits preserve the
 original source coordinate/value fields and all existing area aliases while
-recalculating consumer classification from the changed raw byte. A value byte
-is not a canonical item ID. The change updates SQLite/JSON only.
+recalculating consumer classification from the changed raw byte. The preview
+and applied response include `source_references`: the imported source row's
+file/revision/hash, source label/line/expression, source-offset annotation, and
+each linked area's target label plus pointer/target/sentinel annotations.
+Every cited offset is explicitly unverified against ROM bytes. A value byte is
+not a canonical item ID. The change updates SQLite/JSON only.
 
 `dungeon_audit_chest_room_references` reports every chest against both
 registered 320-entry pointer tables, grouping repeated room values and surfacing
@@ -134,9 +138,14 @@ revision, source hash, and evidence flags.
 `dungeon_update_chest_record` accepts a table index from 0–167 and at least
 one of `item_value` (0–255), `room_value` (0–32767), or `is_big_chest` (boolean).
 It recomposes the packed 24-bit value while preserving the original source
-literal and source field baselines. The room value remains a raw pointer-table
-index candidate, not a confirmed playable-room identifier, and the item byte
-is not a canonical item-name mapping. The update changes SQLite/JSON only.
+literal and source field baselines. The preview and applied response include
+`source_references` for the source table declaration/range and selected row:
+source file/revision/hash, table label, raw range annotation, source line and
+expression, and the candidate entry-offset annotation. These are source
+annotations, not ROM-verified locations. The room value remains a raw
+pointer-table index candidate, not a confirmed playable-room identifier, and
+the item byte is not a canonical item-name mapping. The update changes
+SQLite/JSON only.
 
 The preview responses for all five mutation tools include `project_revision`.
 The `expected_project_revision` input is available only with `apply=true` and
