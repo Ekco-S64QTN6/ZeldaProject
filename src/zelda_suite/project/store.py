@@ -2958,6 +2958,24 @@ def _compact_semantic_model_context(
     }
 
 
+def _redact_project_context_problems(
+    problems: list[str],
+    database_path: Path,
+    json_path: Path,
+) -> list[str]:
+    """Remove machine-specific local paths from context summary diagnostics."""
+    redacted = list(problems)
+    for path, label in (
+        (database_path, "project database"),
+        (json_path, "canonical JSON sidecar"),
+    ):
+        candidates = {str(path), str(path.resolve())}
+        for candidate in candidates:
+            if candidate:
+                redacted = [message.replace(candidate, label) for message in redacted]
+    return redacted
+
+
 def get_project_context(
     database_path: str | Path,
     json_path: str | Path | None = None,
@@ -2974,7 +2992,7 @@ def get_project_context(
     if not db_path.is_file():
         return {
             "valid": False,
-            "problems": [f"database file not found: {db_path}"],
+            "problems": ["project database file not found"],
             "project_revision": None,
             "format": None,
             "format_version": None,
@@ -3000,7 +3018,7 @@ def get_project_context(
     except sqlite3.Error as exc:
         return {
             "valid": False,
-            "problems": [f"could not open database read-only: {exc}"],
+            "problems": ["could not open project database read-only"],
             "project_revision": None,
             "format": None,
             "format_version": None,
@@ -3023,10 +3041,13 @@ def get_project_context(
     try:
         connection.execute("BEGIN")
         problems, payload = _project_validation_snapshot(connection, output_path)
+        context_problems = _redact_project_context_problems(
+            problems, db_path, output_path
+        )
         if payload is None:
             return {
                 "valid": False,
-                "problems": problems,
+                "problems": context_problems,
                 "project_revision": None,
                 "format": None,
                 "format_version": None,
@@ -3064,7 +3085,7 @@ def get_project_context(
         ]
         return {
             "valid": not problems,
-            "problems": problems,
+            "problems": context_problems,
             "project_revision": project_revision,
             "format": payload["format"],
             "format_version": payload["format_version"],

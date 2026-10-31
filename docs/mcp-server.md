@@ -70,9 +70,10 @@ session. It validates the SQLite project and canonical JSON sidecar, then
 returns project identity, the exact canonical `project_revision` used by
 revision-bound mutation previews, source-asset metadata, and summary-only
 semantic-model provenance/counts. The values are derived from one read-only
-SQLite transaction. Asset payloads and individual records are omitted; a
-semantic model that has not been imported is returned as `null`. No ROM bytes
-are read.
+SQLite transaction. Asset payloads and individual records are omitted; the
+source file names shown are registered source metadata, not local file paths.
+A semantic model that has not been imported is returned as `null`. No ROM
+bytes are read.
 
 The server is bound to one resolved database path and one resolved asset
 registry path at startup. No tool accepts a database path, registry path, or

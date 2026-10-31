@@ -10,7 +10,8 @@ model endpoint, or external tool integration has been tested.
 Run one `zelda-suite-mcp` process for one project database and one registered
 asset manifest. Begin an authoring session with `project_get_context` to read
 validation status, source metadata, semantic-model counts, and the exact project
-revision without dumping full record arrays. Prefer absolute paths in the host launch configuration:
+revision without dumping full record arrays. Prefer absolute paths in the host
+launch configuration:
 
 ~~~bash
 uv sync --extra agent

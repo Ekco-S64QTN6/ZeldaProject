@@ -251,6 +251,11 @@ def test_mcp_project_context_is_compact_consistent_and_read_only(
     original_database = database.read_bytes()
     original_export = json_export.read_bytes()
 
+    missing_context = get_project_context(tmp_path / "missing.db")
+    assert missing_context["valid"] is False
+    assert missing_context["project_revision"] is None
+    assert str(tmp_path) not in json.dumps(missing_context)
+
     empty_context = json.loads(
         _tool_text(asyncio.run(server.call_tool("project_get_context", {})))
     )
@@ -344,6 +349,7 @@ def test_mcp_project_context_is_compact_consistent_and_read_only(
     )
     assert stale_context["valid"] is False
     assert any("stale or non-canonical" in problem for problem in stale_context["problems"])
+    assert str(json_export) not in json.dumps(stale_context)
     assert stale_context["project_revision"] == populated_context["project_revision"]
     assert database.read_bytes() == populated_database
     assert json_export.read_bytes() == stale_export
