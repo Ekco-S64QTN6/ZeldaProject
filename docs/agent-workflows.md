@@ -40,14 +40,23 @@ preview safe to apply after another writer has changed the project.
 
 ## Tool permissions
 
-The current MCP surface has three practical permission groups.
+The current MCP surface has three practical permission groups:
 
-| Group | Tools | Expected host policy |
-| --- | --- | --- |
-| Read-only project inspection | project_validate, project_list_source_assets, project_get_source_asset, `overworld_list_hidden_items`, overworld_find_hidden_items, dungeon_list_chest_records, dungeon_find_chest_records, dungeon_audit_chest_room_references | May be called to inspect the bound project. |
-| Preview-first project mutation | `overworld_update_hidden_item_record`, dungeon_update_chest_record, `overworld_create_custom_hidden_item`, overworld_update_custom_hidden_item, overworld_delete_custom_hidden_item | Call first without apply or with `apply=false`; show the preview and obtain approval for the exact change before applying. |
-| Not exposed | ROM reads/writes, patching, building, source-asset imports, arbitrary file access, registry/database selection | Do not infer these capabilities or emulate them through unrelated tools. |
-
+- **Read-only project inspection:** `project_validate`,
+  `project_list_source_assets`, `project_get_source_asset`,
+  `overworld_list_hidden_items`, `overworld_find_hidden_items`,
+  `dungeon_list_chest_records`, `dungeon_find_chest_records`, and
+  `dungeon_audit_chest_room_references`. These may be called to inspect the
+  bound project.
+- **Preview-first project mutation:** `overworld_update_hidden_item_record`,
+  `dungeon_update_chest_record`, `overworld_create_custom_hidden_item`,
+  `overworld_update_custom_hidden_item`, and
+  `overworld_delete_custom_hidden_item`. Call first without `apply` or with
+  `apply=false`; show the preview and obtain approval for the exact change
+  before applying.
+- **Not exposed:** ROM reads/writes, patching, building, source-asset imports,
+  arbitrary file access, and registry/database selection. Do not infer these
+  capabilities or emulate them through unrelated tools.
 The server's Pydantic schemas enforce field types and bounds. Mutating calls
 default to a read-only preview. Setting `apply=true` persists project-local
 SQLite/JSON data only; it does not update a ROM. The server does not implement
