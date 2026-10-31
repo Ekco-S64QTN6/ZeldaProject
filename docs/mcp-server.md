@@ -193,13 +193,15 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 read-only project inspection, full and single-entry chest reads, chest/room
 audit, default preview behavior, revision fingerprints on every mutation
 preview, missing/stale revision rejection, explicit imported-row, custom-record,
-and chest edit commits, area alias visibility/replacement, immutable source
-baselines, source-row count preservation, and absence of ROM/import tools.
+and chest edit commits, structured source citations on every mutation class,
+area alias visibility/replacement, immutable source baselines, source-row count
+preservation, and absence of ROM/import tools.
 
 `tests/test_mcp_stdio.py` launches the module as a subprocess and connects with
 the MCP Python SDK `ClientSession` over the real stdio transport. It checks
-protocol initialization, tool discovery, project validation, preview output,
-rejection of apply without a revision, revision-bound application, re-reading
-the edited chest, and final project validation. This is an SDK-level process
+protocol initialization, tool discovery, project validation, mutation-tool
+source citation descriptions, preview output, rejection of apply without a
+revision, revision-bound application, re-reading the edited chest, and final
+project validation. This is an SDK-level process
 smoke test; it does not establish compatibility with a particular desktop/IDE
 host, model endpoint, or `z3cli`. Those remain separate roadmap gates.

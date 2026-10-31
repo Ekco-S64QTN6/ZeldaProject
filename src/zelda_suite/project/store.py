@@ -1992,7 +1992,7 @@ def _overworld_area_source_references(
     connection: sqlite3.Connection,
     area_indices: list[int],
 ) -> list[dict[str, Any]]:
-    """Cite source-annotated pointer metadata for areas linked to a custom record."""
+    """Cite source-annotated pointer metadata for imported or custom area links."""
     if not area_indices:
         return []
     placeholders = ",".join("?" for _ in area_indices)

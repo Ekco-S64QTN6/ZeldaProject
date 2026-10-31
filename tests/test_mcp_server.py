@@ -140,6 +140,10 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
 
     tools = asyncio.run(server.list_tools())
     schemas = {tool.name: tool.inputSchema for tool in tools}
+    descriptions = {tool.name: tool.description or "" for tool in tools}
+
+    assert "source_references" in descriptions["overworld_update_hidden_item_record"]
+    assert "source_references" in descriptions["dungeon_update_chest_record"]
 
     assert set(schemas) == {
         "project_validate",

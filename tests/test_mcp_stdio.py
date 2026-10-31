@@ -46,6 +46,11 @@ async def _exercise_stdio_session(database_path: Path) -> None:
 
         tool_list = await session.list_tools()
         tool_names = {tool.name for tool in tool_list.tools}
+        tool_descriptions = {
+            tool.name: tool.description or "" for tool in tool_list.tools
+        }
+        assert "source_references" in tool_descriptions["overworld_update_hidden_item_record"]
+        assert "source_references" in tool_descriptions["dungeon_update_chest_record"]
         assert "project_validate" in tool_names
         assert "dungeon_update_chest_record" in tool_names
         assert "dungeon_list_chest_records" in tool_names
