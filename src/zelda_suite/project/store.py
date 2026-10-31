@@ -1887,6 +1887,8 @@ def update_overworld_hidden_item(
                 "record_index": record_index,
                 "before": before,
                 "proposed": proposed,
+                "before_area_source_references": before_area_source_references,
+                "proposed_area_source_references": proposed_area_source_references,
                 "changed_fields": changed_fields,
                 "rom_modified": False,
             }
@@ -1981,6 +1983,50 @@ def _custom_hidden_item_replacement_words(
     ]
 
 
+def _custom_hidden_item_area_source_references(
+    connection: sqlite3.Connection,
+    area_indices: list[int],
+) -> list[dict[str, Any]]:
+    """Cite source-annotated pointer metadata for areas linked to a custom record."""
+    if not area_indices:
+        return []
+    placeholders = ",".join("?" for _ in area_indices)
+    model = connection.execute(
+        """SELECT source_file, source_revision, source_sha256
+           FROM overworld_hidden_item_model WHERE singleton = 1"""
+    ).fetchone()
+    if model is None:
+        raise ValueError("overworld hidden-item model has no source provenance")
+    rows = connection.execute(
+        f"""SELECT area_index, pointer_entry_file_offset, target_label,
+                   target_file_offset, sentinel_file_offset, record_count
+            FROM overworld_hidden_item_area
+            WHERE area_index IN ({placeholders})
+            ORDER BY area_index""",
+        area_indices,
+    ).fetchall()
+    if len(rows) != len(area_indices):
+        raise ValueError("custom hidden-item area source references are incomplete")
+    return [
+        {
+            "area_index": int(row["area_index"]),
+            "source_file": str(model["source_file"]),
+            "source_revision": str(model["source_revision"]),
+            "source_sha256": str(model["source_sha256"]),
+            "target_label": str(row["target_label"]),
+            "pointer_entry_file_offset_annotation": int(
+                row["pointer_entry_file_offset"]
+            ),
+            "target_file_offset_annotation": int(row["target_file_offset"]),
+            "sentinel_file_offset_annotation": int(row["sentinel_file_offset"]),
+            "source_record_count": int(row["record_count"]),
+            "rom_offsets_verified": False,
+            "rom_bytes_read": False,
+        }
+        for row in rows
+    ]
+
+
 def create_custom_overworld_hidden_item(
     database_path: str | Path,
     *,
@@ -2045,6 +2091,9 @@ def create_custom_overworld_hidden_item(
         semantics = classify_overworld_hidden_item_value_byte(
             value_byte, _custom_hidden_item_replacement_words(connection)
         )
+        area_source_references = _custom_hidden_item_area_source_references(
+            connection, validated_areas
+        )
         if dry_run:
             return {
                 "action": "create_custom_overworld_hidden_item",
@@ -2052,6 +2101,7 @@ def create_custom_overworld_hidden_item(
                 "project_revision": project_revision,
                 "custom_record_id": None,
                 "area_indices": validated_areas,
+                "area_source_references": area_source_references,
                 "coordinate_word": coordinate_word,
                 "value_byte": value_byte,
                 "consumer_class": semantics["consumer_class"],
@@ -2101,6 +2151,7 @@ def create_custom_overworld_hidden_item(
         "action": "create_custom_overworld_hidden_item",
         "dry_run": False,
         "record": result,
+        "area_source_references": area_source_references,
         "rom_modified": False,
     }
 
@@ -2180,6 +2231,9 @@ def update_custom_overworld_hidden_item(
                 (custom_record_id,),
             ).fetchall()
         ]
+        before_area_source_references = _custom_hidden_item_area_source_references(
+            connection, old_areas
+        )
         new_coordinate = old_coordinate if coordinate_word is None else coordinate_word
         new_value = old_value if value_byte is None else value_byte
         requested_areas = old_areas if area_indices is None else area_indices
@@ -2199,6 +2253,9 @@ def update_custom_overworld_hidden_item(
         missing_areas = [area for area in new_areas if area not in existing_areas]
         if missing_areas:
             raise KeyError(f"overworld area not found: {missing_areas[0]}")
+        proposed_area_source_references = _custom_hidden_item_area_source_references(
+            connection, new_areas
+        )
 
         replacement_words = _custom_hidden_item_replacement_words(connection)
         before_semantics = classify_overworld_hidden_item_value_byte(
@@ -2299,6 +2356,8 @@ def update_custom_overworld_hidden_item(
         "dry_run": False,
         "record": record,
         "before": before,
+        "before_area_source_references": before_area_source_references,
+        "area_source_references": proposed_area_source_references,
         "changed_fields": changed_fields,
         "rom_modified": False,
     }
@@ -2364,6 +2423,9 @@ def delete_custom_overworld_hidden_item(
                 (custom_record_id,),
             ).fetchall()
         ]
+        area_source_references = _custom_hidden_item_area_source_references(
+            connection, area_indices
+        )
         result = {
             "custom_record_id": int(row["custom_record_id"]),
             "area_indices": area_indices,
@@ -2378,6 +2440,7 @@ def delete_custom_overworld_hidden_item(
                 "dry_run": True,
                 "project_revision": project_revision,
                 "record": result,
+                "area_source_references": area_source_references,
                 "rom_modified": False,
             }
         with connection:
@@ -2395,6 +2458,7 @@ def delete_custom_overworld_hidden_item(
         "action": "delete_custom_overworld_hidden_item",
         "dry_run": False,
         "deleted": result,
+        "area_source_references": area_source_references,
         "rom_modified": False,
     }
 
