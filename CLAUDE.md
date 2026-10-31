@@ -42,7 +42,8 @@ base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 (or `ZELDA_SUITE_PROJECT_DB` and `ZELDA_SUITE_ASSET_REGISTRY`) starts the stdio
 MCP server bound to one project database and one registered asset manifest. It
 exposes project validation/source metadata reads, bounded overworld/dungeon
-model reads, optionally filtered single-chest reads, AND-combined chest
+model reads and filtered source/custom overworld hidden-item searches,
+optionally filtered single-chest reads, AND-combined chest
 searches by raw item byte, room value, and big-chest flag, a read-only audit of
 chest-to-room pointer references, preview-first imported overworld hidden-item
 and packed dungeon-chest edits, and project-authored

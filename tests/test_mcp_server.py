@@ -144,6 +144,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "project_list_source_assets",
         "project_get_source_asset",
         "overworld_list_hidden_items",
+        "overworld_find_hidden_items",
         "overworld_update_hidden_item_record",
         "dungeon_list_chest_records",
         "dungeon_find_chest_records",
@@ -176,6 +177,15 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
 
     delete_schema = schemas["overworld_delete_custom_hidden_item"]
     assert delete_schema["properties"]["apply"]["default"] is False
+
+    overworld_find_schema = schemas["overworld_find_hidden_items"]
+    assert overworld_find_schema["properties"]["area_index"]["anyOf"][0]["minimum"] == 0
+    assert overworld_find_schema["properties"]["area_index"]["anyOf"][0]["maximum"] == 127
+    assert overworld_find_schema["properties"]["record_index"]["anyOf"][0]["minimum"] == 0
+    assert overworld_find_schema["properties"]["record_index"]["anyOf"][0]["maximum"] == 350
+    assert overworld_find_schema["properties"]["custom_record_id"]["anyOf"][0]["minimum"] == 1
+    assert overworld_find_schema["properties"]["coordinate_word"]["anyOf"][0]["maximum"] == 65534
+    assert overworld_find_schema["properties"]["value_byte"]["anyOf"][0]["maximum"] == 255
 
     overworld_schema = schemas["overworld_update_hidden_item_record"]
     assert overworld_schema["properties"]["apply"]["default"] is False
@@ -223,6 +233,98 @@ def test_mcp_read_tools_validate_and_list_project_without_mutation(
     assert assets == []
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
+
+
+def test_mcp_overworld_find_searches_source_and_custom_records_without_mutation(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_find_overworld_items", tmp_path)
+    _seed_semantic_model(database)
+    server = create_server(database)
+
+    created = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "overworld_create_custom_hidden_item",
+                    {
+                        "area_indices": [0, 3],
+                        "coordinate_word": 1,
+                        "value_byte": 0x05,
+                        "apply": True,
+                    },
+                )
+            )
+        )
+    )
+    custom_id = created["record"]["custom_record_id"]
+    database_before = database.read_bytes()
+    export_before = json_export.read_bytes()
+
+    result = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "overworld_find_hidden_items",
+                    {
+                        "area_index": 0,
+                        "coordinate_word": 1,
+                        "value_byte": 0x05,
+                    },
+                )
+            )
+        )
+    )
+    assert result["format"] == "zelda-suite-overworld-hidden-item-model"
+    assert result["source_revision"] == PINNED_REVISION
+    assert result["filters"] == {
+        "area_index": 0,
+        "record_index": None,
+        "custom_record_id": None,
+        "coordinate_word": 1,
+        "value_byte": 0x05,
+    }
+    assert result["summary"]["matched_count"] == 2
+    assert result["summary"]["source_record_count"] == 1
+    assert result["summary"]["custom_record_count"] == 1
+    assert [record["record_index"] for record in result["records"]] == [0]
+    assert [record["custom_record_id"] for record in result["custom_records"]] == [
+        custom_id
+    ]
+    assert result["evidence"]["rom_bytes_read"] is False
+    assert result["evidence"]["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_export.read_bytes() == export_before
+
+    source_only = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "overworld_find_hidden_items",
+                    {"record_index": 0},
+                )
+            )
+        )
+    )
+    assert [record["record_index"] for record in source_only["records"]] == [0]
+    assert source_only["custom_records"] == []
+
+    custom_only = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "overworld_find_hidden_items",
+                    {"custom_record_id": custom_id},
+                )
+            )
+        )
+    )
+    assert custom_only["records"] == []
+    assert [record["custom_record_id"] for record in custom_only["custom_records"]] == [
+        custom_id
+    ]
+    assert database.read_bytes() == database_before
+    assert json_export.read_bytes() == export_before
 
 
 def test_mcp_overworld_row_update_previews_then_applies_explicitly(
