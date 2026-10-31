@@ -44,62 +44,62 @@ async def _exercise_stdio_session(database_path: Path) -> None:
     ):
         await session.initialize()
 
-            tool_list = await session.list_tools()
-            tool_names = {tool.name for tool in tool_list.tools}
-            assert "project_validate" in tool_names
-            assert "dungeon_update_chest_record" in tool_names
-            assert "dungeon_list_chest_records" in tool_names
+        tool_list = await session.list_tools()
+        tool_names = {tool.name for tool in tool_list.tools}
+        assert "project_validate" in tool_names
+        assert "dungeon_update_chest_record" in tool_names
+        assert "dungeon_list_chest_records" in tool_names
 
-            initial_validation = _tool_json(
-                await session.call_tool("project_validate", {})
-            )
-            assert initial_validation == {"problems": [], "valid": True}
+        initial_validation = _tool_json(
+            await session.call_tool("project_validate", {})
+        )
+        assert initial_validation == {"problems": [], "valid": True}
 
-            arguments = {"table_index": 0, "item_value": 0xAA}
-            preview = _tool_json(
-                await session.call_tool("dungeon_update_chest_record", arguments)
-            )
-            assert preview["dry_run"] is True
-            assert preview["rom_modified"] is False
-            revision = preview["project_revision"]
-            assert isinstance(revision, str) and len(revision) == 64
+        arguments = {"table_index": 0, "item_value": 0xAA}
+        preview = _tool_json(
+            await session.call_tool("dungeon_update_chest_record", arguments)
+        )
+        assert preview["dry_run"] is True
+        assert preview["rom_modified"] is False
+        revision = preview["project_revision"]
+        assert isinstance(revision, str) and len(revision) == 64
 
-            missing_revision = await session.call_tool(
+        missing_revision = await session.call_tool(
+            "dungeon_update_chest_record",
+            {**arguments, "apply": True},
+        )
+        assert missing_revision.isError is True
+        assert missing_revision.content
+        error_content = missing_revision.content[0]
+        assert isinstance(error_content, TextContent)
+        assert "expected_project_revision" in error_content.text
+
+        applied = _tool_json(
+            await session.call_tool(
                 "dungeon_update_chest_record",
-                {**arguments, "apply": True},
+                {
+                    **arguments,
+                    "expected_project_revision": revision,
+                    "apply": True,
+                },
             )
-            assert missing_revision.isError is True
-            assert missing_revision.content
-            error_content = missing_revision.content[0]
-            assert isinstance(error_content, TextContent)
-            assert "expected_project_revision" in error_content.text
+        )
+        assert applied["table_index"] == 0
+        assert applied["item_value"] == 0xAA
+        assert applied["is_modified"] is True
 
-            applied = _tool_json(
-                await session.call_tool(
-                    "dungeon_update_chest_record",
-                    {
-                        **arguments,
-                        "expected_project_revision": revision,
-                        "apply": True,
-                    },
-                )
+        selected = _tool_json(
+            await session.call_tool(
+                "dungeon_list_chest_records", {"table_index": 0}
             )
-            assert applied["table_index"] == 0
-            assert applied["item_value"] == 0xAA
-            assert applied["is_modified"] is True
+        )
+        assert selected["entry"]["item_value"] == 0xAA
+        assert selected["evidence"]["rom_modified"] is False
 
-            selected = _tool_json(
-                await session.call_tool(
-                    "dungeon_list_chest_records", {"table_index": 0}
-                )
-            )
-            assert selected["entry"]["item_value"] == 0xAA
-            assert selected["evidence"]["rom_modified"] is False
-
-            final_validation = _tool_json(
-                await session.call_tool("project_validate", {})
-            )
-            assert final_validation == {"problems": [], "valid": True}
+        final_validation = _tool_json(
+            await session.call_tool("project_validate", {})
+        )
+        assert final_validation == {"problems": [], "valid": True}
 
 
 def test_mcp_stdio_client_session_lists_tools_and_applies_revision_bound_edit(
