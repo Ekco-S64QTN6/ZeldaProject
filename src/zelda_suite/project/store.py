@@ -1774,7 +1774,9 @@ def update_overworld_hidden_item(
 
     The default is read-only. Applying an edit updates the current project values
     and derived consumer classification, while source fields and area aliases
-    remain unchanged. No ROM bytes are read or written.
+    remain unchanged. When supplied, expected_project_revision is checked against
+    the canonical project snapshot held by the write transaction. No ROM bytes
+    are read or written.
     """
     if isinstance(record_index, bool) or not isinstance(record_index, int) or not 0 <= record_index <= 350:
         raise ValueError("record_index must be an integer in 0..350")
@@ -1991,7 +1993,9 @@ def create_custom_overworld_hidden_item(
     """Preview or create a project-authored hidden item linked to one or more areas.
 
     The 351 imported source records and their source-area relationships are never
-    changed. A committed custom record is project-local and never writes a ROM.
+    changed. When supplied, expected_project_revision is checked before creation
+    under the write transaction. A committed custom record is project-local and
+    never writes a ROM.
     """
     if not isinstance(dry_run, bool):
         raise TypeError("dry_run must be a boolean")
@@ -2116,7 +2120,9 @@ def update_custom_overworld_hidden_item(
     Omitted fields retain their current values. Supplying area_indices
     replaces the complete area-link set; at least one valid area must remain.
     Imported source records, their baselines, and their area links are never
-    updated. A committed change affects only SQLite and canonical JSON.
+    updated. A committed change affects only SQLite and canonical JSON. When
+    supplied, expected_project_revision rejects persistence after any intervening
+    canonical project edit.
     """
     if (
         isinstance(custom_record_id, bool)
@@ -2305,7 +2311,12 @@ def delete_custom_overworld_hidden_item(
     expected_project_revision: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
-    """Preview or delete only a project-authored record, never a source record."""
+    """Preview or delete only a project-authored record, never a source record.
+
+    When supplied, expected_project_revision is checked inside the write
+    transaction so a stale preview cannot delete a record after another project
+    edit has occurred.
+    """
     if (
         isinstance(custom_record_id, bool)
         or not isinstance(custom_record_id, int)
@@ -2582,8 +2593,9 @@ def update_dungeon_chest_record(
 
     The default is read-only. An applied edit recomposes the packed 24-bit
     literal and updates only current project fields; source expression, source
-    literal, and source field values remain unchanged. No ROM bytes are read or
-    written.
+    literal, and source field values remain unchanged. When supplied,
+    expected_project_revision is checked inside the write transaction. No ROM
+    bytes are read or written.
     """
     if isinstance(table_index, bool) or not isinstance(table_index, int) or not 0 <= table_index <= 167:
         raise ValueError("table_index must be an integer in 0..167")
