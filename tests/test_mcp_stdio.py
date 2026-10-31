@@ -65,6 +65,7 @@ async def _exercise_stdio_session(
         tool_descriptions = {
             tool.name: tool.description or "" for tool in tool_list.tools
         }
+        assert "compact" in tool_descriptions["project_get_context"]
         assert "source_references" in tool_descriptions["overworld_update_hidden_item_record"]
         assert "source_references" in tool_descriptions["dungeon_update_chest_record"]
         assert "project_get_context" in tool_names

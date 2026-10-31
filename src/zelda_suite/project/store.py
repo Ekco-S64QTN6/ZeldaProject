@@ -3050,12 +3050,12 @@ def get_project_context(
             _render_json(payload).encode("utf-8")
         ).hexdigest()
         source_asset_fields = (
-            "asset_key",
-            "asset_format",
-            "asset_format_version",
+            "key",
+            "format",
+            "format_version",
             "source_file",
             "source_revision",
-            "payload_sha256",
+            "sha256",
             "imported_at",
         )
         source_assets = [

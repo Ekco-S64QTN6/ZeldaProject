@@ -16,11 +16,13 @@ from zelda_suite.project import (
     get_overworld_hidden_item_model,
     get_project_context,
     import_dungeon_chest_data,
+    import_source_asset,
     initialize_project,
     update_overworld_hidden_item,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+ITEM_VALUES_EXPORT = ROOT / "data" / "extracted" / "falling-prize-item-values.json"
 REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 
 PINNED_REVISION = "347c23f9fc019c72d32da537c9cb235f468d021d"
@@ -143,6 +145,8 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     schemas = {tool.name: tool.inputSchema for tool in tools}
     descriptions = {tool.name: tool.description or "" for tool in tools}
 
+    assert "compact" in descriptions["project_get_context"]
+    assert "project revision" in descriptions["project_get_context"]
     assert "source_references" in descriptions["overworld_update_hidden_item_record"]
     assert "source_references" in descriptions["dungeon_update_chest_record"]
 
@@ -275,6 +279,9 @@ def test_mcp_project_context_is_compact_consistent_and_read_only(
     assert json_export.read_bytes() == original_export
 
     _seed_semantic_model(database)
+    source_asset = import_source_asset(
+        database, "falling-prize-values", ITEM_VALUES_EXPORT
+    )
     imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
     assert imported["summary"]["entry_count"] == 168
     populated_database = database.read_bytes()
@@ -286,14 +293,21 @@ def test_mcp_project_context_is_compact_consistent_and_read_only(
     assert populated_context["valid"] is True
     assert populated_context["problems"] == []
     assert populated_context["project_revision"] != empty_revision
-    assert populated_context["source_asset_count"] == len(
-        populated_context["source_assets"]
-    )
-    assert all("payload" not in asset for asset in populated_context["source_assets"])
-    assert all(
-        "path" not in asset and "absolute_path" not in asset
-        for asset in populated_context["source_assets"]
-    )
+    assert populated_context["source_asset_count"] == 1
+    assert len(populated_context["source_assets"]) == 1
+    source_asset_summary = populated_context["source_assets"][0]
+    assert source_asset_summary == {
+        "key": "falling-prize-values",
+        "format": source_asset["format"],
+        "format_version": source_asset["format_version"],
+        "source_file": source_asset["source_file"],
+        "source_revision": source_asset["source_revision"],
+        "sha256": source_asset["sha256"],
+        "imported_at": source_asset["imported_at"],
+    }
+    assert "payload" not in source_asset_summary
+    assert "absolute_path" not in source_asset_summary
+    assert get_project_context(database) == populated_context
     overworld = populated_context["semantic_models"]["overworld_hidden_items"]
     assert overworld["summary"]["record_count"] == 351
     assert overworld["source_revision"] == PINNED_REVISION
@@ -322,6 +336,18 @@ def test_mcp_project_context_is_compact_consistent_and_read_only(
     assert preview["project_revision"] == populated_context["project_revision"]
     assert database.read_bytes() == populated_database
     assert json_export.read_bytes() == populated_export
+
+    json_export.write_text("{}\n", encoding="utf-8")
+    stale_export = json_export.read_bytes()
+    stale_context = json.loads(
+        _tool_text(asyncio.run(server.call_tool("project_get_context", {})))
+    )
+    assert stale_context["valid"] is False
+    assert any("stale or non-canonical" in problem for problem in stale_context["problems"])
+    assert stale_context["project_revision"] == populated_context["project_revision"]
+    assert database.read_bytes() == populated_database
+    assert json_export.read_bytes() == stale_export
+    json_export.write_bytes(populated_export)
 
 
 def test_mcp_read_tools_validate_and_list_project_without_mutation(

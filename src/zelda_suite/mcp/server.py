@@ -73,7 +73,9 @@ def create_server(
         "zelda-suite-project",
         instructions=(
             "You are connected to one explicitly configured ZeldaProject SQLite "
-            "database. Read tools inspect the project and source metadata only. "
+            "database. Start with project_get_context to inspect project validity, "
+            "source provenance, model counts, and the current revision. Read tools "
+            "inspect the project and source metadata only. "
             "Project-authored custom hidden-item changes and packed dungeon-chest "
             "field edits preview by default; set apply=true only with the exact "
             "expected_project_revision from the approved preview, after the user "
