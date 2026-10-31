@@ -100,7 +100,8 @@ def rom_dictionary(rom: bytes) -> Dictionary:
                             "little") for i in range(DICTIONARY_POINTER_COUNT)]
     if any(not 0x8000 <= w <= 0xFFFF for w in words) or any(a >= b for a, b in itertools.pairwise(words)):
         raise TextDecodeError("the dictionary pointer table is not 98 increasing bank-$0E addresses")
-    offset = lambda w: 0x070000 + (w - 0x8000)          # LoROM bank $0E
+    def offset(word: int) -> int:                      # LoROM bank $0E
+        return 0x070000 + (word - 0x8000)
     return Dictionary([rom[offset(words[i]):offset(words[i + 1])] for i in range(DICTIONARY_ENTRY_COUNT)])
 
 
@@ -137,9 +138,12 @@ def source_dictionary(bank0e_source: str) -> Dictionary:
     return Dictionary(entries)
 
 
-def tokens(data: bytes) -> list[tuple]:
+Token = tuple[Any, ...]
+
+
+def tokens(data: bytes) -> list[Token]:
     """('glyph', b) | ('dict', i) | ('cmd', byte, params) up to and including the End command."""
-    out: list[tuple] = []
+    out: list[Token] = []
     i = 0
     while i < len(data):
         b = data[i]
@@ -269,7 +273,7 @@ def decode_text_messages(main_source: str, extra_source: str, rom: bytes | None 
                              "rom_bytes": r.hex().upper() if (r is not None and rom is not None) else None})
         elif rom is not None and s != r:
             findings.append({"code": "dictionary_entry_source_rom_mismatch", "entry": i,
-                             "source_bytes": s.hex().upper(), "rom_bytes": r.hex().upper()})
+                             "source_bytes": s.hex().upper(), "rom_bytes": r.hex().upper() if r else None})
     entries = []
     for m in messages:
         if message_id is not None and m["message_id"] != message_id:
