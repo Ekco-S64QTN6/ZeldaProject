@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from mcp.server.fastmcp.exceptions import ToolError
 
 from zelda_suite.mcp.server import create_server
 from zelda_suite.project import (
@@ -838,28 +839,28 @@ def test_mcp_apply_rejects_stale_project_revision(tmp_path: Path) -> None:
     database_after_other_edit = database.read_bytes()
     export_after_other_edit = json_export.read_bytes()
 
-    stale = asyncio.run(
-        server.call_tool(
-            "dungeon_update_chest_record",
-            {
-                **arguments,
-                "expected_project_revision": revision,
-                "apply": True,
-            },
+    with pytest.raises(ToolError, match="project revision changed since preview"):
+        asyncio.run(
+            server.call_tool(
+                "dungeon_update_chest_record",
+                {
+                    **arguments,
+                    "expected_project_revision": revision,
+                    "apply": True,
+                },
+            )
         )
-    )
-    assert "project revision changed since preview" in _tool_text(stale)
     assert database.read_bytes() == database_after_other_edit
     assert json_export.read_bytes() == export_after_other_edit
 
     # A current preview can be applied, and omission of the revision is refused.
-    missing_revision = asyncio.run(
-        server.call_tool(
-            "dungeon_update_chest_record",
-            {**arguments, "apply": True},
+    with pytest.raises(ToolError, match="expected_project_revision"):
+        asyncio.run(
+            server.call_tool(
+                "dungeon_update_chest_record",
+                {**arguments, "apply": True},
+            )
         )
-    )
-    assert "expected_project_revision" in _tool_text(missing_revision)
     assert database.read_bytes() == database_after_other_edit
     assert json_export.read_bytes() == export_after_other_edit
 
