@@ -8,6 +8,7 @@ from pathlib import Path
 
 from mcp.client.session import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
+from mcp.types import CallToolResult, TextContent
 
 from zelda_suite.project import import_dungeon_chest_data, initialize_project
 
@@ -15,12 +16,12 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "data" / "extracted" / "manifest.json"
 
 
-def _tool_json(result: object) -> dict[str, object]:
-    assert not result.isError  # type: ignore[attr-defined]
-    content = result.content  # type: ignore[attr-defined]
-    assert content
-    assert hasattr(content[0], "text")
-    return json.loads(content[0].text)
+def _tool_json(result: CallToolResult) -> dict[str, object]:
+    assert not result.isError
+    assert result.content
+    content = result.content[0]
+    assert isinstance(content, TextContent)
+    return json.loads(content.text)
 
 
 async def _exercise_stdio_session(database_path: Path) -> None:
@@ -66,7 +67,10 @@ async def _exercise_stdio_session(database_path: Path) -> None:
                 {**arguments, "apply": True},
             )
             assert missing_revision.isError is True
-            assert "expected_project_revision" in missing_revision.content[0].text
+            assert missing_revision.content
+            error_content = missing_revision.content[0]
+            assert isinstance(error_content, TextContent)
+            assert "expected_project_revision" in error_content.text
 
             applied = _tool_json(
                 await session.call_tool(
