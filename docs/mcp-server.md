@@ -198,10 +198,11 @@ area alias visibility/replacement, immutable source baselines, source-row count
 preservation, and absence of ROM/import tools.
 
 `tests/test_mcp_stdio.py` launches the module as a subprocess and connects with
-the MCP Python SDK `ClientSession` over the real stdio transport. It checks
-protocol initialization, tool discovery, project validation, mutation-tool
-source citation descriptions, preview output, rejection of apply without a
-revision, revision-bound application, re-reading the edited chest, and final
-project validation. This is an SDK-level process
-smoke test; it does not establish compatibility with a particular desktop/IDE
-host, model endpoint, or `z3cli`. Those remain separate roadmap gates.
+the MCP Python SDK `ClientSession` over the real stdio transport. It imports
+both semantic models into a temporary project, then runs revision-bound chest
+editing, imported overworld editing, and project-authored hidden-item
+create/update/delete in one session. It verifies the source citation envelopes,
+area-link readback, removal of deleted custom records, and final project
+validation. This is an SDK-level process smoke test; it does not establish
+compatibility with a particular desktop/IDE host, model endpoint, or `z3cli`.
+Those remain separate roadmap gates.
