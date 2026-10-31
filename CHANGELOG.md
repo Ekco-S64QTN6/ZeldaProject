@@ -9,6 +9,12 @@ does not imply that any release has been published.
 
 ### Added
 
+- Expand the real stdio subprocess integration test to exercise revision-bound
+  chest edits, imported overworld row edits, and project-authored hidden-item
+  create/update/delete through one MCP SDK `ClientSession`. The test checks
+  source citation metadata, filtered readback, area reassignment, deletion, and
+  final project validation without claiming a third-party desktop/IDE host test.
+
 - Include structured `source_references` in imported overworld-row and
   dungeon-chest edit previews and applied responses. Overworld citations identify
   the pinned source row and all linked area pointer entries; chest citations
