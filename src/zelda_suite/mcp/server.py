@@ -21,6 +21,7 @@ from zelda_suite.project import (
     delete_custom_overworld_hidden_item,
     get_dungeon_chest_model,
     get_overworld_hidden_item_model,
+    get_project_context,
     get_source_asset,
     list_source_assets,
     update_custom_overworld_hidden_item,
@@ -82,6 +83,16 @@ def create_server(
             "rebuild, or write a ROM."
         ),
     )
+
+    @server.tool()
+    def project_get_context() -> str:
+        """Return one compact, read-only project snapshot for agent planning.
+
+        Includes the canonical project revision, validation result, source-asset
+        metadata, and semantic-model provenance/counts. Individual payloads and
+        record arrays are intentionally omitted.
+        """
+        return _render_json(get_project_context(db_path))
 
     @server.tool()
     def project_validate() -> str:
