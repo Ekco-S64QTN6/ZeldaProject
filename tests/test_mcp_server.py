@@ -15,7 +15,6 @@ from zelda_suite.project import (
     get_overworld_hidden_item_model,
     import_dungeon_chest_data,
     initialize_project,
-    update_dungeon_chest_record,
     update_overworld_hidden_item,
 )
 
