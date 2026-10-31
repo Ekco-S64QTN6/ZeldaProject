@@ -21,7 +21,11 @@ work.
   They default to `dry_run=True`. Updates can replace the complete set of
   area links or retain it when omitted, and can independently edit the raw
   coordinate word/value byte. Custom records remain separate from source row
-  indexes, baselines, and source alias rows.
+  indexes, baselines, and source alias rows. Custom hidden-item mutation
+  previews also return source citations for each linked overworld area:
+  the source file/revision/hash, target label, and source-annotated pointer,
+  target, and sentinel offsets. These are source metadata only, not verified
+  ROM offsets or a physical source offset for the project-authored record.
 - `import_dungeon_chest_data()`, `get_dungeon_chest_model()`, and
   `update_dungeon_chest_record()` operate on the 168 source-indexed packed
   chest entries. Editable fields are raw item byte, low-15-bit room value, and

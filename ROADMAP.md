@@ -182,7 +182,12 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   reference procedure and SDK stdio round trip are tested, but selection/
   configuration of a concrete desktop/IDE MCP host and live interoperability
   are not verified.
-- [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
+- [~] Include project-record and source citations in mutation previews: imported
+  overworld rows expose their source label/line/offset, chest rows expose their
+  source line and annotated entry offset, and custom hidden-item CRUD exposes
+  each linked area's target label plus pointer/target/sentinel annotations.
+  These are source references; a host must present them with every proposal,
+  and the offsets remain unverified against ROM bytes.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
 - [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
 

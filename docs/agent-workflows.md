@@ -85,9 +85,14 @@ For every mutation, the host should follow this sequence:
    successful response with `dry_run=true`; inspect its `before`, `proposed`,
    `changed_fields`, source baselines, and evidence flags.
 3. **Explain the exact change.** Show the record identity and the `proposed` raw
-   field values. Explain unresolved semantics: chest item bytes are not
-   canonical item IDs; chest room values are not confirmed playable-room IDs;
-   hidden-item value bytes are source-consumer masks/selectors, not item names.
+   field values with their source citations. Imported overworld rows carry a
+   source label/line/offset; chest records carry their source line and annotated
+   candidate entry offset. For project-authored hidden items, show the
+   `area_source_references` (or before/proposed lists) with area target labels
+   and pointer annotations, explicitly saying these are not ROM-verified
+   offsets. Explain unresolved semantics: chest item bytes are not canonical
+   item IDs; chest room values are not confirmed playable-room IDs; hidden-item
+   value bytes are source-consumer masks/selectors, not item names.
 4. **Obtain explicit approval.** Ask the user to approve this exact preview.
    Approval to explore or to find a candidate is not approval to persist it.
    Do not infer approval from silence or from a broad project goal.
