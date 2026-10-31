@@ -41,7 +41,8 @@ base_game_roms/Legend of Zelda, The - A Link to the Past (U) [!].smc
 **Optional agent transport:** `zelda-suite-mcp --database PATH --registry PATH`
 (or `ZELDA_SUITE_PROJECT_DB` and `ZELDA_SUITE_ASSET_REGISTRY`) starts the stdio
 MCP server bound to one project database and one registered asset manifest. It
-exposes project validation/source metadata reads, bounded overworld/dungeon
+exposes compact `project_get_context` snapshots and focused project
+validation/source metadata reads, bounded overworld/dungeon
 model reads and filtered source/custom overworld hidden-item searches,
 optionally filtered single-chest reads, AND-combined chest
 searches by raw item byte, room value, and big-chest flag, a read-only audit of

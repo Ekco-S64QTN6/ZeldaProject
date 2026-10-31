@@ -8,7 +8,9 @@ model endpoint, or external tool integration has been tested.
 ## Session model
 
 Run one `zelda-suite-mcp` process for one project database and one registered
-asset manifest. Prefer absolute paths in the host launch configuration:
+asset manifest. Begin an authoring session with `project_get_context` to read
+validation status, source metadata, semantic-model counts, and the exact project
+revision without dumping full record arrays. Prefer absolute paths in the host launch configuration:
 
 ~~~bash
 uv sync --extra agent
@@ -52,7 +54,7 @@ approval/session store.
 
 The current MCP surface has three practical permission groups:
 
-- **Read-only project inspection:** `project_validate`,
+- **Read-only project inspection:** `project_get_context`, `project_validate`,
   `project_list_source_assets`, `project_get_source_asset`,
   `overworld_list_hidden_items`, `overworld_find_hidden_items`,
   `dungeon_list_chest_records`, `dungeon_find_chest_records`, and
@@ -79,8 +81,10 @@ host responsibilities, not server guarantees.
 For every mutation, the host should follow this sequence:
 
 1. **Establish context.** Confirm which project is bound, call
-   `project_validate`, and inspect the relevant record/model. For source-backed
-   data, retain the source label/index and provenance fields.
+   `project_get_context`, and check `valid`, source/model provenance, counts,
+   and the returned `project_revision`. Use `project_validate` for a focused
+   validation re-check and inspect individual records only when needed. For
+   source-backed data, retain the source label/index and provenance fields.
 2. **Preview.** Call the mutation tool without `apply=true`. Require a
    successful response with `dry_run=true`; inspect its `before`, `proposed`,
    `changed_fields`, source baselines, and evidence flags.

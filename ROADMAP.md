@@ -163,7 +163,9 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [~] Expose project validation/source metadata reads, bounded overworld/dungeon
   reads, a read-only chest-to-room-pointer audit, full/single/raw-field-filtered
   chest reads, and AND-filtered overworld hidden-item searches across imported
-  and project-authored records. The optional stdio MCP server also exposes
+  and project-authored records. The optional stdio MCP server also exposes a
+compact single-snapshot `project_get_context` read that returns the canonical
+revision and model counts without record arrays or asset payloads, plus
   dry-run-first project-authored hidden-item CRUD and preview-first packed
   dungeon-chest/imported-overworld updates. Strict schemas pin record/field
   ranges; edits preserve immutable source baselines and area aliases. Every
