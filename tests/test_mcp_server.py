@@ -389,6 +389,32 @@ def test_mcp_overworld_row_update_previews_then_applies_explicitly(
     assert preview["proposed"]["selector_byte_offset"] == 4
     assert preview["proposed"]["replacement_table_index"] == 2
     assert preview["changed_fields"] == ["coordinate_word", "value_byte"]
+    source_references = preview["source_references"]
+    source_record_reference = source_references["record"]
+    assert source_record_reference["record_kind"] == "imported_overworld_hidden_item"
+    assert source_record_reference["record_index"] == 0
+    assert source_record_reference["source_file"] == "Bank1B.asm"
+    assert source_record_reference["source_revision"] == PINNED_REVISION
+    assert source_record_reference["source_sha256"] == "0" * 64
+    assert source_record_reference["source_label"] == "OverworldData_HiddenItems_Screen_00"
+    assert source_record_reference["source_line"] == 500
+    assert source_record_reference["source_file_offset_annotation"] == 0x0DC3F9
+    assert source_record_reference["rom_offsets_verified"] is False
+    assert source_record_reference["rom_bytes_read"] is False
+    assert [reference["area_index"] for reference in source_references["areas"]] == [0, 1]
+    assert [reference["target_label"] for reference in source_references["areas"]] == [
+        "OverworldData_HiddenItems_Screen_00",
+        "OverworldData_HiddenItems_Screen_00",
+    ]
+    assert source_references["areas"][0]["pointer_entry_file_offset_annotation"] == 0x0DC2F9
+    assert source_references["areas"][1]["pointer_entry_file_offset_annotation"] == 0x0DC2FB
+    assert all(
+        reference["rom_offsets_verified"] is False
+        and reference["rom_bytes_read"] is False
+        for reference in source_references["areas"]
+    )
+    assert source_references["rom_offsets_verified"] is False
+    assert source_references["rom_bytes_read"] is False
     assert preview["rom_modified"] is False
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
@@ -417,6 +443,7 @@ def test_mcp_overworld_row_update_previews_then_applies_explicitly(
     assert applied["replacement_word_value"] == 0xFFFF
     assert applied["canonical_item_id_resolved"] is False
     assert applied["is_modified"] is True
+    assert applied["source_references"] == source_references
 
     model = get_overworld_hidden_item_model(database)
     assert model is not None
@@ -632,6 +659,26 @@ def test_mcp_dungeon_chest_update_previews_then_applies_explicitly(
     assert preview["proposed"]["literal_value"] == 0xAA9234
     assert preview["proposed"]["room_pointer_table_byte_displacement"] == 0x1234 * 3
     assert preview["changed_fields"] == ["item_value", "room_value", "is_big_chest"]
+    source_references = preview["source_references"]
+    source_record_reference = source_references["record"]
+    assert source_record_reference["record_kind"] == "dungeon_chest_source_entry"
+    assert source_record_reference["table_index"] == 0
+    assert source_record_reference["source_file"] == imported["source_file"]
+    assert source_record_reference["source_revision"] == imported["source_revision"]
+    assert source_record_reference["source_sha256"] == imported["source_sha256"]
+    assert source_record_reference["table_label"] == imported["table_label"]
+    assert source_record_reference["source_line"] == preview["before"]["source_line"]
+    assert source_record_reference["source_expression"] == preview["before"]["expression"]
+    assert source_record_reference["candidate_entry_offset_annotation"] == (
+        preview["before"]["candidate_entry_offset"]
+    )
+    assert source_record_reference["source_annotated_start_offset"] == (
+        imported["source_annotated_start_offset"]
+    )
+    assert source_record_reference["rom_offsets_verified"] is False
+    assert source_record_reference["rom_bytes_read"] is False
+    assert source_references["rom_offsets_verified"] is False
+    assert source_references["rom_bytes_read"] is False
     assert preview["rom_modified"] is False
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
@@ -658,6 +705,7 @@ def test_mcp_dungeon_chest_update_previews_then_applies_explicitly(
     assert applied["literal_value"] == 0xAA9234
     assert applied["expression"] == "$AA9234"
     assert applied["is_modified"] is True
+    assert applied["source_references"] == source_references
 
     model = get_dungeon_chest_model(database)
     assert model is not None
