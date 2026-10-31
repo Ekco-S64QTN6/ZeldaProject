@@ -99,6 +99,14 @@ that requires at least one raw item-byte, room-value, or big-chest-flag filter
 and ANDs all supplied filters. It returns matches in source table order with
 provenance and evidence flags; it does not resolve canonical item or room names.
 
+All five project mutation functions accept an optional
+`expected_project_revision` SHA-256 fingerprint. Preview responses expose
+`project_revision`; supplying the matching expected value to a non-preview
+call makes the API compare canonical project state before applying. The MCP
+transport requires that value for every `apply=true` mutation and checks it
+under SQLite's `BEGIN IMMEDIATE` lock, preventing stale preview application.
+This is optimistic concurrency control, not authentication or user approval.
+
 The MCP surface deliberately does not expose source-asset imports, arbitrary
 file access, ROM reads, or ROM writes. See
 [agent-workflows.md](./agent-workflows.md) for session boundaries, permission

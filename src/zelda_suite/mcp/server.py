@@ -41,6 +41,21 @@ def _render_json(payload: Any) -> str:
     )
 
 
+def _require_preview_revision(
+    apply: bool,
+    expected_project_revision: str | None,
+) -> None:
+    """Require every MCP apply to carry the fingerprint from its approved preview."""
+    if apply and expected_project_revision is None:
+        raise ValueError(
+            "apply=true requires expected_project_revision from the current preview"
+        )
+    if not apply and expected_project_revision is not None:
+        raise ValueError(
+            "expected_project_revision may only be supplied with apply=true"
+        )
+
+
 def create_server(
     database_path: str | Path,
     registry_path: str | Path = "data/extracted/manifest.json",
@@ -59,8 +74,9 @@ def create_server(
             "You are connected to one explicitly configured ZeldaProject SQLite "
             "database. Read tools inspect the project and source metadata only. "
             "Project-authored custom hidden-item changes and packed dungeon-chest "
-            "field edits preview by default; set apply=true only when the user has "
-            "approved persisting that project-local change. Imported overworld "
+            "field edits preview by default; set apply=true only with the exact "
+            "expected_project_revision from the approved preview, after the user "
+            "has approved persisting that project-local change. Imported overworld "
             "record edits preserve source fields and area aliases; chest edits "
             "preserve their source baseline. These tools never read, patch, "
             "rebuild, or write a ROM."
@@ -225,6 +241,9 @@ def create_server(
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
         value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
         apply: Annotated[bool, Field(strict=True)] = False,
+        expected_project_revision: Annotated[
+            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+        ] | None = None,
     ) -> str:
         """Preview an edit to an imported overworld row; set apply=true to persist it.
 
@@ -233,11 +252,13 @@ def create_server(
         value byte. $FFFF is reserved as the list sentinel; the byte is raw
         source data, not a canonical item ID. This tool changes SQLite/JSON only.
         """
+        _require_preview_revision(apply, expected_project_revision)
         result = update_overworld_hidden_item(
             db_path,
             record_index,
             coordinate_word=coordinate_word,
             value_byte=value_byte,
+            expected_project_revision=expected_project_revision,
             dry_run=not apply,
         )
         return _render_json(result)
@@ -349,6 +370,9 @@ def create_server(
         room_value: Annotated[int, Field(strict=True, ge=0, le=32767)] | None = None,
         is_big_chest: Annotated[bool, Field(strict=True)] | None = None,
         apply: Annotated[bool, Field(strict=True)] = False,
+        expected_project_revision: Annotated[
+            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+        ] | None = None,
     ) -> str:
         """Preview a packed chest-field edit; set apply=true to persist it.
 
@@ -357,12 +381,14 @@ def create_server(
         and source field baselines remain unchanged. This tool does not resolve
         canonical item names or playable-room semantics and never writes a ROM.
         """
+        _require_preview_revision(apply, expected_project_revision)
         result = update_dungeon_chest_record(
             db_path,
             table_index,
             item_value=item_value,
             room_value=room_value,
             is_big_chest=is_big_chest,
+            expected_project_revision=expected_project_revision,
             dry_run=not apply,
         )
         return _render_json(result)
@@ -376,6 +402,9 @@ def create_server(
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)],
         value_byte: Annotated[int, Field(strict=True, ge=0, le=255)],
         apply: Annotated[bool, Field(strict=True)] = False,
+        expected_project_revision: Annotated[
+            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+        ] | None = None,
     ) -> str:
         """Preview a project-authored hidden-item addition; set apply=true to persist it.
 
@@ -383,11 +412,13 @@ def create_server(
         or canonical item ID. Multiple area indexes create an alias-aware project
         relationship. The default is a read-only preview.
         """
+        _require_preview_revision(apply, expected_project_revision)
         result = create_custom_overworld_hidden_item(
             db_path,
             area_indices=area_indices,
             coordinate_word=coordinate_word,
             value_byte=value_byte,
+            expected_project_revision=expected_project_revision,
             dry_run=not apply,
         )
         return _render_json(result)
@@ -402,6 +433,9 @@ def create_server(
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
         value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
         apply: Annotated[bool, Field(strict=True)] = False,
+        expected_project_revision: Annotated[
+            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+        ] | None = None,
     ) -> str:
         """Preview an edit to a project-authored hidden item; set apply=true to persist it.
 
@@ -410,12 +444,14 @@ def create_server(
         records cannot be edited through this tool. The default is a read-only
         preview.
         """
+        _require_preview_revision(apply, expected_project_revision)
         result = update_custom_overworld_hidden_item(
             db_path,
             custom_record_id,
             area_indices=area_indices,
             coordinate_word=coordinate_word,
             value_byte=value_byte,
+            expected_project_revision=expected_project_revision,
             dry_run=not apply,
         )
         return _render_json(result)
@@ -424,15 +460,20 @@ def create_server(
     def overworld_delete_custom_hidden_item(
         custom_record_id: Annotated[int, Field(strict=True, ge=1)],
         apply: Annotated[bool, Field(strict=True)] = False,
+        expected_project_revision: Annotated[
+            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+        ] | None = None,
     ) -> str:
         """Preview deletion of a project-authored hidden item; set apply=true to persist it.
 
         Only a custom record ID is accepted. Source record indexes cannot be
         deleted. The default is a read-only preview.
         """
+        _require_preview_revision(apply, expected_project_revision)
         result = delete_custom_overworld_hidden_item(
             db_path,
             custom_record_id,
+            expected_project_revision=expected_project_revision,
             dry_run=not apply,
         )
         return _render_json(result)

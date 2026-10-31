@@ -50,14 +50,14 @@ open a ROM.
 | `project_get_source_asset` | Read one project source-asset snapshot by key. |
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
 | `overworld_find_hidden_items` | Read-only AND-filtered search across imported and project-authored records by area, record ID, coordinate word, and/or value byte. |
-| `overworld_update_hidden_item_record` | Preview coordinate/value edits to one imported source record; persist only with `apply=true`. |
+| `overworld_update_hidden_item_record` | Preview coordinate/value edits to one imported source record; persist only with `apply=true` and the preview's `expected_project_revision`. |
 | `dungeon_list_chest_records` | Read all 168 chest records or select one record by bounded table index 0–167. |
 | `dungeon_find_chest_records` | Find records by one or more raw item-byte (0–255), room-value (0–32767), and big-chest-flag filters; read-only and source-order preserving. |
 | `dungeon_audit_chest_room_references` | Read-only join of current chest room values to the registered object/door pointer tables, retaining source baselines and findings. |
-| `dungeon_update_chest_record` | Preview a bounded item-byte, room-value, and/or big-chest-flag edit; persist only with `apply=true`. |
-| `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true`. |
-| `overworld_update_custom_hidden_item` | Preview coordinate/value edits and/or replacement of the complete area-link set; persist only with `apply=true`. |
-| `overworld_delete_custom_hidden_item` | Preview deletion by custom-record ID; persist only with `apply=true`. |
+| `dungeon_update_chest_record` | Preview a bounded item-byte, room-value, and/or big-chest-flag edit; persist only with `apply=true` and the preview's `expected_project_revision`. |
+| `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true` and the preview's `expected_project_revision`. |
+| `overworld_update_custom_hidden_item` | Preview coordinate/value edits and/or replacement of the complete area-link set; persist only with `apply=true` and the preview's `expected_project_revision`. |
+| `overworld_delete_custom_hidden_item` | Preview deletion by custom-record ID; persist only with `apply=true` and the preview's `expected_project_revision`. |
 
 The server is bound to one resolved database path and one resolved asset
 registry path at startup. No tool accepts a database path, registry path, or
@@ -78,8 +78,19 @@ The operation is read-only and does not open a ROM.
 
 ## Write and approval boundary
 
-All mutation calls default to a read-only preview (`apply=false`). Setting
-`apply=true` commits a project-local SQLite change and refreshes canonical JSON.
+All mutation calls default to a read-only preview (`apply=false`). Each preview
+returns `project_revision`, a lowercase SHA-256 fingerprint over the complete
+canonical project payload. Every MCP apply must supply that exact preview value
+as `expected_project_revision` alongside `apply=true`. The server recalculates
+the fingerprint inside the `BEGIN IMMEDIATE` SQLite write transaction before
+any mutation. If a different writer or operation has changed any canonical
+project data, the server rejects the stale apply without changing SQLite or
+JSON; the caller must preview again and obtain approval for the new proposal.
+A fingerprint is a concurrency guard, not proof of user approval or an
+authentication token. The server still relies on the host to obtain explicit
+user approval and does not implement user identity or authorization.
+
+A successful `apply=true` commits a project-local SQLite change and refreshes canonical JSON.
 Custom hidden-item updates retain omitted fields; supplying `area_indices`
 replaces the complete non-empty area-link set. Custom update/delete accept only
 a custom-record ID; neither can edit nor delete an imported source record.
@@ -109,6 +120,13 @@ It recomposes the packed 24-bit value while preserving the original source
 literal and source field baselines. The room value remains a raw pointer-table
 index candidate, not a confirmed playable-room identifier, and the item byte
 is not a canonical item-name mapping. The update changes SQLite/JSON only.
+
+The preview responses for all five mutation tools include `project_revision`.
+The `expected_project_revision` input is available only with `apply=true` and
+is required for MCP persistence. Its schema accepts exactly 64 lowercase hex
+characters. The underlying Python APIs also accept the optional expected
+revision for callers that need the same optimistic-concurrency check outside
+MCP.
 
 The `dungeon_find_chest_records` tool requires at least one filter and applies
 all supplied filters as an AND query to the current project model. It returns
@@ -143,8 +161,9 @@ and [v2 changes](https://py.sdk.modelcontextprotocol.io/whats-new/).
 
 `tests/test_mcp_server.py` checks the tool schema, database and registry binding,
 read-only project inspection, full and single-entry chest reads, chest/room
-audit, default preview behavior, explicit imported-row, custom-record, and
-chest edit commits, area alias
+audit, default preview behavior, revision fingerprints on every mutation
+preview, missing/stale revision rejection, explicit imported-row, custom-record,
+and chest edit commits, area alias
 visibility/replacement, immutable source baselines, source-row count preservation,
 and absence of ROM/import tools. CI runs these contract tests with the other
 Python checks.

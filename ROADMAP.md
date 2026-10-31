@@ -166,8 +166,13 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   and project-authored records. The optional stdio MCP server also exposes
   dry-run-first project-authored hidden-item CRUD and preview-first packed
   dungeon-chest/imported-overworld updates. Strict schemas pin record/field
-  ranges; edits preserve immutable source baselines and area aliases. Source
-  imports and ROM reads/writes remain outside the tool surface.
+  ranges; edits preserve immutable source baselines and area aliases. Every
+  MCP mutation preview includes a canonical project fingerprint and every
+  apply must match it under `BEGIN IMMEDIATE`; stale cross-domain edits fail
+  closed. Source imports and ROM reads/writes remain outside the tool surface.
+- [x] Bind every MCP mutation apply to the complete canonical project revision:
+  preview returns a SHA-256 fingerprint, and the apply checks it under SQLite's
+  write lock so cross-domain changes invalidate stale approvals.
 - [~] Document the one-project-per-process session model, read/write tool
   permission groups, and explicit human-approval gate in
   [docs/agent-workflows.md](./docs/agent-workflows.md). The host-neutral

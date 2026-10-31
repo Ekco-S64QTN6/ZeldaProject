@@ -9,6 +9,13 @@ does not imply that any release has been published.
 
 ### Added
 
+- Bind all five MCP mutation tools to preview-time canonical project revisions.
+  Every preview returns a SHA-256 `project_revision`; `apply=true` requires
+  that exact `expected_project_revision`, rechecked under SQLite's
+  `BEGIN IMMEDIATE` write lock. Any intervening canonical project edit makes
+  the apply fail closed without changing project state. The fingerprint is
+  optimistic concurrency control, not an authorization or approval token.
+
 - Add `docs/agent-workflows.md` with the host-neutral MCP session model,
   read/write permission groups, explicit human-approval gate, concurrency
   limitations of preview/apply, and three reference tool-call workflows.
