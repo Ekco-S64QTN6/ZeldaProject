@@ -4,10 +4,12 @@ This is the only package that produces ROM bytes (CLAUDE.md §7 rule 1). It read
 base image through the extraction layer, never modifies it, and writes a separate
 output file only when explicitly applied.
 """
-from zelda_suite.write.rom_build import (  # noqa: F401
+from zelda_suite.write.rom_build import (
     BuildError,
     BuildPatch,
     build_rom,
     lorom_checksum,
     plan_project_patches,
 )
+
+__all__ = ["BuildError", "BuildPatch", "build_rom", "lorom_checksum", "plan_project_patches"]
