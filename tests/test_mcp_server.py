@@ -692,6 +692,21 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     assert preview["dry_run"] is True
     assert preview["custom_record_id"] is None
     assert preview["area_indices"] == [4, 5]
+    create_refs = preview["area_source_references"]
+    assert [reference["area_index"] for reference in create_refs] == [4, 5]
+    assert [reference["target_label"] for reference in create_refs] == [
+        "OverworldData_HiddenItems_Screen_03",
+        "OverworldData_HiddenItems_Screen_04",
+    ]
+    assert create_refs[0]["source_file"] == "Bank1B.asm"
+    assert create_refs[0]["source_revision"] == PINNED_REVISION
+    assert create_refs[0]["source_sha256"] == "0" * 64
+    assert create_refs[0]["pointer_entry_file_offset_annotation"] == 0x0DC301
+    assert create_refs[0]["target_file_offset_annotation"] == 0x0DC402
+    assert create_refs[0]["sentinel_file_offset_annotation"] == 0x0DC454
+    assert create_refs[0]["source_record_count"] == 1
+    assert all(reference["rom_offsets_verified"] is False for reference in create_refs)
+    assert all(reference["rom_bytes_read"] is False for reference in create_refs)
     assert preview["rom_modified"] is False
     assert database.read_bytes() == original_database
     assert json_export.read_bytes() == original_export
@@ -715,6 +730,7 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     assert applied["record"]["record_kind"] == "project_authored"
     assert applied["record"]["source_record_index"] is None
     assert applied["record"]["area_indices"] == [4, 5]
+    assert applied["area_source_references"] == create_refs
 
     area_result = json.loads(
         _tool_text(
@@ -744,6 +760,29 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     assert update_preview["dry_run"] is True
     assert update_preview["before"]["area_indices"] == [4, 5]
     assert update_preview["proposed"]["area_indices"] == [6, 7]
+    assert [
+        reference["area_index"]
+        for reference in update_preview["before_area_source_references"]
+    ] == [4, 5]
+    assert [
+        reference["area_index"]
+        for reference in update_preview["proposed_area_source_references"]
+    ] == [6, 7]
+    assert [
+        reference["target_label"]
+        for reference in update_preview["proposed_area_source_references"]
+    ] == [
+        "OverworldData_HiddenItems_Screen_05",
+        "OverworldData_HiddenItems_Screen_06",
+    ]
+    assert all(
+        reference["rom_offsets_verified"] is False
+        and reference["rom_bytes_read"] is False
+        for reference in (
+            update_preview["before_area_source_references"]
+            + update_preview["proposed_area_source_references"]
+        )
+    )
     assert update_preview["proposed"]["coordinate_word"] == 0x2345
     assert update_preview["proposed"]["value_byte"] == 0x84
     assert database.read_bytes() == database_after_create
@@ -767,6 +806,10 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     assert updated["record"]["area_indices"] == [6, 7]
     assert updated["record"]["coordinate_word"] == 0x2345
     assert updated["record"]["value_byte"] == 0x84
+    assert updated["before_area_source_references"] == create_refs
+    assert [
+        reference["area_index"] for reference in updated["area_source_references"]
+    ] == [6, 7]
 
     area_result = json.loads(
         _tool_text(
@@ -786,6 +829,14 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     )
     assert delete_preview["dry_run"] is True
     assert delete_preview["record"]["area_indices"] == [6, 7]
+    assert [
+        reference["area_index"]
+        for reference in delete_preview["area_source_references"]
+    ] == [6, 7]
+    assert all(
+        reference["rom_offsets_verified"] is False
+        for reference in delete_preview["area_source_references"]
+    )
 
     deleted = json.loads(
         _tool_text(
@@ -803,6 +854,7 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
     )
     assert deleted["dry_run"] is False
     assert deleted["deleted"]["custom_record_id"] == custom_id
+    assert deleted["area_source_references"] == delete_preview["area_source_references"]
 
     final_model = json.loads(
         _tool_text(

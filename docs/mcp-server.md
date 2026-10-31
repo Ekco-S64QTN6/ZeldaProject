@@ -100,6 +100,18 @@ Custom hidden-item updates retain omitted fields; supplying `area_indices`
 replaces the complete non-empty area-link set. Custom update/delete accept only
 a custom-record ID; neither can edit nor delete an imported source record.
 
+Custom hidden-item create/update/delete previews include `area_source_references`
+for the linked overworld areas. Create and delete responses return that list;
+update previews return `before_area_source_references` and
+`proposed_area_source_references`, while applied updates return the before and
+current lists. Each reference carries the area index, the pinned source file,
+revision and hash, its target label, and source-annotated pointer-entry,
+target, and sentinel file offsets. These citations identify the source area
+table context for a project-authored record; they are not a source offset for
+the custom record itself. Each entry explicitly sets `rom_offsets_verified`
+and `rom_bytes_read` to false. Treat these as source annotations, not verified
+ROM locations.
+
 `overworld_update_hidden_item_record` accepts a source record index from 0–350
 and at least one of `coordinate_word` (0–65534) or `value_byte` (0–255).
 `$FFFF` remains reserved as a list sentinel. Applied edits preserve the

@@ -128,7 +128,9 @@ records, and preview-first imported hidden-item record updates, dungeon chest
 reads with optional single-entry chest selection, AND-combined chest searches
 by raw item byte, room value, and big-chest flag, bounded packed-chest field
 edits, a read-only chest-to-room-pointer audit, plus project-authored
-hidden-item create/update/delete. Set `--registry` or
+hidden-item create/update/delete. Custom hidden-item mutation previews include
+source area labels and pointer-offset annotations for the selected areas; these
+are explicitly not ROM-verified offsets. Set `--registry` or
 `ZELDA_SUITE_ASSET_REGISTRY` to the registered asset manifest. All mutation
 tools default to previews; `apply=true`
 explicitly persists the project-local SQLite/JSON change while preserving

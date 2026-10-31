@@ -9,6 +9,13 @@ does not imply that any release has been published.
 
 ### Added
 
+- Include source-area citations in custom hidden-item create/update/delete
+  previews and applied results. References carry source file/revision/hash,
+  target label, and pointer/target/sentinel offset annotations. They explicitly
+  report that ROM offsets are unverified and no ROM bytes were read; these
+  references describe the linked area table, not a physical source location for
+  the project-authored record itself. Add create/update/delete coverage.
+
 - Describe revision-bound approval directly in all five MCP mutation tool
   schemas. The `apply` property requires explicit user approval and the
   `expected_project_revision` property explains that clients must return the
