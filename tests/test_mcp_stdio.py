@@ -38,9 +38,11 @@ async def _exercise_stdio_session(database_path: Path) -> None:
         env={"PYTHONPATH": str(ROOT / "src")},
         cwd=ROOT,
     )
-    async with stdio_client(parameters) as (read_stream, write_stream):
-        async with ClientSession(read_stream, write_stream) as session:
-            await session.initialize()
+    async with (
+        stdio_client(parameters) as (read_stream, write_stream),
+        ClientSession(read_stream, write_stream) as session,
+    ):
+        await session.initialize()
 
             tool_list = await session.list_tools()
             tool_names = {tool.name for tool in tool_list.tools}
