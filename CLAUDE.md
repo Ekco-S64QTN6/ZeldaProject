@@ -51,10 +51,11 @@ hidden-item create/update/delete. All mutation tools default to previews and
 require explicit `apply=true` to persist SQLite/JSON changes; every MCP apply
 must also pass the `expected_project_revision` hash from the preview, which is
 checked under `BEGIN IMMEDIATE` so stale proposals fail closed. Imported edits
-preserve their source baselines and area aliases. Project-authored hidden-item
-mutation previews include the selected areas' source labels and pointer-offset
-annotations; keep those distinct from verified ROM locations and do not claim
-the custom record itself has a disassembly payload offset. No tool accepts a database
+preserve their source baselines and area aliases. Every mutation response
+includes source citations: imported overworld row labels/lines/offset annotations,
+chest table/entry annotations, and custom hidden-item linked-area labels and
+pointer metadata. Keep these distinct from verified ROM locations; a custom
+record itself has no disassembly payload offset. No tool accepts a database
 or registry path, and the server does not expose imports, ROM reads, or ROM
 writes. Install it with
 `uv sync --extra agent`; the core package

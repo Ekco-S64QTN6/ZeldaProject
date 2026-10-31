@@ -9,6 +9,13 @@ does not imply that any release has been published.
 
 ### Added
 
+- Include structured `source_references` in imported overworld-row and
+  dungeon-chest edit previews and applied responses. Overworld citations identify
+  the pinned source row and all linked area pointer entries; chest citations
+  identify the source table declaration/range and selected entry. Every offset
+  is marked as an unverified source annotation, and the responses state that no
+  ROM bytes were read.
+
 - Include source-area citations in custom hidden-item create/update/delete
   previews and applied results. References carry source file/revision/hash,
   target label, and pointer/target/sentinel offset annotations. They explicitly

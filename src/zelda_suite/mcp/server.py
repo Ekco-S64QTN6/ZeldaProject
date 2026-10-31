@@ -267,7 +267,10 @@ def create_server(
         The source coordinate/value fields and existing area aliases remain
         immutable. Consumer classification is recalculated for the proposed
         value byte. $FFFF is reserved as the list sentinel; the byte is raw
-        source data, not a canonical item ID. This tool changes SQLite/JSON only.
+        source data, not a canonical item ID. The response includes
+        source_references for the imported row and each linked area's source
+        pointer metadata. These offsets are source annotations, not ROM-verified
+        locations. This tool changes SQLite/JSON only.
         """
         _require_preview_revision(apply, expected_project_revision)
         result = update_overworld_hidden_item(
@@ -414,6 +417,8 @@ def create_server(
         The recomposed 24-bit value is stored only in SQLite/JSON; source literal
         and source field baselines remain unchanged. This tool does not resolve
         canonical item names or playable-room semantics and never writes a ROM.
+        The response includes source_references for the source table declaration,
+        selected entry, and candidate entry-offset annotation; none are ROM-verified.
         """
         _require_preview_revision(apply, expected_project_revision)
         result = update_dungeon_chest_record(

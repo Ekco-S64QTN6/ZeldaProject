@@ -1834,6 +1834,9 @@ def update_overworld_hidden_item(
         if before_record is None:
             raise KeyError(f"overworld hidden-item record not found: {record_index}")
         before = dict(before_record)
+        source_references = _imported_overworld_record_source_references(
+            connection, model, before_record
+        )
 
         new_coordinate = (
             int(before_record["coordinate_word"])
@@ -1887,6 +1890,7 @@ def update_overworld_hidden_item(
                 "record_index": record_index,
                 "before": before,
                 "proposed": proposed,
+                "source_references": source_references,
                 "changed_fields": changed_fields,
                 "rom_modified": False,
             }
@@ -1925,7 +1929,10 @@ def update_overworld_hidden_item(
         raise ValueError("no overworld hidden-item model has been imported")
     for record in updated_model["records"]:
         if record["record_index"] == record_index:
-            return cast(dict[str, Any], record)
+            return cast(
+                dict[str, Any],
+                {**record, "source_references": source_references},
+            )
     raise KeyError(f"overworld hidden-item record not found: {record_index}")
 
 
@@ -1981,11 +1988,11 @@ def _custom_hidden_item_replacement_words(
     ]
 
 
-def _custom_hidden_item_area_source_references(
+def _overworld_area_source_references(
     connection: sqlite3.Connection,
     area_indices: list[int],
 ) -> list[dict[str, Any]]:
-    """Cite source-annotated pointer metadata for areas linked to a custom record."""
+    """Cite source-annotated pointer metadata for imported or custom area links."""
     if not area_indices:
         return []
     placeholders = ",".join("?" for _ in area_indices)
@@ -2004,7 +2011,7 @@ def _custom_hidden_item_area_source_references(
         area_indices,
     ).fetchall()
     if len(rows) != len(area_indices):
-        raise ValueError("custom hidden-item area source references are incomplete")
+        raise ValueError("overworld area source references are incomplete")
     return [
         {
             "area_index": int(row["area_index"]),
@@ -2023,6 +2030,62 @@ def _custom_hidden_item_area_source_references(
         }
         for row in rows
     ]
+
+
+def _imported_overworld_record_source_references(
+    connection: sqlite3.Connection,
+    model: dict[str, Any],
+    record: dict[str, Any],
+) -> dict[str, Any]:
+    """Cite the imported row and each source area pointer that references it."""
+    area_references = _overworld_area_source_references(
+        connection, [int(area) for area in record["area_indices"]]
+    )
+    return {
+        "record": {
+            "record_kind": "imported_overworld_hidden_item",
+            "record_index": int(record["record_index"]),
+            "source_file": str(model["source_file"]),
+            "source_revision": str(model["source_revision"]),
+            "source_sha256": str(model["source_sha256"]),
+            "source_label": str(record["source_label"]),
+            "source_line": int(record["source_line"]),
+            "source_file_offset_annotation": int(record["source_file_offset"]),
+            "source_expression": str(record["source_expression"]),
+            "rom_offsets_verified": False,
+            "rom_bytes_read": False,
+        },
+        "areas": area_references,
+        "rom_offsets_verified": False,
+        "rom_bytes_read": False,
+    }
+
+
+def _dungeon_chest_record_source_references(
+    model: dict[str, Any],
+    record: dict[str, Any],
+) -> dict[str, Any]:
+    """Cite a packed chest row against its source table declaration and range."""
+    return {
+        "record": {
+            "record_kind": "dungeon_chest_source_entry",
+            "table_index": int(record["table_index"]),
+            "source_file": str(model["source_file"]),
+            "source_revision": str(model["source_revision"]),
+            "source_sha256": str(model["source_sha256"]),
+            "table_label": str(model["table_label"]),
+            "source_range_annotation": model["source_range_annotation"],
+            "source_annotated_start_offset": model["source_annotated_start_offset"],
+            "source_annotated_end_offset": model["source_annotated_end_offset"],
+            "source_line": int(record["source_line"]),
+            "source_expression": str(record["expression"]),
+            "candidate_entry_offset_annotation": int(record["candidate_entry_offset"]),
+            "rom_offsets_verified": False,
+            "rom_bytes_read": False,
+        },
+        "rom_offsets_verified": False,
+        "rom_bytes_read": False,
+    }
 
 
 def create_custom_overworld_hidden_item(
@@ -2089,7 +2152,7 @@ def create_custom_overworld_hidden_item(
         semantics = classify_overworld_hidden_item_value_byte(
             value_byte, _custom_hidden_item_replacement_words(connection)
         )
-        area_source_references = _custom_hidden_item_area_source_references(
+        area_source_references = _overworld_area_source_references(
             connection, validated_areas
         )
         if dry_run:
@@ -2229,7 +2292,7 @@ def update_custom_overworld_hidden_item(
                 (custom_record_id,),
             ).fetchall()
         ]
-        before_area_source_references = _custom_hidden_item_area_source_references(
+        before_area_source_references = _overworld_area_source_references(
             connection, old_areas
         )
         new_coordinate = old_coordinate if coordinate_word is None else coordinate_word
@@ -2251,7 +2314,7 @@ def update_custom_overworld_hidden_item(
         missing_areas = [area for area in new_areas if area not in existing_areas]
         if missing_areas:
             raise KeyError(f"overworld area not found: {missing_areas[0]}")
-        proposed_area_source_references = _custom_hidden_item_area_source_references(
+        proposed_area_source_references = _overworld_area_source_references(
             connection, new_areas
         )
 
@@ -2423,7 +2486,7 @@ def delete_custom_overworld_hidden_item(
                 (custom_record_id,),
             ).fetchall()
         ]
-        area_source_references = _custom_hidden_item_area_source_references(
+        area_source_references = _overworld_area_source_references(
             connection, area_indices
         )
         result = {
@@ -2715,6 +2778,9 @@ def update_dungeon_chest_record(
         if before_record is None:
             raise KeyError(f"dungeon chest record not found: {table_index}")
         before = dict(before_record)
+        source_references = _dungeon_chest_record_source_references(
+            model, before_record
+        )
 
         new_item = int(before["item_value"]) if item_value is None else item_value
         new_room = int(before["room_value"]) if room_value is None else room_value
@@ -2751,6 +2817,7 @@ def update_dungeon_chest_record(
                 "table_index": table_index,
                 "before": before,
                 "proposed": proposed,
+                "source_references": source_references,
                 "changed_fields": changed_fields,
                 "rom_modified": False,
             }
@@ -2775,7 +2842,10 @@ def update_dungeon_chest_record(
         raise ValueError("no dungeon chest model has been imported")
     for record in updated_model["entries"]:
         if record["table_index"] == table_index:
-            return cast(dict[str, Any], record)
+            return cast(
+                dict[str, Any],
+                {**record, "source_references": source_references},
+            )
     raise KeyError(f"dungeon chest record not found: {table_index}")
 
 
