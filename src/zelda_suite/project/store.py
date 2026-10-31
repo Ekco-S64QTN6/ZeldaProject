@@ -3015,7 +3015,7 @@ def get_project_context(
     read_only_uri = db_path.resolve().as_uri() + "?mode=ro"
     try:
         connection = sqlite3.connect(read_only_uri, uri=True)
-    except sqlite3.Error as exc:
+    except sqlite3.Error:
         return {
             "valid": False,
             "problems": ["could not open project database read-only"],
