@@ -15,6 +15,8 @@ from zelda_suite.project import (
     get_overworld_hidden_item_model,
     import_dungeon_chest_data,
     initialize_project,
+    update_dungeon_chest_record,
+    update_overworld_hidden_item,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -206,6 +208,19 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     assert chest_find_schema["properties"]["room_value"]["anyOf"][0]["maximum"] == 32767
     assert chest_find_schema["properties"]["is_big_chest"]["anyOf"][0]["type"] == "boolean"
 
+    for mutation_name in (
+        "overworld_update_hidden_item_record",
+        "dungeon_update_chest_record",
+        "overworld_create_custom_hidden_item",
+        "overworld_update_custom_hidden_item",
+        "overworld_delete_custom_hidden_item",
+    ):
+        revision_schema = schemas[mutation_name]["properties"][
+            "expected_project_revision"
+        ]["anyOf"][0]
+        assert revision_schema["type"] == "string"
+        assert revision_schema["pattern"] == "^[0-9a-f]{64}$"
+
     chest_schema = schemas["dungeon_update_chest_record"]
     assert chest_schema["properties"]["apply"]["default"] is False
     assert chest_schema["properties"]["table_index"]["minimum"] == 0
@@ -242,15 +257,26 @@ def test_mcp_overworld_find_searches_source_and_custom_records_without_mutation(
     _seed_semantic_model(database)
     server = create_server(database)
 
+    create_arguments = {
+        "area_indices": [0, 3],
+        "coordinate_word": 1,
+        "value_byte": 0x05,
+    }
+    create_preview = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool("overworld_create_custom_hidden_item", create_arguments)
+            )
+        )
+    )
     created = json.loads(
         _tool_text(
             asyncio.run(
                 server.call_tool(
                     "overworld_create_custom_hidden_item",
                     {
-                        "area_indices": [0, 3],
-                        "coordinate_word": 1,
-                        "value_byte": 0x05,
+                        **create_arguments,
+                        "expected_project_revision": create_preview["project_revision"],
                         "apply": True,
                     },
                 )
@@ -368,7 +394,11 @@ def test_mcp_overworld_row_update_previews_then_applies_explicitly(
             asyncio.run(
                 server.call_tool(
                     "overworld_update_hidden_item_record",
-                    {**arguments, "apply": True},
+                    {
+                        **arguments,
+                        "expected_project_revision": preview["project_revision"],
+                        "apply": True,
+                    },
                 )
             )
         )
@@ -523,12 +553,24 @@ def test_mcp_chest_room_reference_audit_is_read_only_and_tracks_project_edits(
     assert database.read_bytes() == database_before_audit
     assert json_export.read_bytes() == export_before_audit
 
+    edit_arguments = {"table_index": 0, "room_value": 0x1234}
+    edit_preview = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool("dungeon_update_chest_record", edit_arguments)
+            )
+        )
+    )
     edit = json.loads(
         _tool_text(
             asyncio.run(
                 server.call_tool(
                     "dungeon_update_chest_record",
-                    {"table_index": 0, "room_value": 0x1234, "apply": True},
+                    {
+                        **edit_arguments,
+                        "expected_project_revision": edit_preview["project_revision"],
+                        "apply": True,
+                    },
                 )
             )
         )
@@ -595,7 +637,11 @@ def test_mcp_dungeon_chest_update_previews_then_applies_explicitly(
             asyncio.run(
                 server.call_tool(
                     "dungeon_update_chest_record",
-                    {**arguments, "apply": True},
+                    {
+                        **arguments,
+                        "expected_project_revision": preview["project_revision"],
+                        "apply": True,
+                    },
                 )
             )
         )
@@ -651,7 +697,11 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
             asyncio.run(
                 server.call_tool(
                     "overworld_create_custom_hidden_item",
-                    {**create_arguments, "apply": True},
+                    {
+                        **create_arguments,
+                        "expected_project_revision": preview["project_revision"],
+                        "apply": True,
+                    },
                 )
             )
         )
@@ -700,7 +750,11 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
             asyncio.run(
                 server.call_tool(
                     "overworld_update_custom_hidden_item",
-                    {**update_arguments, "apply": True},
+                    {
+                        **update_arguments,
+                        "expected_project_revision": update_preview["project_revision"],
+                        "apply": True,
+                    },
                 )
             )
         )
@@ -734,7 +788,11 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
             asyncio.run(
                 server.call_tool(
                     "overworld_delete_custom_hidden_item",
-                    {**delete_arguments, "apply": True},
+                    {
+                        **delete_arguments,
+                        "expected_project_revision": delete_preview["project_revision"],
+                        "apply": True,
+                    },
                 )
             )
         )
@@ -754,6 +812,79 @@ def test_mcp_custom_hidden_item_tools_preview_and_apply_explicitly(
         _tool_text(asyncio.run(server.call_tool("project_validate", {})))
     )
     assert validation == {"problems": [], "valid": True}
+
+
+def test_mcp_apply_rejects_stale_project_revision(tmp_path: Path) -> None:
+    database, json_export = initialize_project("mcp_stale_revision", tmp_path)
+    _seed_semantic_model(database)
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    assert imported["summary"]["entry_count"] == 168
+    server = create_server(database, REGISTRY_PATH)
+
+    arguments = {"table_index": 0, "item_value": 0xAA}
+    preview = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_update_chest_record", arguments))
+        )
+    )
+    revision = preview["project_revision"]
+    assert len(revision) == 64
+    assert all(character in "0123456789abcdef" for character in revision)
+
+    # A separate edit to the overworld model invalidates the complete-project
+    # revision even though the chest row being edited has not changed.
+    update_overworld_hidden_item(
+        database, 1, coordinate_word=0x4321, dry_run=False
+    )
+    database_after_other_edit = database.read_bytes()
+    export_after_other_edit = json_export.read_bytes()
+
+    stale = asyncio.run(
+        server.call_tool(
+            "dungeon_update_chest_record",
+            {
+                **arguments,
+                "expected_project_revision": revision,
+                "apply": True,
+            },
+        )
+    )
+    assert "project revision changed since preview" in _tool_text(stale)
+    assert database.read_bytes() == database_after_other_edit
+    assert json_export.read_bytes() == export_after_other_edit
+
+    # A current preview can be applied, and omission of the revision is refused.
+    missing_revision = asyncio.run(
+        server.call_tool(
+            "dungeon_update_chest_record",
+            {**arguments, "apply": True},
+        )
+    )
+    assert "expected_project_revision" in _tool_text(missing_revision)
+    assert database.read_bytes() == database_after_other_edit
+    assert json_export.read_bytes() == export_after_other_edit
+
+    current_preview = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_update_chest_record", arguments))
+        )
+    )
+    applied = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "dungeon_update_chest_record",
+                    {
+                        **arguments,
+                        "expected_project_revision": current_preview["project_revision"],
+                        "apply": True,
+                    },
+                )
+            )
+        )
+    )
+    assert applied["item_value"] == 0xAA
+    assert applied["is_modified"] is True
 
 
 def test_mcp_server_rejects_missing_database(tmp_path: Path) -> None:
