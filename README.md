@@ -134,4 +134,6 @@ tools default to previews; `apply=true`
 explicitly persists the project-local SQLite/JSON change while preserving
 source baselines and area aliases. Source imports, ROM access, and ROM writes
 are not exposed. See
-[`docs/mcp-server.md`](./docs/mcp-server.md) for the tool contract and limits.
+[`docs/mcp-server.md`](./docs/mcp-server.md) for the tool contract and limits,
+and [`docs/agent-workflows.md`](./docs/agent-workflows.md) for the recommended
+session model, permission groups, approval gate, and reference workflows.
