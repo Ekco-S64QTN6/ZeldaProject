@@ -111,7 +111,10 @@ The following are tool-call sequences a host can implement. The values are
 illustrative raw fields, not a claim about canonical game-item identities.
 These examples document the intended operating procedure; no external natural
 language host session has been completed or counted as an end-to-end
-integration test.
+integration test. CI now also starts the server as a subprocess and exercises
+initialization, tool discovery, revision-bound mutation, and validation with
+the MCP SDK `ClientSession`; that checks the stdio protocol but is not a test
+of a particular end-user host.
 
 In the examples below, tool_name{...} means an MCP tool call with the
 shown JSON arguments; an empty argument object is written as tool_name{}.
