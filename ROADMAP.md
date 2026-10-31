@@ -174,8 +174,9 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
   preview returns a SHA-256 fingerprint, and the apply checks it under SQLite's
   write lock so cross-domain changes invalidate stale approvals.
 - [x] Exercise the MCP stdio protocol in CI by launching the server subprocess
-  and using the SDK `ClientSession` to initialize, discover tools, preview,
-  apply with a revision fingerprint, and validate the project.
+  and using the SDK `ClientSession` to initialize, discover tools, and complete
+  revision-bound preview/apply/readback flows for chest edits, imported
+  overworld edits, and project-authored hidden-item create/update/delete.
 - [~] Document the one-project-per-process session model, read/write tool
   permission groups, and explicit human-approval gate in
   [docs/agent-workflows.md](./docs/agent-workflows.md). The host-neutral

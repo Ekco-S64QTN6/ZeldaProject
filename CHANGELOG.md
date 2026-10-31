@@ -9,6 +9,12 @@ does not imply that any release has been published.
 
 ### Added
 
+- Expand the subprocess-level MCP stdio integration test to run revision-bound
+  imported-overworld edit and project-authored hidden-item create/update/delete
+  calls through an SDK `ClientSession`. The test asserts source line/offset
+  provenance, source-area citations, revision fingerprints, and post-mutation
+  project validation over the real stdio transport.
+
 - Include source-area citations in custom hidden-item create/update/delete
   previews and applied results. References carry source file/revision/hash,
   target label, and pointer/target/sentinel offset annotations. They explicitly
