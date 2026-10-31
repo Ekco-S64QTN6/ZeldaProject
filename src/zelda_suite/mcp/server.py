@@ -127,6 +127,99 @@ def create_server(
         return _render_json(payload)
 
     @server.tool()
+    def overworld_find_hidden_items(
+        area_index: Annotated[int, Field(strict=True, ge=0, le=127)] | None = None,
+        record_index: Annotated[int, Field(strict=True, ge=0, le=350)] | None = None,
+        custom_record_id: Annotated[int, Field(strict=True, ge=1)] | None = None,
+        coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
+        value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
+    ) -> str:
+        """Find imported or project-authored hidden items by bounded raw fields.
+
+        At least one filter is required. Source and custom record identifiers
+        are mutually exclusive. Other supplied filters combine with AND logic.
+        Results retain source order, provenance, and raw semantic annotations;
+        the tool never changes project files or accesses a ROM.
+        """
+        if all(
+            value is None
+            for value in (
+                area_index,
+                record_index,
+                custom_record_id,
+                coordinate_word,
+                value_byte,
+            )
+        ):
+            raise ValueError("supply at least one hidden-item filter")
+        if record_index is not None and custom_record_id is not None:
+            raise ValueError("record_index and custom_record_id are mutually exclusive")
+
+        model = get_overworld_hidden_item_model(db_path)
+        if model is None:
+            raise ValueError("no overworld hidden-item model has been imported")
+
+        def matches(record: dict[str, Any]) -> bool:
+            return (
+                (area_index is None or area_index in record["area_indices"])
+                and (
+                    coordinate_word is None
+                    or record["coordinate_word"] == coordinate_word
+                )
+                and (value_byte is None or record["value_byte"] == value_byte)
+            )
+
+        source_records = (
+            []
+            if custom_record_id is not None
+            else [
+                record
+                for record in model["records"]
+                if (record_index is None or record["record_index"] == record_index)
+                and matches(record)
+            ]
+        )
+        custom_records = (
+            []
+            if record_index is not None
+            else [
+                record
+                for record in model["custom_records"]
+                if (
+                    custom_record_id is None
+                    or record["custom_record_id"] == custom_record_id
+                )
+                and matches(record)
+            ]
+        )
+        return _render_json(
+            {
+                "format": model["format"],
+                "format_version": model["format_version"],
+                "source_file": model["source_file"],
+                "source_revision": model["source_revision"],
+                "source_sha256": model["source_sha256"],
+                "filters": {
+                    "area_index": area_index,
+                    "record_index": record_index,
+                    "custom_record_id": custom_record_id,
+                    "coordinate_word": coordinate_word,
+                    "value_byte": value_byte,
+                },
+                "summary": {
+                    "matched_count": len(source_records) + len(custom_records),
+                    "source_record_count": len(source_records),
+                    "custom_record_count": len(custom_records),
+                    "total_source_record_count": len(model["records"]),
+                    "total_custom_record_count": len(model["custom_records"]),
+                },
+                "records": source_records,
+                "custom_records": custom_records,
+                "evidence": model["evidence"],
+            }
+        )
+
+    @server.tool()
     def overworld_update_hidden_item_record(
         record_index: Annotated[int, Field(strict=True, ge=0, le=350)],
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,

@@ -87,6 +87,13 @@ The initial tool set is:
   to SQLite and refreshes canonical JSON. Updates omit fields to retain their
   values, and an explicit `area_indices` list replaces all area links.
 
+The MCP surface includes `overworld_find_hidden_items`, a read-only search
+that requires at least one filter and can search imported rows by source record
+index, custom rows by custom-record ID, and both kinds by area, coordinate word,
+and/or raw value byte. It applies all supplied non-identifier filters with AND
+semantics, keeps source/custom ordering separate, and returns provenance plus
+evidence flags. Source and custom identifiers are mutually exclusive.
+
 The MCP surface also includes `dungeon_find_chest_records`, a read-only query
 that requires at least one raw item-byte, room-value, or big-chest-flag filter
 and ANDs all supplied filters. It returns matches in source table order with

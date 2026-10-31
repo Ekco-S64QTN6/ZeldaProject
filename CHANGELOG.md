@@ -9,6 +9,12 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add read-only `overworld_find_hidden_items` to search imported and
+  project-authored hidden-item records by area, source/custom identifier,
+  coordinate word, and/or raw value byte. Supplied filters combine with AND
+  logic, source/custom IDs are mutually exclusive, and results preserve
+  provenance/order without changing SQLite/JSON or accessing a ROM.
+
 - Add read-only `dungeon_find_chest_records` to the project-bound MCP server.
   It combines any supplied raw item-byte, room-value, and big-chest-flag
   filters, preserves source table order/provenance, and returns evidence flags

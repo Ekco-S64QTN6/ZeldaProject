@@ -49,6 +49,7 @@ open a ROM.
 | `project_list_source_assets` | List imported source-asset metadata. |
 | `project_get_source_asset` | Read one project source-asset snapshot by key. |
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
+| `overworld_find_hidden_items` | Read-only AND-filtered search across imported and project-authored records by area, record ID, coordinate word, and/or value byte. |
 | `overworld_update_hidden_item_record` | Preview coordinate/value edits to one imported source record; persist only with `apply=true`. |
 | `dungeon_list_chest_records` | Read all 168 chest records or select one record by bounded table index 0–167. |
 | `dungeon_find_chest_records` | Find records by one or more raw item-byte (0–255), room-value (0–32767), and big-chest-flag filters; read-only and source-order preserving. |
@@ -64,6 +65,16 @@ arbitrary filesystem path, and tool inputs are validated with strict Pydantic
 fields. The custom hidden-item tools retain the underlying API's bounds: area indexes 0–127, coordinate words 0–65534 (with `$FFFF` reserved as
 the list sentinel), and value bytes 0–255. A custom record remains separate from
 the 351 imported source records and can link to several area slots.
+
+The `overworld_find_hidden_items` tool requires at least one filter. It can
+search source rows by `record_index` (0–350), custom rows by
+`custom_record_id` (positive integer), and either kind by `area_index`
+(0–127), `coordinate_word` (0–65534), or `value_byte` (0–255). Source and
+custom IDs cannot be supplied together; all other supplied fields combine with
+AND semantics. Results keep imported rows in record-index order and custom
+rows in custom-record-ID order, with source provenance and evidence flags.
+These are raw fields and consumer annotations, not canonical item identities.
+The operation is read-only and does not open a ROM.
 
 ## Write and approval boundary
 

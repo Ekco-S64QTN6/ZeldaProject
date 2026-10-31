@@ -160,7 +160,8 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, a read-only chest-to-room-pointer audit, full, single-entry, and raw-field-filtered chest reads, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest/imported-overworld updates through the optional stdio MCP server. Strict schemas pin record/field ranges; edits preserve immutable source baselines and area aliases. The room audit uses the startup-bound asset registry and reports source-only findings; source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
+- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, a read-only chest-to-room-pointer audit, full, single-entry, and raw-field-filtered chest reads plus AND-filtered
+overworld hidden-item searches across imported and project-authored records, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest/imported-overworld updates through the optional stdio MCP server. Strict schemas pin record/field ranges; edits preserve immutable source baselines and area aliases. The room audit uses the startup-bound asset registry and reports source-only findings; source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
 - [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
@@ -243,8 +244,9 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
    `DictionaryPointers:`; no explicit alias is present. A source regression
    pins both findings, but the source/ROM interpretation remains unresolved.
 3. Continue extending the project-facing authoring API: the MCP server now
-   exposes preview-first packed dungeon-chest field edits, raw-field-filtered
-   chest queries, and imported
+   exposes read-only field-filtered searches across imported and custom
+   overworld hidden-item records, preview-first packed dungeon-chest field
+   edits and raw-field-filtered chest queries, plus imported
    overworld hidden-item row updates in addition to project-authored additions.
    Next, establish a verified room-payload fixture and reconcile the 320 pointer
    slots with the unresolved playable-room set before attempting room-object
