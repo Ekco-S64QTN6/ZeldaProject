@@ -32,7 +32,15 @@ def _tool_json(result: CallToolResult) -> dict[str, object]:
     return json.loads(content.text)
 
 
-async def _exercise_stdio_session(database_path: Path) -> None:
+async def _exercise_stdio_session(
+    database_path: Path,
+    *,
+    chest_source_file: str,
+    chest_source_revision: str,
+    chest_source_sha256: str,
+    overworld_source_revision: str,
+    overworld_source_sha256: str,
+) -> None:
     parameters = StdioServerParameters(
         command=sys.executable,
         args=[
@@ -117,9 +125,9 @@ async def _exercise_stdio_session(database_path: Path) -> None:
         chest_source_record = chest_source_references["record"]
         assert chest_source_record["record_kind"] == "dungeon_chest_source_entry"
         assert chest_source_record["table_index"] == 0
-        assert chest_source_record["source_file"] == imported["source_file"]
-        assert chest_source_record["source_revision"] == imported["source_revision"]
-        assert chest_source_record["source_sha256"] == imported["source_sha256"]
+        assert chest_source_record["source_file"] == chest_source_file
+        assert chest_source_record["source_revision"] == chest_source_revision
+        assert chest_source_record["source_sha256"] == chest_source_sha256
         assert chest_source_record["source_line"] > 0
         assert chest_source_record["source_expression"]
         assert chest_source_record["candidate_entry_offset_annotation"] > 0
@@ -148,8 +156,8 @@ async def _exercise_stdio_session(database_path: Path) -> None:
         assert source_record["record_kind"] == "imported_overworld_hidden_item"
         assert source_record["record_index"] == 0
         assert source_record["source_file"] == "Bank1B.asm"
-        assert source_record["source_revision"] == imported_overworld["source_revision"]
-        assert source_record["source_sha256"] == imported_overworld["source_sha256"]
+        assert source_record["source_revision"] == overworld_source_revision
+        assert source_record["source_sha256"] == overworld_source_sha256
         assert source_record["source_label"] == overworld_preview["before"]["source_label"]
         assert source_record["source_line"] == overworld_preview["before"]["source_line"]
         assert source_record["source_file_offset_annotation"] == (
@@ -341,4 +349,13 @@ def test_mcp_stdio_client_session_exercises_all_authoring_flows(
     imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
     assert imported["summary"]["entry_count"] == 168
 
-    asyncio.run(_exercise_stdio_session(database))
+    asyncio.run(
+        _exercise_stdio_session(
+            database,
+            chest_source_file=imported["source_file"],
+            chest_source_revision=imported["source_revision"],
+            chest_source_sha256=imported["source_sha256"],
+            overworld_source_revision=imported_overworld["source_revision"],
+            overworld_source_sha256=imported_overworld["source_sha256"],
+        )
+    )
