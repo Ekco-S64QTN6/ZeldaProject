@@ -893,6 +893,37 @@ def _render_json(payload: dict[str, Any]) -> str:
     ) + "\n"
 
 
+def _validate_expected_project_revision(expected_project_revision: str | None) -> None:
+    """Validate an optional SHA-256 fingerprint supplied by an approved preview."""
+    if expected_project_revision is None:
+        return
+    if (
+        not isinstance(expected_project_revision, str)
+        or re.fullmatch(r"[0-9a-f]{64}", expected_project_revision) is None
+    ):
+        raise ValueError("expected_project_revision must be a lowercase SHA-256 hex digest")
+
+
+def _calculate_project_revision(connection: sqlite3.Connection) -> str:
+    """Fingerprint the complete canonical project state from the current SQLite snapshot."""
+    canonical_payload = _render_json(_export_payload(connection)).encode("utf-8")
+    return hashlib.sha256(canonical_payload).hexdigest()
+
+
+def _require_matching_project_revision(
+    expected_project_revision: str | None,
+    current_project_revision: str,
+) -> None:
+    """Reject an apply when any canonical project content changed after its preview."""
+    if (
+        expected_project_revision is not None
+        and expected_project_revision != current_project_revision
+    ):
+        raise ValueError(
+            "project revision changed since preview; create a fresh preview before applying"
+        )
+
+
 def export_project(
     database_path: str | Path, json_path: str | Path | None = None
 ) -> Path:
@@ -1736,6 +1767,7 @@ def update_overworld_hidden_item(
     *,
     coordinate_word: int | None = None,
     value_byte: int | None = None,
+    expected_project_revision: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Preview or update one imported hidden-item row without touching its source baseline.
@@ -1762,6 +1794,7 @@ def update_overworld_hidden_item(
         raise ValueError("value_byte must be an integer in 0..255")
     if not isinstance(dry_run, bool):
         raise TypeError("dry_run must be a boolean")
+    _validate_expected_project_revision(expected_project_revision)
 
     db_path = Path(database_path)
     if not db_path.is_file():
@@ -1776,10 +1809,16 @@ def update_overworld_hidden_item(
     changed_fields: list[str] = []
     before: dict[str, Any]
     try:
-        if not dry_run:
+        if dry_run:
+            connection.execute("BEGIN")
+        else:
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
+        project_revision = _calculate_project_revision(connection)
+        _require_matching_project_revision(
+            expected_project_revision, project_revision
+        )
         model = _export_overworld_hidden_items(connection)
         if model is None:
             raise ValueError("no overworld hidden-item model has been imported")
@@ -1842,6 +1881,7 @@ def update_overworld_hidden_item(
             return {
                 "action": "update_overworld_hidden_item",
                 "dry_run": True,
+                "project_revision": project_revision,
                 "record_index": record_index,
                 "before": before,
                 "proposed": proposed,
@@ -1945,6 +1985,7 @@ def create_custom_overworld_hidden_item(
     area_indices: list[int] | tuple[int, ...],
     coordinate_word: int,
     value_byte: int,
+    expected_project_revision: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Preview or create a project-authored hidden item linked to one or more areas.
@@ -1954,6 +1995,7 @@ def create_custom_overworld_hidden_item(
     """
     if not isinstance(dry_run, bool):
         raise TypeError("dry_run must be a boolean")
+    _validate_expected_project_revision(expected_project_revision)
     validated_areas = _validated_custom_hidden_item_fields(
         coordinate_word, value_byte, area_indices
     )
@@ -1969,10 +2011,16 @@ def create_custom_overworld_hidden_item(
     )
     connection.row_factory = sqlite3.Row
     try:
-        if not dry_run:
+        if dry_run:
+            connection.execute("BEGIN")
+        else:
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
+        project_revision = _calculate_project_revision(connection)
+        _require_matching_project_revision(
+            expected_project_revision, project_revision
+        )
         model_row = connection.execute(
             "SELECT 1 FROM overworld_hidden_item_model WHERE singleton = 1"
         ).fetchone()
@@ -1997,6 +2045,7 @@ def create_custom_overworld_hidden_item(
             return {
                 "action": "create_custom_overworld_hidden_item",
                 "dry_run": True,
+                "project_revision": project_revision,
                 "custom_record_id": None,
                 "area_indices": validated_areas,
                 "coordinate_word": coordinate_word,
@@ -2059,6 +2108,7 @@ def update_custom_overworld_hidden_item(
     area_indices: list[int] | tuple[int, ...] | None = None,
     coordinate_word: int | None = None,
     value_byte: int | None = None,
+    expected_project_revision: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Preview or update only a project-authored hidden item.
@@ -2076,6 +2126,7 @@ def update_custom_overworld_hidden_item(
         raise ValueError("custom_record_id must be a positive integer")
     if not isinstance(dry_run, bool):
         raise TypeError("dry_run must be a boolean")
+    _validate_expected_project_revision(expected_project_revision)
     if area_indices is None and coordinate_word is None and value_byte is None:
         raise ValueError("supply area_indices, coordinate_word, or value_byte")
 
@@ -2093,10 +2144,16 @@ def update_custom_overworld_hidden_item(
     changed_fields: list[str] = []
     before: dict[str, Any]
     try:
-        if not dry_run:
+        if dry_run:
+            connection.execute("BEGIN")
+        else:
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
+        project_revision = _calculate_project_revision(connection)
+        _require_matching_project_revision(
+            expected_project_revision, project_revision
+        )
         row = connection.execute(
             """SELECT custom_record_id, coordinate_word, value_byte, created_at
                FROM overworld_hidden_item_custom_record
@@ -2183,6 +2240,7 @@ def update_custom_overworld_hidden_item(
             return {
                 "action": "update_custom_overworld_hidden_item",
                 "dry_run": True,
+                "project_revision": project_revision,
                 "custom_record_id": custom_record_id,
                 "before": before,
                 "proposed": proposed,
@@ -2244,6 +2302,7 @@ def delete_custom_overworld_hidden_item(
     database_path: str | Path,
     custom_record_id: int,
     *,
+    expected_project_revision: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Preview or delete only a project-authored record, never a source record."""
@@ -2255,6 +2314,7 @@ def delete_custom_overworld_hidden_item(
         raise ValueError("custom_record_id must be a positive integer")
     if not isinstance(dry_run, bool):
         raise TypeError("dry_run must be a boolean")
+    _validate_expected_project_revision(expected_project_revision)
     db_path = Path(database_path)
     if not db_path.is_file():
         raise FileNotFoundError(f"project database not found: {db_path}")
@@ -2267,10 +2327,16 @@ def delete_custom_overworld_hidden_item(
     )
     connection.row_factory = sqlite3.Row
     try:
-        if not dry_run:
+        if dry_run:
+            connection.execute("BEGIN")
+        else:
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
+        project_revision = _calculate_project_revision(connection)
+        _require_matching_project_revision(
+            expected_project_revision, project_revision
+        )
         row = connection.execute(
             """SELECT custom_record_id, coordinate_word, value_byte, created_at
                FROM overworld_hidden_item_custom_record
@@ -2299,6 +2365,7 @@ def delete_custom_overworld_hidden_item(
             return {
                 "action": "delete_custom_overworld_hidden_item",
                 "dry_run": True,
+                "project_revision": project_revision,
                 "record": result,
                 "rom_modified": False,
             }
@@ -2508,6 +2575,7 @@ def update_dungeon_chest_record(
     item_value: int | None = None,
     room_value: int | None = None,
     is_big_chest: bool | None = None,
+    expected_project_revision: str | None = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Preview or edit packed chest fields while preserving immutable source values.
@@ -2533,6 +2601,7 @@ def update_dungeon_chest_record(
         raise ValueError("is_big_chest must be a boolean")
     if not isinstance(dry_run, bool):
         raise TypeError("dry_run must be a boolean")
+    _validate_expected_project_revision(expected_project_revision)
 
     db_path = Path(database_path)
     if not db_path.is_file():
@@ -2547,10 +2616,16 @@ def update_dungeon_chest_record(
     changed_fields: list[str] = []
     before: dict[str, Any]
     try:
-        if not dry_run:
+        if dry_run:
+            connection.execute("BEGIN")
+        else:
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("BEGIN IMMEDIATE")
         _require_current_schema(connection)
+        project_revision = _calculate_project_revision(connection)
+        _require_matching_project_revision(
+            expected_project_revision, project_revision
+        )
         model = _export_dungeon_chests(connection)
         if model is None:
             raise ValueError("no dungeon chest model has been imported")
@@ -2596,6 +2671,7 @@ def update_dungeon_chest_record(
             return {
                 "action": "update_dungeon_chest_record",
                 "dry_run": True,
+                "project_revision": project_revision,
                 "table_index": table_index,
                 "before": before,
                 "proposed": proposed,
