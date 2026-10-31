@@ -9,6 +9,13 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add a subprocess-level MCP stdio integration test. CI launches
+  `python -m zelda_suite.mcp.server`, initializes an SDK `ClientSession`,
+  discovers tools, validates a project, previews a chest edit, verifies
+  revision-less apply is rejected, applies with the preview revision, and
+  re-reads/validates the updated project. This exercises the protocol process
+  boundary without claiming compatibility with a third-party desktop/IDE host.
+
 - Bind all five MCP mutation tools to preview-time canonical project revisions.
   Every preview returns a SHA-256 `project_revision`; `apply=true` requires
   that exact `expected_project_revision`, rechecked under SQLite's
