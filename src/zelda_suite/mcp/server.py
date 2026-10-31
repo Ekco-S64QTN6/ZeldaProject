@@ -521,3 +521,7 @@ def main() -> None:
     except (FileNotFoundError, OSError, ValueError) as exc:
         parser.error(str(exc))
     server.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()
