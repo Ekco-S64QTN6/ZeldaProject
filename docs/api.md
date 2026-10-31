@@ -76,6 +76,20 @@ uv run zelda-suite build-rom project/my-hack.db --base-rom BASE.smc --output pro
 `plan_project_patches(database)` lists the patches without reading a ROM. Supported domains, refusals
 and evidence: [rom-writer.md](./rom-writer.md).
 
+### Decoding message text
+
+```bash
+uv run zelda-suite decode-text-messages --text                       # from the pinned source
+uv run zelda-suite decode-text-messages --rom BASE.smc --message-id 32 --text
+uv run zelda-suite decode-text-messages --rom BASE.smc --output project/messages.json
+```
+
+`zelda_suite.extract.text_decode`: `decode_text_messages(main_source, extra_source, rom=None)`
+returns the `zelda-suite-text-messages` report; `decode_markup` / `encode_markup` convert one
+message's bytes to and from the lossless markup; `display_text` renders it readable;
+`rom_dictionary` / `source_dictionary` load the 97 dictionary entries. Contract and evidence:
+[schemas/text.md](./schemas/text.md#decoding-messages).
+
 ## Design constraints for future operations
 
 1. Every mutating call must support `dry_run=True` before it can write external
