@@ -9,6 +9,14 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add message decoding: `zelda-suite decode-text-messages [--rom PATH]` and
+  `zelda_suite.extract.text_decode`. All 397 messages decode to readable text and a
+  lossless markup (`{Speed 00}Save And C[on]t[in]ue{Line2}…`) that encodes back to the
+  identical bytes. Grammar from `Text_LoadCharacterBuffer`/`Text_Command`; glyphs derived
+  from 5,044 annotated source lines (five inferred, two unknown, reported); dictionary
+  from the ROM pointer table, which resolves `.You` as `18 28 2E` ending at `$C8D9`.
+  Adds the public `parse_source_message_bytes()` helper.
+
 - Add the ROM writer: `zelda-suite build-rom DB --base-rom PATH --output PATH [--apply]`
   and `zelda_suite.write.build_rom()`. Dungeon-chest and imported overworld hidden-item
   edits become same-size in-place patches at offsets verified against the US image

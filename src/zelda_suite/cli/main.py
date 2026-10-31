@@ -4003,6 +4003,64 @@ def update_dungeon_chest_record_command(
     click.echo(json.dumps(record, ensure_ascii=False, indent=2, sort_keys=True))
 
 
+@cli.command(name="decode-text-messages")
+@click.option(
+    "--rom",
+    "rom_path",
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=False),
+    default=None,
+    help="Read message bytes and the dictionary from this US image (read only); "
+    "without it, decode the pinned source literals.",
+)
+@click.option("--message-id", type=click.IntRange(min=0), default=None, help="Only this message.")
+@click.option(
+    "--main-source",
+    type=click.Path(path_type=Path, exists=True, dir_okay=False),
+    default="reference/AsarUSALTTPDisassembly/Bank1C.asm",
+    show_default=True,
+)
+@click.option(
+    "--extra-source",
+    type=click.Path(path_type=Path, exists=True, dir_okay=False),
+    default="reference/AsarUSALTTPDisassembly/Bank0E.asm",
+    show_default=True,
+)
+@click.option("--text", "as_text", is_flag=True, help="Print readable text instead of the JSON report.")
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path, dir_okay=False),
+    default=None,
+    help="Write the JSON report here (a new file) instead of standard output.",
+)
+def decode_text_messages_command(rom_path: Path | None, message_id: int | None, main_source: Path,
+                                 extra_source: Path, as_text: bool, output: Path | None) -> None:
+    """Decode the 397 messages into readable text and lossless markup (reads only)."""
+    from zelda_suite.extract.rom_image import EXPECTED_US_ROM_SIZE, read_rom_bytes
+    from zelda_suite.extract.text_decode import TextDecodeError, decode_text_messages
+
+    try:
+        rom = read_rom_bytes(rom_path) if rom_path else None
+        if rom is not None and len(rom) != EXPECTED_US_ROM_SIZE:
+            raise click.ClickException(f"{rom_path} is not the headerless 1 MiB US image")
+        report = decode_text_messages(main_source.read_text(encoding="utf-8"),
+                                      extra_source.read_text(encoding="utf-8"), rom, message_id=message_id)
+    except (TextDecodeError, OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if as_text:
+        for m in report["messages"]:
+            click.echo(f"--- ${m['message_id']:03X} {m['message_label']}")
+            click.echo(m["text"])
+        return
+    rendered = json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True)
+    if output is None:
+        click.echo(rendered)
+        return
+    if output.exists():
+        raise click.ClickException(f"{output} exists; choose a new path")
+    output.write_text(rendered + "\n", encoding="utf-8")
+    click.echo(f"wrote {output} ({report['message_count']} messages)")
+
+
 @cli.command(name="build-rom")
 @click.argument(
     "database",
