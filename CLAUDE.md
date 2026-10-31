@@ -235,6 +235,7 @@ The aesthetic and technical direction is **the *Parallel Worlds* lineage**.
 - **`CHANGELOG.md`** and **`docs/versioning.md`** — record unreleased changes and keep package, project JSON, SQLite schema, registry, and source-export versions distinct.
 - **`RESEARCH.md`** — the catalog of tools and projects referenced above, with more detail.
 - **`docs/api.md`** — current documented API surface; extend it as CLI and authoring functions change. Use `zelda-suite audit-unresolved-table-expressions` to inventory unresolved registered scalar-table expressions without requiring a ROM or evaluating assembler syntax.
+- **`docs/agent-workflows.md`** — MCP session model, tool permission groups, mandatory human-approval sequence, and reference hidden-item/chest workflows. These examples are not evidence of a tested external host.
 - **`docs/schemas/`** — source-export contracts and discovery notes; full editable game-system schemas remain incomplete.
 - **`docs/decisions/`** — Architecture Decision Records. Read `0001` before touching the data model.
 - **`docs/glossary.md`** — terminology (IPS, ASM, MSU‑1, rooms vs. maps, etc.).

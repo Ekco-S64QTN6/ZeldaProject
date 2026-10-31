@@ -9,6 +9,12 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add `docs/agent-workflows.md` with the host-neutral MCP session model,
+  read/write permission groups, explicit human-approval gate, concurrency
+  limitations of preview/apply, and three reference tool-call workflows.
+  The document distinguishes operating guidance from tested external-host
+  compatibility or completed end-to-end demos.
+
 - Add read-only `overworld_find_hidden_items` to search imported and
   project-authored hidden-item records by area, source/custom identifier,
   coordinate word, and/or raw value byte. Supplied filters combine with AND

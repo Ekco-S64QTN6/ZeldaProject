@@ -119,6 +119,9 @@ resolves item bytes to canonical item names or room values to playable rooms.
 The host/agent workflow must obtain human approval before sending `apply=true`.
 The server's instructions describe this expectation, but the server does not
 implement a separate user-authentication, authorization, or approval service.
+The recommended one-project-per-process session model, permission groups,
+preview/approval/apply sequence, and reference workflows are documented in
+[agent-workflows.md](./agent-workflows.md).
 Source-asset imports, arbitrary file access, ROM reads, ROM writes, patching,
 saving, and rebuilding remain outside the tool surface. Continue using the
 Python API/CLI for supported operations that are not yet mapped to MCP. Do not

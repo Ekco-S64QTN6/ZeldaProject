@@ -160,14 +160,27 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 
 **Objective:** Make agent-driven changes structured, reviewable, and reproducible.
 
-- [~] Expose project validation/source metadata reads, bounded overworld/dungeon reads, a read-only chest-to-room-pointer audit, full, single-entry, and raw-field-filtered chest reads plus AND-filtered
-overworld hidden-item searches across imported and project-authored records, dry-run-first project-authored hidden-item create/update/delete, and preview-first packed dungeon-chest/imported-overworld updates through the optional stdio MCP server. Strict schemas pin record/field ranges; edits preserve immutable source baselines and area aliases. The room audit uses the startup-bound asset registry and reports source-only findings; source imports, ROM reads/writes, and external host interoperability remain unverified or unavailable.
-- [ ] Select and document an agent harness, session model, tool permissions, and human review boundaries.
+- [~] Expose project validation/source metadata reads, bounded overworld/dungeon
+  reads, a read-only chest-to-room-pointer audit, full/single/raw-field-filtered
+  chest reads, and AND-filtered overworld hidden-item searches across imported
+  and project-authored records. The optional stdio MCP server also exposes
+  dry-run-first project-authored hidden-item CRUD and preview-first packed
+  dungeon-chest/imported-overworld updates. Strict schemas pin record/field
+  ranges; edits preserve immutable source baselines and area aliases. Source
+  imports and ROM reads/writes remain outside the tool surface.
+- [~] Document the one-project-per-process session model, read/write tool
+  permission groups, and explicit human-approval gate in
+  [docs/agent-workflows.md](./docs/agent-workflows.md). The host-neutral
+  reference procedure is documented, but selection/configuration of a concrete
+  MCP host and live interoperability are not verified.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
 - [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
 
-**Exit criteria:** Not met. The initial bounded MCP server now supports custom hidden-item create/update/delete, but external host interoperability, human approval workflow, broader authoring operations, deterministic ROM diffs, and emulator-backed edit-to-build verification remain future work.
+**Exit criteria:** Not met. The bounded MCP surface and host-neutral approval
+procedure are documented, but a concrete host/session, live interoperability,
+three completed natural-language workflows, deterministic ROM diffs, and
+emulator-backed edit-to-build verification remain future work.
 
 ## Phase 4 — Maker-Style Expansion
 

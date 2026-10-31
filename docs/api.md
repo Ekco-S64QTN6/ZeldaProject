@@ -74,7 +74,7 @@ in `docs/schemas/project-dungeon-chest-room-reference-audit.schema.json`.
 Install the `agent` extra and run `zelda-suite-mcp --database PATH` to
 serve one existing project database over stdio. The process binds its database
 path once at startup; no tool accepts a database or arbitrary filesystem path.
-The initial tool set is:
+The currently exposed tool set is:
 
 - `project_validate`, `project_list_source_assets`, and
   `project_get_source_asset` for project validation and source metadata.
@@ -100,7 +100,9 @@ and ANDs all supplied filters. It returns matches in source table order with
 provenance and evidence flags; it does not resolve canonical item or room names.
 
 The MCP surface deliberately does not expose source-asset imports, arbitrary
-file access, ROM reads, or ROM writes.
+file access, ROM reads, or ROM writes. See
+[agent-workflows.md](./agent-workflows.md) for session boundaries, permission
+groups, human approval requirements, and reference tool-call sequences.
 The Python API and CLI remain available independently of the optional MCP
 dependency. See [`mcp-server.md`](./mcp-server.md) for installation, startup,
 host setup, and the complete security/verification boundary.
