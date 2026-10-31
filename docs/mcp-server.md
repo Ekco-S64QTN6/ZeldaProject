@@ -51,6 +51,7 @@ open a ROM.
 | `overworld_list_hidden_items` | Read the model, optionally filtered to one area index. |
 | `overworld_update_hidden_item_record` | Preview coordinate/value edits to one imported source record; persist only with `apply=true`. |
 | `dungeon_list_chest_records` | Read all 168 chest records or select one record by bounded table index 0–167. |
+| `dungeon_find_chest_records` | Find records by one or more raw item-byte (0–255), room-value (0–32767), and big-chest-flag filters; read-only and source-order preserving. |
 | `dungeon_audit_chest_room_references` | Read-only join of current chest room values to the registered object/door pointer tables, retaining source baselines and findings. |
 | `dungeon_update_chest_record` | Preview a bounded item-byte, room-value, and/or big-chest-flag edit; persist only with `apply=true`. |
 | `overworld_create_custom_hidden_item` | Preview a project-authored record and one-or-more area links; persist only with `apply=true`. |
@@ -97,6 +98,12 @@ It recomposes the packed 24-bit value while preserving the original source
 literal and source field baselines. The room value remains a raw pointer-table
 index candidate, not a confirmed playable-room identifier, and the item byte
 is not a canonical item-name mapping. The update changes SQLite/JSON only.
+
+The `dungeon_find_chest_records` tool requires at least one filter and applies
+all supplied filters as an AND query to the current project model. It returns
+matching records in their original table-index order with source provenance,
+immutable baselines, and ROM evidence flags. It never edits the project or
+resolves item bytes to canonical item names or room values to playable rooms.
 
 The host/agent workflow must obtain human approval before sending `apply=true`.
 The server's instructions describe this expectation, but the server does not

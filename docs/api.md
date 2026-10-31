@@ -87,8 +87,13 @@ The initial tool set is:
   to SQLite and refreshes canonical JSON. Updates omit fields to retain their
   values, and an explicit `area_indices` list replaces all area links.
 
-The MCP surface deliberately does not expose source-row updates, dungeon chest
-edits, source-asset imports, arbitrary file access, ROM reads, or ROM writes.
+The MCP surface also includes `dungeon_find_chest_records`, a read-only query
+that requires at least one raw item-byte, room-value, or big-chest-flag filter
+and ANDs all supplied filters. It returns matches in source table order with
+provenance and evidence flags; it does not resolve canonical item or room names.
+
+The MCP surface deliberately does not expose source-asset imports, arbitrary
+file access, ROM reads, or ROM writes.
 The Python API and CLI remain available independently of the optional MCP
 dependency. See [`mcp-server.md`](./mcp-server.md) for installation, startup,
 host setup, and the complete security/verification boundary.

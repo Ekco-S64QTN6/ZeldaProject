@@ -202,6 +202,54 @@ def create_server(
         )
 
     @server.tool()
+    def dungeon_find_chest_records(
+        item_value: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
+        room_value: Annotated[int, Field(strict=True, ge=0, le=32767)] | None = None,
+        is_big_chest: Annotated[bool, Field(strict=True)] | None = None,
+    ) -> str:
+        """Find chest entries by one or more bounded raw packed fields.
+
+        At least one filter is required. Results retain source-order indexes,
+        source baselines, provenance, and evidence; this tool is read-only.
+        Item bytes and room values remain raw fields, not resolved game entities.
+        """
+        if item_value is None and room_value is None and is_big_chest is None:
+            raise ValueError("supply item_value, room_value, or is_big_chest")
+        model = get_dungeon_chest_model(db_path)
+        if model is None:
+            raise ValueError("no dungeon chest model has been imported")
+        entries = [
+            record
+            for record in model["entries"]
+            if (item_value is None or record["item_value"] == item_value)
+            and (room_value is None or record["room_value"] == room_value)
+            and (
+                is_big_chest is None
+                or record["is_big_chest"] is is_big_chest
+            )
+        ]
+        return _render_json(
+            {
+                "format": model["format"],
+                "format_version": model["format_version"],
+                "source_file": model["source_file"],
+                "source_revision": model["source_revision"],
+                "source_sha256": model["source_sha256"],
+                "filters": {
+                    "item_value": item_value,
+                    "room_value": room_value,
+                    "is_big_chest": is_big_chest,
+                },
+                "summary": {
+                    "matched_count": len(entries),
+                    "total_count": len(model["entries"]),
+                },
+                "entries": entries,
+                "evidence": model["evidence"],
+            }
+        )
+
+    @server.tool()
     def dungeon_update_chest_record(
         table_index: Annotated[int, Field(strict=True, ge=0, le=167)],
         item_value: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
