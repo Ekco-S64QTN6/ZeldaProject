@@ -220,7 +220,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         ]["anyOf"][0]
         assert revision_schema["type"] == "string"
         assert revision_schema["pattern"] == "^[0-9a-f]{64}$"
-        assert "exact project_revision" in revision_schema["description"]
+        assert "exact project_revision" in revision_schema["description"].lower()
         apply_schema = schemas[mutation_name]["properties"]["apply"]
         assert apply_schema["default"] is False
         assert "explicit user approval" in apply_schema["description"]
