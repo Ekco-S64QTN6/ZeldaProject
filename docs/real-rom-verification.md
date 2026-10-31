@@ -732,9 +732,18 @@ Both preserve source baselines and store edits only in SQLite and canonical JSON
 commands report candidate byte comparisons only; they do not prove every source
 offset or decode the messages.
 
+Implemented since (2026-10-31): `build-rom` writes chest and imported hidden-item
+edits as in-place patches (all 168 `Dungeon_ChestData` literals matched this image
+byte-for-byte at their source offsets; header checksum routine reproduces `$AF0D`;
+see [rom-writer.md](./rom-writer.md)), and `decode-text-messages --rom` decodes all
+397 messages from this image, reading the dictionary through its pointer table
+(entry `$60` "You" = `18 28 2E` at `$0748D6`, terminal pointer `$C8D9`; see
+[schemas/text.md](./schemas/text.md#decoding-messages)). The stock image boots in
+snes9x 1.63 headless; playtesting built ROMs is user-run.
+
 Still not implemented/verified: general semantic schemas for room objects, map
-layers, entrances, text, sprites, and audio; an edit-to-ROM build pipeline; ROM
-writer and patch generation; automated emulator smoke tests; complete YAZE/z3ed
+layers, entrances, sprites, and audio; writing edited text; relocation for
+project-authored records; automated in-game checks; complete YAZE/z3ed
 integration (the map read fails as recorded above); and z3cli/model-endpoint
 integration. Several YAZE read commands do succeed, but that is not an adapter or
 end-to-end verification. The user reported that the ROM boots and the local
