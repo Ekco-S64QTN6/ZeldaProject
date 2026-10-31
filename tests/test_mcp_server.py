@@ -146,6 +146,7 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
         "overworld_list_hidden_items",
         "overworld_update_hidden_item_record",
         "dungeon_list_chest_records",
+        "dungeon_find_chest_records",
         "dungeon_audit_chest_room_references",
         "dungeon_update_chest_record",
         "overworld_create_custom_hidden_item",
@@ -187,6 +188,13 @@ def test_mcp_server_binds_project_path_and_exposes_bounded_tool_surface(
     table_index_schema = chest_list_schema["properties"]["table_index"]["anyOf"][0]
     assert table_index_schema["minimum"] == 0
     assert table_index_schema["maximum"] == 167
+
+    chest_find_schema = schemas["dungeon_find_chest_records"]
+    assert chest_find_schema["properties"]["item_value"]["anyOf"][0]["minimum"] == 0
+    assert chest_find_schema["properties"]["item_value"]["anyOf"][0]["maximum"] == 255
+    assert chest_find_schema["properties"]["room_value"]["anyOf"][0]["minimum"] == 0
+    assert chest_find_schema["properties"]["room_value"]["anyOf"][0]["maximum"] == 32767
+    assert chest_find_schema["properties"]["is_big_chest"]["anyOf"][0]["type"] == "boolean"
 
     chest_schema = schemas["dungeon_update_chest_record"]
     assert chest_schema["properties"]["apply"]["default"] is False
@@ -317,6 +325,70 @@ def test_mcp_dungeon_chest_list_can_select_one_source_entry(
     )
     assert len(full["entries"]) == 168
     assert full["summary"]["entry_count"] == 168
+    assert database.read_bytes() == database_before
+    assert json_export.read_bytes() == export_before
+
+
+def test_mcp_dungeon_chest_find_filters_raw_fields_without_mutation(
+    tmp_path: Path,
+) -> None:
+    database, json_export = initialize_project("mcp_find_chests", tmp_path)
+    imported = import_dungeon_chest_data(database, REGISTRY_PATH, dry_run=False)
+    server = create_server(database, REGISTRY_PATH)
+    database_before = database.read_bytes()
+    export_before = json_export.read_bytes()
+
+    target = imported["entries"][5]
+    arguments = {
+        "item_value": target["item_value"],
+        "room_value": target["room_value"],
+        "is_big_chest": target["is_big_chest"],
+    }
+    result = json.loads(
+        _tool_text(
+            asyncio.run(server.call_tool("dungeon_find_chest_records", arguments))
+        )
+    )
+    expected = [
+        record
+        for record in imported["entries"]
+        if record["item_value"] == arguments["item_value"]
+        and record["room_value"] == arguments["room_value"]
+        and record["is_big_chest"] is arguments["is_big_chest"]
+    ]
+
+    assert result["format"] == "zelda-suite-dungeon-chest-model"
+    assert result["source_revision"] == PINNED_REVISION
+    assert result["source_sha256"] == imported["source_sha256"]
+    assert result["filters"] == arguments
+    assert result["summary"] == {
+        "matched_count": len(expected),
+        "total_count": 168,
+    }
+    assert result["entries"] == expected
+    assert [entry["table_index"] for entry in result["entries"]] == sorted(
+        entry["table_index"] for entry in result["entries"]
+    )
+    assert result["evidence"]["rom_bytes_read"] is False
+    assert result["evidence"]["rom_modified"] is False
+    assert database.read_bytes() == database_before
+    assert json_export.read_bytes() == export_before
+
+    by_big_chest_flag = json.loads(
+        _tool_text(
+            asyncio.run(
+                server.call_tool(
+                    "dungeon_find_chest_records",
+                    {"is_big_chest": target["is_big_chest"]},
+                )
+            )
+        )
+    )
+    assert by_big_chest_flag["entries"] == [
+        record
+        for record in imported["entries"]
+        if record["is_big_chest"] is target["is_big_chest"]
+    ]
     assert database.read_bytes() == database_before
     assert json_export.read_bytes() == export_before
 

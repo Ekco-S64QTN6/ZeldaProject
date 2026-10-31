@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Add read-only `dungeon_find_chest_records` to the project-bound MCP server.
+  It combines any supplied raw item-byte, room-value, and big-chest-flag
+  filters, preserves source table order/provenance, and returns evidence flags
+  without changing SQLite/JSON or resolving semantic item/room identities.
+
 - Allow `dungeon_list_chest_records` to select one bounded table index (0–167) through MCP while preserving the full-model response when omitted. Focused reads carry source provenance and evidence flags, avoiding a 168-entry response when an agent needs one chest.
 
 - Expose `dungeon_audit_chest_room_references` through the project-bound MCP server. The read-only tool is bound to the registered asset manifest at startup, joins current edited chest room values to both source pointer tables, preserves original room baselines, and reports out-of-range/mismatched targets without reading or writing ROM bytes.
