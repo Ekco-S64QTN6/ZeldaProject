@@ -133,8 +133,9 @@ async def _exercise_stdio_session(database_path: Path) -> None:
                 },
             )
         )
-        assert overworld_applied["dry_run"] is False
         assert overworld_applied["record_index"] == 0
+        assert overworld_applied["coordinate_word"] == 0x1234
+        assert overworld_applied["is_modified"] is True
         found_source = _tool_json(
             await session.call_tool(
                 "overworld_find_hidden_items", {"record_index": 0}
