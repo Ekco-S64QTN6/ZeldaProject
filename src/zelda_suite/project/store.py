@@ -2011,7 +2011,7 @@ def _overworld_area_source_references(
         area_indices,
     ).fetchall()
     if len(rows) != len(area_indices):
-        raise ValueError("custom hidden-item area source references are incomplete")
+        raise ValueError("overworld area source references are incomplete")
     return [
         {
             "area_index": int(row["area_index"]),

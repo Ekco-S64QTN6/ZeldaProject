@@ -412,6 +412,11 @@ def test_mcp_overworld_row_update_previews_then_applies_explicitly(
     ]
     assert source_references["areas"][0]["pointer_entry_file_offset_annotation"] == 0x0DC2F9
     assert source_references["areas"][1]["pointer_entry_file_offset_annotation"] == 0x0DC2FB
+    assert source_references["areas"][0]["target_file_offset_annotation"] == 0x0DC3F9
+    assert source_references["areas"][1]["target_file_offset_annotation"] == 0x0DC3F9
+    assert source_references["areas"][0]["sentinel_file_offset_annotation"] == 0x0DC450
+    assert source_references["areas"][1]["sentinel_file_offset_annotation"] == 0x0DC451
+    assert [reference["source_record_count"] for reference in source_references["areas"]] == [1, 1]
     assert all(
         reference["rom_offsets_verified"] is False
         and reference["rom_bytes_read"] is False
