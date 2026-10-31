@@ -225,3 +225,44 @@ verified by the command. A synthetic test or a matching byte report does not
 establish that the candidate source ranges are canonical. See the
 [text-message byte verification schema](./text-message-byte-verification.schema.json)
 and [real-ROM runbook](../real-rom-verification.md).
+
+## Decoding messages
+
+`uv run zelda-suite decode-text-messages [--rom PATH] [--message-id N] [--text] [--output PATH]`
+(`zelda_suite.extract.text_decode`) decodes all 397 messages into readable text and a
+lossless markup. Format `zelda-suite-text-messages`, version 1.
+
+**Grammar** — from the pinned consumer, `Text_LoadCharacterBuffer` / `Text_Command` /
+`Text_DictionarySequence` (Bank0E.asm): a byte below `$67` is a glyph; `$67–$7F` is a
+command (`$6B–$6E` and `$77–$7A` take one parameter byte; `$7F` ends the message); `$88`
+and up is dictionary entry `byte − $88`, copied from pointer *i* up to pointer *i + 1*.
+
+**Glyphs** — derived from the source's own annotations: 5,044 annotated `db` lines of
+the two message blocks aligned byte-for-byte; every glyph maps to a single character
+(`$25` reads "L" once against 1,211 "l", a typo; `tests/test_text_decode.py` re-derives
+the map from the pinned source). `X`, `4`, `6`, `7`, `9` (`$17 $38 $3A $3B $3D`) never
+appear in an annotated line and are **inferred** from alphabet/digit order; each message
+lists any inferred or unknown glyphs it uses (`$4A` and `$4B` appear once each, unknown,
+written `{glyph 4A}`). The seven heart-piece glyphs `$52–$58` share "♥" and are written
+`{glyph XX}` in markup.
+
+**Markup** — glyphs as characters; dictionary entries as `[text]` (the 97 entry texts
+are distinct); commands as `{Name}` / `{Name XX}` with the consumer's names
+(`{Speed 00}`, `{Line2}`, `{Name}`, `{WaitKey}` …); the final `{End}` is implied.
+`encode_markup(decode_markup(b)) == b` for every message, from the source and from the
+ROM. `text` is the readable rendering: dictionary expanded, `Line2`/`Line3`/`Scroll` as
+line breaks, the player's name as `<Name>`.
+
+**The `$80` block marker** — `Message_0166`, the main block's last message, is followed by
+`db $80 ; Change banks`, which the source index counts with that message. The decoder
+reports it as `trailing_block_marker` and decodes the message up to its End.
+
+**`.You`, resolved by the ROM** — the source declares dictionary entry `$60` as
+`dw $18, $28, $2E` beside a two-byte offset interval. Decoded from source alone it stays
+unresolved (`{dict 60}` in 127 messages). With `--rom`, the dictionary is read through
+the ROM's pointer table as the game reads it: on the fingerprint-matched US image (2026-10-31)
+entry `$60` is the three bytes `18 28 2E` ("You") at `$0748D6`, ending at the table's
+terminal pointer `$C8D9` (`$0748D9`). The `dw` is a declaration error in the source (the
+bytes are `db` values); the terminal pointer is the exclusive end. With the ROM, all 397
+messages decode with no unresolved entries, and each message's ROM bytes are required to
+equal the source literals before decoding.

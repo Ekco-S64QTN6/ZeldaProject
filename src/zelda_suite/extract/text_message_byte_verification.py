@@ -210,6 +210,36 @@ def _parse_message_bytes(
     return {label: bytes(values) for label, values in parsed.items()}
 
 
+def parse_source_message_bytes(
+    source_blocks: list[MessageSourceBlock],
+    *,
+    source_revision: str = PINNED_TEXT_SOURCE_REVISION,
+) -> list[dict[str, Any]]:
+    """Every message's literal source bytes, in index order, without a ROM.
+
+    Each entry carries the index fields (`message_id`, `message_label`,
+    `source_file`, `data_block_label`, `source_line`) plus `data` (bytes) and
+    `sequential_file_offset` (its block start plus the bytes declared before it).
+    No bytes are interpreted.
+    """
+    index = parse_text_message_index(source_blocks, source_revision=source_revision)
+    out: list[dict[str, Any]] = []
+    for block in source_blocks:
+        block_messages = [
+            message.to_dict()
+            for message in index.messages
+            if message.source_file == block.source_file
+            and message.data_block_label == block.block_label
+        ]
+        parsed = _parse_message_bytes(block, block_messages)
+        cursor = block.block_start_offset
+        for message in block_messages:
+            data = parsed.get(message["message_label"], b"")
+            out.append({**message, "data": data, "sequential_file_offset": cursor})
+            cursor += len(data)
+    return sorted(out, key=lambda m: m["message_id"])
+
+
 def verify_text_message_bytes(
     rom_path: str | Path,
     source_blocks: list[MessageSourceBlock],

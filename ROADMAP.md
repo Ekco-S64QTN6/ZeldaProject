@@ -136,6 +136,7 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [x] Add a submodule-independent regression baseline for the committed 128-entry `OverworldData_HiddenItems` pointer table. It pins contiguous two-byte slot offsets, the full set of 80 target labels, and the 64-singleton/16-quadruple target distribution; target labels are still source symbols, not verified ROM offsets.
 - [ ] Extract and validate the full overworld map, dungeon room, and graphics/palette datasets through YAZE/`z3ed` or independently verified source/ROM parsers. The Landmine field export, OAM allocator audit and prep-dispatch inventory are bounded source inventories, not the complete sprite/graphics dataset.
 - [ ] Decode the committed overworld High/Low payloads into editable map layers from the actual `bin/ow/*.bin` data or a trusted local ROM. Source research now documents the Map32 high-byte/low-byte relationship and audits all current comment discrepancies, but the referenced payload files are absent from the pinned tree and their offsets still require trusted-ROM verification.
+- [~] Decode message text: `zelda-suite decode-text-messages` decodes all 397 messages into readable text and a lossless markup that encodes back to the identical bytes (verified on every message, from source and from the local ROM). Grammar from the pinned consumer; glyphs derived from the source's own annotations (five inferred, two unknown, reported per message); dictionary read through the ROM pointer table, which resolves `.You`. Editing and re-encoding text into the ROM (variable length, pointer rebuild) is the next step. See [docs/schemas/text.md](./docs/schemas/text.md#decoding-messages).
 - [ ] Establish complete editable schemas for items/chests/shops, doors/entrances, sprites/placements, message encoding, and audio payloads; distinguish raw metadata from verified semantic meaning. The packed chest inventory, purchase-handler catalogs, the special-shop transaction catalog, paid-overworld interaction inventory, and receive-item comment audit are bounded source evidence, not a complete editable item/chest/shop model.
 - [~] Continue documenting source-derived exports, schemas, provenance, regeneration commands, parser limits, and unresolved discrepancies as each asset lands.
 
@@ -274,7 +275,11 @@ emulator-backed edit-to-build verification remain future work.
    directive disagree. The consumer also references `Text_DictionaryPointers`
    while the only table declaration in the pinned file is
    `DictionaryPointers:`; no explicit alias is present. A source regression
-   pins both findings, but the source/ROM interpretation remains unresolved.
+   pins both findings. **The ROM resolves `.You`** (2026-10-31, read through the
+   pointer table as `Text_DictionarySequence` does): entry `$60` is three bytes
+   `18 28 2E` ("You") at `$0748D6`, ending at the terminal pointer `$C8D9`. The
+   source's `dw` is a declaration error; the bytes are `db` values. The source
+   annotations are preserved; the `Text_DictionaryPointers` name question remains.
 3. Continue extending the project-facing authoring API: the MCP server now
    exposes read-only field-filtered searches across imported and custom
    overworld hidden-item records, preview-first packed dungeon-chest field
