@@ -33,7 +33,10 @@ from pathlib import Path
 from typing import Any
 
 from zelda_suite.diff.rom_diff import compare_bytes
-from zelda_suite.extract.overworld_hidden_item_verification import DATA_END_EXCLUSIVE, DATA_START_OFFSET
+from zelda_suite.extract.overworld_hidden_item_verification import (
+    DATA_END_EXCLUSIVE,
+    DATA_START_OFFSET,
+)
 from zelda_suite.extract.rom_image import read_rom_bytes
 from zelda_suite.project import store
 
