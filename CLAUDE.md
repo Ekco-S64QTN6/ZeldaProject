@@ -48,7 +48,9 @@ searches by raw item byte, room value, and big-chest flag, a read-only audit of
 chest-to-room pointer references, preview-first imported overworld hidden-item
 and packed dungeon-chest edits, and project-authored
 hidden-item create/update/delete. All mutation tools default to previews and
-require explicit `apply=true` to persist SQLite/JSON changes; imported edits
+require explicit `apply=true` to persist SQLite/JSON changes; every MCP apply
+must also pass the `expected_project_revision` hash from the preview, which is
+checked under `BEGIN IMMEDIATE` so stale proposals fail closed. Imported edits
 preserve their source baselines and area aliases. No tool accepts a database
 or registry path, and the server does not expose imports, ROM reads, or ROM
 writes. Install it with

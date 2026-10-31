@@ -132,7 +132,9 @@ hidden-item create/update/delete. Set `--registry` or
 `ZELDA_SUITE_ASSET_REGISTRY` to the registered asset manifest. All mutation
 tools default to previews; `apply=true`
 explicitly persists the project-local SQLite/JSON change while preserving
-source baselines and area aliases. Source imports, ROM access, and ROM writes
+source baselines and area aliases. Every MCP apply must include the
+`expected_project_revision` fingerprint returned by its preview; stale project
+state is rejected before the write. Source imports, ROM access, and ROM writes
 are not exposed. See
 [`docs/mcp-server.md`](./docs/mcp-server.md) for the tool contract and limits,
 and [`docs/agent-workflows.md`](./docs/agent-workflows.md) for the recommended

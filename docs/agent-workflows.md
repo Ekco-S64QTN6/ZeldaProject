@@ -30,13 +30,23 @@ the canonical JSON sidecar. A host should maintain the user conversation and
 the current task plan, but it must re-read project state after every applied
 mutation rather than trusting stale context.
 
-Use one active writer per project during an edit workflow. Preview calls are
-read-only and do not reserve the project for a later apply. There is no preview
-token or revision precondition that binds an `apply=true` call to a previous
-preview. Re-preview immediately before applying, avoid concurrent edits from
-another session, and verify the result afterward. The underlying applied
-project edits use SQLite write transactions, but that does not make an old
-preview safe to apply after another writer has changed the project.
+Every mutation preview includes `project_revision`, a SHA-256 fingerprint of
+the complete canonical project content. For an MCP apply, pass that exact value
+as `expected_project_revision` with `apply=true`. The server recomputes the
+fingerprint after acquiring SQLite's `BEGIN IMMEDIATE` write lock and rejects
+the apply if any canonical project data changed since the preview. A stale
+proposal must be previewed and approved again.
+
+The fingerprint is an optimistic-concurrency guard, not an authentication
+credential, a signed approval, or a user-identity token. The server does not
+know who approved a proposal; the host must still obtain explicit approval for
+the displayed change. The Python mutation APIs accept the expected revision
+optionally, while the MCP surface requires it for every `apply=true` call.
+
+Use one active writer per project during an edit workflow and verify after
+applying. The revision check protects the SQLite mutation from stale project
+state, but the server still does not implement multi-user locking or a durable
+approval/session store.
 
 ## Tool permissions
 
@@ -81,10 +91,12 @@ For every mutation, the host should follow this sequence:
 4. **Obtain explicit approval.** Ask the user to approve this exact preview.
    Approval to explore or to find a candidate is not approval to persist it.
    Do not infer approval from silence or from a broad project goal.
-5. **Apply the same operation.** Re-check the current record/model, repeat the
-   preview if anything has changed, then call the same tool with the same
-   target/field arguments and `apply=true`. If the current preview differs
-   from the approved proposal, stop and request approval for the new proposal.
+5. **Apply the same operation.** Call the same tool with the same
+   target/field arguments, the exact `project_revision` returned by the
+   approved preview as `expected_project_revision`, and `apply=true`. The
+   server checks the fingerprint under its SQLite write lock. If it rejects a
+   stale revision, obtain a new preview and new approval; do not retry the old
+   token or silently apply the changed proposal.
 6. **Verify.** Re-read the changed record, validate the project, and run the
    relevant read-only audit. Report the project-local mutation accurately and
    state that the ROM was not changed.
@@ -112,8 +124,9 @@ shown JSON arguments; an empty argument object is written as tool_name{}.
    `dungeon_update_chest_record{"table_index":5,"item_value":36}`.
 4. Present the source index, source literal/baselines, and `proposed` item byte.
    State that byte 36 is raw and has no resolved item name.
-5. After approval of that exact preview, re-read/preview and call the same
-   mutation with `apply=true`.
+5. After approval, call the same mutation with
+   `expected_project_revision` set to the exact `project_revision` returned
+   by the preview and `apply=true`.
 6. Re-read index 5, call `project_validate{}`, and run
    `dungeon_audit_chest_room_references{}` when room references are relevant.
 
@@ -126,8 +139,8 @@ shown JSON arguments; an empty argument object is written as tool_name{}.
    `overworld_update_hidden_item_record`; do not include `apply=true`.
 3. Show the `before`/`proposed` values, source label/index, area aliases, and
    consumer classification. Do not rename the raw byte as an item.
-4. After explicit approval, repeat the preview against current state and apply
-   the same arguments with `apply=true`.
+4. After explicit approval, apply the same arguments with the preview's exact
+   `project_revision` as `expected_project_revision` and `apply=true`.
 5. Re-read the row with `overworld_find_hidden_items`, inspect the affected
    area with `overworld_list_hidden_items`, and call `project_validate{}`.
 
@@ -139,8 +152,8 @@ shown JSON arguments; an empty argument object is written as tool_name{}.
    `{"area_indices":[12,13],"coordinate_word":4660,"value_byte":5}`.
 3. Explain that the `proposed` record is project-authored, has no source record
    index or canonical item ID, and adds links to both selected areas.
-4. After approval, repeat the preview and call the same operation with
-   `apply=true`.
+4. After approval, call the same operation with the preview's exact
+   `project_revision` as `expected_project_revision` and `apply=true`.
 5. Verify the returned custom ID with
    `overworld_find_hidden_items{"custom_record_id":1}` (use the ID returned by
    the apply response), inspect both area views, and call `project_validate{}`.
@@ -151,8 +164,9 @@ shown JSON arguments; an empty argument object is written as tool_name{}.
   only been exercised by its repository contract tests.
 - Demonstrate at least three natural-language workflows in a real host
   session. The sequences above are documented examples, not completed demos.
-- Add stronger revision-bound preview/apply semantics before supporting
-  concurrent writers or treating previews as durable approval artifacts.
+- Add durable approval/session identity and multi-user coordination if the
+  project later supports shared-host or multi-user editing; revision fingerprints
+  guard stale state but are not signed approvals or authorization.
 - Keep deterministic ROM diffs, a verified writer, and emulator checks outside
   the MCP contract until their roadmap gates are met.
 
