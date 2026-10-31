@@ -40,8 +40,11 @@ executable as a local stdio server and keep its stdin/stdout reserved for MCP
 traffic. Use an absolute database path in the host configuration if its working
 directory is not the repository root. The server does not download, locate, or
 open a ROM. The module can also be launched directly for development and
-protocol testing with `python -m zelda_suite.mcp.server --database PATH
---registry PATH`.
+protocol testing:
+
+```bash
+python -m zelda_suite.mcp.server --database PATH --registry PATH
+```
 
 ## Tool contract
 
