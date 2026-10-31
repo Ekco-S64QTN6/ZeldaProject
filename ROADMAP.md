@@ -173,15 +173,11 @@ Status legend: **[x] verified in repository/automated tests** · **[~] partial; 
 - [x] Bind every MCP mutation apply to the complete canonical project revision:
   preview returns a SHA-256 fingerprint, and the apply checks it under SQLite's
   write lock so cross-domain changes invalidate stale approvals.
-- [x] Exercise the MCP stdio protocol in CI by launching the server subprocess
-  and using the SDK `ClientSession` to initialize, discover tools, preview,
-  apply with a revision fingerprint, and validate the project.
 - [~] Document the one-project-per-process session model, read/write tool
   permission groups, and explicit human-approval gate in
   [docs/agent-workflows.md](./docs/agent-workflows.md). The host-neutral
-  reference procedure and SDK stdio round trip are tested, but selection/
-  configuration of a concrete desktop/IDE MCP host and live interoperability
-  are not verified.
+  reference procedure is documented, but selection/configuration of a concrete
+  MCP host and live interoperability are not verified.
 - [ ] Require every proposed edit to cite the project record and supporting disassembly label/offset range.
 - [ ] Run deterministic ROM diffs and emulator smoke tests for every ROM-changing operation.
 - [ ] Demonstrate at least three nontrivial natural-language edit workflows end-to-end.
