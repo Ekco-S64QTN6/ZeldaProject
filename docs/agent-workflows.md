@@ -57,6 +57,7 @@ The current MCP surface has three practical permission groups:
 - **Not exposed:** ROM reads/writes, patching, building, source-asset imports,
   arbitrary file access, and registry/database selection. Do not infer these
   capabilities or emulate them through unrelated tools.
+
 The server's Pydantic schemas enforce field types and bounds. Mutating calls
 default to a read-only preview. Setting `apply=true` persists project-local
 SQLite/JSON data only; it does not update a ROM. The server does not implement
@@ -68,7 +69,7 @@ host responsibilities, not server guarantees.
 For every mutation, the host should follow this sequence:
 
 1. **Establish context.** Confirm which project is bound, call
-   project_validate, and inspect the relevant record/model. For source-backed
+   `project_validate`, and inspect the relevant record/model. For source-backed
    data, retain the source label/index and provenance fields.
 2. **Preview.** Call the mutation tool without `apply=true`. Require a
    successful response with `dry_run=true`; inspect its `before`, `proposed`,
@@ -100,6 +101,9 @@ These examples document the intended operating procedure; no external natural
 language host session has been completed or counted as an end-to-end
 integration test.
 
+In the examples below, tool_name{...} means an MCP tool call with the
+shown JSON arguments; an empty argument object is written as tool_name{}.
+
 ### 1. Inspect and edit one dungeon chest
 
 1. Call `project_validate{}`.
@@ -124,7 +128,7 @@ integration test.
    consumer classification. Do not rename the raw byte as an item.
 4. After explicit approval, repeat the preview against current state and apply
    the same arguments with `apply=true`.
-5. Re-read the row with overworld_find_hidden_items, inspect the affected
+5. Re-read the row with `overworld_find_hidden_items`, inspect the affected
    area with `overworld_list_hidden_items`, and call `project_validate{}`.
 
 ### 3. Add a project-authored hidden-item record
