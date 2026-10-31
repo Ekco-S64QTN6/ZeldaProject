@@ -1887,8 +1887,6 @@ def update_overworld_hidden_item(
                 "record_index": record_index,
                 "before": before,
                 "proposed": proposed,
-                "before_area_source_references": before_area_source_references,
-                "proposed_area_source_references": proposed_area_source_references,
                 "changed_fields": changed_fields,
                 "rom_modified": False,
             }
@@ -2307,6 +2305,8 @@ def update_custom_overworld_hidden_item(
                 "custom_record_id": custom_record_id,
                 "before": before,
                 "proposed": proposed,
+                "before_area_source_references": before_area_source_references,
+                "proposed_area_source_references": proposed_area_source_references,
                 "changed_fields": changed_fields,
                 "rom_modified": False,
             }
