@@ -240,9 +240,26 @@ def create_server(
         record_index: Annotated[int, Field(strict=True, ge=0, le=350)],
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
         value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
-        apply: Annotated[bool, Field(strict=True)] = False,
+        apply: Annotated[
+            bool,
+            Field(
+                strict=True,
+                description=(
+                    "Persist only after explicit user approval. Requires the exact "
+                    "expected_project_revision returned by the approved preview."
+                ),
+            ),
+        ] = False,
         expected_project_revision: Annotated[
-            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+            str,
+            Field(
+                strict=True,
+                pattern=r"^[0-9a-f]{64}$",
+                description=(
+                    "Exact project_revision returned by this tool's preview. The "
+                    "server checks it against current canonical project state before writing."
+                ),
+            ),
         ] | None = None,
     ) -> str:
         """Preview an edit to an imported overworld row; set apply=true to persist it.
@@ -369,9 +386,26 @@ def create_server(
         item_value: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
         room_value: Annotated[int, Field(strict=True, ge=0, le=32767)] | None = None,
         is_big_chest: Annotated[bool, Field(strict=True)] | None = None,
-        apply: Annotated[bool, Field(strict=True)] = False,
+        apply: Annotated[
+            bool,
+            Field(
+                strict=True,
+                description=(
+                    "Persist only after explicit user approval. Requires the exact "
+                    "expected_project_revision returned by the approved preview."
+                ),
+            ),
+        ] = False,
         expected_project_revision: Annotated[
-            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+            str,
+            Field(
+                strict=True,
+                pattern=r"^[0-9a-f]{64}$",
+                description=(
+                    "Exact project_revision returned by this tool's preview. The "
+                    "server checks it against current canonical project state before writing."
+                ),
+            ),
         ] | None = None,
     ) -> str:
         """Preview a packed chest-field edit; set apply=true to persist it.
@@ -401,9 +435,26 @@ def create_server(
         ],
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)],
         value_byte: Annotated[int, Field(strict=True, ge=0, le=255)],
-        apply: Annotated[bool, Field(strict=True)] = False,
+        apply: Annotated[
+            bool,
+            Field(
+                strict=True,
+                description=(
+                    "Persist only after explicit user approval. Requires the exact "
+                    "expected_project_revision returned by the approved preview."
+                ),
+            ),
+        ] = False,
         expected_project_revision: Annotated[
-            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+            str,
+            Field(
+                strict=True,
+                pattern=r"^[0-9a-f]{64}$",
+                description=(
+                    "Exact project_revision returned by this tool's preview. The "
+                    "server checks it against current canonical project state before writing."
+                ),
+            ),
         ] | None = None,
     ) -> str:
         """Preview a project-authored hidden-item addition; set apply=true to persist it.
@@ -432,9 +483,26 @@ def create_server(
         ] | None = None,
         coordinate_word: Annotated[int, Field(strict=True, ge=0, le=65534)] | None = None,
         value_byte: Annotated[int, Field(strict=True, ge=0, le=255)] | None = None,
-        apply: Annotated[bool, Field(strict=True)] = False,
+        apply: Annotated[
+            bool,
+            Field(
+                strict=True,
+                description=(
+                    "Persist only after explicit user approval. Requires the exact "
+                    "expected_project_revision returned by the approved preview."
+                ),
+            ),
+        ] = False,
         expected_project_revision: Annotated[
-            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+            str,
+            Field(
+                strict=True,
+                pattern=r"^[0-9a-f]{64}$",
+                description=(
+                    "Exact project_revision returned by this tool's preview. The "
+                    "server checks it against current canonical project state before writing."
+                ),
+            ),
         ] | None = None,
     ) -> str:
         """Preview an edit to a project-authored hidden item; set apply=true to persist it.
@@ -459,9 +527,26 @@ def create_server(
     @server.tool()
     def overworld_delete_custom_hidden_item(
         custom_record_id: Annotated[int, Field(strict=True, ge=1)],
-        apply: Annotated[bool, Field(strict=True)] = False,
+        apply: Annotated[
+            bool,
+            Field(
+                strict=True,
+                description=(
+                    "Persist only after explicit user approval. Requires the exact "
+                    "expected_project_revision returned by the approved preview."
+                ),
+            ),
+        ] = False,
         expected_project_revision: Annotated[
-            str, Field(strict=True, pattern=r"^[0-9a-f]{64}$")
+            str,
+            Field(
+                strict=True,
+                pattern=r"^[0-9a-f]{64}$",
+                description=(
+                    "Exact project_revision returned by this tool's preview. The "
+                    "server checks it against current canonical project state before writing."
+                ),
+            ),
         ] | None = None,
     ) -> str:
         """Preview deletion of a project-authored hidden item; set apply=true to persist it.

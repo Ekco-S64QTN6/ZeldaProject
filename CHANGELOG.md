@@ -9,6 +9,11 @@ does not imply that any release has been published.
 
 ### Added
 
+- Describe revision-bound approval directly in all five MCP mutation tool
+  schemas. The `apply` property requires explicit user approval and the
+  `expected_project_revision` property explains that clients must return the
+  exact preview fingerprint; schema contract tests pin both descriptions.
+
 - Add a subprocess-level MCP stdio integration test. CI launches
   `python -m zelda_suite.mcp.server`, initializes an SDK `ClientSession`,
   discovers tools, validates a project, previews a chest edit, verifies

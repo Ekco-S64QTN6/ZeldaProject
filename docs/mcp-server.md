@@ -129,8 +129,12 @@ is not a canonical item-name mapping. The update changes SQLite/JSON only.
 The preview responses for all five mutation tools include `project_revision`.
 The `expected_project_revision` input is available only with `apply=true` and
 is required for MCP persistence. Its schema accepts exactly 64 lowercase hex
-characters. The underlying Python APIs also accept the optional expected
-revision for callers that need the same optimistic-concurrency check outside
+characters. The tool schema also describes `apply` as requiring explicit user
+approval and `expected_project_revision` as the exact preview fingerprint to
+return on apply. These descriptions are sent to MCP clients, so agents see the
+required call sequence in tool metadata rather than relying only on external
+documentation. The underlying Python APIs accept the expected revision
+optionally for callers that need the same optimistic-concurrency check outside
 MCP.
 
 The `dungeon_find_chest_records` tool requires at least one filter and applies
